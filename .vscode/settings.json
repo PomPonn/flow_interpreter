@@ -1,0 +1,19 @@
+{
+  "files.associations": {
+    "common.h": "c",
+    "array": "c",
+    "deque": "c",
+    "format": "c",
+    "initializer_list": "c",
+    "list": "c",
+    "queue": "c",
+    "random": "c",
+    "utility": "c",
+    "vector": "c",
+    "xhash": "c",
+    "xstring": "c",
+    "xutility": "c",
+    "string_view": "c"
+  },
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}

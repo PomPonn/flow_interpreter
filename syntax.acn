@@ -1,0 +1,61 @@
+# types can be combined eg. const int, const obj etc.
+
+# arrow '=>' indicates, that this is
+# some static definition, and can't be used
+# like a normal variable
+
+
+import io
+
+# return can be ommitted if there is only one expression
+
+simple_function: func=>int(a:int,b){a+b}
+
+simple_list:int list={1,2,3}
+simple_list2:var list={1,"123",124.23564}
+
+# '.' before identifier means that the identifier is a built-in global
+
+# it can be enumerated as well
+simple_object:obj={
+  field1:int=1,
+  field2:func=>str(){
+     return "fields: " + field1;
+  },
+}
+
+# if statement
+? simple_object.field1 == 1 {
+  # do something
+}
+# else if
+:? (simple_object.field2 == "fields: 1") {
+  # do something else
+}
+# else
+: {
+  # do something else else
+}
+
+# for loop
+for (i; range(0, 100, 2)) {
+  #do something
+}
+
+# for loop variation 2
+for (i: int, simple_list) {
+  # do something
+}
+
+# while loop
+while (simple_object.field1 == 1) {
+  # do something
+}
+
+# primitive data types:
+# static types are optional
+simple_variable1: int = 1
+simple_variable2: float = 1.12
+simple_variable3: str = "Str"
+simple_variable3: char = 'c'
+simple_variable4: bool = 0
