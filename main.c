@@ -14,7 +14,8 @@ int main() {
 
   // Tokenize the content
   size_t tokens_num;
-  char** tokens = tok_tokenize(file_content, " \r\n\t", &tokens_num);
+  char** tokens =
+      tok_tokenize(file_content, "\n\".'(){}=>;?:", " \r\t", &tokens_num);
 
   if (tokens == NULL) {
     fprintf(stderr, "Failed to tokenize content.\n");
