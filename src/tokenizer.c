@@ -3,41 +3,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline const char* _tok_trim_left(const char* str, const char* delims) {
-  if (str == NULL || delims == NULL) return str;
+static inline char* _tok_trim_left(const char* str, const char* delims) {
+  if (str == NULL || delims == NULL) return (char*)str;
 
   while (*str && strchr(delims, *str)) str++;
 
-  return str;
+  return (char*)str;
 }
 
 static inline const char* _tok_next_stop(const char* str, const char* escapes,
                                          const char* delims) {
   if (str == NULL || escapes == NULL || delims == NULL) return NULL;
 
-  static const char* last_stop = NULL;
+  str = _tok_trim_left(str, delims);
 
-  if (str) {
-    last_stop = str;
-  } else if (last_stop == NULL) {
+  if (*str == '\0')
     return NULL;
+  else if (strchr(escapes, *str))
+    return ++str;
+
+  char* next_delim = strpbrk(str, delims);
+  char* next_escape = strpbrk(str, escapes);
+
+  if (next_escape == NULL && next_delim == NULL)
+    // Return the end of the string
+    return str + strlen(str);
+  else if (next_escape == NULL)
+    return next_delim;
+  else if (next_delim == NULL)
+    return next_escape;
+  else {
+    str = min(next_escape, next_delim);
+    if (next_delim == str) str++;
+    return str;
   }
-
-  last_stop = _tok_trim_left(last_stop, delims);
-
-  char* next_delim = strpbrk(last_stop, delims);
-  char* next_escape = strpbrk(last_stop, escapes);
-
-  if (next_escape == NULL && next_delim == NULL) return NULL;
-
-  last_stop = min(next_escape, next_delim);
-
-  const char* res = last_stop;
-  if (next_escape == last_stop) {
-    last_stop++;
-  }
-
-  return res;
 }
 
 static inline size_t _tok_count_tokens(const char* str, const char* escapes,
@@ -137,10 +136,11 @@ char** tok_tokenize(const char* str, const char* escapes, const char* delims,
 
   // Tokenize the string
   char* token = _tok_next_token(str_copy, escapes, delims);
-
+  size_t test = 0;
   for (size_t index = 0; token; index++) {
     tokens[index] = _strdup(token);
     token = _tok_next_token(NULL, escapes, delims);
+    test = index;
   }
 
   free(str_copy);
