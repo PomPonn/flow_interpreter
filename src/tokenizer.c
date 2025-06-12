@@ -11,7 +11,7 @@ static inline char* _tok_trim_left(const char* str, const char* delims) {
   return (char*)str;
 }
 
-static inline const char* _tok_next_stop(const char* str, const char* escapes,
+static inline const char* _tok_next_stop(const char* str, const char** escapes,
                                          const char* delims) {
   if (str == NULL || escapes == NULL || delims == NULL) return NULL;
 
@@ -39,7 +39,7 @@ static inline const char* _tok_next_stop(const char* str, const char* escapes,
   }
 }
 
-static inline size_t _tok_count_tokens(const char* str, const char* escapes,
+static inline size_t _tok_count_tokens(const char* str, const char** escapes,
                                        const char* delims) {
   if (str == NULL || escapes == NULL || delims == NULL) return 0;
 
@@ -52,7 +52,7 @@ static inline size_t _tok_count_tokens(const char* str, const char* escapes,
   return count;
 }
 
-static char* _tok_next_token(char* str, const char* escapes,
+static char* _tok_next_token(char* str, const char** escapes,
                              const char* delimiters) {
   if (escapes == NULL || delimiters == NULL) return NULL;
 
@@ -108,7 +108,7 @@ __return:
   return token_start;
 }
 
-char** tok_tokenize(const char* str, const char* escapes, const char* delims,
+char** tok_tokenize(const char* str, const char** escapes, const char* delims,
                     size_t* tokens_num) {
   // validate arguments
   if (str == NULL || escapes == NULL || delims == NULL || tokens_num == NULL)

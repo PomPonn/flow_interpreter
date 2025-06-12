@@ -3,8 +3,40 @@
 #include "file.h"
 #include "tokenizer.h"
 
+const char* TOKEN_ESCAPES[] = {"==",
+                               "!=",
+                               "<=",
+                               ">=",
+                               "<<",
+                               ">>",
+                               "=",
+                               "<",
+                               ">",
+                               "+",
+                               "-",
+                               "*",
+                               "/",
+                               "%",
+                               "&&",
+                               "||",
+                               "!",
+                               "&",
+                               "|"
+                               "~",
+                               "?",
+                               ":",
+                               "\n",
+                               "\"",
+                               "'",
+                               "(",
+                               ")",
+                               "{",
+                               "}",
+                               ";",
+                               "?"};
+
 int main() {
-  const char* filename = "../../../../syntax.fl";
+  const char* filename = "../../../../test.fl";
   char* file_content = fl_read_file_as_str(filename);
 
   if (file_content == NULL) {
