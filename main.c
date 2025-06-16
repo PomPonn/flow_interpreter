@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "file.h"
+#include "preprocessor.h"
 #include "tokenizer.h"
 
 int main() {
@@ -28,9 +29,11 @@ int main() {
     return 1;
   }
 
+  inp_token* processed_tokens = ppc_preprocess(tokens, tokens_num);
+
   // Print tokens
   for (size_t i = 0; i < tokens_num; i++) {
-    printf("Token %zu: %s\n", i + 1, tokens[i]);
+    printf("[%zu]\t%s\t%i\n", i + 1, tokens[i], processed_tokens[i].type);
   }
   // for (size_t i = 0; i < tokens_num; i++) {
   //   printf("%s", tokens[i]);
