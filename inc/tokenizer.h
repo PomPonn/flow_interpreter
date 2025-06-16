@@ -4,10 +4,12 @@
 
 struct _tok_context {
   const char** escapes;
-  char* escapes_peek;
+  const char** literal_wrappers;
   const char* delims;
+  char* escapes_peek;
 
   size_t escapes_num;
+  size_t literal_wrappers_num;
 };
 typedef struct _tok_context tok_context;
 

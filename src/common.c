@@ -10,17 +10,20 @@ const char *INP_LINE_COMMENT = "#";
 
 const char *INP_KEYWORDS[] = {"import"};
 
-const char *INP_DELIMITERS[] = {",", "(", ")", "{",  "}",  ";",
-                                "[", "]", ".", "\n", "\"", "'"};
+const char *INP_DELIMITERS[] = {",", "(", ")", "{", "}",
+                                ";", "[", "]", ".", "\n"};
 
 const char *INP_OPERATORS[] = {
     "==", "=>", "!=", "<<", "<=", ">>", "<=", "<", ">", "=", "+", "-",
     "*",  "/",  "%",  "&&", "||", "!",  "&",  "|", "~", "?", ":",
 };
 
+const char *INP_LITERAL_WRAPPERS[] = {"'", "\""};
+
 size_t INP_KEYWORDS_NUM = inp_ssizeof(INP_KEYWORDS);
 size_t INP_DELIMITERS_NUM = inp_ssizeof(INP_DELIMITERS);
 size_t INP_OPERATORS_NUM = inp_ssizeof(INP_OPERATORS);
+size_t INP_LITERAL_WRAPPERS_NUM = inp_ssizeof(INP_LITERAL_WRAPPERS);
 
 uint8_t inp_token_is_keyword(inp_token token) {
   return str_is_in(token.value, INP_KEYWORDS, inp_ssizeof(INP_KEYWORDS));

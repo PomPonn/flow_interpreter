@@ -23,6 +23,9 @@ extern size_t INP_DELIMITERS_NUM;
 extern const char *INP_OPERATORS[];
 extern size_t INP_OPERATORS_NUM;
 
+extern const char *INP_LITERAL_WRAPPERS[];
+extern size_t INP_LITERAL_WRAPPERS_NUM;
+
 enum _inp_token_type {
   COMP_TOKEN_TYPE_UNKNOWN,
   COMP_TOKEN_TYPE_KEYWORD,

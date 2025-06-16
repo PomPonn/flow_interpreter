@@ -11,23 +11,45 @@ static char* _tok_trim_left(const char* str, const char* delims) {
   return (char*)str;
 }
 
-static char* _tok_make_escapes_peek(const char** escapes, size_t escapes_num) {
-  char* view = malloc(escapes_num + 1);
-  for (size_t i = 0; i < escapes_num; i++) {
-    view[i] = *escapes[i];
+static char* _tok_make_escapes_peek(tok_context cnt) {
+  char* view = malloc(cnt.escapes_num + cnt.literal_wrappers_num + 1);
+
+  for (size_t i = 0; i < cnt.escapes_num; i++) {
+    view[i] = *cnt.escapes[i];
   }
-  view[escapes_num] = '\0';
+
+  for (size_t i = 0; i < cnt.literal_wrappers_num; i++) {
+    view[cnt.escapes_num + i] = *cnt.literal_wrappers[i];
+  }
+
+  view[cnt.escapes_num] = '\0';
   return view;
 }
 
 static void _tok_free_escapes_peek(char* view) { free(view); }
 
-uint8_t _tok_is_escape_next(const char* str, tok_context cnt,
-                            size_t* escape_len) {
+static uint8_t _tok_escape_next(const char* str, tok_context cnt,
+                                size_t* escape_len) {
   for (size_t i = 0; i < cnt.escapes_num; i++) {
     size_t len = strlen(cnt.escapes[i]);
     if (strncmp(str, cnt.escapes[i], len) == 0) {
       if (escape_len) *escape_len = len;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+static uint8_t _tok_literal_wrapper_next(const char* str, tok_context cnt,
+                                         size_t* literal_len) {
+  for (size_t i = 0; i < cnt.literal_wrappers_num; i++) {
+    size_t len = strlen(cnt.literal_wrappers[i]);
+    if (strncmp(str, cnt.literal_wrappers[i], len) == 0) {
+      const char* ptr = str + len;
+      while (*ptr && strncmp(ptr, cnt.literal_wrappers[i], len) != 0) ptr++;
+      if (*ptr) ptr++;
+      *literal_len = ptr - str;
       return 1;
     }
   }
@@ -56,8 +78,17 @@ static char* _tok_next_token(char* str, tok_context cnt) {
 
   char* token_start = next_pos;
 
+  // Check for literal wrappers
+  size_t literal_len = 0;
+  if (_tok_literal_wrapper_next(next_pos, cnt, &literal_len)) {
+    next_pos += literal_len;
+    escape_char = *next_pos;
+
+    goto __return;
+  }
+
   size_t escape_len = 0;
-  if (_tok_is_escape_next(next_pos, cnt, &escape_len)) {
+  if (_tok_escape_next(next_pos, cnt, &escape_len)) {
     next_pos += escape_len;
     escape_char = *next_pos;
     goto __return;
@@ -105,6 +136,9 @@ tok_context tok_make_context() {
   tok_context context;
   context.delims = INP_TOKENIZER_DELIMS;
 
+  context.literal_wrappers = INP_LITERAL_WRAPPERS;
+  context.literal_wrappers_num = INP_LITERAL_WRAPPERS_NUM;
+
   size_t escapes_num = 2;  // for block and line comments tokens
   escapes_num += INP_DELIMITERS_NUM + INP_OPERATORS_NUM;
   context.escapes_num = escapes_num;
@@ -121,8 +155,7 @@ tok_context tok_make_context() {
     context.escapes[i++] = INP_OPERATORS[j];
   }
 
-  context.escapes_peek =
-      _tok_make_escapes_peek(context.escapes, context.escapes_num);
+  context.escapes_peek = _tok_make_escapes_peek(context);
 
   return context;
 }
@@ -134,6 +167,9 @@ void tok_free_context(tok_context* context) {
   free(context->escapes);
   context->escapes = NULL;
   context->escapes_num = 0;
+  context->escapes_peek = NULL;
+  context->literal_wrappers = NULL;
+  context->literal_wrappers_num = 0;
   context->delims = NULL;
 }
 
