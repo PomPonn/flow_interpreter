@@ -5,6 +5,7 @@
 struct _tok_context {
   const char** escapes;
   const char** literal_wrappers;
+  const char* comment_wrapper;
   const char* delims;
   char* escapes_peek;
 

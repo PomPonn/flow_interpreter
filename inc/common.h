@@ -10,9 +10,7 @@
 
 extern const char *INP_TOKENIZER_DELIMS;
 
-extern const char *INP_BLOCK_COMMENT;
-
-extern const char *INP_LINE_COMMENT;
+extern const char *INP_COMMENT_TOKEN;
 
 extern const char *INP_KEYWORDS[];
 extern size_t INP_KEYWORDS_NUM;
@@ -49,6 +47,6 @@ uint8_t inp_token_is_operator(inp_token token);
 
 uint8_t inp_token_is_delimiter(inp_token token);
 
-uint8_t inp_token_is_block_comment(inp_token token);
+uint8_t inp_token_is_comment(inp_token token);
 
-uint8_t inp_token_is_line_comment(inp_token token);
+uint8_t inp_token_is_literal(inp_token token);

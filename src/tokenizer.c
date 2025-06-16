@@ -57,6 +57,20 @@ static uint8_t _tok_literal_wrapper_next(const char* str, tok_context cnt,
   return 0;
 }
 
+static uint8_t _tok_comment_wrapper_next(const char* str, tok_context cnt,
+                                         size_t* comment_len) {
+  size_t len = strlen(cnt.comment_wrapper);
+  if (strncmp(str, cnt.comment_wrapper, len) == 0) {
+    const char* ptr = str + len;
+    while (*ptr && strncmp(ptr, cnt.comment_wrapper, len) != 0) ptr++;
+    if (*ptr) ptr++;
+    *comment_len = ptr - str;
+    return 1;
+  }
+
+  return 0;
+}
+
 static char* _tok_next_token(char* str, tok_context cnt) {
   static char* next_pos = NULL;
   static char escape_char = '\0';
@@ -82,6 +96,15 @@ static char* _tok_next_token(char* str, tok_context cnt) {
   size_t literal_len = 0;
   if (_tok_literal_wrapper_next(next_pos, cnt, &literal_len)) {
     next_pos += literal_len;
+    escape_char = *next_pos;
+
+    goto __return;
+  }
+
+  // Check for comment wrapper
+  size_t comment_len = 0;
+  if (_tok_comment_wrapper_next(next_pos, cnt, &comment_len)) {
+    next_pos += comment_len;
     escape_char = *next_pos;
 
     goto __return;
@@ -139,15 +162,16 @@ tok_context tok_make_context() {
   context.literal_wrappers = INP_LITERAL_WRAPPERS;
   context.literal_wrappers_num = INP_LITERAL_WRAPPERS_NUM;
 
-  size_t escapes_num = 2;  // for block and line comments tokens
+  context.comment_wrapper = INP_COMMENT_TOKEN;
+
+  size_t escapes_num = 1;  // for comment wrapper token
   escapes_num += INP_DELIMITERS_NUM + INP_OPERATORS_NUM;
   context.escapes_num = escapes_num;
   context.escapes = malloc(escapes_num * sizeof(char*));
 
   // fill escapes
   size_t i = 0;
-  context.escapes[i++] = INP_BLOCK_COMMENT;
-  context.escapes[i++] = INP_LINE_COMMENT;
+  context.escapes[i++] = INP_COMMENT_TOKEN;
   for (size_t j = 0; j < INP_DELIMITERS_NUM; j++) {
     context.escapes[i++] = INP_DELIMITERS[j];
   }
@@ -169,6 +193,7 @@ void tok_free_context(tok_context* context) {
   context->escapes_num = 0;
   context->escapes_peek = NULL;
   context->literal_wrappers = NULL;
+  context->comment_wrapper = NULL;
   context->literal_wrappers_num = 0;
   context->delims = NULL;
 }

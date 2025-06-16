@@ -1,12 +1,12 @@
 #include "common.h"
 
+#include <string.h>
+
 #include "str.h"
 
 const char *INP_TOKENIZER_DELIMS = " \r\t";
 
-const char *INP_BLOCK_COMMENT = "###";
-
-const char *INP_LINE_COMMENT = "#";
+const char *INP_COMMENT_TOKEN = "#";
 
 const char *INP_KEYWORDS[] = {"import"};
 
@@ -29,17 +29,40 @@ uint8_t inp_token_is_keyword(inp_token token) {
   return str_is_in(token.value, INP_KEYWORDS, inp_ssizeof(INP_KEYWORDS));
 }
 uint8_t inp_token_is_operator(inp_token token) {
-  return str_is_in(token.value, INP_OPERATORS, inp_ssizeof(INP_KEYWORDS));
+  return str_is_in(token.value, INP_OPERATORS, inp_ssizeof(INP_OPERATORS));
 }
 
 uint8_t inp_token_is_delimiter(inp_token token) {
   return str_is_in(token.value, INP_DELIMITERS, inp_ssizeof(INP_KEYWORDS));
 }
 
-uint8_t inp_token_is_block_comment(inp_token token) {
-  return str_equal(token.value, INP_BLOCK_COMMENT);
+uint8_t inp_token_is_comment(inp_token token) {
+  size_t comment_token_len = strlen(INP_COMMENT_TOKEN);
+  if (strncmp(token.value, INP_COMMENT_TOKEN, comment_token_len) == 0) {
+    const char *comm_end_predicate =
+        token.value + strlen(token.value) - comment_token_len;
+
+    if (strncmp(comm_end_predicate, INP_COMMENT_TOKEN, comment_token_len) ==
+        0) {
+      return 1;  // It's a comment token
+    }
+  }
+  return 0;
 }
 
-uint8_t inp_token_is_line_comment(inp_token token) {
-  return str_equal(token.value, INP_LINE_COMMENT);
+uint8_t inp_token_is_literal(inp_token token) {
+  for (size_t i = 0; i < INP_LITERAL_WRAPPERS_NUM; i++) {
+    size_t literal_token_len = strlen(INP_LITERAL_WRAPPERS[i]);
+    if (strncmp(token.value, INP_LITERAL_WRAPPERS[i], literal_token_len) == 0) {
+      const char *literal_end_predicate =
+          token.value + strlen(token.value) - literal_token_len;
+
+      if (strncmp(literal_end_predicate, INP_COMMENT_TOKEN,
+                  literal_token_len) == 0) {
+        return 1;  // It's a literal token
+      }
+    }
+  }
+
+  return 0;
 }
