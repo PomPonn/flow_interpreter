@@ -3,43 +3,6 @@
 #include "file.h"
 #include "tokenizer.h"
 
-const char* TOKEN_ESCAPES[] = {
-    "==",
-    "!=",
-    "=>",
-    "<=",
-    ">=",
-    "<<",
-    ">>",
-    "=",
-    "<",
-    ">",
-    "+",
-    "-",
-    "*",
-    "/",
-    "%",
-    "&&",
-    "||",
-    "!",
-    "&",
-    "|"
-    "~",
-    "?",
-    ":",
-    "\n",
-    "\"",
-    "'",
-    ".",
-    "(",
-    ")",
-    "{",
-    "}",
-    ";",
-    "?",
-    "#",
-};
-
 int main() {
   const char* filename = "../../../../test.fl";
   char* file_content = fl_read_file_as_str(filename);
@@ -50,10 +13,12 @@ int main() {
   }
 
   // Tokenize the content
+  tok_context context = tok_make_context();
+
   size_t tokens_num;
-  char** tokens =
-      tok_tokenize(file_content, TOKEN_ESCAPES,
-                   sizeof(TOKEN_ESCAPES) / sizeof(char*), " \r\t", &tokens_num);
+  char** tokens = tok_tokenize(file_content, context, &tokens_num);
+
+  tok_free_context(&context);
 
   fl_free_file(file_content);
 

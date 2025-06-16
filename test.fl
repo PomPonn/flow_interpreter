@@ -2,7 +2,7 @@
 
 import .io.print
 
-
+" This is some string."
 
 main => {
   test = 1
