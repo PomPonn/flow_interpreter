@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "str.h"
+
 static char* _tok_trim_left(const char* str, const char* delims) {
   if (str == NULL || delims == NULL) return (char*)str;
 
@@ -125,7 +127,12 @@ static char* _tok_next_token(char* str, tok_context cnt) {
     return token_start;
   }
 
-  next_pos = min(next_escape, next_delim);
+  if (next_delim == NULL)
+    next_pos = next_escape;
+  else if (next_escape == NULL)
+    next_pos = next_delim;
+  else
+    next_pos = min(next_escape, next_delim);
 
   if (next_escape == next_pos) {
     escape_char = *next_pos;
@@ -198,7 +205,7 @@ void tok_free_context(tok_context* context) {
   context->delims = NULL;
 }
 
-char** tok_tokenize(char* str, tok_context context, size_t* tokens_num) {
+inp_token* tok_tokenize(char* str, tok_context context, size_t* tokens_num) {
   // validate arguments
   if (str == NULL, tokens_num == NULL) return NULL;
 
@@ -213,18 +220,30 @@ char** tok_tokenize(char* str, tok_context context, size_t* tokens_num) {
   }
 
   // Allocate memory for tokens
-  char** tokens = calloc(count, sizeof(char*));
+  inp_token* tokens = calloc(count, sizeof(inp_token));
   if (tokens == NULL) return NULL;
 
   str_copy = _strdup(str);
 
   // Tokenize the string
   char* token = _tok_next_token(str_copy, context);
-  size_t test = 0;
+  char* last_token = NULL;
+  size_t line = 1, column = 1;
   for (size_t index = 0; token; index++) {
-    tokens[index] = _strdup(token);
+    tokens[index].value = _strdup(token);
+
+    tokens[index].line = line;
+    tokens[index].column = column;
+
+    last_token = token;
     token = _tok_next_token(NULL, context);
-    test = index;
+
+    if (*last_token == '\n') {
+      line++;
+      column = 1;
+    } else {
+      column += token - last_token;
+    }
   }
 
   free(str_copy);
@@ -233,9 +252,10 @@ char** tok_tokenize(char* str, tok_context context, size_t* tokens_num) {
   return tokens;
 }
 
-void tok_free_tokens(char** tokens, size_t tokens_num) {
+void tok_free_tokens(inp_token* tokens, size_t tokens_num) {
   if (tokens == NULL) return;
 
-  for (size_t i = 0; i < tokens_num; i++) free(tokens[i]);
+  for (size_t i = 0; i < tokens_num; i++)
+    if (tokens[i].value) free(tokens[i].value);
   free(tokens);
 }

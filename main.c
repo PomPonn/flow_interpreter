@@ -17,7 +17,7 @@ int main() {
   tok_context context = tok_make_context();
 
   size_t tokens_num;
-  char** tokens = tok_tokenize(file_content, context, &tokens_num);
+  inp_token* tokens = tok_tokenize(file_content, context, &tokens_num);
 
   tok_free_context(&context);
 
@@ -29,15 +29,16 @@ int main() {
     return 1;
   }
 
-  inp_token* processed_tokens = ppc_preprocess(tokens, tokens_num);
+  ppc_preprocess(tokens, tokens_num);
 
   // Print tokens
   for (size_t i = 0; i < tokens_num; i++) {
-    printf("[%zu]\t%s\t%i\n", i + 1, tokens[i], processed_tokens[i].type);
+    printf("[%zu, %zu] `%s` %i %i\n", tokens[i].line, tokens[i].column,
+           tokens[i].value, tokens[i].type, tokens[i].alias);
+    // for (size_t i = 0; i < tokens_num; i++) {
+    //   printf("%s", tokens[i]);
+    // }
   }
-  // for (size_t i = 0; i < tokens_num; i++) {
-  //   printf("%s", tokens[i]);
-  // }
 
   tok_free_tokens(tokens, tokens_num);
 

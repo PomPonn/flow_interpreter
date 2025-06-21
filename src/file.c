@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 char *fl_read_file_as_str(const char *filename) {
-  FILE *file = fopen(filename, "rb");
+  FILE *file = fopen(filename, "rt");
   if (file == NULL) return NULL;
 
   fseek(file, 0, SEEK_END);

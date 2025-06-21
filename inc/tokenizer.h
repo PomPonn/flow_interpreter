@@ -18,6 +18,6 @@ tok_context tok_make_context();
 
 void tok_free_context(tok_context* context);
 
-char** tok_tokenize(char* str, tok_context cnt, size_t* tokens_num);
+inp_token* tok_tokenize(char* str, tok_context cnt, size_t* tokens_num);
 
-void tok_free_tokens(char** tokens, size_t tokens_num);
+void tok_free_tokens(inp_token* tokens, size_t tokens_num);
