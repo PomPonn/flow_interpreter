@@ -3,7 +3,7 @@ project(InterpreterTools VERSION 0.1.0 LANGUAGES C)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_library(InterpreterTools STATIC ${SOURCES})
 

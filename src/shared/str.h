@@ -1,0 +1,11 @@
+#pragma once
+
+#include "shared/common.h"
+
+fl_bool str_equal(const fl_char *str1, const fl_char *str2);
+
+fl_bool str_equal_n(const fl_char *str1, const fl_char *str2, const fl_size max_count);
+
+fl_bool str_in(const fl_char *str, const fl_char **arr, fl_size arr_size);
+
+fl_size str_len(const fl_char *str);
