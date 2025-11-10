@@ -1,16 +1,7 @@
 {
-  "files.associations": {
-    "string.h": "c",
-    "stdint.h": "c",
-    "str.h": "c",
-    "type_traits": "c",
-    "xtr1common": "c",
-    "optional": "c",
-    "system_error": "c",
-    "array": "c",
-    "functional": "c",
-    "tuple": "c",
-    "utility": "c",
-    "common.h": "c"
-  }
+    "files.associations": {
+        "ast.h": "c",
+        "common.h": "c",
+        "string.h": "c"
+    }
 }
