@@ -8,7 +8,7 @@ const char *WHITESPACE = " \r\t";
 
 const char *COMMENT_TOKEN = "#";
 
-const char *KEYWORDS[] = {"import", "export"};
+const char *KEYWORDS[] = {"use", "export"};
 
 const char *DELIMITERS[] = {",", "(", ")", "{", "}",
                             ";", "[", "]", ".", "\n"};
@@ -43,6 +43,25 @@ const char *LITERAL_WRAPPERS[] = {"'", "\""};
 
 #define V_N(var) var, (sizeof(var) / sizeof(*var))
 
+void print_tokens(fl_token *tokens, fl_size n)
+{
+  for (fl_size i = 0; i < n; i++)
+  {
+    printf("[%i, %i] ", tokens[i].line, tokens[i].column);
+
+    if (*tokens[i].value == '\n')
+    {
+      printf("'\\n' ");
+    }
+    else
+    {
+      printf("'%s' ", tokens[i].value);
+    }
+
+    printf("%i, %i\n", tokens[i].type, tokens[i].alias);
+  }
+}
+
 int main()
 {
   const char *filename = "../../../../test.fl";
@@ -58,8 +77,8 @@ int main()
   fl_tok_context context;
   fl_tok_context_init(&context, COMMENT_TOKEN, WHITESPACE, V_N(DELIMITERS), V_N(OPERATORS), V_N(KEYWORDS), V_N(LITERAL_WRAPPERS));
 
-  fl_size fl_tokens_num;
-  fl_token *tokens = fl_tok_tokenize(file_content, &context, &fl_tokens_num);
+  fl_size tokens_num;
+  fl_token *tokens = fl_tok_tokenize(file_content, &context, &tokens_num);
 
   fl_tok_context_free(&context);
 
@@ -72,19 +91,11 @@ int main()
     return 1;
   }
 
-  fl_ppc_preprocess(tokens, fl_tokens_num);
+  fl_ppc_preprocess(&tokens, &tokens_num);
 
-  // Print fl_tokens
-  // for (fl_size i = 0; i < fl_tokens_num; i++)
-  // {
-  //   printf("[%zu, %zu] `%s` %i %i\n", fl_tokens[i].line, fl_tokens[i].column,
-  //          fl_tokens[i].value, fl_tokens[i].type, fl_tokens[i].alias);
-  //   // for (fl_size i = 0; i < fl_tokens_num; i++) {
-  //   //   printf("%s", fl_tokens[i]);
-  //   // }
-  // }
+  print_tokens(tokens, tokens_num);
 
-  fl_tok_free_tokens(tokens, fl_tokens_num);
+  fl_tok_free_tokens(tokens, tokens_num);
 
   return 0;
 }

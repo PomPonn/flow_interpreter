@@ -9,7 +9,7 @@ import .io
 
 # return can be ommitted if there is only one expression
 
-simple_function: func=>int(a:int,b){a+b}
+simple_function: int func=>(a:int,b){a+b}
 
 simple_list:int list={1,2,3}
 simple_list2:var list={1,"123",124.23564}

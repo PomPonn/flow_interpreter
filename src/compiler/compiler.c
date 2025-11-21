@@ -1,9 +1,8 @@
 #include "compiler.h"
 
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 
+#include "shared/str.h"
 #include "compiler/ast.h"
 
 static inline void _cmp_fl_ast_gen_import_children(fl_ast_node *import_node,
@@ -18,7 +17,7 @@ static inline void _cmp_fl_ast_gen_import_children(fl_ast_node *import_node,
     {
         // add global import flag
         fl_ast_node *global_flag_node;
-        fl_ast_node_init(&global_flag_node, FL_AST_NODE_TYPE_FLAG, _strdup(tokens[*index].value));
+        fl_ast_node_init(&global_flag_node, FL_AST_NODE_TYPE_FLAG, fl_str_dup(tokens[*index].value));
         fl_ast_node_add_child(import_node, global_flag_node);
         *index++;
     }
@@ -28,7 +27,7 @@ static inline void _cmp_fl_ast_gen_import_children(fl_ast_node *import_node,
         if (tokens[*index].type == FL_TOKEN_TYPE_IDENTIFIER)
         {
             fl_ast_node *identifier_node;
-            fl_ast_node_init(&identifier_node, FL_AST_NODE_TYPE_IDENTIFIER, _strdup(tokens[*index].value));
+            fl_ast_node_init(&identifier_node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(tokens[*index].value));
             fl_ast_node_add_child(import_node, identifier_node);
             *index++;
         }

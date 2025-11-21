@@ -1,0 +1,6 @@
+use .c
+use .meta
+
+int: .type = .c.primitives.int32
+float: .type = .c.primitives.float64
+char: .type = .c.primitives.uint8

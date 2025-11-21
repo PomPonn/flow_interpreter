@@ -1,6 +1,6 @@
 #include "shared/token.h"
 
-#define _fl_token_is_in(what, tok_value) str_in(tok_value, what, what##_num)
+#define _fl_token_is_in(what, tok_value) fl_str_in(tok_value, what, what##_num)
 
 static fl_token_type _fl_token_deduce_type(fl_char *value, fl_tok_context *cnt);
 static fl_token_alias _fl_token_deduce_alias(fl_char *value, fl_tok_context *cnt);
@@ -49,12 +49,12 @@ static fl_bool _fl_token_is_literal(fl_char *value, const fl_char **literal_wrap
     for (fl_size i = 0; i < lw_num; i++)
     {
         const char *literal_wrapper = literal_wrappers[i];
-        fl_size literal_token_len = str_len(literal_wrapper);
-        if (str_equal_n(value, literal_wrapper, literal_token_len))
+        fl_size literal_token_len = fl_str_len(literal_wrapper);
+        if (fl_str_equal_n(value, literal_wrapper, literal_token_len))
         {
-            const char *literal_end_predicate = value + str_len(value) - literal_token_len;
+            const char *literal_end_predicate = value + fl_str_len(value) - literal_token_len;
 
-            if (str_equal_n(literal_end_predicate, literal_wrapper, literal_token_len))
+            if (fl_str_equal_n(literal_end_predicate, literal_wrapper, literal_token_len))
             {
                 return FL_TRUE;
             }
@@ -66,12 +66,12 @@ static fl_bool _fl_token_is_literal(fl_char *value, const fl_char **literal_wrap
 
 static fl_bool _fl_token_is_comment(fl_char *value, const fl_char *comment_wrapper)
 {
-    fl_size comment_token_len = str_len(comment_wrapper);
-    if (str_equal_n(value, comment_wrapper, comment_token_len))
+    fl_size comment_token_len = fl_str_len(comment_wrapper);
+    if (fl_str_equal_n(value, comment_wrapper, comment_token_len))
     {
-        const char *comm_end_predicate = value + str_len(value) - comment_token_len;
+        const char *comm_end_predicate = value + fl_str_len(value) - comment_token_len;
 
-        if (str_equal_n(comm_end_predicate, comment_wrapper, comment_token_len))
+        if (fl_str_equal_n(comm_end_predicate, comment_wrapper, comment_token_len))
         {
             return FL_TRUE;
         }
@@ -88,81 +88,81 @@ static fl_token_alias _fl_token_deduce_alias(fl_char *value, fl_tok_context *cnt
     }
     if (_fl_token_is_in(cnt->keywords, value))
     {
-        if (str_equal(value, "import"))
+        if (fl_str_equal(value, "import"))
             return FL_TOKEN_ALIAS_IMPORT;
-        if (str_equal(value, "export"))
+        if (fl_str_equal(value, "use"))
             return FL_TOKEN_ALIAS_EXPORT;
     }
     if (_fl_token_is_in(cnt->delimeters, value))
     {
-        if (str_equal(value, ","))
+        if (fl_str_equal(value, ","))
             return FL_TOKEN_ALIAS_COMMA;
-        if (str_equal(value, "("))
+        if (fl_str_equal(value, "("))
             return FL_TOKEN_ALIAS_LPAREN;
-        if (str_equal(value, ")"))
+        if (fl_str_equal(value, ")"))
             return FL_TOKEN_ALIAS_RPAREN;
-        if (str_equal(value, "{"))
+        if (fl_str_equal(value, "{"))
             return FL_TOKEN_ALIAS_LBRACE;
-        if (str_equal(value, "}"))
+        if (fl_str_equal(value, "}"))
             return FL_TOKEN_ALIAS_RBRACE;
-        if (str_equal(value, ";"))
+        if (fl_str_equal(value, ";"))
             return FL_TOKEN_ALIAS_SEMICOLON;
-        if (str_equal(value, "["))
+        if (fl_str_equal(value, "["))
             return FL_TOKEN_ALIAS_LBRACKET;
-        if (str_equal(value, "]"))
+        if (fl_str_equal(value, "]"))
             return FL_TOKEN_ALIAS_RBRACKET;
-        if (str_equal(value, "."))
+        if (fl_str_equal(value, "."))
             return FL_TOKEN_ALIAS_DOT;
-        if (str_equal(value, "\n"))
+        if (fl_str_equal(value, "\n"))
             return FL_TOKEN_ALIAS_NL;
     }
     if (_fl_token_is_in(cnt->operators, value))
     {
-        if (str_equal(value, "+"))
+        if (fl_str_equal(value, "+"))
             return FL_TOKEN_ALIAS_ADD;
-        if (str_equal(value, "-"))
+        if (fl_str_equal(value, "-"))
             return FL_TOKEN_ALIAS_SUB;
-        if (str_equal(value, "*"))
+        if (fl_str_equal(value, "*"))
             return FL_TOKEN_ALIAS_MUL;
-        if (str_equal(value, "/"))
+        if (fl_str_equal(value, "/"))
             return FL_TOKEN_ALIAS_DIV;
-        if (str_equal(value, "%"))
+        if (fl_str_equal(value, "%"))
             return FL_TOKEN_ALIAS_MOD;
-        if (str_equal(value, "&&"))
+        if (fl_str_equal(value, "&&"))
             return FL_TOKEN_ALIAS_AND;
-        if (str_equal(value, "||"))
+        if (fl_str_equal(value, "||"))
             return FL_TOKEN_ALIAS_OR;
-        if (str_equal(value, "<"))
+        if (fl_str_equal(value, "<"))
             return FL_TOKEN_ALIAS_LT;
-        if (str_equal(value, ">"))
+        if (fl_str_equal(value, ">"))
             return FL_TOKEN_ALIAS_GT;
-        if (str_equal(value, "<="))
+        if (fl_str_equal(value, "<="))
             return FL_TOKEN_ALIAS_LTE;
-        if (str_equal(value, ">="))
+        if (fl_str_equal(value, ">="))
             return FL_TOKEN_ALIAS_GTE;
-        if (str_equal(value, "=="))
+        if (fl_str_equal(value, "=="))
             return FL_TOKEN_ALIAS_EQ;
-        if (str_equal(value, "!="))
+        if (fl_str_equal(value, "!="))
             return FL_TOKEN_ALIAS_NEQ;
-        if (str_equal(value, "="))
+        if (fl_str_equal(value, "="))
             return FL_TOKEN_ALIAS_ASSIGN;
-        if (str_equal(value, "!"))
+        if (fl_str_equal(value, "!"))
             return FL_TOKEN_ALIAS_NOT;
-        if (str_equal(value, "&"))
+        if (fl_str_equal(value, "&"))
             return FL_TOKEN_ALIAS_BIT_AND;
-        if (str_equal(value, "|"))
+        if (fl_str_equal(value, "|"))
             return FL_TOKEN_ALIAS_BIT_OR;
-        if (str_equal(value, "~"))
+        if (fl_str_equal(value, "~"))
             return FL_TOKEN_ALIAS_BIT_XOR;
-        if (str_equal(value, "<<"))
+        if (fl_str_equal(value, "<<"))
             return FL_TOKEN_ALIAS_BIT_LSHIFT;
-        if (str_equal(value, ">>"))
+        if (fl_str_equal(value, ">>"))
             return FL_TOKEN_ALIAS_BIT_RSHIFT;
-        if (str_equal(value, "?"))
+        if (fl_str_equal(value, "?"))
             return FL_TOKEN_ALIAS_IF;
-        if (str_equal(value, ":"))
+        if (fl_str_equal(value, ":"))
             return FL_TOKEN_ALIAS_COLON;
-        if (str_equal(value, "=>"))
+        if (fl_str_equal(value, "=>"))
             return FL_TOKEN_ALIAS_LAMBDA;
     }
 

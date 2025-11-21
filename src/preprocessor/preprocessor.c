@@ -1,9 +1,9 @@
 #include "preprocessor.h"
 
 #include "shared/common.h"
+#include "shared/memory.h"
 #include "shared/token.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_size fl_tokens_num)
@@ -32,7 +32,7 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         lfl_ast_type = tokens[i].type;
     }
 
-    *optimalized = calloc(opt_size, sizeof(fl_token));
+    *optimalized = fl_mem_alloc_arr(opt_size, sizeof(fl_token));
 
     lfl_ast_type = FL_TOKEN_TYPE_NONE;
     fl_size j = 0;
@@ -54,7 +54,7 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         }
 
         (*optimalized)[j] = tokens[i];
-        (*optimalized)[j].value = _strdup(tokens[i].value);
+        (*optimalized)[j].value = fl_str_dup(tokens[i].value);
 
         lfl_ast_type = tokens[i].type;
         j++;
@@ -63,11 +63,11 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
     return opt_size;
 }
 
-void fl_ppc_preprocess(fl_token *tokens, fl_size tokens_num)
+void fl_ppc_preprocess(fl_token **tokens, fl_size *tokens_num)
 {
     fl_token *opt;
+    *tokens_num = _fl_ppc_optimalize(&opt, *tokens, *tokens_num);
 
-    fl_size opt_tnum = _fl_ppc_optimalize(&opt, tokens, tokens_num);
-
-    // FREE OLD FL_TOKENS HERE
+    fl_mem_free(*tokens);
+    *tokens = opt;
 }

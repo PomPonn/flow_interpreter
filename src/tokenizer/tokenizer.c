@@ -22,8 +22,8 @@ static fl_bool _tok_escape_next(const fl_char *str, fl_tok_context *cnt,
 {
     for (fl_size i = 0; i < cnt->escapes_num; i++)
     {
-        fl_size len = str_len(cnt->escapes[i]);
-        if (str_equal_n(str, cnt->escapes[i], len))
+        fl_size len = fl_str_len(cnt->escapes[i]);
+        if (fl_str_equal_n(str, cnt->escapes[i], len))
         {
             if (escape_len)
                 *escape_len = len;
@@ -39,11 +39,11 @@ static fl_bool _tok_literal_wrapper_next(const fl_char *str, fl_tok_context *cnt
 {
     for (fl_size i = 0; i < cnt->literal_wrappers_num; i++)
     {
-        fl_size len = str_len(cnt->literal_wrappers[i]);
-        if (str_equal_n(str, cnt->literal_wrappers[i], len))
+        fl_size len = fl_str_len(cnt->literal_wrappers[i]);
+        if (fl_str_equal_n(str, cnt->literal_wrappers[i], len))
         {
             const fl_char *ptr = str + len;
-            while (*ptr && !str_equal_n(ptr, cnt->literal_wrappers[i], len))
+            while (*ptr && !fl_str_equal_n(ptr, cnt->literal_wrappers[i], len))
                 ptr++;
             if (*ptr)
                 ptr++;
@@ -184,9 +184,9 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
         return FL_NULL;
 
     // count tokens
-    fl_char *str_copy = _strdup(str);
-    fl_uint count = _tok_count_tokens(str_copy, context);
-    free(str_copy);
+    fl_char *fl_str_copy = fl_str_dup(str);
+    fl_uint count = _tok_count_tokens(fl_str_copy, context);
+    free(fl_str_copy);
 
     if (count == 0)
     {
@@ -199,15 +199,15 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
     if (tokens == FL_NULL)
         return FL_NULL;
 
-    str_copy = _strdup(str);
+    fl_str_copy = fl_str_dup(str);
 
     // Tokenize the string
-    fl_char *token = _tok_next_token(str_copy, context);
+    fl_char *token = _tok_next_token(fl_str_copy, context);
     fl_char *last_token = FL_NULL;
     fl_int line = 1, column = 1;
     for (fl_size index = 0; token; index++)
     {
-        fl_token_init((tokens + index), _strdup(token), context);
+        fl_token_init((tokens + index), fl_str_dup(token), context);
         tokens[index].line = line;
         tokens[index].column = column;
 
@@ -225,7 +225,7 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
         }
     }
 
-    free(str_copy);
+    free(fl_str_copy);
 
     *tokens_num = count;
     return tokens;
