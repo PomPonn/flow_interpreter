@@ -6,12 +6,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-static fl_char *_tok_trim_left(fl_char *str, const fl_char *trimmable)
+static fl_char *_tok_trim_left(fl_char *str, const fl_char *to_trim)
 {
-    if (str == FL_NULL || trimmable == FL_NULL)
+    if (str == FL_NULL || to_trim == FL_NULL)
         return str;
 
-    while (*str && strchr(trimmable, *str))
+    while (*str && fl_str_has(to_trim, *str))
         str++;
 
     return str;
@@ -34,20 +34,50 @@ static fl_bool _tok_escape_next(const fl_char *str, fl_tok_context *cnt,
     return 0;
 }
 
-static fl_bool _tok_literal_wrapper_next(const fl_char *str, fl_tok_context *cnt,
-                                         fl_size *literal_len)
+static fl_bool _tok_number_next(const fl_char *str, fl_tok_context *cnt,
+                                fl_size *num_len)
 {
-    for (fl_size i = 0; i < cnt->literal_wrappers_num; i++)
+    fl_bool dot_found = FL_FALSE;
+    fl_bool digit_found = FL_FALSE;
+
+    for (fl_size i = 0; str[i]; i++)
     {
-        fl_size len = fl_str_len(cnt->literal_wrappers[i]);
-        if (fl_str_equal_n(str, cnt->literal_wrappers[i], len))
+        if (str[i] == '.')
+        {
+            if (dot_found || i == 0)
+                return FL_FALSE;
+            else
+            {
+                dot_found = FL_TRUE;
+                digit_found = FL_FALSE;
+            }
+        }
+        else if (fl_chr_is_digit(str[i]))
+            digit_found = FL_TRUE;
+        else
+        {
+            *num_len = i;
+            return digit_found;
+        }
+    }
+
+    return FL_FALSE;
+}
+
+static fl_bool _tok_string_wrapper_next(const fl_char *str, fl_tok_context *cnt,
+                                        fl_size *string_len)
+{
+    for (fl_size i = 0; i < cnt->string_wrappers_num; i++)
+    {
+        fl_size len = fl_str_len(cnt->string_wrappers[i]);
+        if (fl_str_equal_n(str, cnt->string_wrappers[i], len))
         {
             const fl_char *ptr = str + len;
-            while (*ptr && !fl_str_equal_n(ptr, cnt->literal_wrappers[i], len))
+            while (*ptr && !fl_str_equal_n(ptr, cnt->string_wrappers[i], len))
                 ptr++;
             if (*ptr)
                 ptr++;
-            *literal_len = ptr - str;
+            *string_len = ptr - str;
             return 1;
         }
     }
@@ -98,31 +128,39 @@ static fl_char *_tok_next_token(fl_char *str, fl_tok_context *cnt)
         return FL_NULL;
 
     fl_char *token_start = next_pos;
+    fl_size skip_len = 0;
+
+    // Check for number
+    if (_tok_number_next(next_pos, cnt, &skip_len))
+    {
+        next_pos += skip_len;
+        escape_char = *next_pos;
+
+        goto __return;
+    }
 
     // Check for literal wrappers
-    fl_size literal_len = 0;
-    if (_tok_literal_wrapper_next(next_pos, cnt, &literal_len))
+    if (_tok_string_wrapper_next(next_pos, cnt, &skip_len))
     {
-        next_pos += literal_len;
+        next_pos += skip_len;
         escape_char = *next_pos;
 
         goto __return;
     }
 
     // Check for comment wrapper
-    fl_size comment_len = 0;
-    if (_tok_comment_wrapper_next(next_pos, cnt, &comment_len))
+    if (_tok_comment_wrapper_next(next_pos, cnt, &skip_len))
     {
-        next_pos += comment_len;
+        next_pos += skip_len;
         escape_char = *next_pos;
 
         goto __return;
     }
 
-    fl_size escape_len = 0;
-    if (_tok_escape_next(next_pos, cnt, &escape_len))
+    // Check for token to escape
+    if (_tok_escape_next(next_pos, cnt, &skip_len))
     {
-        next_pos += escape_len;
+        next_pos += skip_len;
         escape_char = *next_pos;
         goto __return;
     }

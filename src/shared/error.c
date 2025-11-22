@@ -29,7 +29,7 @@ static const fl_char *_fl_err_code_to_message(fl_err_code code)
     case FL_ERR_NONE:
         return "No error";
     case FL_ERR_AST_SYNTAX:
-        return "Invalid syntex";
+        return "Invalid syntax";
     default:
         return "Undefined error";
     }
@@ -66,12 +66,22 @@ void fl_err_clear()
     _FL_ERRORS_NUM = 0;
 }
 
+void fl_err_throw(fl_err_code code, fl_token bad_token)
+{
+    fl_err_report(code, bad_token);
+
+    fl_err_execute();
+
+    fl_err_clear();
+    exit(-1);
+}
+
 void fl_err_execute()
 {
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {
         printf(
-            "Error in line %zu, column %zu near token '%s'\n: %s\n",
+            "Error in line %zu, column %zu near token '%s':\n%s\n",
             _FL_ERRORS[i].line,
             _FL_ERRORS[i].column,
             fl_token_str_as_printable(_FL_ERRORS[i].token),
@@ -79,6 +89,5 @@ void fl_err_execute()
     }
 
     fl_err_clear();
-
     exit(-1);
 }

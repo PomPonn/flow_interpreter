@@ -15,7 +15,7 @@ void fl_tok_context_free(fl_tok_context *context)
     context->escapes = FL_NULL;
     context->escapes_num = 0;
     context->escapes_peek = FL_NULL;
-    context->literal_wrappers = FL_NULL;
+    context->string_wrappers = FL_NULL;
     context->comment_wrapper = FL_NULL;
     context->ws = FL_NULL;
 }
@@ -26,16 +26,16 @@ void fl_tok_context_init(fl_tok_context *cnt,
                          const fl_char *delims[], fl_uint delims_num,
                          const fl_char *operators[], fl_uint operators_num,
                          const fl_char *keywords[], fl_uint keywords_num,
-                         const fl_char *literal_wrappers[], fl_uint literal_wrappers_num)
+                         const fl_char *string_wrappers[], fl_uint string_wrappers_num)
 {
     cnt->ws = whitespace;
     cnt->comment_wrapper = comment_wrapper;
-    cnt->literal_wrappers = literal_wrappers;
+    cnt->string_wrappers = string_wrappers;
     cnt->delimeters = delims;
     cnt->operators = operators;
     cnt->keywords = keywords;
 
-    cnt->literal_wrappers_num = literal_wrappers_num;
+    cnt->string_wrappers_num = string_wrappers_num;
     cnt->delimeters_num = delims_num;
     cnt->operators_num = operators_num;
     cnt->keywords_num = keywords_num;
@@ -60,16 +60,16 @@ void fl_tok_context_init(fl_tok_context *cnt,
 
 static fl_char *_tok_make_escapes_peek(fl_tok_context *cnt)
 {
-    fl_char *view = fl_mem_alloc(cnt->escapes_num + cnt->literal_wrappers_num + 1);
+    fl_char *view = fl_mem_alloc(cnt->escapes_num + cnt->string_wrappers_num + 1);
 
     for (fl_size i = 0; i < cnt->escapes_num; i++)
     {
         view[i] = *cnt->escapes[i];
     }
 
-    for (fl_size i = 0; i < cnt->literal_wrappers_num; i++)
+    for (fl_size i = 0; i < cnt->string_wrappers_num; i++)
     {
-        view[cnt->escapes_num + i] = *cnt->literal_wrappers[i];
+        view[cnt->escapes_num + i] = *cnt->string_wrappers[i];
     }
 
     view[cnt->escapes_num] = '\0';

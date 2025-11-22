@@ -24,4 +24,6 @@ fl_bool fl_err_report(fl_err_code code, fl_token bad_token);
 
 void fl_err_clear();
 
+void fl_err_throw(fl_err_code code, fl_token bad_token);
+
 void fl_err_execute();

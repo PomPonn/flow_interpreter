@@ -6,7 +6,6 @@
 enum _fl_ast_node_type
 {
     FL_AST_NODE_TYPE_UNKNOWN,
-    FL_AST_NODE_TYPE_ROOT,
     FL_AST_NODE_TYPE_BLOCK,
     FL_AST_NODE_TYPE_GROUP,
     FL_AST_NODE_TYPE_IMPORT,
@@ -36,3 +35,4 @@ void fl_ast_free(fl_ast_node *node);
 
 void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data);
 void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
+fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);

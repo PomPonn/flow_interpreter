@@ -57,6 +57,9 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_IF,         // ?
     FL_TOKEN_ALIAS_COLON,      // :
     FL_TOKEN_ALIAS_LAMBDA,     // =>
+    // literals
+    FL_TOKEN_ALIAS_STRING,
+    FL_TOKEN_ALIAS_NUMBER,
 };
 typedef fl_ubyte fl_token_alias;
 
@@ -70,6 +73,6 @@ struct _fl_token
 };
 typedef struct _fl_token fl_token;
 
-void fl_token_init(fl_token *token, fl_char *value, fl_tok_context *context);
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_tok_context *context);
 
 fl_char *fl_token_str_as_printable(fl_char *token_str);

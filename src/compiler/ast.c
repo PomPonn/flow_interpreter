@@ -2,30 +2,122 @@
 
 #include "shared/token.h"
 #include "shared/memory.h"
-
-#include <string.h>
+#include "shared/error.h"
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
-static void _fl_ast_handle_use_statement(fl_ast_node *root, fl_token *tokens, fl_size *curr_index, fl_size tokens_num);
+static fl_bool _fl_ast_gen_helper(fl_ast_node *parent, fl_token *tokens, fl_size tokens_num);
+static void _fl_ast_handle_use_statement(fl_ast_node *parent, fl_token *tokens, fl_size *curr_index, fl_size tokens_num);
+static void _fl_ast_handle_var_creation(fl_ast_node *parent, fl_token *tokens, fl_size *curr_index, fl_size tokens_num);
 
 // --- IMPLEMENTATIONS ---
 
-static void _fl_ast_handle_use_statement(fl_ast_node *root, fl_token *tokens, fl_size *curr_index, fl_size tokens_num)
+static void _fl_ast_handle_use_statement(fl_ast_node *parent, fl_token *tokens, fl_size *curr_index, fl_size tokens_num)
 {
-    if (tokens[*curr_index + 1].type == FL_TOKEN_TYPE_IDENTIFIER)
+    if (*curr_index >= tokens_num)
+        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*curr_index]);
+
+    fl_ast_node *import_node;
+
+    if (tokens[*curr_index].alias != FL_TOKEN_ALIAS_DOT)
     {
-        // *curr_index++;
-
-        // Create an import FL_AST node
-        // fl_ast_node *import_node;
-        // fl_ast_node_init(parent, FL_NULL, FL_NULL, FL_AST_NODE_TYPE_IMPORT);
-
-        // _cmp_fl_ast_gen_import_children(import_node, tokens, i);
-        // assert(import_node->children != FL_NULL);
-
-        // ...
+        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*curr_index]);
     }
+
+    fl_ast_node_init(&import_node, FL_AST_NODE_TYPE_IMPORT, FL_NULL);
+    fl_ast_node_add_child(parent, import_node);
+
+    while (tokens[*curr_index].alias == FL_TOKEN_ALIAS_DOT)
+    {
+        (*curr_index)++;
+
+        if (*curr_index >= tokens_num || tokens[*curr_index].type != FL_TOKEN_TYPE_IDENTIFIER)
+        {
+            fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*curr_index]);
+        }
+
+        fl_ast_node *child_node;
+        fl_ast_node_init(&child_node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(tokens[*curr_index].value));
+        fl_ast_node_add_child(import_node, child_node);
+
+        (*curr_index)++;
+    }
+
+    if (tokens[*curr_index].type != FL_TOKEN_TYPE_DELIMITER)
+    {
+        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*curr_index]);
+    }
+}
+
+static void _fl_ast_handle_var_creation(fl_ast_node *parent, fl_token *tokens, fl_size *curr_index, fl_size tokens_num)
+{
+}
+
+static fl_bool _fl_ast_gen_helper(fl_ast_node *parent, fl_token *tokens, fl_size tokens_num)
+{
+    fl_bool force_postdot = FL_FALSE;
+
+    for (fl_size i = 0; i < tokens_num; i++)
+    {
+        if (force_postdot && tokens[i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[i].type != FL_TOKEN_TYPE_KEYWORD)
+        {
+            fl_err_throw(FL_ERR_AST_SYNTAX, tokens[i]);
+            return FL_FALSE;
+        }
+
+        force_postdot = FL_FALSE;
+
+        switch (tokens[i].type)
+        {
+        case FL_TOKEN_TYPE_COMMENT:
+            break;
+        case FL_TOKEN_TYPE_DELIMITER:
+            if (tokens[i].alias == FL_TOKEN_ALIAS_DOT)
+            {
+                force_postdot = FL_TRUE;
+            }
+            break;
+        case FL_TOKEN_TYPE_KEYWORD:
+            switch (tokens[i].alias)
+            {
+            case FL_TOKEN_ALIAS_USE:
+                i++;
+                _fl_ast_handle_use_statement(parent, tokens, &i, tokens_num);
+                break;
+            case FL_TOKEN_ALIAS_EXPORT:
+                // Handle export keyword
+
+                break;
+            }
+            break;
+        case FL_TOKEN_TYPE_IDENTIFIER:
+            switch (parent->type)
+            {
+            case FL_AST_NODE_TYPE_BLOCK:
+                _fl_ast_handle_var_creation(parent, tokens, &i, tokens_num);
+                break;
+            }
+            break;
+        case FL_TOKEN_TYPE_LITERAL:
+            // change later
+            // ignore if unused
+            if (FL_TRUE)
+            {
+                break;
+            }
+
+            switch (tokens[i].alias)
+            {
+            case FL_TOKEN_ALIAS_STRING:
+                break;
+            case FL_TOKEN_ALIAS_NUMBER:
+                break;
+            }
+            break;
+        }
+    }
+
+    return FL_TRUE;
 }
 
 fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num)
@@ -33,47 +125,9 @@ fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num)
     if (!root || !*root || !tokens || tokens_num == 0)
         return FL_FALSE;
 
-    fl_ast_node_init(root, FL_AST_NODE_TYPE_ROOT, FL_NULL);
+    fl_ast_node_init(root, FL_AST_NODE_TYPE_BLOCK, FL_NULL);
 
-    fl_ast_node *node = *root;
-
-    for (fl_size i = 0; i < tokens_num; i++)
-    {
-        switch (tokens[i].type)
-        {
-        case FL_TOKEN_TYPE_COMMENT:
-            break;
-        case FL_TOKEN_TYPE_KEYWORD:
-            switch (tokens[i].alias)
-            {
-            case FL_TOKEN_ALIAS_USE:
-                _fl_ast_handle_use_statement(node, tokens, &i, tokens_num);
-                break;
-            case FL_TOKEN_ALIAS_EXPORT:
-                // Handle export keyword
-
-                // ...
-                break;
-            }
-            break;
-        case FL_TOKEN_TYPE_IDENTIFIER:
-            // Handle identifier
-
-            switch (node->type)
-            {
-            case FL_AST_NODE_TYPE_BLOCK:
-
-                break;
-
-            default:
-                break;
-            }
-
-            break;
-        }
-    }
-
-    return FL_TRUE;
+    return _fl_ast_gen_helper(*root, tokens, tokens_num);
 }
 
 void fl_ast_free(fl_ast_node *node)
@@ -106,6 +160,14 @@ void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *dat
     n->next = FL_NULL;
 
     *node = n;
+}
+
+fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
+{
+    fl_ast_node *node = parent->children;
+    while (node->next)
+        node = node->next;
+    return node;
 }
 
 void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
