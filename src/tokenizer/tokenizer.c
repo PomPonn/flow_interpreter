@@ -184,9 +184,9 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
         return FL_NULL;
 
     // count tokens
-    fl_char *fl_str_copy = fl_str_dup(str);
-    fl_uint count = _tok_count_tokens(fl_str_copy, context);
-    free(fl_str_copy);
+    fl_char *str_copy = fl_str_dup(str);
+    fl_uint count = _tok_count_tokens(str_copy, context);
+    free(str_copy);
 
     if (count == 0)
     {
@@ -199,10 +199,10 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
     if (tokens == FL_NULL)
         return FL_NULL;
 
-    fl_str_copy = fl_str_dup(str);
+    str_copy = fl_str_dup(str);
 
     // Tokenize the string
-    fl_char *token = _tok_next_token(fl_str_copy, context);
+    fl_char *token = _tok_next_token(str_copy, context);
     fl_char *last_token = FL_NULL;
     fl_int line = 1, column = 1;
     for (fl_size index = 0; token; index++)
@@ -225,7 +225,7 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_tok_context *context, fl_size *tokens
         }
     }
 
-    free(fl_str_copy);
+    free(str_copy);
 
     *tokens_num = count;
     return tokens;

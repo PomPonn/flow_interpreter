@@ -14,13 +14,13 @@ enum _fl_token_type
     FL_TOKEN_TYPE_DELIMITER,
     FL_TOKEN_TYPE_COMMENT
 };
-typedef uint8_t fl_token_type;
+typedef fl_ubyte fl_token_type;
 
 enum _fl_token_alias
 {
     FL_TOKEN_ALIAS_NONE,
     // keywords
-    FL_TOKEN_ALIAS_IMPORT,
+    FL_TOKEN_ALIAS_USE,
     FL_TOKEN_ALIAS_EXPORT,
     // delimiters
     FL_TOKEN_ALIAS_COMMA,
@@ -58,16 +58,18 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_COLON,      // :
     FL_TOKEN_ALIAS_LAMBDA,     // =>
 };
-typedef uint8_t fl_token_alias;
+typedef fl_ubyte fl_token_alias;
 
 struct _fl_token
 {
     fl_token_type type;
     fl_token_alias alias;
     fl_char *value;
-    fl_int line;
-    fl_int column;
+    fl_size line;
+    fl_size column;
 };
 typedef struct _fl_token fl_token;
 
 void fl_token_init(fl_token *token, fl_char *value, fl_tok_context *context);
+
+fl_char *fl_token_str_as_printable(fl_char *token_str);

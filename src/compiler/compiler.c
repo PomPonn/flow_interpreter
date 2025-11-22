@@ -59,7 +59,7 @@ static inline void _cmp_fl_ast_gen_subtree(fl_ast_node *parent, fl_token *tokens
     case FL_TOKEN_TYPE_KEYWORD:
         switch (tokens[*index].alias)
         {
-        case FL_TOKEN_ALIAS_IMPORT:
+        case FL_TOKEN_ALIAS_USE:
             // Handle import keyword
 
             if (tokens[*index + 1].type == FL_TOKEN_TYPE_IDENTIFIER)

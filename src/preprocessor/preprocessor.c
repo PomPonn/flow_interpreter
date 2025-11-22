@@ -9,7 +9,7 @@
 static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_size fl_tokens_num)
 {
     fl_size opt_size = fl_tokens_num;
-    fl_token_type lfl_ast_type = FL_TOKEN_TYPE_NONE;
+    fl_token_type last_type = FL_TOKEN_TYPE_NONE;
 
     for (fl_size i = 0; i < fl_tokens_num; i++)
     {
@@ -21,20 +21,20 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
 
         if (tokens[i].alias == FL_TOKEN_ALIAS_NL)
         {
-            if (lfl_ast_type == FL_TOKEN_TYPE_NONE ||
-                lfl_ast_type == FL_TOKEN_TYPE_OPERATOR ||
-                lfl_ast_type == FL_TOKEN_TYPE_DELIMITER)
+            if (last_type == FL_TOKEN_TYPE_NONE ||
+                last_type == FL_TOKEN_TYPE_OPERATOR ||
+                last_type == FL_TOKEN_TYPE_DELIMITER)
             {
                 opt_size--;
             }
         }
 
-        lfl_ast_type = tokens[i].type;
+        last_type = tokens[i].type;
     }
 
     *optimalized = fl_mem_alloc_arr(opt_size, sizeof(fl_token));
 
-    lfl_ast_type = FL_TOKEN_TYPE_NONE;
+    last_type = FL_TOKEN_TYPE_NONE;
     fl_size j = 0;
 
     for (fl_size i = 0; i < fl_tokens_num; i++)
@@ -45,9 +45,9 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         }
         if (tokens[i].alias == FL_TOKEN_ALIAS_NL)
         {
-            if (lfl_ast_type == FL_TOKEN_TYPE_NONE ||
-                lfl_ast_type == FL_TOKEN_TYPE_OPERATOR ||
-                lfl_ast_type == FL_TOKEN_TYPE_DELIMITER)
+            if (last_type == FL_TOKEN_TYPE_NONE ||
+                last_type == FL_TOKEN_TYPE_OPERATOR ||
+                last_type == FL_TOKEN_TYPE_DELIMITER)
             {
                 continue;
             }
@@ -56,7 +56,7 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         (*optimalized)[j] = tokens[i];
         (*optimalized)[j].value = fl_str_dup(tokens[i].value);
 
-        lfl_ast_type = tokens[i].type;
+        last_type = tokens[i].type;
         j++;
     }
 

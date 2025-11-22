@@ -5,6 +5,29 @@
 
 #include <string.h>
 
+// --- STATIC FUNCTIONS DEFINITION ---
+
+static void _fl_ast_handle_use_statement(fl_ast_node *root, fl_token *tokens, fl_size *curr_index, fl_size tokens_num);
+
+// --- IMPLEMENTATIONS ---
+
+static void _fl_ast_handle_use_statement(fl_ast_node *root, fl_token *tokens, fl_size *curr_index, fl_size tokens_num)
+{
+    if (tokens[*curr_index + 1].type == FL_TOKEN_TYPE_IDENTIFIER)
+    {
+        // *curr_index++;
+
+        // Create an import FL_AST node
+        // fl_ast_node *import_node;
+        // fl_ast_node_init(parent, FL_NULL, FL_NULL, FL_AST_NODE_TYPE_IMPORT);
+
+        // _cmp_fl_ast_gen_import_children(import_node, tokens, i);
+        // assert(import_node->children != FL_NULL);
+
+        // ...
+    }
+}
+
 fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num)
 {
     if (!root || !*root || !tokens || tokens_num == 0)
@@ -14,32 +37,17 @@ fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num)
 
     fl_ast_node *node = *root;
 
-    for (fl_size i = 0; i < tokens_num;)
+    for (fl_size i = 0; i < tokens_num; i++)
     {
         switch (tokens[i].type)
         {
         case FL_TOKEN_TYPE_COMMENT:
-            i++;
             break;
         case FL_TOKEN_TYPE_KEYWORD:
             switch (tokens[i].alias)
             {
-            case FL_TOKEN_ALIAS_IMPORT:
-                // Handle import keyword
-
-                if (tokens[i + 1].type == FL_TOKEN_TYPE_IDENTIFIER)
-                {
-                    i++;
-
-                    // Create an import FL_AST node
-                    // fl_ast_node *import_node;
-                    // fl_ast_node_init(parent, FL_NULL, FL_NULL, FL_AST_NODE_TYPE_IMPORT);
-
-                    // _cmp_fl_ast_gen_import_children(import_node, tokens, i);
-                    // assert(import_node->children != FL_NULL);
-
-                    // ...
-                }
+            case FL_TOKEN_ALIAS_USE:
+                _fl_ast_handle_use_statement(node, tokens, &i, tokens_num);
                 break;
             case FL_TOKEN_ALIAS_EXPORT:
                 // Handle export keyword

@@ -1,17 +1,37 @@
 #include "shared/token.h"
 
+#include "stdio.h"
+
+// --- DEFINES ---
+
 #define _fl_token_is_in(what, tok_value) fl_str_in(tok_value, what, what##_num)
+
+// --- STATIC FUNCTIONS DEFINITION ---
 
 static fl_token_type _fl_token_deduce_type(fl_char *value, fl_tok_context *cnt);
 static fl_token_alias _fl_token_deduce_alias(fl_char *value, fl_tok_context *cnt);
 static fl_bool _fl_token_is_comment(fl_char *value, const fl_char *comment_wrapper);
 static fl_bool _fl_token_is_literal(fl_char *value, const fl_char **literal_wrappers, fl_uint lw_num);
 
+// --- IMPLEMENTATIONS ---
+
+fl_char *fl_token_str_as_printable(fl_char *tok)
+{
+    if (*tok == '\n')
+    {
+        return "\\n";
+    }
+    else
+    {
+        return tok;
+    }
+}
+
 void fl_token_init(fl_token *token, fl_char *value, fl_tok_context *cnt)
 {
     token->value = value;
-    token->line = -1;
-    token->column = -1;
+    token->line = 0;
+    token->column = 0;
 
     if (!cnt)
     {
@@ -88,9 +108,9 @@ static fl_token_alias _fl_token_deduce_alias(fl_char *value, fl_tok_context *cnt
     }
     if (_fl_token_is_in(cnt->keywords, value))
     {
-        if (fl_str_equal(value, "import"))
-            return FL_TOKEN_ALIAS_IMPORT;
         if (fl_str_equal(value, "use"))
+            return FL_TOKEN_ALIAS_USE;
+        if (fl_str_equal(value, "export"))
             return FL_TOKEN_ALIAS_EXPORT;
     }
     if (_fl_token_is_in(cnt->delimeters, value))

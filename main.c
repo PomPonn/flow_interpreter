@@ -47,7 +47,7 @@ void print_tokens(fl_token *tokens, fl_size n)
 {
   for (fl_size i = 0; i < n; i++)
   {
-    printf("[%i, %i] ", tokens[i].line, tokens[i].column);
+    printf("[%zu, %zu] ", tokens[i].line, tokens[i].column);
 
     if (*tokens[i].value == '\n')
     {

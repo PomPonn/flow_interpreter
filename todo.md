@@ -1,1 +1,2 @@
 - optimalize tokens better in preprocesor module
+- print errors to different destinations, eg. logs

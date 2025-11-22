@@ -6,7 +6,7 @@
 
 char *fl_file_read_text(const fl_char *filename)
 {
-  FILE *file = fopen(filename, "rt");
+  FILE *file = fopen(filename, "rb");
   if (!file)
     return FL_NULL;
 

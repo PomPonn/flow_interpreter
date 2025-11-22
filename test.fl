@@ -1,6 +1,6 @@
 # test program #
 
-use .io.print
+.use .io.print
 
 " This is some string."
 
