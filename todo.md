@@ -1,2 +1,3 @@
 - optimalize tokens better in preprocesor module
+- finish abstact syntax tree generation
 - print errors to different destinations, eg. logs

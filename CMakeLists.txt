@@ -8,4 +8,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_library(FlowInterpreter STATIC ${SOURCES})
 
 add_executable(Example ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
-target_link_libraries(Example InterpreterTools)
+target_link_libraries(Example FlowInterpreter)
