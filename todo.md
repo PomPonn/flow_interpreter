@@ -1,3 +1,4 @@
-- optimalize tokens better in preprocesor module
-- finish abstact syntax tree generation
-- print errors to different destinations, eg. logs
+-   optimalize tokens better in preprocesor module
+-   finish abstract syntax tree generation
+    -   expression & operators handling
+-   print errors to different destinations, eg. logs

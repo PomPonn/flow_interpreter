@@ -4,7 +4,7 @@
 
 " This is some string."
 
-main => {
+main: func => {
   test = 1.25
 
   ? test == 1 {

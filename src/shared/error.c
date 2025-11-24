@@ -8,6 +8,8 @@
 
 // --- DEFINES ---
 
+// #define SUPPRESS_ERRORS
+
 #define _MAX_ERROR_NUM 32
 
 // --- GLOBALS ---
@@ -18,7 +20,6 @@ fl_size _FL_ERRORS_NUM = 0;
 // --- STATIC FUNCTIONS DEFINITION ---
 
 static const fl_char *_fl_err_code_to_message(fl_err_code code);
-static fl_char *_fl_err_print_token(fl_token *tok);
 
 // --- IMPLEMENTATIONS ---
 
@@ -68,12 +69,14 @@ void fl_err_clear()
 
 void fl_err_throw(fl_err_code code, fl_token bad_token)
 {
+#ifndef SUPPRESS_ERRORS
     fl_err_report(code, bad_token);
 
     fl_err_execute();
 
     fl_err_clear();
     exit(-1);
+#endif
 }
 
 void fl_err_execute()

@@ -65,17 +65,38 @@ void print_tokens(fl_token *tokens, fl_size n)
 
 void print_ast_node(fl_ast_node *node)
 {
-    printf("-> ");
+    printf("> ");
     switch (node->type)
     {
+    case FL_AST_NODE_TYPE_ROOT:
+        printf("<root>");
+        break;
     case FL_AST_NODE_TYPE_BLOCK:
         printf("<block>");
         break;
     case FL_AST_NODE_TYPE_IMPORT:
         printf("<import>");
         break;
+    case FL_AST_NODE_TYPE_TYPE:
+        printf("<type> %s", ((fl_ast_type_node_info *)node->data)->type_id);
+        break;
+    case FL_AST_NODE_TYPE_STATEMENT:
+        printf("<statement>");
+        break;
+    case FL_AST_NODE_TYPE_FUNCTION:
+        printf("<function>");
+        break;
+    case FL_AST_NODE_TYPE_FUNC_HEADER:
+        printf("<header>");
+        break;
+    case FL_AST_NODE_TYPE_EXPRESSION:
+        printf("<expression>");
+        break;
+    case FL_AST_NODE_TYPE_LITERAL:
+        printf("<literal> %s", (fl_char *)node->data);
+        break;
     case FL_AST_NODE_TYPE_IDENTIFIER:
-        printf("<id> %s", (char *)node->data);
+        printf("<id> %s", (fl_char *)node->data);
         break;
     default:
         printf("<node>");
