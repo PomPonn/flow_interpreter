@@ -5,7 +5,7 @@
 # like a normal variable
 
 
-import .io
+.load .io
 
 # return can be ommitted if there is only one expression
 

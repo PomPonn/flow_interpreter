@@ -8,7 +8,7 @@
 
 // --- DEFINES ---
 
-// #define SUPPRESS_ERRORS
+#define SUPPRESS_ERRORS
 
 #define _MAX_ERROR_NUM 32
 

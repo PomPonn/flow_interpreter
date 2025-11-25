@@ -16,10 +16,11 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_EXPRESSION,
     FL_AST_NODE_TYPE_LITERAL,
     FL_AST_NODE_TYPE_IDENTIFIER,
+    FL_AST_NODE_TYPE_ID_CHAIN,
+    FL_AST_NODE_TYPE_OPERATOR,
     // --- unused
     FL_AST_NODE_TYPE_GROUP,
     FL_AST_NODE_TYPE_CALL,
-    FL_AST_NODE_TYPE_OPERATOR,
     FL_AST_NODE_TYPE_DELIMITER,
     FL_AST_NODE_TYPE_FLAG,
 };
@@ -37,16 +38,16 @@ typedef struct _fl_ast_node fl_ast_node;
 
 struct _fl_ast_type_node_info
 {
-    fl_char *type_id;
     fl_uint dimensions;
 };
 typedef struct _fl_ast_type_node_info fl_ast_type_node_info;
 
 fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num);
 void fl_ast_free(fl_ast_node *node);
-void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_char *type_id, fl_uint dimensions);
+void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions);
+void fl_ast_type_node_info_free(fl_ast_type_node_info *info);
 
-void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data);
+void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent);
 void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);

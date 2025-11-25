@@ -123,9 +123,9 @@ static fl_char *_tok_next_token(fl_char *str, fl_tok_context *cnt)
         escape_char = '\0';
     }
 
-    next_pos = _tok_trim_left(next_pos, cnt->ws);
-    if (*next_pos == '\0')
-        return FL_NULL;
+    // next_pos = _tok_trim_left(next_pos, cnt->ws);
+    // if (*next_pos == '\0')
+    //     return FL_NULL;
 
     fl_char *token_start = next_pos;
     fl_size skip_len = 0;
@@ -139,7 +139,7 @@ static fl_char *_tok_next_token(fl_char *str, fl_tok_context *cnt)
         goto __return;
     }
 
-    // Check for literal wrappers
+    // Check for string wrappers
     if (_tok_string_wrapper_next(next_pos, cnt, &skip_len))
     {
         next_pos += skip_len;

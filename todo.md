@@ -1,3 +1,5 @@
+-   work on tokenizer - optimalization, string escape, etc.
+-   write text optimalizer (include whitespace, but reduce it to minimum)
 -   optimalize tokens better in preprocesor module
 -   finish abstract syntax tree generation
     -   expression & operators handling

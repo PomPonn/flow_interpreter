@@ -1,8 +1,7 @@
-#include "preprocessor.h"
+#include "optimalizer.h"
 
-#include "shared/common.h"
-#include "shared/memory.h"
 #include "shared/token.h"
+#include "shared/memory.h"
 
 #include <string.h>
 
@@ -70,4 +69,8 @@ void fl_ppc_preprocess(fl_token **tokens, fl_size *tokens_num)
 
     fl_mem_free(*tokens);
     *tokens = opt;
+}
+
+void fl_opt_optimalize_source(fl_char *src, fl_tok_context *cnt)
+{
 }
