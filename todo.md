@@ -1,3 +1,6 @@
+-   remove operators and keyword parsing from tokenizer (we have no predefined stuff)
+-   revise delimeters (reduce them to minimum)
+-   make the tokenizer less adjustive, because it is used for really special case and making it universal has no sense
 -   work on tokenizer - optimalization, string escape, etc.
 -   write text optimalizer (include whitespace, but reduce it to minimum)
 -   optimalize tokens better in preprocesor module
