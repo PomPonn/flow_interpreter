@@ -1,18 +1,14 @@
-# types can be combined eg. const int, const obj etc.
+# type is optional
 
-# arrow '=>' indicates, that this is
-# some static definition, and can't be used
-# like a normal variable
-
-
+#
 .load .io
 
-# return can be ommitted if there is only one expression
+# function
+simple_function: func => (a, b) a + b
 
-simple_function => (a: int, b) a + b
-
-simple_list: int[] = {1,2,3}
-simple_list2:var list={1,"123",124.23564}
+# list
+simple_list: int[] = [1,2,3]
+simple_list2: var[] = [1,"123",124.23564]
 
 # '.' before identifier means that the identifier is a built-in global
 
