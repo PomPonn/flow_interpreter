@@ -8,6 +8,7 @@
 -   finish abstract syntax tree generation
     -   expression & operators handling
 -   cleanup tokenizer
+-   cleanup source optimalizer
 
 # optional
 

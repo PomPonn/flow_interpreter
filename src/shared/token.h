@@ -19,15 +19,15 @@ enum _fl_token_alias
     // delimiters
     // don't touch the comma alias
     FL_TOKEN_ALIAS_COMMA,     // ,
+    FL_TOKEN_ALIAS_DOT,       // .
+    FL_TOKEN_ALIAS_COLON,     // :
+    FL_TOKEN_ALIAS_SEMICOLON, // ;
     FL_TOKEN_ALIAS_LPAREN,    // (
     FL_TOKEN_ALIAS_RPAREN,    // )
     FL_TOKEN_ALIAS_LBRACE,    // {
     FL_TOKEN_ALIAS_RBRACE,    // }
-    FL_TOKEN_ALIAS_SEMICOLON, // ;
     FL_TOKEN_ALIAS_LBRACKET,  // [
     FL_TOKEN_ALIAS_RBRACKET,  // ]
-    FL_TOKEN_ALIAS_COLON,     // :
-    FL_TOKEN_ALIAS_DOT,       // .
     FL_TOKEN_ALIAS_SPACE,     //' '
     FL_TOKEN_ALIAS_NL,        // \n
     // literals

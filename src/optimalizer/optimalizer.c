@@ -69,6 +69,72 @@ void fl_ppc_preprocess(fl_token **tokens, fl_size *tokens_num)
     *tokens = opt;
 }
 
-void fl_opt_optimalize_source(fl_char *src)
+void fl_opt_optimalize_source(fl_char **src)
 {
+    fl_size new_len = fl_str_len(*src);
+    fl_char *ptr = *src;
+    fl_uint check_dist = 1;
+
+    // count new length
+    while (*(ptr + check_dist))
+    {
+        // ignore caret returns, and go back to check if there is
+        // optimalization without it
+        if (*ptr == '\r')
+        {
+            new_len--;
+            ptr--;
+            check_dist++;
+            continue;
+        }
+        // exclude duplicates
+        else if (fl_chr_is_any(*ptr, FL_WHITESPACE) && *ptr == *(ptr + check_dist))
+        {
+            new_len--;
+        }
+
+        ptr += check_dist;
+        check_dist = 1;
+    }
+
+    fl_char *new_src = fl_mem_alloc_arr(sizeof(fl_char), new_len + 1);
+    new_src[new_len] = '\0';
+    fl_size i = 0;
+
+    check_dist = 1;
+    ptr = *src;
+
+    // fill new array
+    while (*(ptr + check_dist))
+    {
+        // ignore caret returns, and go back to check if there is
+        // optimalization without it
+        if (*ptr == '\r')
+        {
+            ptr--;
+            check_dist++;
+            continue;
+        }
+        // exclude duplicates
+        else if (fl_chr_is_any(*ptr, FL_WHITESPACE) && *ptr == *(ptr + check_dist))
+        {
+            ptr += check_dist + 1;
+            check_dist = 1;
+            continue;
+        }
+        else if (check_dist > 1)
+        {
+            ptr += check_dist;
+            check_dist = 1;
+        }
+
+        new_src[i] = *ptr;
+        ptr += check_dist;
+        i++;
+    }
+
+    new_src[i] = *ptr;
+
+    fl_mem_free(*src);
+    *src = new_src;
 }

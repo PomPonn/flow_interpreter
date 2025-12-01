@@ -139,9 +139,7 @@ int main()
         return 1;
     }
 
-    // Tokenize the content
-    // fl_tok_context context;
-    // fl_tok_context_init(&context, COMMENT_TOKEN, WHITESPACE, V_N(DELIMITERS), V_N(OPERATORS), V_N(KEYWORDS), V_N(STR_LITERAL_WRAPPERS));
+    fl_opt_optimalize_source(&file_content);
 
     fl_size tokens_num;
     fl_token *tokens = fl_tok_tokenize(file_content, &tokens_num);
