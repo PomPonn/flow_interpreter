@@ -5,41 +5,42 @@
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
 
-const char *WHITESPACE = " \r\t";
+// const char *WHITESPACE = " \r\t";
 
-const char *COMMENT_TOKEN = "#";
+// const char *COMMENT_TOKEN = "#";
+
+const char *wrappers = "'\"#";
 
 // const char *KEYWORDS[] = {"use", "export"};
-const char *KEYWORDS[] = {"_w_a_d"};
+// const char *KEYWORDS[] = {"_w_a_d"};
 
-const char *DELIMITERS[] = {",", "(", ")", "{", "}",
-                            ";", "[", "]", ".", "\n", " "};
+const char *DELIMITERS = ",(){}[].\n ";
 
-const char *OPERATORS[] = {
-    "==",
-    "=>",
-    "!=",
-    "<<",
-    "<=",
-    ">>",
-    "<=",
-    "<",
-    ">",
-    "=",
-    "+",
-    "-",
-    "*",
-    "/",
-    "%",
-    "&&",
-    "||",
-    "!",
-    "&",
-    "|",
-    "~",
-    "?",
-    ":",
-};
+// const char *OPERATORS[] = {
+//     "==",
+//     "=>",
+//     "!=",
+//     "<<",
+//     "<=",
+//     ">>",
+//     "<=",
+//     "<",
+//     ">",
+//     "=",
+//     "+",
+//     "-",
+//     "*",
+//     "/",
+//     "%",
+//     "&&",
+//     "||",
+//     "!",
+//     "&",
+//     "|",
+//     "~",
+//     "?",
+//     ":",
+// };
 
 const char *STR_LITERAL_WRAPPERS[] = {"'", "\""};
 
@@ -51,16 +52,9 @@ void print_tokens(fl_token *tokens, fl_size n)
     {
         printf("[%zu, %zu] ", tokens[i].line, tokens[i].column);
 
-        if (*tokens[i].value == '\n')
-        {
-            printf("'\\n' ");
-        }
-        else
-        {
-            printf("'%s' ", tokens[i].value);
-        }
+        printf("'%s'\n", fl_token_str_as_printable(tokens[i].value));
 
-        printf("%i, %i\n", tokens[i].type, tokens[i].alias);
+        // printf("%i, %i\n", tokens[i].type, tokens[i].alias);
     }
 }
 
@@ -146,13 +140,13 @@ int main()
     }
 
     // Tokenize the content
-    fl_tok_context context;
-    fl_tok_context_init(&context, COMMENT_TOKEN, WHITESPACE, V_N(DELIMITERS), V_N(OPERATORS), V_N(KEYWORDS), V_N(STR_LITERAL_WRAPPERS));
+    // fl_tok_context context;
+    // fl_tok_context_init(&context, COMMENT_TOKEN, WHITESPACE, V_N(DELIMITERS), V_N(OPERATORS), V_N(KEYWORDS), V_N(STR_LITERAL_WRAPPERS));
 
     fl_size tokens_num;
-    fl_token *tokens = fl_tok_tokenize(file_content, &context, &tokens_num);
+    fl_token *tokens = fl_tok_tokenize(file_content, &tokens_num);
 
-    fl_tok_context_free(&context);
+    // fl_tok_context_free(&context);
 
     fl_file_free(file_content);
 
@@ -167,11 +161,11 @@ int main()
 
     print_tokens(tokens, tokens_num);
 
-    fl_ast_node *root;
-    fl_ast_gen(&root, tokens, tokens_num);
+    // fl_ast_node *root;
+    // fl_ast_gen(&root, tokens, tokens_num);
 
     printf("\n");
-    print_ast_tree(root, 1);
+    // print_ast_tree(root, 1);
 
     fl_tok_free_tokens(tokens, tokens_num);
 

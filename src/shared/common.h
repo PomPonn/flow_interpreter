@@ -9,6 +9,12 @@
 
 #define FL_NULL (void *)0
 
+#define FL_ORDERED_DELIMS ",(){}[]:. \n\t\r"
+#define FL_ESCAPE_CHAR '\\'
+#define FL_STRING_WRAPPER '"'
+#define FL_COMMENT_WRAPPER '#'
+#define FL_WRAPPERS "\"#"
+
 typedef void fl_unknown;
 typedef char fl_char;
 typedef uint8_t fl_ubyte;

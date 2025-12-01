@@ -9,12 +9,29 @@ fl_bool fl_chr_is_digit(fl_char chr)
     return chr >= '0' && chr <= '9';
 }
 
+fl_char *fl_str_find_any(const fl_char *str, const fl_char *chrs)
+{
+    return strpbrk(str, chrs);
+}
+
 fl_bool fl_str_equal(const fl_char *str1, const fl_char *str2)
 {
     if (!str1 || !str2)
         return FL_FALSE; // Return false if either string is FL_NULL
 
     return strcmp(str1, str2) == 0;
+}
+
+fl_bool fl_chr_is_any(fl_char chr, fl_char *pool)
+{
+    while (*pool)
+    {
+        if (chr == *pool)
+            return FL_TRUE;
+        pool++;
+    }
+
+    return FL_FALSE;
 }
 
 fl_bool fl_str_equal_n(const fl_char *str1, const fl_char *str2, const fl_size max_count)
@@ -73,4 +90,22 @@ fl_bool fl_str_is_num(const fl_char *str)
     }
 
     return FL_TRUE;
+}
+
+fl_char *fl_str_find(const fl_char *str, fl_char chr)
+{
+    return strchr(str, chr);
+}
+
+fl_long fl_str_index(const fl_char *str, fl_char chr)
+{
+    for (fl_long i = 0; *str; i++)
+    {
+        if (*str == chr)
+            return i;
+
+        str++;
+    }
+
+    return -1;
 }

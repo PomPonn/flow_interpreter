@@ -21,7 +21,6 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         if (tokens[i].alias == FL_TOKEN_ALIAS_NL)
         {
             if (last_type == FL_TOKEN_TYPE_NONE ||
-                last_type == FL_TOKEN_TYPE_OPERATOR ||
                 last_type == FL_TOKEN_TYPE_DELIMITER)
             {
                 opt_size--;
@@ -45,7 +44,6 @@ static fl_size _fl_ppc_optimalize(fl_token **optimalized, fl_token *tokens, fl_s
         if (tokens[i].alias == FL_TOKEN_ALIAS_NL)
         {
             if (last_type == FL_TOKEN_TYPE_NONE ||
-                last_type == FL_TOKEN_TYPE_OPERATOR ||
                 last_type == FL_TOKEN_TYPE_DELIMITER)
             {
                 continue;
@@ -71,6 +69,6 @@ void fl_ppc_preprocess(fl_token **tokens, fl_size *tokens_num)
     *tokens = opt;
 }
 
-void fl_opt_optimalize_source(fl_char *src, fl_tok_context *cnt)
+void fl_opt_optimalize_source(fl_char *src)
 {
 }

@@ -152,20 +152,6 @@ static void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size 
                 break;
             }
             break;
-        case FL_TOKEN_TYPE_KEYWORD:
-            switch (tokens[*i].alias)
-            {
-            case FL_TOKEN_ALIAS_USE:
-                _fl_ast_increase_tok_index(i, tokens, tok_n);
-
-                // _fl_ast_handle_use_keyword(parent, tokens, i, tok_n);
-                break;
-            case FL_TOKEN_ALIAS_EXPORT:
-                // Handle export keyword
-
-                break;
-            }
-            break;
         case FL_TOKEN_TYPE_IDENTIFIER:
             switch (parent->type)
             {
@@ -246,17 +232,9 @@ static void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_s
         //     fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
         // }
         break;
-    case FL_TOKEN_ALIAS_ASSIGN:
-        // assign expression
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, fl_str_dup("="), statement_node);
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
-        _fl_ast_handle_expression(statement_node, tokens, i, tok_n);
-        break;
-    case FL_TOKEN_ALIAS_LAMBDA:
-        // assign function
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, fl_str_dup("=>"), statement_node);
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
-        _fl_ast_handle_func(statement_node, tokens, i, tok_n);
+    case FL_TOKEN_ALIAS_DOT:
+        fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, statement_node);
+        _fl_ast_handle_id_chain(node, tokens, i, tok_n);
         break;
     default:
         // invalid token after declaration
