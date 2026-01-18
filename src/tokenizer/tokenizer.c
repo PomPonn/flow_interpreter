@@ -2,6 +2,7 @@
 
 #include "shared/memory.h"
 #include "shared/str.h"
+#include "shared/delims.h"
 
 #include <stdlib.h>
 
@@ -9,7 +10,7 @@
 
 static fl_uint _fl_tok_count_tokens(fl_char *str);
 static fl_bool _fl_tok_handle_number(const fl_char **str);
-static fl_char *_fl_tok_next_token(fl_char *str);
+static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped);
 static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
 static fl_bool _fl_tok_handle_wrapper(const fl_char **str);
 static fl_bool _fl_tok_handle_escapement(const fl_char **str);
@@ -99,8 +100,41 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
     return FL_FALSE;
 }
 
-static fl_char *_fl_tok_next_token(fl_char *str)
+// returns next token if current char is whitespace and reduces any following whitespace to a single delimeter
+// returned token is a static string
+// otherwise returns FL_NULL
+static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos)
 {
+    fl_char *ptr = token_start;
+
+    if (*token_start == '\n' || (*token_start == '\r' && *(token_start + 1) == '\n'))
+    {
+        while (fl_chr_is_any(*ptr, FL_WHITESPACE))
+        {
+            *ptr++;
+        }
+        *next_pos = ptr;
+
+        return "\n";
+    }
+    else if (*token_start == ' ' || *token_start == '\t')
+    {
+        while (fl_chr_is_any(*ptr, " \t"))
+        {
+            *ptr++;
+        }
+        *next_pos = ptr;
+
+        return " ";
+    }
+
+    return FL_NULL;
+}
+
+// find next token in a string and returns string copy of it
+static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped)
+{
+    // start of the next token (used on next function call)
     static fl_char *next_pos = FL_NULL;
     static fl_char escape_char = '\0';
 
@@ -119,17 +153,32 @@ static fl_char *_fl_tok_next_token(fl_char *str)
         escape_char = '\0';
     }
 
+    *skipped = 0;
+
+    // start of the current token
     fl_char *token_start = next_pos;
+    // potential whitespace delimeter
+    fl_char *ws_delim;
+
+    // reduce any whitespace to single delimeter
+    // - space or newline
+    if (ws_delim = _fl_tok_handle_whitespace(token_start, &next_pos))
+    {
+        *skipped = next_pos - token_start - 1;
+        escape_char = '\0';
+
+        return ws_delim;
+    }
 
     if (_fl_tok_handle_escapement(&next_pos))
     {
-        goto __return;
+        goto __std_return;
     }
 
     if (fl_chr_is_any(*next_pos, FL_ORDERED_DELIMS))
     {
         next_pos++;
-        goto __return;
+        goto __std_return;
     }
 
     next_pos = fl_str_find_any(next_pos + 1, FL_ORDERED_DELIMS);
@@ -140,9 +189,9 @@ static fl_char *_fl_tok_next_token(fl_char *str)
     }
 
     escape_char = *next_pos;
-    goto __return;
+    goto __std_return;
 
-__return:
+__std_return:
 
     escape_char = *next_pos;
 
@@ -162,12 +211,14 @@ __return:
 static fl_uint _fl_tok_count_tokens(fl_char *str)
 {
     fl_uint count = 0;
-    if (_fl_tok_next_token(str))
+    fl_size skipped_chrs = 0;
+
+    if (_fl_tok_next_token(str, &skipped_chrs))
         count++;
     else
         return 0;
 
-    while (_fl_tok_next_token(FL_NULL))
+    while (_fl_tok_next_token(FL_NULL, &skipped_chrs))
         count++;
 
     return count;
@@ -189,27 +240,27 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
         return FL_NULL;
 
     // Tokenize the string
-    fl_char *token = _fl_tok_next_token(str);
+    fl_size skipped = 0;
+    fl_char *token = _fl_tok_next_token(str, &skipped);
     fl_char *last_token = FL_NULL;
     fl_size line = 1, column = 1;
 
     for (fl_size index = 0; token; index++)
     {
         fl_token_init(tokens + index, fl_str_dup(token));
+
         tokens[index].line = line;
         tokens[index].column = column;
 
         last_token = token;
-        token = _fl_tok_next_token(FL_NULL);
+        token = _fl_tok_next_token(FL_NULL, &skipped);
+
+        column += fl_str_len(token) + skipped;
 
         if (*last_token == '\n')
         {
             line++;
             column = 1;
-        }
-        else
-        {
-            column += token - last_token;
         }
     }
 

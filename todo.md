@@ -1,16 +1,20 @@
--   whitespace tokenizer context member makes no sense
--   make wrappers single character, not string, to apply some optimalization (since we leave universality)
--   remove operators and keyword parsing from tokenizer (we have no predefined stuff)
--   revise delimeters (reduce them to minimum)
--   make the tokenizer less adjustive, because it is used for really special case and making it universal has no sense
--   work on tokenizer - optimalization, string escape, etc.
--   write text optimalizer (include whitespace, but reduce it to minimum)
--   finish abstract syntax tree generation
-    -   expression & operators handling
--   cleanup tokenizer
--   cleanup source optimalizer
+## todo
+
+- work on tokenizer - optimalization, string escape, etc.
+- write text optimalizer (include whitespace, but reduce it to minimum)
+- finish abstract syntax tree generation
+    - expression & operators handling
+- cleanup tokenizer
+- cleanup source optimalizer
 
 # optional
 
--   print errors to different destinations, eg. logs
--   optimalize tokens better in preprocesor module
+- print errors to different destinations, eg. logs
+- optimalize tokens better in preprocesor module
+
+# done
+
+- whitespace tokenizer context member makes no sense
+- make wrappers single character, not string, to apply some optimalization (since we leave universality)
+- remove operators and keyword parsing from tokenizer (we have no predefined stuff)
+- revise delimeters (reduce them to minimum)

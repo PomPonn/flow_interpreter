@@ -139,7 +139,7 @@ int main()
         return 1;
     }
 
-    fl_opt_optimalize_source(&file_content);
+    // fl_opt_optimalize_source(&file_content);
 
     fl_size tokens_num;
     fl_token *tokens = fl_tok_tokenize(file_content, &tokens_num);
@@ -151,7 +151,6 @@ int main()
     if (!tokens)
     {
         fprintf(stderr, "Failed to fl_tokenize content.\n");
-        fl_file_free(file_content);
         return 1;
     }
 

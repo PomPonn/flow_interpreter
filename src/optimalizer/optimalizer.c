@@ -2,6 +2,7 @@
 
 #include "shared/token.h"
 #include "shared/memory.h"
+#include "shared/delims.h"
 
 #include <string.h>
 
