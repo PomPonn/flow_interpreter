@@ -4,11 +4,11 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static fl_void fl_ptr_print_ast_node(fl_ast_node *node);
+static fl_void _fl_ptr_print_ast_node(fl_ast_node *node);
 
 // --- IMPLEMENTATIONS ---
 
-static fl_void fl_ptr_print_ast_node(fl_ast_node *node)
+static fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
 {
     printf("> ");
     switch (node->type)
@@ -57,6 +57,8 @@ static fl_void fl_ptr_print_ast_node(fl_ast_node *node)
 
 fl_void fl_prt_print_token_entries(fl_token *tokens, fl_size n)
 {
+    printf("<%zu entries>\n", n);
+
     for (fl_size i = 0; i < n; i++)
     {
         printf("[%zu, %zu] ", tokens[i].line + 1, tokens[i].column + 1);
@@ -79,7 +81,7 @@ fl_void fl_prt_print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
         printf("  ");
     }
 
-    fl_ptr_print_ast_node(root);
+    _fl_ptr_print_ast_node(root);
 
     fl_ast_node *node = root->children;
 

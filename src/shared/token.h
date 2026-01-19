@@ -3,6 +3,9 @@
 #include "shared/common.h"
 #include "shared/str.h"
 
+#define FL_CHR_NL '\n'
+#define FL_CHR_ACCESS_STR "."
+
 #define _fl_var_arr(type, ...) \
     (type[]){__VA_ARGS__}, sizeof((type[]){__VA_ARGS__}) / sizeof(type)
 

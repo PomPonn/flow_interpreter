@@ -69,6 +69,7 @@ fl_void fl_err_clear()
 
 fl_void fl_err_throw(fl_err_code code, fl_token bad_token)
 {
+    // TODO: prevent memory leak here
 #ifndef SUPPRESS_ERRORS
     fl_err_report(code, bad_token);
 

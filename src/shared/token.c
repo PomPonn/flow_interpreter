@@ -24,7 +24,7 @@ static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 fl_char *fl_token_str_as_printable(fl_char *tok)
 {
-    if (*tok == FL_NL)
+    if (*tok == FL_CHR_NL)
     {
         return "\\n";
     }

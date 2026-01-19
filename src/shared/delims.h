@@ -1,6 +1,5 @@
 #pragma once
 
-#define FL_NL '\n'
 #define FL_ORDERED_DELIMS " ,.:;(){}[]\n\r"
 #define FL_WHITESPACE " \r\n\t"
 #define FL_ESCAPE_CHAR '\\'

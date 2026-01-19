@@ -109,11 +109,11 @@ static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_p
 {
     fl_char *ptr = token_start + 1;
 
-    if (*token_start == FL_NL || (*token_start == '\r' && *(token_start + 1) == FL_NL))
+    if (*token_start == FL_CHR_NL || (*token_start == '\r' && *(token_start + 1) == FL_CHR_NL))
     {
         while (fl_chr_is_any(*ptr, FL_WHITESPACE))
         {
-            if (*ptr == FL_NL)
+            if (*ptr == FL_CHR_NL)
                 (*nls_counter)++;
             ptr++;
         }
@@ -179,7 +179,7 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     {
         next_column += next_pos - token_start;
 
-        if (*ws == FL_NL)
+        if (*ws == FL_CHR_NL)
         {
             escape_char = '\0';
             next_column = 0;

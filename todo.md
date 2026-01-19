@@ -2,6 +2,7 @@
 
 - finish abstract syntax tree generation
     - expression & operators handling
+- ast generation unused literals handling
 
 # optional
 
