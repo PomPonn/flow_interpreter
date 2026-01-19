@@ -54,7 +54,7 @@ fl_bool fl_err_report(fl_err_code code, fl_token bad_token)
     return FL_TRUE;
 }
 
-void fl_err_clear()
+fl_void fl_err_clear()
 {
     if (!_FL_ERRORS_NUM)
         return;
@@ -67,7 +67,7 @@ void fl_err_clear()
     _FL_ERRORS_NUM = 0;
 }
 
-void fl_err_throw(fl_err_code code, fl_token bad_token)
+fl_void fl_err_throw(fl_err_code code, fl_token bad_token)
 {
 #ifndef SUPPRESS_ERRORS
     fl_err_report(code, bad_token);
@@ -79,7 +79,7 @@ void fl_err_throw(fl_err_code code, fl_token bad_token)
 #endif
 }
 
-void fl_err_execute()
+fl_void fl_err_execute()
 {
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {

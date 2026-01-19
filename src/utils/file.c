@@ -25,7 +25,7 @@ char *fl_file_read(const fl_char *filename)
   return buffer;
 }
 
-void fl_file_free(fl_char *buffer)
+fl_void fl_file_free(fl_char *buffer)
 {
   fl_mem_free(buffer);
 }

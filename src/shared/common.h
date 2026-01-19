@@ -10,6 +10,7 @@
 #define FL_NULL (void *)0
 
 typedef void fl_unknown;
+typedef void fl_void;
 typedef char fl_char;
 typedef uint8_t fl_ubyte;
 typedef int8_t fl_byte;

@@ -22,8 +22,8 @@ typedef struct _fl_err_record fl_err_record;
 
 fl_bool fl_err_report(fl_err_code code, fl_token bad_token);
 
-void fl_err_clear();
+fl_void fl_err_clear();
 
-void fl_err_throw(fl_err_code code, fl_token bad_token);
+fl_void fl_err_throw(fl_err_code code, fl_token bad_token);
 
-void fl_err_execute();
+fl_void fl_err_execute();

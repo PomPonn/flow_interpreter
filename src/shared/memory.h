@@ -2,7 +2,7 @@
 
 #include "shared/common.h"
 
-void fl_mem_free(fl_unknown *memory);
+fl_void fl_mem_free(fl_unknown *memory);
 
 fl_unknown *fl_mem_alloc(fl_size size);
 

@@ -43,11 +43,11 @@ struct _fl_ast_type_node_info
 typedef struct _fl_ast_type_node_info fl_ast_type_node_info;
 
 fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num);
-void fl_ast_free(fl_ast_node *node);
-void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions);
-void fl_ast_type_node_info_free(fl_ast_type_node_info *info);
+fl_void fl_ast_free(fl_ast_node *node);
+fl_void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions);
+fl_void fl_ast_type_node_info_free(fl_ast_type_node_info *info);
 
-void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent);
-void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
+fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent);
+fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);

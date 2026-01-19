@@ -4,16 +4,17 @@
 #include "shared/str.h"
 #include "shared/delims.h"
 
-#include <stdlib.h>
+#include <assert.h>
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
 static fl_uint _fl_tok_count_tokens(fl_char *str);
 static fl_bool _fl_tok_handle_number(const fl_char **str);
-static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped);
+static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
 static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
 static fl_bool _fl_tok_handle_wrapper(const fl_char **str);
 static fl_bool _fl_tok_handle_escapement(const fl_char **str);
+static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *nls_counter);
 
 // --- IMPLEMENTATIONS ---
 
@@ -103,25 +104,27 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
 // returns next token if current char is whitespace and reduces any following whitespace to a single delimeter
 // returned token is a static string
 // otherwise returns FL_NULL
-static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos)
+static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *nls_counter)
 {
-    fl_char *ptr = token_start;
+    fl_char *ptr = token_start + 1;
 
-    if (*token_start == '\n' || (*token_start == '\r' && *(token_start + 1) == '\n'))
+    if (*token_start == FL_NL || (*token_start == '\r' && *(token_start + 1) == FL_NL))
     {
         while (fl_chr_is_any(*ptr, FL_WHITESPACE))
         {
-            *ptr++;
+            if (*ptr == FL_NL)
+                (*nls_counter)++;
+            ptr++;
         }
         *next_pos = ptr;
 
         return "\n";
     }
-    else if (*token_start == ' ' || *token_start == '\t')
+    else if (*token_start == ' ' || *token_start == '\t' || *token_start == '\r')
     {
-        while (fl_chr_is_any(*ptr, " \t"))
+        while (fl_chr_is_any(*ptr, " \t\r"))
         {
-            *ptr++;
+            ptr++;
         }
         *next_pos = ptr;
 
@@ -132,20 +135,26 @@ static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_p
 }
 
 // find next token in a string and returns string copy of it
-static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped)
+static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
 {
     // start of the next token (used on next function call)
     static fl_char *next_pos = FL_NULL;
+    static fl_size next_line = 0;
+    static fl_size next_column = 0;
     static fl_char escape_char = '\0';
 
     if (str)
     {
+        // reset static variables to operate on new string
         next_pos = str;
         escape_char = '\0';
+        next_line = 0;
+        next_column = 0;
     }
     else if (next_pos == FL_NULL)
         return FL_NULL;
 
+    // fix string from last iteration
     if (escape_char)
     {
         next_pos--;
@@ -153,7 +162,10 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped)
         escape_char = '\0';
     }
 
-    *skipped = 0;
+    if (line != FL_NULL)
+        *line = next_line;
+    if (column != FL_NULL)
+        *column = next_column;
 
     // start of the current token
     fl_char *token_start = next_pos;
@@ -162,10 +174,13 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped)
 
     // reduce any whitespace to single delimeter
     // - space or newline
-    if (ws_delim = _fl_tok_handle_whitespace(token_start, &next_pos))
+    if (ws_delim = _fl_tok_handle_whitespace(token_start, &next_pos, &next_line))
     {
-        *skipped = next_pos - token_start - 1;
+        next_column = next_pos - token_start - 1;
         escape_char = '\0';
+
+        if (*ws_delim == FL_NL)
+            next_column = 0;
 
         return ws_delim;
     }
@@ -184,12 +199,7 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *skipped)
     next_pos = fl_str_find_any(next_pos + 1, FL_ORDERED_DELIMS);
 
     if (!next_pos)
-    {
         return token_start;
-    }
-
-    escape_char = *next_pos;
-    goto __std_return;
 
 __std_return:
 
@@ -205,20 +215,21 @@ __std_return:
         next_pos++;
     }
 
+    next_column += fl_str_len(token_start);
+
     return token_start;
 }
 
 static fl_uint _fl_tok_count_tokens(fl_char *str)
 {
     fl_uint count = 0;
-    fl_size skipped_chrs = 0;
 
-    if (_fl_tok_next_token(str, &skipped_chrs))
+    if (_fl_tok_next_token(str, FL_NULL, FL_NULL))
         count++;
     else
         return 0;
 
-    while (_fl_tok_next_token(FL_NULL, &skipped_chrs))
+    while (_fl_tok_next_token(FL_NULL, FL_NULL, FL_NULL))
         count++;
 
     return count;
@@ -240,28 +251,13 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
         return FL_NULL;
 
     // Tokenize the string
-    fl_size skipped = 0;
-    fl_char *token = _fl_tok_next_token(str, &skipped);
-    fl_char *last_token = FL_NULL;
-    fl_size line = 1, column = 1;
+    fl_size line, column;
+    fl_char *token = _fl_tok_next_token(str, &line, &column);
 
     for (fl_size index = 0; token; index++)
     {
-        fl_token_init(tokens + index, fl_str_dup(token));
-
-        tokens[index].line = line;
-        tokens[index].column = column;
-
-        last_token = token;
-        token = _fl_tok_next_token(FL_NULL, &skipped);
-
-        column += fl_str_len(token) + skipped;
-
-        if (*last_token == '\n')
-        {
-            line++;
-            column = 1;
-        }
+        assert(fl_token_init(tokens + index, fl_str_dup(token), line, column));
+        token = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 
     *tokens_num = count;
@@ -269,14 +265,13 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
     return tokens;
 }
 
-void fl_tok_free_tokens(fl_token *tokens, fl_size tokens_num)
+fl_void fl_tok_free_tokens(fl_token *tokens, fl_size tokens_num)
 {
     if (tokens == FL_NULL)
         return;
 
     for (fl_size i = 0; i < tokens_num; i++)
-        if (tokens[i].value)
-            free(tokens[i].value);
+        fl_token_free(tokens + i);
 
-    free(tokens);
+    fl_mem_free(tokens);
 }

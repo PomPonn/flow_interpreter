@@ -46,11 +46,11 @@ const char *STR_LITERAL_WRAPPERS[] = {"'", "\""};
 
 #define V_N(var) var, (sizeof(var) / sizeof(*var))
 
-void print_tokens(fl_token *tokens, fl_size n)
+fl_void print_tokens(fl_token *tokens, fl_size n)
 {
     for (fl_size i = 0; i < n; i++)
     {
-        printf("[%zu, %zu] ", tokens[i].line, tokens[i].column);
+        printf("[%zu, %zu] ", tokens[i].line + 1, tokens[i].column + 1);
 
         printf("'%s'\n", fl_token_str_as_printable(tokens[i].value));
 
@@ -58,7 +58,7 @@ void print_tokens(fl_token *tokens, fl_size n)
     }
 }
 
-void print_ast_node(fl_ast_node *node)
+fl_void print_ast_node(fl_ast_node *node)
 {
     printf("> ");
     switch (node->type)
@@ -105,7 +105,7 @@ void print_ast_node(fl_ast_node *node)
     }
 }
 
-void print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
+fl_void print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
 {
     for (fl_ushort i = 0; i < nest_level - 1; i++)
     {
@@ -139,12 +139,8 @@ int main()
         return 1;
     }
 
-    // fl_opt_optimalize_source(&file_content);
-
     fl_size tokens_num;
     fl_token *tokens = fl_tok_tokenize(file_content, &tokens_num);
-
-    // fl_tok_context_free(&context);
 
     fl_file_free(file_content);
 
@@ -154,8 +150,11 @@ int main()
         return 1;
     }
 
-    // fl_ppc_preprocess(&tokens, &tokens_num);
+    printf("Przed (%zu):\n", tokens_num);
+    print_tokens(tokens, tokens_num);
 
+    tokens = fl_opt_optimalize(tokens, &tokens_num);
+    printf("Po (%zu):\n", tokens_num);
     print_tokens(tokens, tokens_num);
 
     // fl_ast_node *root;

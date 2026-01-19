@@ -3,4 +3,4 @@
 #include "shared/common.h"
 #include "shared/token.h"
 
-void fl_opt_optimalize_source(fl_char **src);
+fl_token *fl_opt_optimalize(fl_token *tokens, fl_size tokens_num, fl_size *opted_num);

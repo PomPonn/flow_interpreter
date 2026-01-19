@@ -8,18 +8,18 @@
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
-static void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
-static void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
+static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 
 // --- IMPLEMENTATIONS ---
 
-static void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n)
+static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n)
 {
     if (*i + 1 >= tok_n)
     {
@@ -29,7 +29,7 @@ static void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok
     (*i)++;
 }
 
-static void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *node;
 
@@ -63,7 +63,7 @@ static void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_si
     } while (FL_TRUE);
 }
 
-static void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     assert(parent->type == FL_AST_NODE_TYPE_FUNCTION);
 
@@ -116,11 +116,11 @@ static void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl
     }
 }
 
-static void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
 }
 
-static void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *node = FL_NULL;
     // tODO: do smoething with tyhis
@@ -180,7 +180,7 @@ static void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size 
     }
 }
 
-static void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *func_node;
 
@@ -207,7 +207,7 @@ static void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *
     }
 }
 
-static void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *statement_node;
     fl_ast_node *node;
@@ -243,7 +243,7 @@ static void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_s
     }
 }
 
-static void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *type_node;
     fl_ast_node_init(&type_node, FL_AST_NODE_TYPE_TYPE, FL_NULL, parent);
@@ -281,7 +281,7 @@ fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tok_n)
     return FL_TRUE;
 }
 
-void fl_ast_free(fl_ast_node *node)
+fl_void fl_ast_free(fl_ast_node *node)
 {
     if (!node)
         return;
@@ -300,7 +300,7 @@ void fl_ast_free(fl_ast_node *node)
     fl_mem_free(node);
 }
 
-void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions)
+fl_void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions)
 {
     fl_ast_type_node_info *i = fl_mem_alloc(sizeof(fl_ast_type_node_info));
 
@@ -309,7 +309,7 @@ void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions
     *info = i;
 }
 
-void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent)
+fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent)
 {
     fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
 
@@ -338,7 +338,7 @@ fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
     return node;
 }
 
-void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
+fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
 {
     if (!parent->children)
     {
@@ -356,7 +356,7 @@ void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
     current->next = node;
 }
 
-void fl_ast_type_node_info_free(fl_ast_type_node_info *info)
+fl_void fl_ast_type_node_info_free(fl_ast_type_node_info *info)
 {
     fl_mem_free(info);
 }

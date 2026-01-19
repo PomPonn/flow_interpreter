@@ -1,6 +1,7 @@
 #include "shared/token.h"
 
 #include "shared/delims.h"
+#include "shared/memory.h"
 
 #include "stdio.h"
 
@@ -17,7 +18,7 @@ static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 fl_char *fl_token_str_as_printable(fl_char *tok)
 {
-    if (*tok == '\n')
+    if (*tok == FL_NL)
     {
         return "\\n";
     }
@@ -35,11 +36,17 @@ fl_char *fl_token_str_as_printable(fl_char *tok)
     }
 }
 
-fl_bool fl_token_init(fl_token *token, fl_char *value)
+fl_void fl_token_free(fl_token *token)
+{
+    if (token->value)
+        fl_mem_free(token->value);
+}
+
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column)
 {
     token->value = value;
-    token->line = 0;
-    token->column = 0;
+    token->line = line;
+    token->column = column;
 
     return _fl_token_deduce(token);
 }

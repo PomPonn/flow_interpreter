@@ -4,4 +4,4 @@
 
 char *fl_file_read(const fl_char *filename);
 
-void fl_file_free(fl_char *buffer);
+fl_void fl_file_free(fl_char *buffer);

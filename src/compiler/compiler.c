@@ -5,7 +5,7 @@
 // #include "shared/str.h"
 // #include "compiler/ast.h"
 
-// static inline void _cmp_fl_ast_gen_import_children(fl_ast_node *import_node,
+// static inline fl_void _cmp_fl_ast_gen_import_children(fl_ast_node *import_node,
 //                                                    fl_token *tokens,
 //                                                    fl_size *index)
 // {
@@ -40,7 +40,7 @@
 //     } while (tokens[*index++].type != FL_TOKEN_TYPE_DELIMITER);
 // }
 
-// static inline void _cmp_fl_ast_gen_subtree(fl_ast_node *parent, fl_token *tokens,
+// static inline fl_void _cmp_fl_ast_gen_subtree(fl_ast_node *parent, fl_token *tokens,
 //                                            fl_size *index,
 //                                            const fl_size tokens_num)
 // {
@@ -103,6 +103,6 @@
 //     _cmp_fl_ast_gen_subtree(parent, tokens, index, tokens_num);
 // }
 
-// void cmp_compile_to_intermediate(fl_token *tokens, fl_size tokens_num)
+// fl_void cmp_compile_to_intermediate(fl_token *tokens, fl_size tokens_num)
 // {
 // }
