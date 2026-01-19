@@ -103,6 +103,7 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
 
 // returns next token if current char is whitespace and reduces any following whitespace to a single delimeter
 // returned token is a static string
+// return "\n" or "\0" if no newline was found (which means ws should be completely skipped)
 // otherwise returns FL_NULL
 static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *nls_counter)
 {
@@ -128,7 +129,7 @@ static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_p
         }
         *next_pos = ptr;
 
-        return " ";
+        return "\0";
     }
 
     return FL_NULL;
@@ -169,20 +170,26 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
 
     // start of the current token
     fl_char *token_start = next_pos;
-    // potential whitespace delimeter
-    fl_char *ws_delim;
+    // potential whitespace indicator
+    fl_char *ws;
 
     // reduce any whitespace to single delimeter
     // - space or newline
-    if (ws_delim = _fl_tok_handle_whitespace(token_start, &next_pos, &next_line))
+    if (ws = _fl_tok_handle_whitespace(token_start, &next_pos, &next_line))
     {
-        next_column = next_pos - token_start - 1;
-        escape_char = '\0';
+        next_column += next_pos - token_start;
 
-        if (*ws_delim == FL_NL)
+        if (*ws == FL_NL)
+        {
+            escape_char = '\0';
             next_column = 0;
-
-        return ws_delim;
+            return ws;
+        }
+        else if (*ws == '\0')
+        {
+            // not meaningful whitespace, ignore
+            token_start = next_pos;
+        }
     }
 
     if (_fl_tok_handle_escapement(&next_pos))
