@@ -153,7 +153,7 @@ int main()
     printf("Przed (%zu):\n", tokens_num);
     print_tokens(tokens, tokens_num);
 
-    tokens = fl_opt_optimalize(tokens, &tokens_num);
+    tokens = fl_opt_optimalize(tokens, tokens_num, &tokens_num);
     printf("Po (%zu):\n", tokens_num);
     print_tokens(tokens, tokens_num);
 

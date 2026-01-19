@@ -3,6 +3,15 @@
 #include "shared/common.h"
 #include "shared/str.h"
 
+#define _fl_var_arr(type, ...) \
+    (type[]) { __VA_ARGS__ }
+
+#define fl_token_alias_arr(...) \
+    _fl_var_arr(fl_token_alias, __VA_ARGS__)
+
+#define fl_token_type_arr(...) \
+    _fl_var_arr(fl_token_type, __VA_ARGS__)
+
 enum _fl_token_type
 {
     FL_TOKEN_TYPE_NONE,
@@ -49,5 +58,9 @@ typedef struct _fl_token fl_token;
 fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column);
 
 fl_void fl_token_free(fl_token *token);
+
+fl_bool fl_token_alias_in(fl_token *token, fl_token_alias aliases[]);
+
+fl_bool fl_token_type_in(fl_token *token, fl_token_type types[]);
 
 fl_char *fl_token_str_as_printable(fl_char *token_str);

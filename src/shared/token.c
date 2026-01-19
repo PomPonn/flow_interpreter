@@ -9,6 +9,12 @@
 
 #define _fl_token_delim_enum(delim_chr) (fl_token_alias)(FL_TOKEN_ALIAS_COMMA + fl_str_index(FL_ORDERED_DELIMS, delim_chr))
 
+#define _fl_check_var_arr(arr, type, val)                    \
+    for (fl_uint i = 0; i < sizeof(arr) / sizeof(type); i++) \
+        if (val == arr[i])                                   \
+            return FL_TRUE;                                  \
+    return FL_FALSE;
+
 // --- STATIC FUNCTION DEFINITIONS ---
 
 static fl_bool _fl_token_deduce(fl_token *tok);
@@ -40,6 +46,26 @@ fl_void fl_token_free(fl_token *token)
 {
     if (token->value)
         fl_mem_free(token->value);
+}
+
+fl_bool fl_token_alias_in(fl_token *token, fl_token_alias aliases[])
+{
+    if (!token)
+        return FL_FALSE;
+
+    for (fl_uint i = 0; i < sizeof(aliases) / sizeof(fl_token_alias); i++)
+        if (token[i].alias == aliases[i])
+            return FL_TRUE;
+    return FL_FALSE;
+    // _fl_check_var_arr(aliases, fl_token_alias, token[i].alias);
+}
+
+fl_bool fl_token_type_in(fl_token *token, fl_token_type types[])
+{
+    if (!token)
+        return FL_FALSE;
+
+    _fl_check_var_arr(types, fl_token_type, token[i].type);
 }
 
 fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column)
