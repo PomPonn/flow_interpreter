@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "utils/file.h"
-#include "utils/printer.h"
+#include "tools/file.h"
+#include "tools/printer.h"
 #include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
