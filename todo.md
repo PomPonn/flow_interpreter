@@ -9,7 +9,6 @@
 
 - fl_token_alias_arr and fl_token_type_arr is unused for now (consider removing it in the future)
 - print errors to different destinations, eg. logs
-- optimalize tokens better in preprocesor module
 
 # done
 
