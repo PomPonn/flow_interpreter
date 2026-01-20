@@ -1,8 +1,10 @@
 ## todo
 
+- new lines are not counted when creating comment and string tokens (tokenizer)
 - finish abstract syntax tree generation
     - expression & operators handling
 - ast generation unused literals handling
+- ast generation unused var declaration (in fl_ast_handle_statement) handling
 
 # optional
 

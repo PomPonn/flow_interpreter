@@ -2,7 +2,7 @@
 
 .use .io.print
 
-" This# is some string."
+" This# is some string.#"
 
 main: func => {
 
@@ -17,11 +17,22 @@ main: func => {
   # expression no 4 #
   test4 = (4 + 2) * 6 - fun2(4);
 
-  ? test == 1 {
+  # function call #
+  obj.some_function 2, 3; # without parens #
+  # vs #
+  # unlabeled operator #
+  # it is not a statement #
+  test1 .add test2
+
+  # else-if chaininig #
+  test == 1 ? {
     test = 2
   }
-  : {
+  : test == 1 ? {
     test = 3
+  }
+  : {
+
   }
 
   print(test)
