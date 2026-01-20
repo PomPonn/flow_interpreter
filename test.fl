@@ -1,8 +1,10 @@
-# test program #
+# test program # test
 
 .use .io.print
 
-" This# is some string.#"
+" This# is some string.#
+and there is a contination
+" var - 5;
 
 main: func => {
 

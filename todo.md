@@ -1,6 +1,5 @@
 ## todo
 
-- new lines are not counted when creating comment and string tokens (tokenizer)
 - finish abstract syntax tree generation
     - expression & operators handling
 - ast generation unused literals handling
@@ -14,6 +13,7 @@
 
 # done
 
+- new lines are not counted when creating comment and string tokens (tokenizer)
 - whitespace tokenizer context member makes no sense
 - make wrappers single character, not string, to apply some optimalization (since we leave universality)
 - remove operators and keyword parsing from tokenizer (we have no predefined stuff)

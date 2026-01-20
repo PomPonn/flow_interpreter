@@ -12,22 +12,10 @@ static fl_uint _fl_tok_count_tokens(fl_char *str);
 static fl_bool _fl_tok_handle_number(const fl_char **str);
 static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
 static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
-static fl_bool _fl_tok_handle_wrapper(const fl_char **str);
-static fl_bool _fl_tok_handle_escapement(const fl_char **str);
-static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *nls_counter);
+static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
+static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter);
 
 // --- IMPLEMENTATIONS ---
-
-static fl_bool _fl_tok_handle_escapement(const fl_char **str)
-{
-    if (_fl_tok_handle_wrapper(str))
-        return FL_TRUE;
-
-    if (_fl_tok_handle_number(str))
-        return FL_TRUE;
-
-    return FL_FALSE;
-}
 
 static fl_bool _fl_tok_handle_number(const fl_char **str)
 {
@@ -72,7 +60,7 @@ static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
     return res;
 }
 
-static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
+static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
 {
     const fl_char *ptr = *str;
 
@@ -87,13 +75,19 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
 
             for (fl_size j = 0; ptr[j]; j++)
             {
-                if (*ptr == wrapper && !_fl_tok_is_char_escaped(ptr, j))
+                if (*ptr == FL_CHR_NL)
+                {
+                    (*line_counter)++;
+                    (*column_counter) = 0;
+                }
+                else if (*ptr == wrapper && !_fl_tok_is_char_escaped(ptr, j))
                 {
                     *str = ptr + 1;
                     return FL_TRUE;
                 }
 
                 ptr++;
+                (*column_counter)++;
             }
         }
     }
@@ -105,7 +99,7 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str)
 // returned token is a static string
 // return "\n" or "\0" if no newline was found (which means ws should be completely skipped)
 // otherwise returns FL_NULL
-static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *nls_counter)
+static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter)
 {
     fl_char *ptr = token_start + 1;
 
@@ -114,7 +108,7 @@ static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_p
         while (fl_chr_is_any(*ptr, FL_WHITESPACE))
         {
             if (*ptr == FL_CHR_NL)
-                (*nls_counter)++;
+                (*line_counter)++;
             ptr++;
         }
         *next_pos = ptr;
@@ -189,20 +183,34 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
         {
             // not meaningful whitespace, ignore
             token_start = next_pos;
+
+            if (column != FL_NULL)
+                *column = next_column;
         }
     }
 
-    if (_fl_tok_handle_escapement(&next_pos))
+    if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
+    {
+        escape_char = *next_pos;
+        *next_pos = '\0';
+        next_pos++;
+
+        return token_start;
+    }
+
+    if (_fl_tok_handle_number(&next_pos))
     {
         goto __std_return;
     }
 
+    // end if is pointing at delim
     if (fl_chr_is_any(*next_pos, FL_ORDERED_DELIMS))
     {
         next_pos++;
         goto __std_return;
     }
 
+    // find ending position for this token
     next_pos = fl_str_find_any(next_pos + 1, FL_ORDERED_DELIMS);
 
     if (!next_pos)
