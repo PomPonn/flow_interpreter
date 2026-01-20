@@ -69,3 +69,5 @@ fl_bool fl_token_alias_in(fl_token *token, fl_token_alias aliases[], fl_uint cou
 fl_bool fl_token_type_in(fl_token *token, fl_token_type types[], fl_uint count);
 
 fl_char *fl_token_str_as_printable(fl_char *token_str);
+
+fl_bool fl_token_is_expr_killer(fl_token *token);

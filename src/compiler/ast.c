@@ -8,17 +8,22 @@
 
 // --- DEFINES ---
 
+// shorthand for accessing current token
+#define token tokens[*i]
+#define increment _fl_ast_increase_tok_index(i, tokens, tok_n)
+
 // --- STATIC FUNCTIONS DEFINITION ---
 
 static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
 static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static fl_void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static fl_void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_bool is_root);
 static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static fl_void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static fl_void _fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id);
+static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left);
 
 // --- IMPLEMENTATIONS ---
 
@@ -29,8 +34,7 @@ static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size 
 }
 
 // id chain (.body.hand) expression
-// TODO: should it include function calls (?)
-static fl_void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *node;
 
@@ -40,35 +44,37 @@ static fl_void _fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl
 
     // dot at the beginning means access to global context
     // so we mark it as a flag
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_DOT)
+    if (token.alias == FL_TOKEN_ALIAS_DOT)
     {
         fl_ast_node_init(&node, FL_AST_NODE_TYPE_FLAG, FL_NULL, parent);
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
     }
 
     // iterate over tokens
-    while (tokens[*i].type == FL_TOKEN_TYPE_IDENTIFIER)
+    while (token.type == FL_TOKEN_TYPE_IDENTIFIER)
     {
         // create id node
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(tokens[*i].value), parent);
+        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(token.value), parent);
 
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
 
         // check for chaining dot
-        if (tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
+        if (token.alias != FL_TOKEN_ALIAS_DOT)
             break;
 
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
     }
 
     // id chain handler failed
     if (parent->children == FL_NULL)
     {
-        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+        fl_err_throw(FL_ERR_AST_SYNTAX, token);
     }
+
+    return parent;
 }
 
-static fl_void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     assert(parent->type == FL_AST_NODE_TYPE_FUNCTION);
 
@@ -79,46 +85,55 @@ static fl_void _fl_ast_handle_func_header(fl_ast_node *parent, fl_token *tokens,
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_FUNC_HEADER, FL_NULL, parent);
     parent = node;
 
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_LPAREN)
+    if (token.alias == FL_TOKEN_ALIAS_LPAREN)
     {
         parenth = FL_TRUE;
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
     }
 
     do
     {
         // parameter id definition
 
-        if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER)
+        if (token.type != FL_TOKEN_TYPE_IDENTIFIER)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+            fl_err_throw(FL_ERR_AST_SYNTAX, token);
         }
 
         fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(tokens[*i].value), statement);
+        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(token.value), statement);
 
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
 
-        if (tokens[*i].alias == FL_TOKEN_ALIAS_COLON)
+        if (token.alias == FL_TOKEN_ALIAS_COLON)
         {
             // parameter type definition
 
-            _fl_ast_increase_tok_index(i, tokens, tok_n);
+            increment;
             _fl_ast_handle_type(statement, tokens, i, tok_n);
         }
-    } while (tokens[*i].alias == FL_TOKEN_ALIAS_COMMA);
+    } while (token.alias == FL_TOKEN_ALIAS_COMMA);
 
     if (parenth)
     {
-        if (tokens[*i].alias != FL_TOKEN_ALIAS_RPAREN)
+        if (token.alias != FL_TOKEN_ALIAS_RPAREN)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+            fl_err_throw(FL_ERR_AST_SYNTAX, token);
         }
         else
         {
-            _fl_ast_increase_tok_index(i, tokens, tok_n);
+            increment;
         }
     }
+}
+
+static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id)
+{
+    fl_ast_node *node;
+
+    // ...
+
+    return node;
 }
 
 // handles any kind of expression
@@ -133,16 +148,40 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_EXPRESSION, FL_NULL, parent);
     parent = node;
 
-    for (; *i < tok_n; (*i)++)
+    while (*i < tok_n)
     {
-        if (tokens[*i].type == FL_TOKEN_TYPE_LITERAL)
+        // if literal is first, we expect operator next
+        if (token.type == FL_TOKEN_TYPE_LITERAL)
         {
             fl_ast_literal_node_info *literal_info;
-            fl_ast_literal_node_info_init(&literal_info, tokens[*i].alias);
+            fl_ast_literal_node_info_init(&literal_info, token.alias);
 
             fl_ast_node_init(&node, FL_AST_NODE_TYPE_LITERAL, literal_info, parent);
 
-            _fl_ast_increase_tok_index(i, tokens, tok_n);
+            increment;
+
+            _fl_ast_handle_operator(parent, tokens, i, tok_n, node);
+        }
+        // identifier can be either left side of the operator or a function name
+        else if (token.type == FL_TOKEN_TYPE_IDENTIFIER)
+        {
+            node = _fl_ast_handle_id_chain(FL_NULL, tokens, i, tok_n);
+
+            // if lparen is next, it's definitely a function
+            if (token.alias == FL_TOKEN_ALIAS_LPAREN)
+            {
+                node = _fl_ast_handle_function_call(FL_NULL, tokens, i, tok_n, node);
+            }
+
+            // check if it is the end of expression
+            if (fl_delim_is_expr_killer(&token))
+            {
+                increment;
+                return;
+            }
+
+            // if it's not, there has to be operator
+            _fl_ast_handle_operator(parent, tokens, i, tok_n, node);
         }
     }
 
@@ -150,47 +189,47 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
     // _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
 
     // // check if type is being assigned
-    // if (tokens[*i].alias == FL_TOKEN_ALIAS_COLON)
+    // if (token.alias == FL_TOKEN_ALIAS_COLON)
     // {
-    //     _fl_ast_increase_tok_index(i, tokens, tok_n);
+    //     increment;
     //     // handle type setting
     //     _fl_ast_handle_type(parent, tokens, i, tok_n);
     // }
 
     // // check if it's a traditional function call
     // // (calls without parens are also valid)
-    // if (tokens[*i].alias == FL_TOKEN_ALIAS_LPAREN)
+    // if (token.alias == FL_TOKEN_ALIAS_LPAREN)
     // {
     // }
     // // check for some id next
-    // else if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
+    // else if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
     // {
     //     // error if it's absent
     //     // (it could be unused variable declaration, but let's ignore it for now)
-    //     fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+    //     fl_err_throw(FL_ERR_AST_SYNTAX, token);
     // }
 
     // _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
 
     // // there is another argument
-    // if (tokens[*i].alias == FL_TOKEN_ALIAS_COMMA)
+    // if (token.alias == FL_TOKEN_ALIAS_COMMA)
     // {
     // }
 
     // _fl_ast_handle_operator(parent, tokens, i, tok_n);
 
     // // check for some kind of 'operator' next (at this compilation stage it is interpreted as indentifier)
-    // if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
+    // if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
     // {
     //     // error if it's absent
-    //     fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+    //     fl_err_throw(FL_ERR_AST_SYNTAX, token);
     // }
 
     // // create operator node and process it's id
     // fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
     // _fl_ast_handle_id_chain(node, tokens, i, tok_n);
 
-    // if (tokens[*i].alias == FL_TOKEN_ALIAS_LBRACE)
+    // if (token.alias == FL_TOKEN_ALIAS_LBRACE)
     // {
     //     // handle block on the right side of the operator...
     //     _fl_ast_handle_block(parent, tokens, i, tok_n, FL_FALSE);
@@ -214,26 +253,29 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
     parent = node;
 
     // check for brace if block is not root
-    if (!is_root && tokens[*i].alias != FL_TOKEN_ALIAS_LBRACE)
+    if (!is_root)
     {
-        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
-    }
-    else
-    {
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        if (token.alias != FL_TOKEN_ALIAS_LBRACE)
+        {
+            fl_err_throw(FL_ERR_AST_SYNTAX, token);
+        }
+        else
+        {
+            increment;
+        }
     }
 
     // iterate over tokens
-    for (; *i < tok_n; (*i)++)
+    while (*i < tok_n)
     {
-        switch (tokens[*i].type)
+        switch (token.type)
         {
         // we ignore comments, if they were present for some reason
         // (they should be removed before AST generation process)
         case FL_TOKEN_TYPE_COMMENT:
             break;
         case FL_TOKEN_TYPE_DELIMITER:
-            switch (tokens[*i].alias)
+            switch (token.alias)
             {
             // inner block to handle
             case FL_TOKEN_ALIAS_LBRACE:
@@ -244,15 +286,17 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
             // (since nested braces will be handled recursively)
             case FL_TOKEN_ALIAS_RBRACE:
                 if (!is_root)
-                    return;
+                    continue;
                 else
-                    fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+                    fl_err_throw(FL_ERR_AST_SYNTAX, token);
+            case FL_TOKEN_ALIAS_DOT:
+                _fl_ast_handle_expression(parent, tokens, i, tok_n);
+                break;
             default:
                 break;
             }
             break;
         case FL_TOKEN_TYPE_IDENTIFIER:
-            // handle expression
             _fl_ast_handle_expression(parent, tokens, i, tok_n);
             break;
         case FL_TOKEN_TYPE_LITERAL:
@@ -264,7 +308,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
             }
 
             // t. b. c.
-            switch (tokens[*i].alias)
+            switch (token.alias)
             {
             case FL_TOKEN_ALIAS_STRING:
                 break;
@@ -276,18 +320,18 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
     }
 }
 
-static fl_void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
     fl_ast_node *func_node;
 
     fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent);
 
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_LPAREN || tokens[*i].type == FL_TOKEN_TYPE_IDENTIFIER)
+    if (token.alias == FL_TOKEN_ALIAS_LPAREN || token.type == FL_TOKEN_TYPE_IDENTIFIER)
     {
-        _fl_ast_handle_func_header(func_node, tokens, i, tok_n);
+        _fl_ast_handle_function_header(func_node, tokens, i, tok_n);
     }
 
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_LBRACE)
+    if (token.alias == FL_TOKEN_ALIAS_LBRACE)
     {
         // function block
         _fl_ast_handle_block(func_node, tokens, i, tok_n, FL_FALSE);
@@ -303,21 +347,91 @@ static fl_void _fl_ast_handle_func(fl_ast_node *parent, fl_token *tokens, fl_siz
     }
 }
 
-static fl_void _fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left)
 {
+    fl_ast_node *node;
 
     // check for some kind of 'operator' next (at this compilation stage it is interpreted as indentifier)
-    // if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
+    if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
+    {
+        // error if it's absent
+        fl_err_throw(FL_ERR_AST_SYNTAX, token);
+    }
+
+    // create operator node
+    fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
+    // process operator id
+    _fl_ast_handle_id_chain(node, tokens, i, tok_n);
+    // add left side of the operator as a child
+    fl_ast_node_add_child(node, left);
+
+    if (token.alias == FL_TOKEN_ALIAS_LBRACE)
+    {
+        // handle block on the right side of the operator...
+        _fl_ast_handle_block(node, tokens, i, tok_n, FL_FALSE);
+    }
+    else
+    {
+        // ... else handle expression
+        _fl_ast_handle_expression(node, tokens, i, tok_n);
+    }
+
+    return node;
+}
+
+static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+{
+    // fl_ast_node *node;
+
+    // // init parent (statement) node
+    // fl_ast_node_init(&node, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
+    // parent = node;
+
+    // // check for id chain on beginning
+    // _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
+
+    // // check if type is being assigned
+    // if (token.alias == FL_TOKEN_ALIAS_COLON)
+    // {
+    //     increment;
+    //     // handle type setting
+    //     _fl_ast_handle_type(parent, tokens, i, tok_n);
+    // }
+
+    // // check if it's a traditional function call
+    // // (calls without parens are also valid)
+    // if (token.alias == FL_TOKEN_ALIAS_LPAREN)
+    // {
+    // }
+    // // check for some id next
+    // else if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
     // {
     //     // error if it's absent
-    //     fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+    //     // (it could be unused variable declaration, but let's ignore it for now)
+    //     fl_err_throw(FL_ERR_AST_SYNTAX, token);
+    // }
+
+    // _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
+
+    // // there is another argument
+    // if (token.alias == FL_TOKEN_ALIAS_COMMA)
+    // {
+    // }
+
+    // _fl_ast_handle_operator(parent, tokens, i, tok_n);
+
+    // // check for some kind of 'operator' next (at this compilation stage it is interpreted as indentifier)
+    // if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
+    // {
+    //     // error if it's absent
+    //     fl_err_throw(FL_ERR_AST_SYNTAX, token);
     // }
 
     // // create operator node and process it's id
     // fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
     // _fl_ast_handle_id_chain(node, tokens, i, tok_n);
 
-    // if (tokens[*i].alias == FL_TOKEN_ALIAS_LBRACE)
+    // if (token.alias == FL_TOKEN_ALIAS_LBRACE)
     // {
     //     // handle block on the right side of the operator...
     //     _fl_ast_handle_block(parent, tokens, i, tok_n, FL_FALSE);
@@ -327,70 +441,6 @@ static fl_void _fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl
     //     // ... else handle expression
     //     _fl_ast_handle_expression(parent, tokens, i, tok_n);
     // }
-}
-
-static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
-{
-    fl_ast_node *node;
-
-    // init parent (statement) node
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
-    parent = node;
-
-    // check for id chain on beginning
-    _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
-
-    // check if type is being assigned
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_COLON)
-    {
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
-        // handle type setting
-        _fl_ast_handle_type(parent, tokens, i, tok_n);
-    }
-
-    // check if it's a traditional function call
-    // (calls without parens are also valid)
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_LPAREN)
-    {
-    }
-    // check for some id next
-    else if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
-    {
-        // error if it's absent
-        // (it could be unused variable declaration, but let's ignore it for now)
-        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
-    }
-
-    _fl_ast_handle_id_chain(parent, tokens, i, tok_n);
-
-    // there is another argument
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_COMMA)
-    {
-    }
-
-    _fl_ast_handle_operator(parent, tokens, i, tok_n);
-
-    // check for some kind of 'operator' next (at this compilation stage it is interpreted as indentifier)
-    if (tokens[*i].type != FL_TOKEN_TYPE_IDENTIFIER && tokens[*i].alias != FL_TOKEN_ALIAS_DOT)
-    {
-        // error if it's absent
-        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
-    }
-
-    // create operator node and process it's id
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
-    _fl_ast_handle_id_chain(node, tokens, i, tok_n);
-
-    if (tokens[*i].alias == FL_TOKEN_ALIAS_LBRACE)
-    {
-        // handle block on the right side of the operator...
-        _fl_ast_handle_block(parent, tokens, i, tok_n, FL_FALSE);
-    }
-    else
-    {
-        // ... else handle expression
-        _fl_ast_handle_expression(parent, tokens, i, tok_n);
-    }
 }
 
 // handles type expression (part after colon in variable declaration)
@@ -404,17 +454,17 @@ static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_siz
 
     // handle array dimensions (if any)
     fl_uint dimensions = 0;
-    for (; tokens[*i].alias == FL_TOKEN_ALIAS_LBRACKET; dimensions++)
+    for (; token.alias == FL_TOKEN_ALIAS_LBRACKET; dimensions++)
     {
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
 
         // throw error if bracket is not closed
-        if (tokens[*i].alias != FL_TOKEN_ALIAS_RBRACKET)
+        if (token.alias != FL_TOKEN_ALIAS_RBRACKET)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*i]);
+            fl_err_throw(FL_ERR_AST_SYNTAX, token);
         }
 
-        _fl_ast_increase_tok_index(i, tokens, tok_n);
+        increment;
         dimensions++;
     }
 

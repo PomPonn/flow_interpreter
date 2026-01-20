@@ -1,5 +1,6 @@
 ## todo
 
+- decide whether ast_handle_operator function should return created node
 - finish abstract syntax tree generation
     - expression & operators handling
 - ast generation unused literals handling

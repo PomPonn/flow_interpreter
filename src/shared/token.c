@@ -123,3 +123,9 @@ static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 {
     return tok->value[0] == wrapper && tok->value[fl_str_len(tok->value) - 1] == wrapper;
 }
+
+fl_bool fl_token_is_expr_killer(fl_token *token)
+{
+    fl_char chr = *token->value;
+    return chr == ';' || chr == '\n';
+}
