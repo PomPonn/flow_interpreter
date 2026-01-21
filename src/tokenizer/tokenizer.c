@@ -95,9 +95,9 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter
     return FL_FALSE;
 }
 
-// returns next token if current char is whitespace and reduces any following whitespace to a single delimeter
+// reduces any following whitespace to a single delimeter
 // returned token is a static string
-// return "\n" or "\0" if no newline was found (which means ws should be completely skipped)
+// returns "\n" or " ", depending on type of following whitespace
 // otherwise returns FL_NULL
 static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter)
 {
@@ -115,15 +115,15 @@ static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_p
 
         return "\n";
     }
-    else if (*token_start == ' ' || *token_start == '\t' || *token_start == '\r')
+    else if (*token_start == ' ' || *token_start == '\t')
     {
-        while (fl_chr_is_any(*ptr, " \t\r"))
+        while (fl_chr_is_any(*ptr, " \t"))
         {
             ptr++;
         }
         *next_pos = ptr;
 
-        return "\0";
+        return " ";
     }
 
     return FL_NULL;
@@ -173,20 +173,14 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     {
         next_column += next_pos - token_start;
 
-        if (*ws == FL_CHR_NL)
-        {
-            escape_char = '\0';
-            next_column = 0;
-            return ws;
-        }
-        else if (*ws == '\0')
-        {
-            // not meaningful whitespace, ignore
-            token_start = next_pos;
+        escape_char = '\0';
 
-            if (column != FL_NULL)
-                *column = next_column;
-        }
+        if (*ws == FL_CHR_NL)
+            next_column = 0;
+        else if (*ws == ' ' && column != FL_NULL)
+            *column = next_column;
+
+        return ws;
     }
 
     if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))

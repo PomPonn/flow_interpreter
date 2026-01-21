@@ -7,7 +7,7 @@
 
 // --- DEFINES ---
 
-#define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr))
+#define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + FL_TOKEN_ALIAS_SPACE)
 
 #define _fl_check_var_arr(arr, count, type, val) \
     for (fl_uint i = 0; i < count; i++)          \
@@ -77,7 +77,7 @@ static fl_bool _fl_token_deduce(fl_token *tok)
 {
     assert(tok != FL_NULL);
 
-    fl_char first_chr = *(tok->value);
+    fl_char first_chr = (tok->value) ? *(tok->value) : '\0';
 
     // is delim
     if (fl_str_find(FL_ORDERED_DELIMS, first_chr))
@@ -126,6 +126,10 @@ static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 
 fl_bool fl_token_is_expr_killer(fl_token *token)
 {
-    fl_char chr = *token->value;
-    return chr == ';' || chr == '\n';
+    return token->alias == FL_TOKEN_ALIAS_NL || token->alias == FL_TOKEN_ALIAS_SEMICOLON;
+}
+
+fl_bool fl_token_is_id_like(fl_token *token)
+{
+    return token->type == FL_TOKEN_TYPE_IDENTIFIER || token->alias == FL_TOKEN_ALIAS_DOT;
 }

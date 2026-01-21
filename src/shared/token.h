@@ -6,14 +6,14 @@
 #define FL_CHR_NL '\n'
 #define FL_CHR_ACCESS_STR "."
 
-#define _fl_var_arr(type, ...) \
+#define __fl_var_arr(type, ...) \
     (type[]){__VA_ARGS__}, sizeof((type[]){__VA_ARGS__}) / sizeof(type)
 
-#define fl_token_alias_arr(...) \
-    _fl_var_arr(fl_token_alias, __VA_ARGS__)
+#define _fl_token_alias_arr(...) \
+    __fl_var_arr(fl_token_alias, __VA_ARGS__)
 
-#define fl_token_type_arr(...) \
-    _fl_var_arr(fl_token_type, __VA_ARGS__)
+#define _fl_token_type_arr(...) \
+    __fl_var_arr(fl_token_type, __VA_ARGS__)
 
 enum _fl_token_type
 {
@@ -30,9 +30,8 @@ enum _fl_token_alias
     // delimiters
     // the order reflects indexes in
     // FL_ORDERED_DELIMS declared in shared/delims.h
-    // FL_TOKEN_ALIAS_NONE represents space too
-    // for compatibility with tokenizer
     FL_TOKEN_ALIAS_NONE,
+    FL_TOKEN_ALIAS_SPACE,
     FL_TOKEN_ALIAS_COMMA,     // ,
     FL_TOKEN_ALIAS_DOT,       // .
     FL_TOKEN_ALIAS_COLON,     // :
@@ -71,3 +70,5 @@ fl_bool fl_token_type_in(fl_token *token, fl_token_type types[], fl_uint count);
 fl_char *fl_token_str_as_printable(fl_char *token_str);
 
 fl_bool fl_token_is_expr_killer(fl_token *token);
+
+fl_bool fl_token_is_id_like(fl_token *token);

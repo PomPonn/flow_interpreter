@@ -163,7 +163,7 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
             _fl_ast_handle_operator(parent, tokens, i, tok_n, node);
         }
         // identifier can be either left side of the operator or a function name
-        else if (token.type == FL_TOKEN_TYPE_IDENTIFIER)
+        else if (fl_token_is_id_like(&token))
         {
             node = _fl_ast_handle_id_chain(FL_NULL, tokens, i, tok_n);
 
@@ -174,7 +174,7 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
             }
 
             // check if it is the end of expression
-            if (fl_delim_is_expr_killer(&token))
+            if (fl_token_is_expr_killer(&token))
             {
                 increment;
                 return;

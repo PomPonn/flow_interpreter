@@ -33,14 +33,13 @@ int main()
     tokens = fl_opt_optimalize(tokens, tokens_num, &tokens_num);
 
     // fl_prt_print_tokens_joined(tokens, tokens_num);
-    // printf("[old] %zu\n", old_num);
-    // fl_prt_print_token_entries(tokens, tokens_num);
+    printf("[old] %zu\n", old_num);
+    fl_prt_print_token_entries(tokens, tokens_num);
 
-    fl_ast_node *root;
-    fl_ast_gen(&root, tokens, tokens_num);
-
-    printf("\n");
-    fl_prt_print_ast_tree(root, 1);
+    // fl_ast_node *root;
+    // fl_ast_gen(&root, tokens, tokens_num);
+    // printf("\n");
+    // fl_prt_print_ast_tree(root, 1);
 
     fl_tok_free_tokens(tokens, tokens_num);
 

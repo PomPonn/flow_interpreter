@@ -21,7 +21,7 @@ main: func => {
   test4 = (4 + 2) * 6 - fun2(4);
 
   # function call #
-  obj.some_function 2, 3; # without parens #
+  obj.some_function 2; # without parens (only one argument is valid) #
   # vs #
   # unlabeled operator #
   # it is not a statement #

@@ -1,5 +1,8 @@
 ## todo
 
+- write profiler
+- revise delimeters (it seems like some of them will be operators)
+- fix optimalizer space handling
 - decide whether ast_handle_operator function should return created node
 - finish abstract syntax tree generation
     - expression & operators handling
@@ -8,7 +11,7 @@
 
 # optional
 
-- fl_token_alias_arr and fl_token_type_arr is unused for now (consider removing it in the future)
+- \_fl_token_alias_arr and \_fl_token_type_arr is unused for now (consider removing it in the future)
 - print errors to different destinations, eg. logs
 
 # done
