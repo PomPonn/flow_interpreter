@@ -8,6 +8,7 @@
     - expression & operators handling
 - ast generation unused literals handling
 - ast generation unused var declaration (in fl_ast_handle_statement) handling
+- implement time measurement on unix systems
 
 # optional
 
