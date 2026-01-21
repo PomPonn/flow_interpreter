@@ -5,6 +5,7 @@
 #include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
+#include "tools/profiler.h"
 
 int main()
 {
@@ -30,11 +31,13 @@ int main()
 
     fl_size old_num = tokens_num;
 
-    tokens = fl_opt_optimalize(tokens, tokens_num, &tokens_num);
+    fl_prof_profile(fl_opt_optimalize, tokens, tokens_num, &tokens_num);
+
+    // tokens = fl_opt_optimalize(tokens, tokens_num, &tokens_num);
 
     // fl_prt_print_tokens_joined(tokens, tokens_num);
-    printf("[old] %zu\n", old_num);
-    fl_prt_print_token_entries(tokens, tokens_num);
+    // printf("[old] %lu\n", old_num);
+    // fl_prt_print_token_entries(tokens, tokens_num);
 
     // fl_ast_node *root;
     // fl_ast_gen(&root, tokens, tokens_num);

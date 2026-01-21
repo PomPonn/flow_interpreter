@@ -85,7 +85,7 @@ fl_void fl_err_execute()
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {
         printf(
-            "Error in line %zu, column %zu near token '%s':\n%s\n",
+            "Error in line %lu, column %lu near token '%s':\n%s\n",
             _FL_ERRORS[i].line,
             _FL_ERRORS[i].column,
             fl_token_str_as_printable(_FL_ERRORS[i].token),

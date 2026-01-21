@@ -57,11 +57,11 @@ static fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
 
 fl_void fl_prt_print_token_entries(fl_token *tokens, fl_size n)
 {
-    printf("<%zu entries>\n", n);
+    printf("<%lu entries>\n", n);
 
     for (fl_size i = 0; i < n; i++)
     {
-        printf("[%zu, %zu] ", tokens[i].line + 1, tokens[i].column + 1);
+        printf("[%lu, %lu] ", tokens[i].line + 1, tokens[i].column + 1);
         printf("'%s'\n", fl_token_str_as_printable(tokens[i].value));
     }
 }

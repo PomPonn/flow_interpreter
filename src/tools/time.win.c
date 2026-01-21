@@ -1,0 +1,26 @@
+#ifdef _WIN32
+#include "tools/time.h"
+
+#include <assert.h>
+#include <windows.h>
+
+fl_timestamp fl_time_get()
+{
+    LARGE_INTEGER ticks;
+    assert(QueryPerformanceCounter(&ticks));
+    return ticks.QuadPart;
+}
+
+fl_double fl_time_diff(fl_timestamp start, fl_timestamp end)
+{
+    static LARGE_INTEGER frequency = {.QuadPart = 0};
+
+    if (!frequency.QuadPart)
+    {
+        assert(QueryPerformanceFrequency(&frequency));
+    }
+
+    return (fl_double)(end - start) / frequency.QuadPart;
+}
+
+#endif
