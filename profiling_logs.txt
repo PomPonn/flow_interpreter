@@ -1,6 +1,0 @@
-# main
-fl_file_read = ~147us
-fl_tok_tokenize = ~67us
-fl_opt_optimalize = ~12us
-# additional
-fl_prt_print_token_entries = ~12400us

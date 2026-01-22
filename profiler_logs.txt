@@ -1,0 +1,36 @@
+[Thu Jan 22 21:07:31 2026]
+Profile for: 'fl_file_read(filename)'
+Samples: 10000 calls
+Input: 694 chars
+Average: 61.09 microseconds
+Minimum: 54.40 microseconds
+Maximum: 318.80 microseconds
+Total: 610.90 miliseconds (610895.20 microseconds)
+
+[Thu Jan 22 21:08:22 2026]
+Profile for: 'fl_tok_tokenize(file_content, &tokens_num)'
+Samples: 10000 calls
+Input: 183 tokens
+Average: 46.78 microseconds
+Minimum: 39.80 microseconds
+Maximum: 362.00 microseconds
+Total: 467.79 miliseconds (467786.00 microseconds)
+
+[Thu Jan 22 21:08:22 2026]
+Profile for: 'fl_opt_optimalize(tokens, tokens_num, &tokens_num)'
+Samples: 1 calls
+Input: 183 tokens
+Average: 28.30 microseconds
+Minimum: 28.30 microseconds
+Maximum: 28.30 microseconds
+Total: 0.03 miliseconds (28.30 microseconds)
+
+[Thu Jan 22 21:17:51 2026]
+Profile for: 'fl_tok_free_tokens(tokens, tokens_num)'
+Samples: 1 calls
+Input: 142 tokens
+Average: 19.40 microseconds
+Minimum: 19.40 microseconds
+Maximum: 19.40 microseconds
+Total: 0.02 miliseconds (19.40 microseconds)
+

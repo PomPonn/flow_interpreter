@@ -8,4 +8,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_library(FlowInterpreter STATIC ${SOURCES})
 
 add_executable(Example ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
+
+add_compile_definitions(_PROFILER_LOGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/profiler_logs.txt")
+
 target_link_libraries(Example FlowInterpreter)

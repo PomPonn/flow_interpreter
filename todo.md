@@ -1,5 +1,6 @@
 ## todo
 
+- (optimalization) consider use of inline functions
 - write profiler
 - revise delimeters (it seems like some of them will be operators)
 - fix optimalizer space handling
