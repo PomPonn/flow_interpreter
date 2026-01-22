@@ -1,15 +1,14 @@
 ## todo
 
-- (optimalization) consider use of inline functions
-- write profiler
 - revise delimeters (it seems like some of them will be operators)
 - fix optimalizer space handling
 - decide whether ast_handle_operator function should return created node
-- finish abstract syntax tree generation
+- abstract syntax tree generation
     - expression & operators handling
-- ast generation unused literals handling
-- ast generation unused var declaration (in fl_ast_handle_statement) handling
+    - unused literals handling
+    - unused var declaration (in fl_ast_handle_statement) handling
 - implement time measurement on unix systems
+- (optimalization) consider use of inline functions
 
 # optional
 
@@ -18,6 +17,7 @@
 
 # done
 
+- write profiler
 - new lines are not counted when creating comment and string tokens (tokenizer)
 - whitespace tokenizer context member makes no sense
 - make wrappers single character, not string, to apply some optimalization (since we leave universality)
