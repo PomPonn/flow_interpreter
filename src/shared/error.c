@@ -19,11 +19,11 @@ fl_size _FL_ERRORS_NUM = 0;
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
-static const fl_char *_fl_err_code_to_message(fl_err_code code);
+static inline const fl_char *_fl_err_code_to_message(fl_err_code code);
 
 // --- IMPLEMENTATIONS ---
 
-static const fl_char *_fl_err_code_to_message(fl_err_code code)
+static inline const fl_char *_fl_err_code_to_message(fl_err_code code)
 {
     switch (code)
     {

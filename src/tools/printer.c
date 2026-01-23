@@ -4,11 +4,11 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static fl_void _fl_ptr_print_ast_node(fl_ast_node *node);
+static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node);
 
 // --- IMPLEMENTATIONS ---
 
-static fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
+static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
 {
     printf("> ");
     switch (node->type)

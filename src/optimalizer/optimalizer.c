@@ -3,7 +3,7 @@
 #include "shared/token.h"
 #include "shared/memory.h"
 
-static fl_token *fl_opt_peek_token(fl_token *tokens, fl_size i, fl_size tokens_num)
+static inline fl_token *_fl_opt_peek_token(fl_token *tokens, fl_size i, fl_size tokens_num)
 {
     if (++i < tokens_num)
     {
@@ -28,7 +28,7 @@ fl_token *fl_opt_optimalize(fl_token *tokens, fl_size tokens_num, fl_size *opted
 
     for (fl_size i = 0; i < tokens_num; i++)
     {
-        peek = fl_opt_peek_token(tokens, i, tokens_num);
+        peek = _fl_opt_peek_token(tokens, i, tokens_num);
 
         if (tokens[i].type == FL_TOKEN_TYPE_COMMENT)
         {
@@ -58,7 +58,7 @@ fl_token *fl_opt_optimalize(fl_token *tokens, fl_size tokens_num, fl_size *opted
 
     for (fl_size i = 0, j = 0; i < tokens_num; i++)
     {
-        peek = fl_opt_peek_token(tokens, i, tokens_num);
+        peek = _fl_opt_peek_token(tokens, i, tokens_num);
 
         if (tokens[i].type == FL_TOKEN_TYPE_COMMENT)
             continue;

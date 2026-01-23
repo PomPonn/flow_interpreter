@@ -8,10 +8,10 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static fl_uint _fl_tok_count_tokens(fl_char *str);
+static inline fl_size _fl_tok_count_tokens(fl_char *str);
 static fl_bool _fl_tok_handle_number(const fl_char **str);
 static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
-static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
+static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
 static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
 static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter);
 
@@ -47,7 +47,7 @@ static fl_bool _fl_tok_handle_number(const fl_char **str)
     return FL_FALSE;
 }
 
-static fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
+static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
 {
     if (chr_index == 0)
         return FL_FALSE;
@@ -229,9 +229,9 @@ __std_return:
     return token_start;
 }
 
-static fl_uint _fl_tok_count_tokens(fl_char *str)
+static inline fl_size _fl_tok_count_tokens(fl_char *str)
 {
-    fl_uint count = 0;
+    fl_size count = 0;
 
     if (_fl_tok_next_token(str, FL_NULL, FL_NULL))
         count++;

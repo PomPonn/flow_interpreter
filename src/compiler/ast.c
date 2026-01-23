@@ -10,11 +10,12 @@
 
 // shorthand for accessing current token
 #define token tokens[*i]
+// shorthand for increasing current token index safely
 #define increment _fl_ast_increase_tok_index(i, tokens, tok_n)
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
-static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
+static inline fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
 static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_bool is_root);
@@ -27,7 +28,7 @@ static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *token
 
 // --- IMPLEMENTATIONS ---
 
-static fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n)
+static inline fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n)
 {
     if ((*i)++ >= tok_n)
         fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*(i - 1)]);

@@ -17,8 +17,8 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static fl_bool _fl_token_deduce(fl_token *tok);
-static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
+static inline fl_bool _fl_token_deduce(fl_token *tok);
+static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 // --- IMPLEMENTATIONS ---
 
@@ -73,7 +73,7 @@ fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size col
     return _fl_token_deduce(token);
 }
 
-static fl_bool _fl_token_deduce(fl_token *tok)
+static inline fl_bool _fl_token_deduce(fl_token *tok)
 {
     assert(tok != FL_NULL);
 
@@ -119,7 +119,7 @@ static fl_bool _fl_token_deduce(fl_token *tok)
     return FL_TRUE;
 }
 
-static fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
+static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 {
     return tok->value[0] == wrapper && tok->value[fl_str_len(tok->value) - 1] == wrapper;
 }
