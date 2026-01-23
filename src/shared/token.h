@@ -34,7 +34,6 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_SPACE,
     FL_TOKEN_ALIAS_COMMA,     // ,
     FL_TOKEN_ALIAS_DOT,       // .
-    FL_TOKEN_ALIAS_COLON,     // :
     FL_TOKEN_ALIAS_SEMICOLON, // ;
     FL_TOKEN_ALIAS_LPAREN,    // (
     FL_TOKEN_ALIAS_RPAREN,    // )

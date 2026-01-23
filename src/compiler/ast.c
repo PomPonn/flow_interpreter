@@ -105,13 +105,14 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tok
 
         increment;
 
-        if (token.alias == FL_TOKEN_ALIAS_COLON)
-        {
-            // parameter type definition
+        // TODO: to revise
+        // if (token.alias == FL_TOKEN_ALIAS_COLON)
+        // {
+        //     // parameter type definition
 
-            increment;
-            _fl_ast_handle_type(statement, tokens, i, tok_n);
-        }
+        //     increment;
+        //     _fl_ast_handle_type(statement, tokens, i, tok_n);
+        // }
     } while (token.alias == FL_TOKEN_ALIAS_COMMA);
 
     if (parenth)

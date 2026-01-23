@@ -24,7 +24,6 @@ main: func => {
   obj.some_function 2; # without parens (only one argument is valid) #
   # vs #
   # unlabeled operator #
-  # it is not a statement #
   test1 .add test2
 
   # else-if chaininig #

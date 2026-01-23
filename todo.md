@@ -1,8 +1,6 @@
 ## todo
 
-- revise delimeters (it seems like some of them will be operators)
 - fix optimalizer space handling
-- decide whether ast_handle_operator function should return created node
 - abstract syntax tree generation
     - expression & operators handling
     - unused literals handling
@@ -17,6 +15,7 @@
 
 # done
 
+- revise delimeters (it seems like some of them will be operators)
 - write profiler
 - new lines are not counted when creating comment and string tokens (tokenizer)
 - whitespace tokenizer context member makes no sense

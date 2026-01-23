@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#define _FL_BUFFER_SIZE 256
+#define BUFFER_SIZE 512
 
-fl_char buffer[_FL_BUFFER_SIZE];
+fl_char buffer[BUFFER_SIZE];
 
 fl_void _fl_prof_log(
     const char *log_header, const char *filename,
