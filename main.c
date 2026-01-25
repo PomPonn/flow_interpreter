@@ -8,6 +8,8 @@
 
 #include "tools/profiler.h"
 
+fl_char *escapes[] = {":", "?"};
+
 int main()
 {
     const char *filename = "../../../../test.fl";

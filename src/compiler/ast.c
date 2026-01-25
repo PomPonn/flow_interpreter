@@ -10,13 +10,14 @@
 
 // shorthand for accessing current token
 #define token tokens[*i]
+
 // shorthand for increasing current token index safely
 #define increment _fl_ast_increase_tok_index(i, tokens, tok_n)
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
 static inline fl_void _fl_ast_increase_tok_index(fl_size *i, fl_token *tokens, fl_size tok_n);
-static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
+static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_bool is_root);
 static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
@@ -112,7 +113,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tok
         //     // parameter type definition
 
         //     increment;
-        //     _fl_ast_handle_type(statement, tokens, i, tok_n);
+        //     _fl_ast_handle_type_dimensions(statement, tokens, i, tok_n);
         // }
     } while (token.alias == FL_TOKEN_ALIAS_COMMA);
 
@@ -155,8 +156,8 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
         // if literal is first, we expect operator next
         if (token.type == FL_TOKEN_TYPE_LITERAL)
         {
-            fl_ast_literal_node_info *literal_info;
-            fl_ast_literal_node_info_init(&literal_info, token.alias);
+            fl_ast_literal_info *literal_info;
+            fl_ast_literal_info_init(&literal_info, token.alias);
 
             fl_ast_node_init(&node, FL_AST_NODE_TYPE_LITERAL, literal_info, parent);
 
@@ -173,6 +174,17 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
             if (token.alias == FL_TOKEN_ALIAS_LPAREN)
             {
                 node = _fl_ast_handle_function_call(FL_NULL, tokens, i, tok_n, node);
+            }
+            // lbrace after id means that we have a dimensions qualifier or array access
+            else if (token.alias == FL_TOKEN_ALIAS_LBRACE)
+            {
+                increment;
+                // if next token is RBRACE it has to be dimensions qualifier
+                if (token.alias == FL_TOKEN_ALIAS_RBRACE)
+                {
+                    (*i)--;
+                    _fl_ast_handle_type_dimensions(node, tokens, i, tok_n);
+                }
             }
 
             // check if it is the end of expression
@@ -195,7 +207,7 @@ static fl_void _fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, 
     // {
     //     increment;
     //     // handle type setting
-    //     _fl_ast_handle_type(parent, tokens, i, tok_n);
+    //     _fl_ast_handle_type_dimensions(parent, tokens, i, tok_n);
     // }
 
     // // check if it's a traditional function call
@@ -353,7 +365,7 @@ static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *token
 {
     fl_ast_node *node;
 
-    // check for some kind of 'operator' next (at this compilation stage it is interpreted as indentifier)
+    // check for some kind of 'operator' next (at this compilation stage it is interpreted as an indentifier)
     if (token.type != FL_TOKEN_TYPE_IDENTIFIER && token.alias != FL_TOKEN_ALIAS_DOT)
     {
         // error if it's absent
@@ -397,7 +409,7 @@ static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, f
     // {
     //     increment;
     //     // handle type setting
-    //     _fl_ast_handle_type(parent, tokens, i, tok_n);
+    //     _fl_ast_handle_type_dimensions(parent, tokens, i, tok_n);
     // }
 
     // // check if it's a traditional function call
@@ -446,15 +458,9 @@ static fl_void _fl_ast_handle_statement(fl_ast_node *parent, fl_token *tokens, f
 }
 
 // handles type expression (part after colon in variable declaration)
-static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
+static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
-    fl_ast_node *type_node;
-    fl_ast_node_init(&type_node, FL_AST_NODE_TYPE_TYPE, FL_NULL, parent);
-
-    // check for id chain, which can resolve to type
-    _fl_ast_handle_id_chain(type_node, tokens, i, tok_n);
-
-    // handle array dimensions (if any)
+    // handle array dimensions
     fl_uint dimensions = 0;
     for (; token.alias == FL_TOKEN_ALIAS_LBRACKET; dimensions++)
     {
@@ -471,9 +477,9 @@ static fl_void _fl_ast_handle_type(fl_ast_node *parent, fl_token *tokens, fl_siz
     }
 
     // create type descriptor
-    fl_ast_type_node_info *type_info;
-    fl_ast_type_node_info_init(&type_info, dimensions);
-    type_node->data = type_info;
+    fl_ast_type_info *type_info;
+    fl_ast_type_info_init(&type_info, dimensions);
+    type_id->data = type_info;
 }
 
 // tries to generate abstract syntax tree from specified tokens
@@ -510,9 +516,9 @@ fl_void fl_ast_free(fl_ast_node *node)
     fl_mem_free(node);
 }
 
-fl_void fl_ast_type_node_info_init(fl_ast_type_node_info **info, fl_uint dimensions)
+fl_void fl_ast_type_info_init(fl_ast_type_info **info, fl_uint dimensions)
 {
-    fl_ast_type_node_info *i = fl_mem_alloc(sizeof(fl_ast_type_node_info));
+    fl_ast_type_info *i = fl_mem_alloc(sizeof(fl_ast_type_info));
 
     i->dimensions = dimensions;
 
@@ -566,21 +572,21 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
     current->next = node;
 }
 
-fl_void fl_ast_type_node_info_free(fl_ast_type_node_info *info)
+fl_void fl_ast_type_info_free(fl_ast_type_info *info)
 {
     fl_mem_free(info);
 }
 
-fl_void fl_ast_literal_node_info_init(fl_ast_literal_node_info **info, fl_ast_literal_type type)
+fl_void fl_ast_literal_info_init(fl_ast_literal_info **info, fl_ast_literal_type type)
 {
-    fl_ast_literal_node_info *i = fl_mem_alloc(sizeof(fl_ast_literal_node_info));
+    fl_ast_literal_info *i = fl_mem_alloc(sizeof(fl_ast_literal_info));
 
     i->literal_type = type;
 
     *info = i;
 }
 
-fl_void fl_ast_literal_node_info_free(fl_ast_literal_node_info *info)
+fl_void fl_ast_literal_info_free(fl_ast_literal_info *info)
 {
     fl_mem_free(info);
 }

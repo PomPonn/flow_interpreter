@@ -23,7 +23,7 @@ static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
         printf("<import>");
         break;
     case FL_AST_NODE_TYPE_TYPE:
-        printf("<type> [%u]", ((fl_ast_type_node_info *)node->data)->dimensions);
+        printf("<type> [%u]", ((fl_ast_type_info *)node->data)->dimensions);
         break;
     case FL_AST_NODE_TYPE_STATEMENT:
         printf("<statement>");
