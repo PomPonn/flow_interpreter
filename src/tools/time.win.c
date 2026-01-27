@@ -5,7 +5,7 @@
 
 fl_timestamp fl_time_get()
 {
-    LARGE_INTEGER ticks;
+    LARGE_INTEGER ticks = {.QuadPart = 0};
     assert(QueryPerformanceCounter(&ticks));
     return ticks.QuadPart;
 }

@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #include "tools/profiler.h"
 
 #include "tools/file.h"
@@ -27,7 +29,7 @@ fl_void _fl_prof_log(
 
     sprintf(
         buffer,
-        "[" __TIMESTAMP__ "]\n"
+        "[" __TIMESTAMP__ " (Debug)]\n"
         "Profile for: '%s'\n"
         "Samples: %u calls\n"
         "Input: %u %s\n"
@@ -40,3 +42,5 @@ fl_void _fl_prof_log(
 
     fl_file_append(filename, buffer);
 }
+
+#endif

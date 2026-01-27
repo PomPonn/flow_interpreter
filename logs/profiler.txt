@@ -33,4 +33,3 @@ Average: 19.40 microseconds
 Minimum: 19.40 microseconds
 Maximum: 19.40 microseconds
 Total: 0.02 miliseconds (19.40 microseconds)
-
