@@ -1,10 +1,12 @@
 # todo
 
+- cleanup tokenizer
 - abstract syntax tree generation
     - expression & operators handling
     - unused literals handling
     - unused var declaration (in fl_ast_handle_statement) handling
 - implement time measurement on unix systems
+- remember to implement convertion of literal info data to appropiate type
 - \_fl_token_alias_arr and \_fl_token_type_arr is unused for now (consider removing it in the future)
 
 # done

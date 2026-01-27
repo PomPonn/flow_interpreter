@@ -4,8 +4,6 @@
 #include "shared/str.h"
 #include "shared/delims.h"
 
-#include <assert.h>
-
 // --- STATIC FUNCTION DEFINITIONS ---
 
 static inline fl_size _fl_tok_count_tokens(fl_char *str);
@@ -69,26 +67,25 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter
         const fl_char wrapper = FL_WRAPPERS[i];
         ptr = *str;
 
-        if (*ptr == wrapper)
+        if (*ptr != wrapper)
+            continue;
+
+        ptr++;
+
+        for (fl_size j = 0; ptr[j]; j++)
         {
-            ptr++;
-
-            for (fl_size j = 0; ptr[j]; j++)
+            if (ptr[j] == FL_CHR_NL)
             {
-                if (*ptr == FL_CHR_NL)
-                {
-                    (*line_counter)++;
-                    (*column_counter) = 0;
-                }
-                else if (*ptr == wrapper && !_fl_tok_is_char_escaped(ptr, j))
-                {
-                    *str = ptr + 1;
-                    return FL_TRUE;
-                }
-
-                ptr++;
-                (*column_counter)++;
+                (*line_counter)++;
+                (*column_counter) = 0;
             }
+            else if (ptr[j] == wrapper && !_fl_tok_is_char_escaped(ptr, j))
+            {
+                *str = ptr + j + 1;
+                return FL_TRUE;
+            }
+
+            (*column_counter)++;
         }
     }
 
@@ -167,6 +164,10 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     // potential whitespace indicator
     fl_char *ws;
 
+    // return null if there is no content in string
+    if (!*token_start)
+        return FL_NULL;
+
     // reduce any whitespace to single delimeter
     // - space or newline
     if (ws = _fl_tok_handle_whitespace(token_start, &next_pos, &next_line))
@@ -186,8 +187,15 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
     {
         escape_char = *next_pos;
-        *next_pos = '\0';
-        next_pos++;
+        if (*next_pos == '\0')
+        {
+            next_pos = FL_NULL;
+        }
+        else
+        {
+            *next_pos = '\0';
+            next_pos++;
+        }
 
         return token_start;
     }

@@ -8,8 +8,6 @@
 
 // --- DEFINES ---
 
-#define SUPPRESS_ERRORS
-
 #define _MAX_ERROR_NUM 32
 
 // --- GLOBALS ---
@@ -70,7 +68,7 @@ fl_void fl_err_clear()
 fl_void fl_err_throw(fl_err_code code, fl_token bad_token)
 {
     // TODO: prevent memory leak here
-#ifndef SUPPRESS_ERRORS
+#if !_SUPPRESS_ERRORS
     fl_err_report(code, bad_token);
 
     fl_err_execute();
@@ -86,8 +84,8 @@ fl_void fl_err_execute()
     {
         printf(
             "Error in line %lu, column %lu near token '%s':\n%s\n",
-            _FL_ERRORS[i].line,
-            _FL_ERRORS[i].column,
+            _FL_ERRORS[i].line + 1,
+            _FL_ERRORS[i].column + 1,
             fl_token_str_as_printable(_FL_ERRORS[i].token),
             _fl_err_code_to_message(_FL_ERRORS[i].code));
     }

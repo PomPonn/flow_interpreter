@@ -1,7 +1,6 @@
 #ifdef _WIN32
 #include "tools/time.h"
 
-#include <assert.h>
 #include <windows.h>
 
 fl_timestamp fl_time_get()

@@ -8,7 +8,8 @@ and there is a contination
 "
 
 main : func => {
-
+  update (x plus (abs x));
+  create (sqrt 2)
   # expression no 0 (array literal) #
   some_arr : int[] = [1, 3, 5];
   # expression no 1 #

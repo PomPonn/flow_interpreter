@@ -2,7 +2,6 @@
 
 #include "shared/memory.h"
 
-#include <assert.h>
 #include <stdio.h>
 
 char *fl_file_read(const fl_char *filename)

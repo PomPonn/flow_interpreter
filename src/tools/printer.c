@@ -4,13 +4,21 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node);
+static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node);
+static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node);
 
 // --- IMPLEMENTATIONS ---
 
-static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
+static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
 {
-    printf("> ");
+    assert(literal_node->type == FL_AST_NODE_TYPE_LITERAL);
+
+    // temp
+    return (fl_char *)((fl_ast_literal_info *)literal_node->data)->data;
+}
+
+static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
+{
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_ROOT:
@@ -38,7 +46,7 @@ static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
         printf("<expression>");
         break;
     case FL_AST_NODE_TYPE_LITERAL:
-        printf("<literal> '%s'", (fl_char *)node->data);
+        printf("<literal> '%s'", _fl_prt_convert_literal(node));
         break;
     case FL_AST_NODE_TYPE_IDENTIFIER:
         printf("<id> '%s'", (fl_char *)node->data);
@@ -47,7 +55,10 @@ static inline fl_void _fl_ptr_print_ast_node(fl_ast_node *node)
         printf("<id chain>");
         break;
     case FL_AST_NODE_TYPE_OPERATOR:
-        printf("<operator> '%s'", (fl_char *)node->data);
+        printf("<operator>");
+        break;
+    case FL_AST_NODE_TYPE_CALL:
+        printf("<call>");
         break;
     default:
         printf("<node>");
@@ -76,19 +87,16 @@ fl_void fl_prt_print_tokens_joined(fl_token *tokens, fl_size n)
 
 fl_void fl_prt_print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
 {
-    for (fl_ushort i = 0; i < nest_level - 1; i++)
+    for (fl_ushort i = 0; i < nest_level; i++)
     {
-        printf("  ");
+        printf((i == nest_level - 1) ? "+- " : "|  ");
     }
 
-    _fl_ptr_print_ast_node(root);
+    _fl_prt_print_ast_node(root);
 
     fl_ast_node *node = root->children;
 
-    if (node)
-        printf(":\n");
-    else
-        printf("\n");
+    printf(node ? ":\n" : "\n");
 
     while (node)
     {
