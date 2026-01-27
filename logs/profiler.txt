@@ -1,35 +1,44 @@
-[Thu Jan 22 21:07:31 2026]
-Profile for: 'fl_file_read(filename)'
-Samples: 10000 calls
-Input: 694 chars
-Average: 61.09 microseconds
-Minimum: 54.40 microseconds
-Maximum: 318.80 microseconds
-Total: 610.90 miliseconds (610895.20 microseconds)
+[PROFILER LOG ENTRY]
+Time: Tue Jan 27 17:26:29 2026
+Expression: 'fl_file_read(filename)'
+Build: Debug
+Samples: 1000 calls
+Input: 712 bytes
+Average: 71.92 microseconds
+Minimum: 56.90 microseconds
+Maximum: 468.20 microseconds
+Total: 71.92 miliseconds (71923.90 microseconds)
 
-[Thu Jan 22 21:08:22 2026]
-Profile for: 'fl_tok_tokenize(file_content, &tokens_num)'
-Samples: 10000 calls
-Input: 183 tokens
-Average: 46.78 microseconds
-Minimum: 39.80 microseconds
-Maximum: 362.00 microseconds
-Total: 467.79 miliseconds (467786.00 microseconds)
+[PROFILER LOG ENTRY]
+Time: Tue Jan 27 17:26:38 2026
+Expression: 'fl_file_read(filename)'
+Build: Release
+Samples: 1000 calls
+Input: 712 bytes
+Average: 55.66 microseconds
+Minimum: 48.80 microseconds
+Maximum: 241.90 microseconds
+Total: 55.66 miliseconds (55662.50 microseconds)
 
-[Thu Jan 22 21:08:22 2026]
-Profile for: 'fl_opt_optimalize(tokens, tokens_num, &tokens_num)'
-Samples: 1 calls
-Input: 183 tokens
-Average: 28.30 microseconds
-Minimum: 28.30 microseconds
-Maximum: 28.30 microseconds
-Total: 0.03 miliseconds (28.30 microseconds)
+[PROFILER LOG ENTRY]
+Time: Tue Jan 27 17:28:23 2026
+Expression: 'fl_tok_tokenize(file_content, &tokens_num)'
+Build: Release
+Samples: 1000 calls
+Input: 712 bytes
+Average: 23.28 microseconds
+Minimum: 16.40 microseconds
+Maximum: 89.50 microseconds
+Total: 23.28 miliseconds (23276.90 microseconds)
 
-[Thu Jan 22 21:17:51 2026]
-Profile for: 'fl_tok_free_tokens(tokens, tokens_num)'
-Samples: 1 calls
-Input: 142 tokens
-Average: 19.40 microseconds
-Minimum: 19.40 microseconds
-Maximum: 19.40 microseconds
-Total: 0.02 miliseconds (19.40 microseconds)
+[PROFILER LOG ENTRY]
+Time: Tue Jan 27 17:37:34 2026
+Expression: 'fl_tok_tokenize(file_content, &tokens_num)'
+Build: Debug
+Samples: 1000 calls
+Input: 712 bytes
+Average: 55.08 microseconds
+Minimum: 47.30 microseconds
+Maximum: 117.10 microseconds
+Total: 55.08 miliseconds (55079.90 microseconds)
+

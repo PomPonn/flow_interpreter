@@ -1,10 +1,11 @@
-#ifndef NDEBUG
+#if _INCLUDE_PROFILER
 
 #include "tools/profiler.h"
 
 #include "tools/file.h"
 
 #include <stdio.h>
+#include <time.h>
 
 #define BUFFER_SIZE 512
 
@@ -27,17 +28,29 @@ fl_void _fl_prof_log(
         sum += measures[i];
     }
 
+    time_t raw_time;
+
+    time(&raw_time);
+
+    char *time_str = asctime(localtime(&raw_time));
+
     sprintf(
         buffer,
-        "[" __TIMESTAMP__ " (Debug)]\n"
-        "Profile for: '%s'\n"
+        "[PROFILER LOG ENTRY]\n"
+        "Time: %s"
+        "Expression: '%s'\n"
+#ifdef NDEBUG
+        "Build: Release\n"
+#else
+        "Build: Debug\n"
+#endif
         "Samples: %u calls\n"
         "Input: %u %s\n"
         "Average: %.2f microseconds\n"
         "Minimum: %.2f microseconds\n"
         "Maximum: %.2f microseconds\n"
         "Total: %.2f miliseconds (%.2f microseconds)\n\n",
-        log_header, measures_count, input_size, input_label,
+        time_str, log_header, measures_count, input_size, input_label,
         sum / measures_count, min, max, sum * 1e-3, sum);
 
     fl_file_append(filename, buffer);

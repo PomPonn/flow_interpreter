@@ -273,7 +273,7 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
 
     for (fl_size index = 0; token; index++)
     {
-        assert(fl_token_init(tokens + index, fl_str_dup(token), line, column));
+        fl_token_init(tokens + index, fl_str_dup(token), line, column);
         token = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 

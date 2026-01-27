@@ -5,8 +5,8 @@
 
 fl_timestamp fl_time_get()
 {
-    LARGE_INTEGER ticks = {.QuadPart = 0};
-    assert(QueryPerformanceCounter(&ticks));
+    LARGE_INTEGER ticks;
+    QueryPerformanceCounter(&ticks);
     return ticks.QuadPart;
 }
 
@@ -16,7 +16,7 @@ fl_double fl_time_diff(fl_timestamp start, fl_timestamp end)
 
     if (!frequency.QuadPart)
     {
-        assert(QueryPerformanceFrequency(&frequency));
+        QueryPerformanceFrequency(&frequency);
     }
 
     return (fl_double)(end - start) / frequency.QuadPart;
