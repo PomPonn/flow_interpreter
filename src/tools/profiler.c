@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE 1024
 
 fl_char buffer[BUFFER_SIZE];
 
@@ -28,10 +28,7 @@ fl_void _fl_prof_log(
         sum += measures[i];
     }
 
-    time_t raw_time;
-
-    time(&raw_time);
-
+    time_t raw_time = time(FL_NULL);
     char *time_str = asctime(localtime(&raw_time));
 
     sprintf(

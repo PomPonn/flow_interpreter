@@ -17,18 +17,18 @@
 // shorthand for increasing current token index with error throw if it fails
 #define strong_increment \
     if (!weak_increment) \
-        fl_err_throw(FL_ERR_AST_SYNTAX, tokens[*(i - 1)]);
+        fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected end of code", tokens[*(i - 1)]);
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
-inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id, fl_ast_node *arg);
+inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id);
 static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_bool is_root);
 static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
 static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n);
-static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left, fl_ast_node *id);
+static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left);
 
 // --- IMPLEMENTATIONS ---
 
@@ -65,7 +65,7 @@ static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *token
 
     // id chain handler failed
     if (parent->children == FL_NULL)
-        fl_err_throw(FL_ERR_AST_SYNTAX, token);
+        fl_err_throw(FL_ERR_AST_SYNTAX, "Expected id chain", token);
     // consume space which separates id chains if it exists
     if (token.alias == FL_TOKEN_ALIAS_SPACE)
         strong_increment;
@@ -75,6 +75,8 @@ static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token *token
 
 static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
+    // TODO
+
     assert(parent->type == FL_AST_NODE_TYPE_FUNCTION);
 
     fl_ast_node *statement;
@@ -96,7 +98,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tok
 
         if (token.type != FL_TOKEN_TYPE_IDENTIFIER)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, token);
+            // fl_err_throw(FL_ERR_AST_SYNTAX, token);
         }
 
         fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
@@ -118,7 +120,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tok
     {
         if (token.alias != FL_TOKEN_ALIAS_RPAREN)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, token);
+            // fl_err_throw(FL_ERR_AST_SYNTAX, token);
         }
         else
         {
@@ -127,23 +129,37 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token *tok
     }
 }
 
-inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id, fl_ast_node *arg)
+inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *func_id)
 {
     fl_ast_node *node;
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_CALL, FL_NULL, parent);
     parent = node;
 
+    // add id as a first child
     fl_ast_node_add_child(parent, func_id);
 
-    if (arg)
-        fl_ast_node_add_child(parent, arg);
-    else
+    // ... handle parameters
+
+    // expect lparen
+    if (token.alias != FL_TOKEN_ALIAS_LPAREN)
     {
-        // ... handle multiple parameters
+        fl_err_throw(FL_ERR_AST_SYNTAX, "Expected '(' when calling function with complex argument", token);
     }
 
-    if (fl_token_is_expr_killer(&token))
-        strong_increment;
+    strong_increment;
+
+    do
+    {
+        _fl_ast_handle_expression(parent, tokens, i, tok_n);
+    } while (token.alias == FL_TOKEN_ALIAS_COMMA);
+
+    // expect rparen
+    if (token.alias != FL_TOKEN_ALIAS_RPAREN)
+    {
+        fl_err_throw(FL_ERR_AST_SYNTAX, "Missing ')' (closing of function call)", token);
+    }
+
+    weak_increment;
 
     return parent;
 }
@@ -154,27 +170,45 @@ inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_
 // it can be a literal, function call, group of operators or a combination of these things
 static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n)
 {
+    // WIP
+
     // temp node
     fl_ast_node *node;
+
+    fl_bool parenths = token.alias == FL_TOKEN_ALIAS_LPAREN;
+    // expression in parenths
+    if (parenths)
+    {
+        strong_increment;
+
+        node = _fl_ast_handle_expression(FL_NULL, tokens, i, tok_n);
+
+        if (token.alias != FL_TOKEN_ALIAS_RPAREN)
+            fl_err_throw(FL_ERR_AST_SYNTAX, "Missing closure of group ')'", token);
+
+        weak_increment;
+    }
 
     if (token.type == FL_TOKEN_TYPE_LITERAL)
     {
         fl_ast_literal_info *literal_info;
         fl_ast_literal_info_init(&literal_info, token.alias, token.value);
 
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_LITERAL, literal_info, parent);
+        fl_ast_node_init(&node, FL_AST_NODE_TYPE_LITERAL, literal_info, FL_NULL);
+
+        // unexpected error may occure here?
 
         strong_increment;
 
         // check if it is the end of expression
-        if (fl_token_is_expr_killer(&token))
+        if (!fl_token_is_delim(&token))
         {
-            weak_increment;
+            // operator has to be next since it is an literal
+            _fl_ast_handle_operator(parent, tokens, i, tok_n, node);
         }
         else
         {
-            // ?
-            _fl_ast_handle_operator(parent, tokens, i, tok_n, node, FL_NULL);
+            fl_ast_node_add_child(parent, node);
         }
     }
     // identifier can be either left side of the operator or a function name
@@ -191,53 +225,40 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token *tok
         // if lparen is next, it's definitely a function
         if (token.alias == FL_TOKEN_ALIAS_LPAREN)
         {
-            node = _fl_ast_handle_function_call(FL_NULL, tokens, i, tok_n, node, FL_NULL);
+            node = _fl_ast_handle_function_call(FL_NULL, tokens, i, tok_n, node);
         }
         // lbrace after id means that we have a dimensions qualifier or array access
-        else if (token.alias == FL_TOKEN_ALIAS_LBRACE)
+        else if (token.alias == FL_TOKEN_ALIAS_LBRACKET)
         {
             strong_increment;
             // if next token is RBRACE it has to be dimensions qualifier
-            if (token.alias == FL_TOKEN_ALIAS_RBRACE)
+            if (token.alias == FL_TOKEN_ALIAS_RBRACKET)
             {
                 (*i)--;
                 _fl_ast_handle_type_dimensions(node, tokens, i, tok_n);
             }
         }
-        // it's an simple id, operator or a single argument function
-        else if (fl_token_is_id_like(&token))
+        // it's an simple id or an operator
+        else
         {
-            // peek next id chain
-            fl_ast_node *id_node = _fl_ast_handle_id_chain(FL_NULL, tokens, i, tok_n);
-
-            // it's a function call (single arg)
-            if (fl_token_is_expr_killer(&token))
-            {
-                _fl_ast_handle_function_call(parent, tokens, i, tok_n, node, id_node);
-
-                return parent;
-            }
-            else
-            {
-                _fl_ast_handle_operator(parent, tokens, i, tok_n, node, id_node);
-                return parent;
-            }
+            _fl_ast_handle_operator(parent, tokens, i, tok_n, node);
         }
 
         // check if it is the end of expression
-        if (fl_token_is_expr_killer(&token))
+        if (fl_token_is_delim(&token))
         {
             fl_ast_node_add_child(parent, node);
-            weak_increment;
         }
         else
         {
             // else it has to be a function call
-            _fl_ast_handle_function_call(parent, tokens, i, tok_n, node, FL_NULL);
+            _fl_ast_handle_function_call(parent, tokens, i, tok_n, node);
         }
     }
-
-    return parent;
+    else
+    {
+        fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected token", token);
+    }
 }
 
 // handles single block ({...}) of code and its children
@@ -256,7 +277,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
     {
         if (token.alias != FL_TOKEN_ALIAS_LBRACE)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, token);
+            fl_err_throw(FL_ERR_AST_SYNTAX, "Expected block opening '{'", token);
         }
         else
         {
@@ -265,7 +286,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
     }
 
     // iterate over tokens
-    while (*i < tok_n)
+    while (!end_of_code)
     {
         switch (token.type)
         {
@@ -280,14 +301,20 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token *tokens, fl_si
             // and if it is not root
             // (since nested braces will be handled recursively)
             case FL_TOKEN_ALIAS_RBRACE:
-                if (!is_root)
-                    continue;
+                if (is_root)
+                    fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected block closure ('}')", token);
                 else
-                    fl_err_throw(FL_ERR_AST_SYNTAX, token);
+                    weak_increment;
+                break;
             case FL_TOKEN_ALIAS_DOT:
                 _fl_ast_handle_expression(parent, tokens, i, tok_n);
                 break;
+            case FL_TOKEN_ALIAS_SEMICOLON:
+            case FL_TOKEN_ALIAS_NL:
+                weak_increment;
+                break;
             default:
+                fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected token", token);
                 break;
             }
             break;
@@ -342,17 +369,15 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token 
     }
 }
 
-static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left, fl_ast_node *id)
+static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token *tokens, fl_size *i, fl_size tok_n, fl_ast_node *left)
 {
     fl_ast_node *node;
 
     // create operator node
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
+
     // add id node
-    if (id)
-        fl_ast_node_add_child(node, id);
-    else
-        _fl_ast_handle_id_chain(node, tokens, i, tok_n);
+    _fl_ast_handle_id_chain(node, tokens, i, tok_n);
     // add left side of the operator as a child
     fl_ast_node_add_child(node, left);
 
@@ -382,7 +407,7 @@ static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token *to
         // throw error if bracket is not closed
         if (token.alias != FL_TOKEN_ALIAS_RBRACKET)
         {
-            fl_err_throw(FL_ERR_AST_SYNTAX, token);
+            fl_err_throw(FL_ERR_AST_SYNTAX, "Wrong use of type dimensions specifier", token);
         }
 
         strong_increment;

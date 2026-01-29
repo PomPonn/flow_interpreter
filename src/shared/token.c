@@ -48,20 +48,9 @@ fl_void fl_token_free(fl_token *token)
         fl_mem_free(token->value);
 }
 
-fl_bool fl_token_alias_in(fl_token *token, fl_token_alias aliases[], fl_uint count)
+fl_bool fl_token_is_delim(fl_token *token)
 {
-    if (!token)
-        return FL_FALSE;
-
-    _fl_check_var_arr(aliases, count, fl_token_alias, token->alias);
-}
-
-fl_bool fl_token_type_in(fl_token *token, fl_token_type types[], fl_uint count)
-{
-    if (!token)
-        return FL_FALSE;
-
-    _fl_check_var_arr(types, count, fl_token_type, token->type);
+    return token->alias >= FL_TOKEN_ALIAS_SPACE && token->alias <= FL_TOKEN_ALIAS_NL;
 }
 
 fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column)

@@ -14,16 +14,17 @@ typedef fl_uint fl_err_code;
 struct _fl_err_record
 {
     fl_err_code code;
+    const fl_char *description;
     fl_size line;
     fl_size column;
     fl_char *token;
 };
 typedef struct _fl_err_record fl_err_record;
 
-fl_bool fl_err_report(fl_err_code code, fl_token bad_token);
+fl_bool fl_err_report(fl_err_code code, const fl_char *message, fl_token bad_token);
 
 fl_void fl_err_clear();
 
-fl_void fl_err_throw(fl_err_code code, fl_token bad_token);
+fl_void fl_err_throw(fl_err_code code, const fl_char *message, fl_token bad_token);
 
 fl_void fl_err_execute();

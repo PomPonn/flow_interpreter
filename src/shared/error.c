@@ -34,7 +34,7 @@ static inline const fl_char *_fl_err_code_to_message(fl_err_code code)
     }
 }
 
-fl_bool fl_err_report(fl_err_code code, fl_token bad_token)
+fl_bool fl_err_report(fl_err_code code, const fl_char *message, fl_token bad_token)
 {
     if (_FL_ERRORS_NUM + 1 > _MAX_ERROR_NUM)
     {
@@ -43,6 +43,7 @@ fl_bool fl_err_report(fl_err_code code, fl_token bad_token)
 
     _FL_ERRORS[_FL_ERRORS_NUM] = (fl_err_record){
         .code = code,
+        .description = message,
         .column = bad_token.column,
         .line = bad_token.line,
         .token = fl_str_dup(bad_token.value)};
@@ -65,11 +66,11 @@ fl_void fl_err_clear()
     _FL_ERRORS_NUM = 0;
 }
 
-fl_void fl_err_throw(fl_err_code code, fl_token bad_token)
+fl_void fl_err_throw(fl_err_code code, const fl_char *message, fl_token bad_token)
 {
     // TODO: prevent memory leak here
 #if !_SUPPRESS_ERRORS
-    fl_err_report(code, bad_token);
+    fl_err_report(code, message, bad_token);
 
     fl_err_execute();
 
@@ -83,11 +84,12 @@ fl_void fl_err_execute()
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {
         printf(
-            "Error in line %lu, column %lu near token '%s':\n%s\n",
+            "Error in line %lu, column %lu near token '%s':\n%s: %s\n",
             _FL_ERRORS[i].line + 1,
             _FL_ERRORS[i].column + 1,
             fl_token_str_as_printable(_FL_ERRORS[i].token),
-            _fl_err_code_to_message(_FL_ERRORS[i].code));
+            _fl_err_code_to_message(_FL_ERRORS[i].code),
+            _FL_ERRORS[i].description);
     }
 
     fl_err_clear();
