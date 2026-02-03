@@ -6,11 +6,9 @@
 - cleanup tokenizer
 - abstract syntax tree generation
     - expression & operators handling
-    - unused literals handling
-    - unused var declaration (in fl_ast_handle_statement) handling
+    - unused tokens handling
 - implement time measurement on unix systems
-- remember to implement convertion of literal info data to appropiate type
-- \_fl_token_alias_arr and \_fl_token_type_arr is unused for now (consider removing it in the future)
+- remember to implement convertion of literal info data field to appropiate type
 
 # done
 
@@ -31,5 +29,5 @@
 
 - how to handle types? Are they predefined?
     - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
-    - We won't now in advance if use of type should be next, so it has to be done dynamically in expression handling
+    - We won't now in advance if use of type should be next
 - How to represent language structures in interpreter code?
