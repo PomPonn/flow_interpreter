@@ -1,6 +1,5 @@
 # todo
 
-- group error descriptions into some structure
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - cleanup ast generator
 - cleanup tokenizer
