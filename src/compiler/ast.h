@@ -2,6 +2,7 @@
 
 #include "shared/common.h"
 #include "shared/token.h"
+#include "shared/token_array.h"
 
 enum _fl_ast_node_type
 {
@@ -57,7 +58,7 @@ struct _fl_ast_type_info
 };
 typedef struct _fl_ast_type_info fl_ast_type_info;
 
-fl_bool fl_ast_gen(fl_ast_node **root, fl_token *tokens, fl_size tokens_num);
+fl_bool fl_ast_gen(fl_ast_node **root, fl_token_arr *arr);
 fl_void fl_ast_free(fl_ast_node *node);
 fl_void fl_ast_type_info_init(fl_ast_type_info **info, fl_uint dimensions);
 fl_void fl_ast_type_info_free(fl_ast_type_info *info);

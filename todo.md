@@ -2,7 +2,6 @@
 
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - cleanup ast generator
-- cleanup tokenizer
 - abstract syntax tree generation
     - expression & operators handling
     - unused tokens handling
@@ -11,6 +10,8 @@
 
 # done
 
+- cleanup optimalizer
+- cleanup tokenizer
 - fix optimalizer space handling
 - revise delimeters (it seems like some of them will be operators)
 - write profiler

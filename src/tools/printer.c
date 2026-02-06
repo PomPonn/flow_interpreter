@@ -66,22 +66,24 @@ static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
     }
 }
 
-fl_void fl_prt_print_token_entries(fl_token *tokens, fl_size n)
+fl_void fl_prt_print_token_entries(fl_token_arr *arr)
 {
-    printf("<%lu entries>\n", n);
+    printf("<%lu entries>\n", arr->_count);
 
-    for (fl_size i = 0; i < n; i++)
+    while (arr->current)
     {
-        printf("[%lu, %lu] ", tokens[i].line + 1, tokens[i].column + 1);
-        printf("'%s'\n", fl_token_str_as_printable(tokens[i].value));
+        printf("[%lu, %lu] ", arr->current->line + 1, arr->current->column + 1);
+        printf("'%s'\n", fl_token_str_as_printable(arr->current->value));
+        fl_token_arr_next(arr);
     }
 }
 
-fl_void fl_prt_print_tokens_joined(fl_token *tokens, fl_size n)
+fl_void fl_prt_print_tokens_joined(fl_token_arr *arr)
 {
-    for (fl_size i = 0; i < n; i++)
+    while (arr->current)
     {
-        printf("%s", tokens[i].value);
+        printf("%s", arr->current->value);
+        fl_token_arr_next(arr);
     }
 }
 

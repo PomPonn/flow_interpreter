@@ -252,20 +252,16 @@ static inline fl_size _fl_tok_count_tokens(fl_char *str)
     return count;
 }
 
-fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
+fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr)
 {
     fl_uint count = _fl_tok_count_tokens(str);
-
-    if (count == 0)
-    {
-        *tokens_num = 0;
-        return FL_NULL;
-    }
+    if (!count)
+        return FL_FALSE;
 
     // Allocate memory for tokens
     fl_token *tokens = fl_mem_alloc_arr(count, sizeof(fl_token));
     if (tokens == FL_NULL)
-        return FL_NULL;
+        return FL_FALSE;
 
     // Tokenize the string
     fl_size line, column;
@@ -277,18 +273,6 @@ fl_token *fl_tok_tokenize(fl_char *str, fl_size *tokens_num)
         token = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 
-    *tokens_num = count;
-
-    return tokens;
-}
-
-fl_void fl_tok_free_tokens(fl_token *tokens, fl_size tokens_num)
-{
-    if (tokens == FL_NULL)
-        return;
-
-    for (fl_size i = 0; i < tokens_num; i++)
-        fl_token_free(tokens + i);
-
-    fl_mem_free(tokens);
+    fl_token_arr_init(token_arr, tokens, count);
+    return FL_TRUE;
 }

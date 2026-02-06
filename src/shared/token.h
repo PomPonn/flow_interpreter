@@ -55,8 +55,6 @@ fl_void fl_token_free(fl_token *token);
 
 fl_char *fl_token_str_as_printable(fl_char *token_str);
 
-fl_bool fl_token_is_expr_killer(fl_token *token);
-
 fl_bool fl_token_is_id_like(fl_token *token);
 
 fl_bool fl_token_is_delim(fl_token *token);
