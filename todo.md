@@ -27,6 +27,7 @@
 
 # Q&A
 
+- should newlines end expressions? Think how to handle this
 - how to handle types? Are they predefined?
     - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
     - We won't now in advance if use of type should be next
