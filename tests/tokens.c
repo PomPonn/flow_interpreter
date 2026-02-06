@@ -4,6 +4,7 @@
 #include "tools/printer.h"
 #include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
+#include "shared/token_array.h"
 
 int main()
 {
@@ -16,23 +17,24 @@ int main()
         return 1;
     }
 
-    fl_size tokens_num;
-    fl_token *tokens = fl_tok_tokenize(file_content, &tokens_num);
+    fl_token_arr token_array;
+    fl_bool res = fl_tok_tokenize(file_content, &token_array);
 
-    if (!tokens)
+    if (!res)
     {
+        fl_file_free(file_content);
         fprintf(stderr, "Failed to fl_tokenize content.\n");
         return 1;
     }
 
-    fl_size old_num = tokens_num;
-    tokens = fl_opt_optimalize(tokens, tokens_num, &tokens_num);
+    fl_size old_num = token_array._count;
+    fl_opt_optimalize(&token_array);
 
     // fl_prt_print_tokens_joined(tokens, tokens_num);
     printf("[old] %lu\n", old_num);
-    fl_prt_print_token_entries(tokens, tokens_num);
+    fl_prt_print_token_entries(&token_array);
 
     fl_file_free(file_content);
-    fl_tok_free_tokens(tokens, tokens_num);
+    fl_token_arr_free(&token_array);
     return 0;
 }

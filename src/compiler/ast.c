@@ -116,7 +116,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
     {
         next_token_with_assert;
-        node = _fl_ast_handle_expression(parent, arr, FL_TRUE);
+        node = _fl_ast_handle_expression(FL_NULL, arr, FL_TRUE);
     }
 
     if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
@@ -140,6 +140,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     {
         node = _fl_ast_handle_id_chain(FL_NULL, arr);
 
+        // check if there are any tokens remaining
         if (!arr->current)
         {
             fl_ast_node_add_child(parent, node);
