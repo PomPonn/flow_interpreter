@@ -10,7 +10,7 @@
 
 int main()
 {
-    const char *filename = _PROJECT_DIR "/input/expr.fl";
+    const char *filename = _PROJECT_DIR "/input/test.fl";
     char *file_content = fl_file_read(filename);
 
     if (file_content == FL_NULL)

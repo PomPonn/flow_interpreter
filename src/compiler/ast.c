@@ -26,13 +26,13 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
 static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
 static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr *arr);
 static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_arr *arr);
-static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token_arr *arr);
 static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left);
+static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr);
 
 // --- IMPLEMENTATIONS ---
 
-// handles id chain (eg. '.body.hand')
-static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token_arr *arr)
+// handles id specifier (eg. 'body.hand')
+static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr)
 {
     fl_ast_node *node;
 
@@ -40,16 +40,8 @@ static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token_arr *a
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_ID_CHAIN, FL_NULL, parent);
     parent = node;
 
-    // dot at the beginning means access to global context
-    // so we mark it as a flag
-    if (arr->current->alias == FL_TOKEN_ALIAS_DOT)
-    {
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_FLAG, FL_NULL, parent);
-        next_token;
-    }
-
     // iterate over tokens
-    while (arr->current->type == FL_TOKEN_TYPE_IDENTIFIER)
+    while (arr->current->type == FL_TOKEN_TYPE_ID)
     {
         // create id node
         fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), parent);
@@ -65,10 +57,6 @@ static fl_ast_node *_fl_ast_handle_id_chain(fl_ast_node *parent, fl_token_arr *a
     // id chain handler failed
     if (parent->children == FL_NULL)
         throw_syntax_error("Expected id chain");
-
-    // consume space which separates id chains if it exists
-    if (arr->current->alias == FL_TOKEN_ALIAS_SPACE)
-        next_token_with_assert;
 
     return parent;
 }
@@ -136,9 +124,9 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
             fl_ast_node_add_child(parent, node);
     }
     // identifier can be either left side of the operator or a function name
-    else if (fl_token_is_id_like(arr->current))
+    else if (arr->current->type == FL_TOKEN_TYPE_ID)
     {
-        node = _fl_ast_handle_id_chain(FL_NULL, arr);
+        node = _fl_ast_handle_id(FL_NULL, arr);
 
         // check if there are any tokens remaining
         if (!arr->current)
@@ -239,7 +227,6 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
                 _fl_ast_handle_expression(parent, arr, FL_FALSE);
                 break;
             case FL_TOKEN_ALIAS_SEMICOLON:
-            case FL_TOKEN_ALIAS_NL:
                 next_token;
                 break;
             default:
@@ -247,7 +234,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
                 break;
             }
             break;
-        case FL_TOKEN_TYPE_IDENTIFIER:
+        case FL_TOKEN_TYPE_ID:
             _fl_ast_handle_expression(parent, arr, FL_FALSE);
             break;
         case FL_TOKEN_TYPE_LITERAL:
@@ -277,7 +264,7 @@ static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *a
     fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
 
     // add id node
-    _fl_ast_handle_id_chain(node, arr);
+    _fl_ast_handle_id(node, arr);
     // add left side of the operator as a child
     fl_ast_node_add_child(node, left);
 
@@ -318,7 +305,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
     {
         // parameter id definition
 
-        if (arr->current->type != FL_TOKEN_TYPE_IDENTIFIER)
+        if (arr->current->type != FL_TOKEN_TYPE_ID)
         {
             // throw_syntax_error(, arr->current);
         }
@@ -357,7 +344,7 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
 
     fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent);
 
-    if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN || arr->current->type == FL_TOKEN_TYPE_IDENTIFIER)
+    if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN || arr->current->type == FL_TOKEN_TYPE_ID)
     {
         _fl_ast_handle_function_header(func_node, arr);
     }

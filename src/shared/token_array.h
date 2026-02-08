@@ -19,4 +19,4 @@ fl_token *fl_token_arr_next(fl_token_arr *arr);
 
 fl_token *fl_token_arr_peek(fl_token_arr *arr);
 
-fl_void *fl_token_arr_reset_ptr(fl_token_arr *arr);
+fl_void fl_token_arr_reset_ptr(fl_token_arr *arr);

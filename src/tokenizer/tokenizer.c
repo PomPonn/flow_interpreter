@@ -4,18 +4,20 @@
 #include "shared/str.h"
 #include "shared/delims.h"
 
+#include <stdlib.h>
+
 // --- STATIC FUNCTION DEFINITIONS ---
 
 static inline fl_size _fl_tok_count_tokens(fl_char *str);
-static fl_bool _fl_tok_handle_number(const fl_char **str);
-static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
+static inline fl_bool _fl_tok_handle_number(const fl_char **str);
 static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
-static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
-static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter);
+static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
+static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
+static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
 
 // --- IMPLEMENTATIONS ---
 
-static fl_bool _fl_tok_handle_number(const fl_char **str)
+static inline fl_bool _fl_tok_handle_number(const fl_char **str)
 {
     fl_bool dot_found = FL_FALSE;
     fl_bool digit_found = FL_FALSE;
@@ -58,7 +60,7 @@ static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_in
     return res;
 }
 
-static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
+static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
 {
     const fl_char *ptr = *str;
 
@@ -74,7 +76,7 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter
 
         for (fl_size j = 0; ptr[j]; j++)
         {
-            if (ptr[j] == FL_CHR_NL)
+            if (ptr[j] == '\n')
             {
                 (*line_counter)++;
                 (*column_counter) = 0;
@@ -92,38 +94,25 @@ static fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter
     return FL_FALSE;
 }
 
-// reduces any following whitespace to a single delimeter
-// returned token is a static string
-// returns "\n" or " ", depending on type of following whitespace
-// otherwise returns FL_NULL
-static fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_char **next_pos, fl_size *line_counter)
+// reduces any following whitespace
+static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter)
 {
-    fl_char *ptr = token_start + 1;
+    fl_char *ptr = token_start;
 
-    if (*token_start == FL_CHR_NL || (*token_start == '\r' && *(token_start + 1) == FL_CHR_NL))
+    while (fl_chr_is_any(*ptr, FL_WHITESPACE))
     {
-        while (fl_chr_is_any(*ptr, FL_WHITESPACE))
+        if (*ptr == '\n')
         {
-            if (*ptr == FL_CHR_NL)
-                (*line_counter)++;
-            ptr++;
+            (*line_counter)++;
+            *col_counter = 0;
         }
-        *next_pos = ptr;
+        else
+            (*col_counter)++;
 
-        return "\n";
-    }
-    else if (*token_start == ' ' || *token_start == '\t')
-    {
-        while (fl_chr_is_any(*ptr, " \t"))
-        {
-            ptr++;
-        }
-        *next_pos = ptr;
-
-        return " ";
+        ptr++;
     }
 
-    return FL_NULL;
+    return ptr;
 }
 
 // find next token in a string and returns string copy of it
@@ -159,30 +148,15 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     if (column != FL_NULL)
         *column = next_column;
 
+    // skip any following whitespace, since it's ignorable
+    next_pos = _fl_tok_handle_whitespace(next_pos, &next_line, &next_column);
+
     // start of the current token
     fl_char *token_start = next_pos;
-    // potential whitespace indicator
-    fl_char *ws;
 
     // return null if there is no content in string
     if (!*token_start)
         return FL_NULL;
-
-    // reduce any whitespace to single delimeter
-    // - space or newline
-    if (ws = _fl_tok_handle_whitespace(token_start, &next_pos, &next_line))
-    {
-        next_column += next_pos - token_start;
-
-        escape_char = '\0';
-
-        if (*ws == FL_CHR_NL)
-            next_column = 0;
-        else if (*ws == ' ' && column != FL_NULL)
-            *column = next_column;
-
-        return ws;
-    }
 
     if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
     {
@@ -213,7 +187,7 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     }
 
     // find ending position for this token
-    next_pos = fl_str_find_any(next_pos + 1, FL_ORDERED_DELIMS);
+    next_pos = fl_str_find_any(++next_pos, FL_WHITESPACE FL_ORDERED_DELIMS);
 
     if (!next_pos)
         return token_start;

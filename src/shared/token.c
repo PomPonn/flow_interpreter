@@ -7,7 +7,7 @@
 
 // --- DEFINES ---
 
-#define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + FL_TOKEN_ALIAS_SPACE)
+#define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr))
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
@@ -18,7 +18,7 @@ static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 fl_char *fl_token_str_as_printable(fl_char *tok)
 {
-    if (*tok == FL_CHR_NL)
+    if (*tok == '\n')
     {
         return "\\n";
     }
@@ -44,7 +44,7 @@ fl_void fl_token_free(fl_token *token)
 
 fl_bool fl_token_is_delim(fl_token *token)
 {
-    return token->alias >= FL_TOKEN_ALIAS_SPACE && token->alias <= FL_TOKEN_ALIAS_NL;
+    return fl_chr_is_any(*token->value, FL_ORDERED_DELIMS);
 }
 
 fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column)
@@ -89,7 +89,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     // is valid identifier
     else if (!fl_chr_is_digit(*tok->value))
     {
-        tok->type = FL_TOKEN_TYPE_IDENTIFIER;
+        tok->type = FL_TOKEN_TYPE_ID;
         tok->alias = FL_TOKEN_ALIAS_NONE;
     }
     else
@@ -105,9 +105,4 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
 static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 {
     return tok->value[0] == wrapper && tok->value[fl_str_len(tok->value) - 1] == wrapper;
-}
-
-fl_bool fl_token_is_id_like(fl_token *token)
-{
-    return token->type == FL_TOKEN_TYPE_IDENTIFIER || token->alias == FL_TOKEN_ALIAS_DOT;
 }

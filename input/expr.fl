@@ -1,7 +1,7 @@
-test equals 2
+test equals 2;
 test 
     (3 + 5 - 4 
     * 2);
 test ((3 + 5 - 4) * 2);
-print my_name
-a + b
+print my_name;
+a + b;

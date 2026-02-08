@@ -24,7 +24,7 @@
 
 //     do
 //     {
-//         if (tokens[*index].type == FL_TOKEN_TYPE_IDENTIFIER)
+//         if (tokens[*index].type == FL_TOKEN_TYPE_ID)
 //         {
 //             fl_ast_node *identifier_node;
 //             fl_ast_node_init(&identifier_node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(tokens[*index].value));
@@ -62,7 +62,7 @@
 //         case FL_TOKEN_ALIAS_USE:
 //             // Handle import keyword
 
-//             if (tokens[*index + 1].type == FL_TOKEN_TYPE_IDENTIFIER)
+//             if (tokens[*index + 1].type == FL_TOKEN_TYPE_ID)
 //             {
 //                 index++;
 
@@ -83,7 +83,7 @@
 //             break;
 //         }
 //         break;
-//     case FL_TOKEN_TYPE_IDENTIFIER:
+//     case FL_TOKEN_TYPE_ID:
 //         // Handle identifier
 
 //         switch (parent->type)

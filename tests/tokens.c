@@ -8,7 +8,7 @@
 
 int main()
 {
-    const char *filename = _PROJECT_DIR "/input/expr.fl";
+    const char *filename = _PROJECT_DIR "/input/test.fl";
     char *file_content = fl_file_read(filename);
 
     if (file_content == FL_NULL)
@@ -28,7 +28,7 @@ int main()
     }
 
     fl_size old_num = token_array._count;
-    fl_opt_optimalize(&token_array);
+    fl_opt_remove_comments(&token_array);
 
     // fl_prt_print_tokens_joined(tokens, tokens_num);
     printf("[old] %lu\n", old_num);

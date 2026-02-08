@@ -40,7 +40,7 @@ fl_token *fl_token_arr_peek(fl_token_arr *arr)
     return arr->_iterator + 1 >= arr->_count ? FL_NULL : arr->current + 1;
 }
 
-fl_void *fl_token_arr_reset_ptr(fl_token_arr *arr)
+fl_void fl_token_arr_reset_ptr(fl_token_arr *arr)
 {
     arr->current = arr->_data;
     arr->_iterator = 0;
