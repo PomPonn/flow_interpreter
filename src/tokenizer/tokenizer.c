@@ -106,7 +106,7 @@ static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *
             (*line_counter)++;
             *col_counter = 0;
         }
-        else
+        else if (*ptr != '\r')
             (*col_counter)++;
 
         ptr++;
@@ -143,13 +143,13 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
         escape_char = '\0';
     }
 
+    // skip any following whitespace, since it's ignorable
+    next_pos = _fl_tok_handle_whitespace(next_pos, &next_line, &next_column);
+
     if (line != FL_NULL)
         *line = next_line;
     if (column != FL_NULL)
         *column = next_column;
-
-    // skip any following whitespace, since it's ignorable
-    next_pos = _fl_tok_handle_whitespace(next_pos, &next_line, &next_column);
 
     // start of the current token
     fl_char *token_start = next_pos;
