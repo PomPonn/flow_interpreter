@@ -51,7 +51,7 @@ static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
     case FL_AST_NODE_TYPE_IDENTIFIER:
         printf("<id> '%s'", (fl_char *)node->data);
         break;
-    case FL_AST_NODE_TYPE_ID:
+    case FL_AST_NODE_TYPE_ID_CHAIN:
         printf("<id chain>");
         break;
     case FL_AST_NODE_TYPE_OPERATOR:

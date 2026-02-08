@@ -1,0 +1,15 @@
+outside_block = 23;
+
+# outer block #
+
+{
+    some_+thing has 45 - 21;
+
+    # inner #
+    {
+        # inner inner #
+        {
+            test;
+        }
+    }
+}

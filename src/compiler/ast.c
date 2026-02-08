@@ -5,10 +5,15 @@
 #include "shared/memory.h"
 #include "shared/error.h"
 
+#ifndef NDEBUG
+#include "tools/printer.h"
+#include <stdio.h>
+#endif
+
 // --- DEFINES ---
 
 #define throw_syntax_error(message) \
-    fl_err_throw(FL_ERR_AST_SYNTAX, message, *arr->current);
+    fl_err_throw(FL_ERR_AST_SYNTAX, message, *arr->current)
 
 #define next_token \
     fl_token_arr_next(arr)
@@ -16,18 +21,18 @@
 // shorthand for increasing current token index with error throw if it fails
 #define next_token_safe \
     if (!next_token)    \
-        fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected end of code", arr->_data[arr->_iterator]);
+    fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected end of code", arr->_data[arr->_iterator])
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr);
-static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
-static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
+inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left);
 static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr *arr);
 static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_arr *arr);
-static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left);
+static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
+static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
 
 // --- IMPLEMENTATIONS ---
 
@@ -38,7 +43,7 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
     fl_ast_node *node;
 
     // init parent (id chain) node
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_ID, FL_NULL, parent);
+    fl_ast_node_init(&node, FL_AST_NODE_TYPE_ID_CHAIN, FL_NULL, parent);
     parent = node;
 
     // iterate over tokens
@@ -121,7 +126,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     else
         throw_syntax_error("Unexpected token");
 
-    if (node->type == FL_AST_NODE_TYPE_ID)
+    if (node->type == FL_AST_NODE_TYPE_ID_CHAIN)
     {
         // if lparen is next, it's a function
         if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
@@ -144,19 +149,17 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     if (fl_token_is_delim(arr->current))
         fl_ast_node_add_child(parent, node);
     else
-        _fl_ast_handle_operator(parent, arr, node);
+        node = _fl_ast_handle_operator(parent, arr, node);
 
     if (inner)
     {
         if (arr->current->alias != FL_TOKEN_ALIAS_RPAREN)
-        {
             throw_syntax_error("Missing closure of group ')'");
-        }
         else
             next_token_safe;
     }
 
-    return parent;
+    return node;
 }
 
 // handles single block ({...}) of code and its children
@@ -183,60 +186,46 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
     // iterate over tokens
     while (arr->current)
     {
-        switch (arr->current->type)
+        if (arr->current->alias == FL_TOKEN_ALIAS_SEMICOLON)
+            next_token;
+        // inner block to handle
+        else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
         {
-        case FL_TOKEN_TYPE_DELIMITER:
-            switch (arr->current->alias)
-            {
-            // inner block to handle
-            case FL_TOKEN_ALIAS_LBRACE:
-                _fl_ast_handle_block(parent, arr, FL_FALSE);
-                break;
-            // its end of a block if we meet ending brace
-            // and if it is not root
-            // (since nested braces will be handled recursively)
-            case FL_TOKEN_ALIAS_RBRACE:
-                if (is_root)
-                {
-                    throw_syntax_error("Unexpected block closure ('}')");
-                }
-                else
-                    next_token;
-                break;
-            case FL_TOKEN_ALIAS_DOT:
-                _fl_ast_handle_expression(parent, arr, FL_FALSE);
-                break;
-            case FL_TOKEN_ALIAS_SEMICOLON:
-                next_token;
-                break;
-            default:
-                throw_syntax_error("Unexpected token");
-                break;
-            }
-            break;
-        case FL_TOKEN_TYPE_ID:
-            _fl_ast_handle_expression(parent, arr, FL_FALSE);
-            break;
-        case FL_TOKEN_TYPE_LITERAL:
-            // to be changed
-            // ignore if unused for now
-            if (FL_TRUE)
-                break;
+            _fl_ast_handle_block(parent, arr, FL_FALSE);
 
-            // t. b. c.
-            switch (arr->current->alias)
-            {
-            case FL_TOKEN_ALIAS_STRING:
-                break;
-            case FL_TOKEN_ALIAS_NUMBER:
-                break;
-            }
-            break;
+#if _INCLUDE_INLINE_LOGS
+            printf("[DEBUG] AST generator passed block:\n");
+            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
+            printf("\n");
+#endif
+        }
+        else if (arr->current->alias == FL_TOKEN_ALIAS_RBRACE)
+        {
+            if (is_root)
+                throw_syntax_error("Unexpected block closure ('}')");
+            else
+                next_token;
+        }
+        else
+        {
+            _fl_ast_handle_expression(parent, arr, FL_FALSE);
+
+            // throw error if expression isn't ending with a semicolon
+            if (arr->current->alias == FL_TOKEN_ALIAS_SEMICOLON)
+                next_token;
+            else
+                throw_syntax_error("expected semicolon ';' before to end expression");
+
+#if _INCLUDE_INLINE_LOGS
+            printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->line + 1);
+            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
+            printf("\n");
+#endif
         }
     }
 }
 
-static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left)
+inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left)
 {
     fl_ast_node *node;
 
@@ -254,10 +243,8 @@ static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *a
         _fl_ast_handle_block(node, arr, FL_FALSE);
     }
     else
-    {
         // ... else handle expression
         _fl_ast_handle_expression(node, arr, FL_FALSE);
-    }
 
     return node;
 }
@@ -369,17 +356,18 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
 }
 
 // tries to generate abstract syntax tree from specified tokens
-fl_bool fl_ast_gen(fl_ast_node **root, fl_token_arr *arr)
+fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 {
     fl_token_arr_reset_ptr(arr);
 
     // create root node with no related data
-    fl_ast_node_init(root, FL_AST_NODE_TYPE_ROOT, FL_NULL, FL_NULL);
+    fl_ast_node *root;
+    fl_ast_node_init(&root, FL_AST_NODE_TYPE_ROOT, FL_NULL, FL_NULL);
 
     // we assume that the whole program is a block
-    _fl_ast_handle_block(*root, arr, FL_TRUE);
+    _fl_ast_handle_block(root, arr, FL_TRUE);
 
-    return FL_TRUE;
+    return root;
 }
 
 fl_void fl_ast_free(fl_ast_node *node)

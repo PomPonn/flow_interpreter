@@ -14,15 +14,15 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_IMPORT,
     FL_AST_NODE_TYPE_LITERAL,
     FL_AST_NODE_TYPE_IDENTIFIER,
-    FL_AST_NODE_TYPE_ID,
+    FL_AST_NODE_TYPE_ID_CHAIN,
     FL_AST_NODE_TYPE_OPERATOR,
     FL_AST_NODE_TYPE_FLAG,
     FL_AST_NODE_TYPE_CALL,
     // --- unused for now
+    FL_AST_NODE_TYPE_GROUP,
     FL_AST_NODE_TYPE_EXPRESSION,
     FL_AST_NODE_TYPE_TYPE,
     FL_AST_NODE_TYPE_STATEMENT,
-    FL_AST_NODE_TYPE_GROUP,
     FL_AST_NODE_TYPE_DELIMITER,
 };
 typedef fl_ubyte fl_ast_node_type;
@@ -58,7 +58,7 @@ struct _fl_ast_type_info
 };
 typedef struct _fl_ast_type_info fl_ast_type_info;
 
-fl_bool fl_ast_gen(fl_ast_node **root, fl_token_arr *arr);
+fl_ast_node *fl_ast_gen(fl_token_arr *arr);
 fl_void fl_ast_free(fl_ast_node *node);
 fl_void fl_ast_type_info_init(fl_ast_type_info **info, fl_uint dimensions);
 fl_void fl_ast_type_info_free(fl_ast_type_info *info);

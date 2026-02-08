@@ -1,0 +1,20 @@
+# T1 (literal - literal) #
+2 == 3;
+
+# T2 (id - literal) #
+num equals 2;
+
+# T3 (id - id) #
+num1 gt num2;
+
+# T4 (expr - id) #
+(3 + 2) * ampl;
+
+# T5 (simple expr - simple expr) #
+(4 pow 3) alt (6 * magnitude);
+
+# T6 (operator chaining 1) #
+4 - 2 + 6 pow 4;
+
+# T7 (operator chaining 2) #
+165 = 2 + (x ^ y) - 18 * w;
