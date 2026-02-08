@@ -1,10 +1,10 @@
 #include "error.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "shared/memory.h"
 #include "shared/token.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 // --- DEFINES ---
 
@@ -15,47 +15,48 @@
 fl_err_record _FL_ERRORS[_MAX_ERROR_NUM];
 fl_size _FL_ERRORS_NUM = 0;
 
-// --- STATIC FUNCTIONS DEFINITION ---
+// --- STATIC FUNCTION DEFINITIONS ---
 
-static inline const fl_char *_fl_err_code_to_message(fl_err_code code);
+static inline const fl_char *_fl_err_type_to_string(fl_err_type type);
 
 // --- IMPLEMENTATIONS ---
 
-static inline const fl_char *_fl_err_code_to_message(fl_err_code code)
+static inline const fl_char *_fl_err_type_to_string(fl_err_type type)
 {
-    switch (code)
+    switch (type)
     {
     case FL_ERR_NONE:
         return "No error";
-    case FL_ERR_AST_SYNTAX:
+    case FL_ERR_AST:
         return "Invalid syntax";
     default:
         return "Undefined error";
     }
 }
 
-fl_bool fl_err_report(fl_err_code code, const fl_char *message, fl_token bad_token)
+// reports error but doesn't end interpretation (so we can catch more errors)
+// exception occurs when there is no room for more errors. Than it throws;
+fl_void fl_err_report(fl_err_type type, const fl_char *message, fl_token bad_token)
 {
     if (_FL_ERRORS_NUM + 1 > _MAX_ERROR_NUM)
     {
-        return FL_FALSE;
+        fl_err_execute();
+        return;
     }
 
     _FL_ERRORS[_FL_ERRORS_NUM] = (fl_err_record){
-        .code = code,
+        .type = type,
         .description = message,
         .column = bad_token.column,
         .line = bad_token.line,
         .token = fl_str_dup(bad_token.value)};
 
     _FL_ERRORS_NUM++;
-
-    return FL_TRUE;
 }
 
 fl_void fl_err_clear()
 {
-    if (!_FL_ERRORS_NUM)
+    if (_FL_ERRORS_NUM == 0)
         return;
 
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
@@ -66,16 +67,12 @@ fl_void fl_err_clear()
     _FL_ERRORS_NUM = 0;
 }
 
-fl_void fl_err_throw(fl_err_code code, const fl_char *message, fl_token bad_token)
+// reports an error and ends interpretation
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, fl_token bad_token)
 {
-    // TODO: prevent memory leak here
 #if !_SUPPRESS_ERRORS
-    fl_err_report(code, message, bad_token);
-
+    fl_err_report(type, message, bad_token);
     fl_err_execute();
-
-    fl_err_clear();
-    exit(-1);
 #endif
 }
 
@@ -87,10 +84,12 @@ fl_void fl_err_execute()
             "Error in line %lu, column %lu near token '%s':\n%s: %s\n",
             _FL_ERRORS[i].line + 1,
             _FL_ERRORS[i].column + 1,
-            fl_token_str_as_printable(_FL_ERRORS[i].token),
-            _fl_err_code_to_message(_FL_ERRORS[i].code),
+            fl_token_as_printable(_FL_ERRORS[i].token),
+            _fl_err_type_to_string(_FL_ERRORS[i].type),
             _FL_ERRORS[i].description);
     }
+
+    // TODO: free program's allocated memory here
 
     fl_err_clear();
     exit(-1);

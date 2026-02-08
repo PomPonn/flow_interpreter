@@ -5,6 +5,7 @@
 #include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
 #include "shared/token_array.h"
+#include "shared/error.h"
 
 #define __prepare_tokens(token_arr_name)                                \
     fl_token_arr token_arr_name;                                        \

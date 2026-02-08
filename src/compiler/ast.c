@@ -13,7 +13,7 @@
 // --- DEFINES ---
 
 #define throw_syntax_error(message) \
-    fl_err_throw(FL_ERR_AST_SYNTAX, message, *arr->current)
+    fl_err_throw(FL_ERR_AST, message, *arr->current)
 
 #define next_token \
     fl_token_arr_next(arr)
@@ -21,7 +21,7 @@
 // shorthand for increasing current token index with error throw if it fails
 #define next_token_safe \
     if (!next_token)    \
-    fl_err_throw(FL_ERR_AST_SYNTAX, "Unexpected end of code", arr->_data[arr->_iterator])
+    fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator])
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
@@ -277,7 +277,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
             // throw_syntax_error(, arr->current);
         }
 
-        fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
+        // fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
         fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
 
         next_token_safe;

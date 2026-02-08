@@ -3,17 +3,18 @@
 #include "shared/common.h"
 #include "shared/token.h"
 
-enum _fl_err_code
+enum _fl_err_type
 {
-    FL_ERR_NONE = 0,
-    // 4** - abstract syntax tree codes
-    FL_ERR_AST_SYNTAX = 401,
+    FL_ERR_NONE,
+    FL_ERR_FILE,
+    FL_ERR_TOKENIZER,
+    FL_ERR_AST,
 };
-typedef fl_uint fl_err_code;
+typedef fl_ushort fl_err_type;
 
 struct _fl_err_record
 {
-    fl_err_code code;
+    fl_err_type type;
     const fl_char *description;
     fl_size line;
     fl_size column;
@@ -21,10 +22,10 @@ struct _fl_err_record
 };
 typedef struct _fl_err_record fl_err_record;
 
-fl_bool fl_err_report(fl_err_code code, const fl_char *message, fl_token bad_token);
+fl_void fl_err_report(fl_err_type code, const fl_char *message, fl_token bad_token);
 
 fl_void fl_err_clear();
 
-fl_void fl_err_throw(fl_err_code code, const fl_char *message, fl_token bad_token);
+fl_void fl_err_throw(fl_err_type code, const fl_char *message, fl_token bad_token);
 
 fl_void fl_err_execute();

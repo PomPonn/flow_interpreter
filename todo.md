@@ -3,10 +3,17 @@
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - cleanup ast generator
 - abstract syntax tree generation
-    - expression & operators handling
     - unused tokens handling
 - implement time measurement on unix systems
 - remember to implement convertion of literal info data field to appropiate type
+
+# Q&A
+
+- what to do with errors? How to report them when we free tokens and don't now the line?
+- how to handle types? Are they predefined?
+    - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
+    - We won't now in advance if use of type should be next
+- How to represent language structures in interpreter code?
 
 # done
 
@@ -24,11 +31,3 @@
 - write text optimalizer (include whitespace, but reduce it to minimum)
 - cleanup tokenizer
 - (optimalization) consider use of inline functions
-
-# Q&A
-
-- should newlines end expressions? Think how to handle this
-- how to handle types? Are they predefined?
-    - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
-    - We won't now in advance if use of type should be next
-- How to represent language structures in interpreter code?

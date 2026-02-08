@@ -16,7 +16,7 @@ static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 // --- IMPLEMENTATIONS ---
 
-fl_char *fl_token_str_as_printable(fl_char *tok)
+fl_char *fl_token_as_printable(fl_char *tok)
 {
     if (*tok == '\n')
     {

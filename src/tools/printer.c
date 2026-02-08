@@ -27,14 +27,8 @@ static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
     case FL_AST_NODE_TYPE_BLOCK:
         printf("<block>");
         break;
-    case FL_AST_NODE_TYPE_IMPORT:
-        printf("<import>");
-        break;
     case FL_AST_NODE_TYPE_TYPE:
         printf("<type> [%u]", ((fl_ast_type_info *)node->data)->dimensions);
-        break;
-    case FL_AST_NODE_TYPE_STATEMENT:
-        printf("<statement>");
         break;
     case FL_AST_NODE_TYPE_FUNCTION:
         printf("<function>");
@@ -73,7 +67,7 @@ fl_void fl_prt_print_token_entries(fl_token_arr *arr)
     while (arr->current)
     {
         printf("[%lu, %lu] ", arr->current->line + 1, arr->current->column + 1);
-        printf("'%s'\n", fl_token_str_as_printable(arr->current->value));
+        printf("'%s'\n", fl_token_as_printable(arr->current->value));
         fl_token_arr_next(arr);
     }
 }
