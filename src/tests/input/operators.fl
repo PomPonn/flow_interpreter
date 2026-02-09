@@ -18,3 +18,9 @@ num1 gt num2;
 
 # T7 (operator chaining 2) #
 165 = 2 + (x ^ y) - 18 * w;
+
+# T8 (function call) #
+some_result is mult(4, 9);
+
+# T9 (function call with more chaining) #
+(my_func(4, (4 * 2) - my_var) as float) / 12 * ring;

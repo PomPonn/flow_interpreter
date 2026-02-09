@@ -1,5 +1,6 @@
 # todo
 
+- make errors more universal
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - cleanup ast generator
 - abstract syntax tree generation

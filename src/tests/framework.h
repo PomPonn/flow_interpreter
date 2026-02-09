@@ -7,6 +7,8 @@
 #include "shared/token_array.h"
 #include "shared/error.h"
 
+#include <stdio.h>
+
 #define __prepare_tokens(token_arr_name)                                                \
     fl_token_arr token_arr_name;                                                        \
     char *file_content = fl_file_read(_TEST_INPUT_PATH);                                \

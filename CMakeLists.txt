@@ -10,10 +10,10 @@ add_compile_definitions(
     _INCLUDE_PROFILER=1
     _INCLUDE_INLINE_LOGS=1
     _SUPPRESS_ERRORS=0
-    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/tests/${TEST_NAME}/${TEST_NAME}.fl"
+    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/tests/input/${TEST_NAME}.fl"
     _PROFILER_LOGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/logs/profiler.txt"
 )
 
 add_library(FlowInterpreter STATIC ${SOURCES})
-add_executable(Example ${CMAKE_CURRENT_SOURCE_DIR}/tests/${TEST_NAME}/${TEST_NAME}.c)
-target_link_libraries(Example FlowInterpreter)
+add_executable(Test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/main.c)
+target_link_libraries(Test FlowInterpreter)

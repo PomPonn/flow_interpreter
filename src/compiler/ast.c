@@ -58,7 +58,9 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
         init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), parent);
 
         // check for end of code or chaining dot
-        if (!next_token || arr->current->alias != FL_TOKEN_ALIAS_DOT)
+        next_token_safe;
+
+        if (arr->current->alias != FL_TOKEN_ALIAS_DOT)
             break;
 
         // skip remaining dot (move to next id)
@@ -87,10 +89,9 @@ inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_
     if (arr->current->alias != FL_TOKEN_ALIAS_LPAREN)
         throw_syntax_error("Expected '(' when calling a function");
 
-    next_token_safe;
-
     do
     {
+        next_token_safe;
         _fl_ast_handle_expression(parent, arr, FL_FALSE);
     } while (arr->current->alias == FL_TOKEN_ALIAS_COMMA);
 
