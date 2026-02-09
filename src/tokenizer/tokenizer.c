@@ -226,7 +226,7 @@ static inline fl_size _fl_tok_count_tokens(fl_char *str)
     return count;
 }
 
-fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr)
+fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *source_desc)
 {
     fl_uint count = _fl_tok_count_tokens(str);
     if (!count)
@@ -243,7 +243,12 @@ fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr)
 
     for (fl_size index = 0; token; index++)
     {
-        fl_token_init(tokens + index, fl_str_dup(token), line, column);
+        fl_token_init(tokens + index,
+                      fl_str_dup(token),
+                      (fl_token_location){
+                          .column = column,
+                          .line = line,
+                          .description = source_desc});
         token = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 

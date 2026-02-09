@@ -47,8 +47,8 @@ fl_void fl_err_report(fl_err_type type, const fl_char *message, fl_token bad_tok
     _FL_ERRORS[_FL_ERRORS_NUM] = (fl_err_record){
         .type = type,
         .description = message,
-        .column = bad_token.column,
-        .line = bad_token.line,
+        .column = bad_token.location.column,
+        .line = bad_token.location.line,
         .token = fl_str_dup(bad_token.value)};
 
     _FL_ERRORS_NUM++;

@@ -18,10 +18,15 @@
 #define next_token \
     fl_token_arr_next(arr)
 
-// shorthand for increasing current token index with error throw if it fails
 #define next_token_safe \
     if (!next_token)    \
     fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator])
+
+#define init_node_empty(type, parent) \
+    fl_ast_node_init(&node, type, FL_NULL, parent, arr->current->location);
+
+#define init_node_filled(type, value, parent) \
+    fl_ast_node_init(&node, type, value, parent, arr->current->location);
 
 // --- STATIC FUNCTIONS DEFINITION ---
 
@@ -43,14 +48,14 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
     fl_ast_node *node;
 
     // init parent (id chain) node
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_ID_CHAIN, FL_NULL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_ID_CHAIN, parent);
     parent = node;
 
     // iterate over tokens
     while (arr->current->type == FL_TOKEN_TYPE_ID)
     {
         // create id node
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), parent);
+        init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), parent);
 
         // check for end of code or chaining dot
         if (!next_token || arr->current->alias != FL_TOKEN_ALIAS_DOT)
@@ -70,7 +75,7 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id)
 {
     fl_ast_node *node;
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_CALL, FL_NULL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_CALL, parent);
     parent = node;
 
     // add id as a first child
@@ -114,9 +119,9 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
     {
-        fl_ast_literal_info *literal_info;
-        fl_ast_literal_info_init(&literal_info, arr->current->alias, arr->current->value);
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_LITERAL, literal_info, FL_NULL);
+        fl_ast_literal_data *literal_info;
+        fl_ast_literal_data_init(&literal_info, arr->current->alias, arr->current->value);
+        init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_info, FL_NULL);
 
         next_token_safe;
     }
@@ -169,7 +174,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
     fl_ast_node *node;
 
     // create parent node (block node)
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_BLOCK, FL_NULL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_BLOCK, parent);
     parent = node;
 
     // check for brace if block is not root
@@ -230,7 +235,7 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     fl_ast_node *node;
 
     // create operator node
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_OPERATOR, FL_NULL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, parent);
 
     // add id node
     _fl_ast_handle_id(node, arr);
@@ -259,7 +264,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
     fl_ast_node *node;
     fl_bool parenth = FL_FALSE;
 
-    fl_ast_node_init(&node, FL_AST_NODE_TYPE_FUNC_HEADER, FL_NULL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_FUNC_HEADER, parent);
     parent = node;
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
@@ -278,7 +283,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
         }
 
         // fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
-        fl_ast_node_init(&node, FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
+        init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
 
         next_token_safe;
 
@@ -309,7 +314,7 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
 {
     fl_ast_node *func_node;
 
-    fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent);
+    fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent, arr->current->location);
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN || arr->current->type == FL_TOKEN_TYPE_ID)
     {
@@ -326,7 +331,7 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
         // single expression
         fl_ast_node *block_node;
 
-        fl_ast_node_init(&block_node, FL_AST_NODE_TYPE_BLOCK, FL_NULL, parent);
+        fl_ast_node_init(&block_node, FL_AST_NODE_TYPE_BLOCK, FL_NULL, parent, arr->current->location);
 
         _fl_ast_handle_expression(block_node, arr, FL_FALSE);
     }
@@ -350,8 +355,8 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
     }
 
     // create type descriptor
-    fl_ast_type_info *type_info;
-    fl_ast_type_info_init(&type_info, dimensions);
+    fl_ast_type_data *type_info;
+    fl_ast_type_data_init(&type_info, dimensions);
     type_id->data = type_info;
 }
 
@@ -361,13 +366,13 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
     fl_token_arr_reset_ptr(arr);
 
     // create root node with no related data
-    fl_ast_node *root;
-    fl_ast_node_init(&root, FL_AST_NODE_TYPE_ROOT, FL_NULL, FL_NULL);
+    fl_ast_node *node;
+    init_node_empty(FL_AST_NODE_TYPE_ROOT, FL_NULL);
 
     // we assume that the whole program is a block
-    _fl_ast_handle_block(root, arr, FL_TRUE);
+    _fl_ast_handle_block(node, arr, FL_TRUE);
 
-    return root;
+    return node;
 }
 
 fl_void fl_ast_free(fl_ast_node *node)
@@ -389,16 +394,16 @@ fl_void fl_ast_free(fl_ast_node *node)
     fl_mem_free(node);
 }
 
-fl_void fl_ast_type_info_init(fl_ast_type_info **info, fl_uint dimensions)
+fl_void fl_ast_type_data_init(fl_ast_type_data **info, fl_uint dimensions)
 {
-    fl_ast_type_info *i = fl_mem_alloc(sizeof(fl_ast_type_info));
+    fl_ast_type_data *i = fl_mem_alloc(sizeof(fl_ast_type_data));
 
     i->dimensions = dimensions;
 
     *info = i;
 }
 
-fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent)
+fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_token_location location)
 {
     fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
 
@@ -406,15 +411,12 @@ fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *
     n->data = data;
     n->children = FL_NULL;
     n->next = FL_NULL;
+    n->location = location;
 
     if (parent)
-    {
         fl_ast_node_add_child(parent, n);
-    }
     else
-    {
         n->parent = FL_NULL;
-    }
 
     *node = n;
 }
@@ -445,14 +447,14 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
     current->next = node;
 }
 
-fl_void fl_ast_type_info_free(fl_ast_type_info *info)
+fl_void fl_ast_type_data_free(fl_ast_type_data *info)
 {
     fl_mem_free(info);
 }
 
-fl_void fl_ast_literal_info_init(fl_ast_literal_info **info, fl_ast_literal_type type, fl_unknown *value)
+fl_void fl_ast_literal_data_init(fl_ast_literal_data **info, fl_ast_literal_type type, fl_unknown *value)
 {
-    fl_ast_literal_info *i = fl_mem_alloc(sizeof(fl_ast_literal_info));
+    fl_ast_literal_data *i = fl_mem_alloc(sizeof(fl_ast_literal_data));
 
     i->literal_type = type;
     i->data = value;
@@ -460,7 +462,7 @@ fl_void fl_ast_literal_info_init(fl_ast_literal_info **info, fl_ast_literal_type
     *info = i;
 }
 
-fl_void fl_ast_literal_info_free(fl_ast_literal_info *info)
+fl_void fl_ast_literal_data_free(fl_ast_literal_data *info)
 {
     fl_mem_free(info);
 }

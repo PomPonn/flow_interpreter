@@ -37,33 +37,34 @@ struct _fl_ast_node
     struct _fl_ast_node *children;
     struct _fl_ast_node *next;
     fl_ast_node_type type;
+    fl_token_location location;
     fl_unknown *data;
 };
 typedef struct _fl_ast_node fl_ast_node;
 
-struct _fl_ast_literal_info
+struct _fl_ast_literal_data
 {
     fl_ast_literal_type literal_type;
     fl_unknown *data;
 };
-typedef struct _fl_ast_literal_info fl_ast_literal_info;
+typedef struct _fl_ast_literal_data fl_ast_literal_data;
 
-struct _fl_ast_type_info
+struct _fl_ast_type_data
 {
     fl_ushort dimensions;
 };
-typedef struct _fl_ast_type_info fl_ast_type_info;
+typedef struct _fl_ast_type_data fl_ast_type_data;
 
 fl_ast_node *fl_ast_gen(fl_token_arr *arr);
 fl_void fl_ast_free(fl_ast_node *node);
 
-fl_void fl_ast_type_info_init(fl_ast_type_info **info, fl_uint dimensions);
-fl_void fl_ast_type_info_free(fl_ast_type_info *info);
+fl_void fl_ast_type_data_init(fl_ast_type_data **info, fl_uint dimensions);
+fl_void fl_ast_type_data_free(fl_ast_type_data *info);
 
-fl_void fl_ast_literal_info_init(fl_ast_literal_info **info, fl_ast_literal_type type, fl_unknown *data);
-fl_void fl_ast_literal_info_free(fl_ast_literal_info *info);
+fl_void fl_ast_literal_data_init(fl_ast_literal_data **info, fl_ast_literal_type type, fl_unknown *data);
+fl_void fl_ast_literal_data_free(fl_ast_literal_data *info);
 
-fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent);
+fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_token_location location);
 fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);

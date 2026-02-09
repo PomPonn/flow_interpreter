@@ -34,17 +34,25 @@ enum _fl_token_alias
 };
 typedef fl_ubyte fl_token_alias;
 
+struct _fl_token_location
+{
+    // e.g. filename
+    const fl_char *description;
+    fl_size line;
+    fl_size column;
+};
+typedef struct _fl_token_location fl_token_location;
+
 struct _fl_token
 {
     fl_token_type type;
     fl_token_alias alias;
     fl_char *value;
-    fl_size line;
-    fl_size column;
+    fl_token_location location;
 };
 typedef struct _fl_token fl_token;
 
-fl_bool fl_token_init(fl_token *token, fl_char *value, fl_size line, fl_size column);
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location location);
 
 fl_void fl_token_free(fl_token *token);
 

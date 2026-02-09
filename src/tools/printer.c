@@ -2,6 +2,10 @@
 
 #include <stdio.h>
 
+// --- DEFINES ---
+
+#define _LOCATION_STR_BUFFER_SIZE 16
+
 // --- STATIC FUNCTION DEFINITIONS ---
 
 static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node);
@@ -14,7 +18,7 @@ static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
     assert(literal_node->type == FL_AST_NODE_TYPE_LITERAL);
 
     // temp
-    return (fl_char *)((fl_ast_literal_info *)literal_node->data)->data;
+    return (fl_char *)((fl_ast_literal_data *)literal_node->data)->data;
 }
 
 static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
@@ -28,7 +32,7 @@ static inline fl_void _fl_prt_print_ast_node(fl_ast_node *node)
         printf("<block>");
         break;
     case FL_AST_NODE_TYPE_TYPE:
-        printf("<type> [%u]", ((fl_ast_type_info *)node->data)->dimensions);
+        printf("<type> [%u]", ((fl_ast_type_data *)node->data)->dimensions);
         break;
     case FL_AST_NODE_TYPE_FUNCTION:
         printf("<function>");
@@ -66,7 +70,7 @@ fl_void fl_prt_print_token_entries(fl_token_arr *arr)
 
     while (arr->current)
     {
-        printf("[%lu, %lu] ", arr->current->line + 1, arr->current->column + 1);
+        printf("[%lu, %lu] ", arr->current->location.line + 1, arr->current->location.column + 1);
         printf("'%s'\n", fl_token_as_printable(arr->current->value));
         fl_token_arr_next(arr);
     }
@@ -83,6 +87,18 @@ fl_void fl_prt_print_tokens_joined(fl_token_arr *arr)
 
 fl_void fl_prt_print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
 {
+    static const char *last_desc = FL_NULL;
+    static fl_char location_str_buffer[_LOCATION_STR_BUFFER_SIZE];
+
+    if (!fl_str_equal(last_desc, root->location.description))
+    {
+        last_desc = root->location.description;
+        printf("[%s]\n", last_desc);
+    }
+
+    sprintf(location_str_buffer, "[%lu, %lu]", root->location.line + 1, root->location.column + 1);
+    printf("%-*s", _LOCATION_STR_BUFFER_SIZE, location_str_buffer);
+
     for (fl_ushort i = 0; i < nest_level; i++)
     {
         printf((i == nest_level - 1) ? "+- " : "|  ");
