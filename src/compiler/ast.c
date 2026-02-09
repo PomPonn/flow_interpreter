@@ -189,10 +189,10 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
     }
 
     // iterate over tokens
-    while (arr->current)
+    for (; arr->current; next_token)
     {
         if (arr->current->alias == FL_TOKEN_ALIAS_SEMICOLON)
-            next_token;
+            continue;
         // inner block to handle
         else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
         {
@@ -208,21 +208,17 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
         {
             if (is_root)
                 throw_syntax_error("Unexpected block closure ('}')");
-            else
-                next_token;
         }
         else
         {
             _fl_ast_handle_expression(parent, arr, FL_FALSE);
 
             // throw error if expression isn't ending with a semicolon
-            if (arr->current->alias == FL_TOKEN_ALIAS_SEMICOLON)
-                next_token;
-            else
+            if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
                 throw_syntax_error("expected semicolon ';' before to end expression");
 
 #if _INCLUDE_INLINE_LOGS
-            printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->line + 1);
+            printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
             fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
             printf("\n");
 #endif

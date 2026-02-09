@@ -90,10 +90,10 @@ fl_void fl_prt_print_ast_tree(fl_ast_node *root, fl_ushort nest_level)
     static const char *last_desc = FL_NULL;
     static fl_char location_str_buffer[_LOCATION_STR_BUFFER_SIZE];
 
-    if (!fl_str_equal(last_desc, root->location.description))
+    if (nest_level == 0 || !fl_str_equal(last_desc, root->location.description))
     {
         last_desc = root->location.description;
-        printf("[%s]\n", last_desc);
+        printf("[LOCATION] %s\n", last_desc);
     }
 
     sprintf(location_str_buffer, "[%lu, %lu]", root->location.line + 1, root->location.column + 1);
