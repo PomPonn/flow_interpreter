@@ -226,6 +226,7 @@ static inline fl_size _fl_tok_count_tokens(fl_char *str)
     return count;
 }
 
+// returns FL_FALSE if source has no tokens
 fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *source_desc)
 {
     fl_uint count = _fl_tok_count_tokens(str);
@@ -234,8 +235,6 @@ fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *so
 
     // Allocate memory for tokens
     fl_token *tokens = fl_mem_alloc_arr(count, sizeof(fl_token));
-    if (tokens == FL_NULL)
-        return FL_FALSE;
 
     // Tokenize the string
     fl_size line, column;
