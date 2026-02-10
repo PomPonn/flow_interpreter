@@ -36,20 +36,17 @@ static inline const fl_char *_fl_err_type_to_string(fl_err_type type)
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;
-fl_void fl_err_report(fl_err_type type, const fl_char *message, fl_token bad_token)
+fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location)
 {
     if (_FL_ERRORS_NUM + 1 > _MAX_ERROR_NUM)
-    {
+        // execute errors if current one exceeds the limit
         fl_err_execute();
-        return;
-    }
 
     _FL_ERRORS[_FL_ERRORS_NUM] = (fl_err_record){
         .type = type,
         .description = message,
-        .column = bad_token.location.column,
-        .line = bad_token.location.line,
-        .token = fl_str_dup(bad_token.value)};
+        .location = location,
+        .near = fl_str_dup(near)};
 
     _FL_ERRORS_NUM++;
 }
@@ -60,18 +57,16 @@ fl_void fl_err_clear()
         return;
 
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
-    {
-        fl_mem_free(_FL_ERRORS[i].token);
-    }
+        fl_mem_free(_FL_ERRORS[i].near);
 
     _FL_ERRORS_NUM = 0;
 }
 
 // reports an error and ends interpretation
-fl_void fl_err_throw(fl_err_type type, const fl_char *message, fl_token bad_token)
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location)
 {
 #if !_SUPPRESS_ERRORS
-    fl_err_report(type, message, bad_token);
+    fl_err_report(type, message, near, location);
     fl_err_execute();
 #endif
 }
@@ -81,10 +76,10 @@ fl_void fl_err_execute()
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {
         printf(
-            "Error in line %lu, column %lu near token '%s':\n%s: %s\n",
-            _FL_ERRORS[i].line + 1,
-            _FL_ERRORS[i].column + 1,
-            fl_token_as_printable(_FL_ERRORS[i].token),
+            "Error in line %lu, column %lu near '%s':\n%s: %s\n",
+            _FL_ERRORS[i].location.line + 1,
+            _FL_ERRORS[i].location.column + 1,
+            _FL_ERRORS[i].near,
             _fl_err_type_to_string(_FL_ERRORS[i].type),
             _FL_ERRORS[i].description);
     }
