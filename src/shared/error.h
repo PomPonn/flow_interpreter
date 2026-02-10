@@ -15,17 +15,16 @@ typedef fl_ushort fl_err_type;
 struct _fl_err_record
 {
     fl_err_type type;
+    fl_token_location location;
     const fl_char *description;
-    fl_size line;
-    fl_size column;
-    fl_char *token;
+    const fl_char *near;
 };
 typedef struct _fl_err_record fl_err_record;
 
-fl_void fl_err_report(fl_err_type code, const fl_char *message, fl_token bad_token);
+fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location);
 
 fl_void fl_err_clear();
 
-fl_void fl_err_throw(fl_err_type code, const fl_char *message, fl_token bad_token);
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location);
 
 fl_void fl_err_execute();
