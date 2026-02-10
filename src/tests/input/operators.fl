@@ -22,5 +22,5 @@ num1 gt num2;
 # T8 (function call) #
 some_result is mult(4, 9);
 
-# T9 (function call with more chaining) #
+# T9 (function call with extended chaining) #
 (my_func(4, (4 * 2) - my_var) as float) / 12 * ring;
