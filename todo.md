@@ -5,6 +5,7 @@
 - remember to implement convertion of literal info data field to appropiate type
 ## general
 - implement time measurement on unix systems
+- think if warnings should be a thing (they probably should, but for now I don't have any good use for them)
 - test tokenizer
 - make errors more universal
 
