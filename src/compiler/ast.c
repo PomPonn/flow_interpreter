@@ -13,14 +13,14 @@
 // --- DEFINES ---
 
 #define throw_syntax_error(message) \
-    fl_err_throw(FL_ERR_AST, message, *arr->current)
+    fl_err_throw(FL_ERR_AST, message, *arr->current->value, *arr->current->location)
 
 #define next_token \
     fl_token_arr_next(arr)
 
 #define next_token_safe \
     if (!next_token)    \
-    fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator])
+        fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator]->value, arr->_data[arr->_iterator]->location)
 
 #define init_node_empty(type, parent) \
     fl_ast_node_init(&node, type, FL_NULL, parent, arr->current->location);
