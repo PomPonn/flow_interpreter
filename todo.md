@@ -1,15 +1,13 @@
 # todo
-
-- make errors more universal
+## AST
 - think if we can use only single id ast node instead of id chain if there is no chaining
-- cleanup ast generator
-- abstract syntax tree generation
-    - unused tokens handling
-- implement time measurement on unix systems
+- AST generation unused tokens handling
 - remember to implement convertion of literal info data field to appropiate type
+## general
+- implement time measurement on unix systems
+- make errors more universal
 
 # Q&A
-
 - what to do with errors? How to report them when we free tokens and don't now the line?
 - how to handle types? Are they predefined?
     - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
@@ -17,7 +15,6 @@
 - How to represent language structures in interpreter code?
 
 # done
-
 - cleanup optimalizer
 - cleanup tokenizer
 - fix optimalizer space handling
