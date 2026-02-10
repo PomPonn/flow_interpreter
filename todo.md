@@ -5,6 +5,7 @@
 - remember to implement convertion of literal info data field to appropiate type
 ## general
 - implement time measurement on unix systems
+- test tokenizer
 - make errors more universal
 
 # Q&A
