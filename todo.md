@@ -1,15 +1,26 @@
+# WIP
+
+- AST function expression handling
+
 # todo
+
 ## AST
+
+- AST types handling (type dimensions?)
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - AST generation unused tokens handling
 - remember to implement convertion of literal info data field to appropiate type
+
 ## general
+
 - implement time measurement on unix systems
 - think if warnings should be a thing (they probably should, but for now I don't have any good use for them)
 - test tokenizer
 - make errors more universal
+- handle other number bases (hex for instance)
 
 # Q&A
+
 - what to do with errors? How to report them when we free tokens and don't now the line?
 - how to handle types? Are they predefined?
     - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
@@ -17,6 +28,7 @@
 - How to represent language structures in interpreter code?
 
 # done
+
 - cleanup optimalizer
 - cleanup tokenizer
 - fix optimalizer space handling
