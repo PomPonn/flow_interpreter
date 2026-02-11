@@ -24,3 +24,6 @@ some_result is mult(4, 9);
 
 # T9 (function call with extended chaining) #
 (my_func(4, (4 * 2) - my_var) as float) / 12 * ring;
+
+# T10 (type assignment) #
+x : float = 5.123;

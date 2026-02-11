@@ -41,7 +41,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
 
 // --- IMPLEMENTATIONS ---
 
-// handles id specifier (eg. 'body.hand')
+// handles id chain (eg. 'body.hand')
 // guarantees that next token is not null
 inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr)
 {
@@ -154,7 +154,8 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     // check if it is the end of expression
     if (fl_token_is_delim(arr->current))
         fl_ast_node_add_child(parent, node);
-    else
+
+    else if (!parent || parent->type != FL_AST_NODE_TYPE_OPERATOR)
         node = _fl_ast_handle_operator(parent, arr, node);
 
     if (inner)
@@ -216,7 +217,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
 
             // throw error if expression isn't ending with a semicolon
             if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
-                throw_syntax_error("expected semicolon ';' before to end expression");
+                throw_syntax_error("expected semicolon ';' to end expression");
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
@@ -232,9 +233,9 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     fl_ast_node *node;
 
     // create operator node
-    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, parent);
+    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
 
-    // add id node
+    // add operator id node
     _fl_ast_handle_id(node, arr);
     // add left side of the operator as a child
     fl_ast_node_add_child(node, left);
@@ -247,6 +248,11 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     else
         // ... else handle expression
         _fl_ast_handle_expression(node, arr, FL_FALSE);
+
+    if (arr->current->type == FL_TOKEN_TYPE_ID)
+        node = _fl_ast_handle_operator(parent, arr, node);
+    else
+        fl_ast_node_add_child(parent, node);
 
     return node;
 }
@@ -345,10 +351,9 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
 
         // throw error if bracket is not closed
         if (arr->current->alias != FL_TOKEN_ALIAS_RBRACKET)
-            throw_syntax_error("Wrong use of type dimensions specifier");
+            throw_syntax_error("Bracket not closed");
 
         next_token_safe;
-        dimensions++;
     }
 
     // create type descriptor
@@ -428,6 +433,9 @@ fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 
 fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
 {
+    if (!parent)
+        return;
+
     if (!parent->children)
     {
         node->parent = parent;

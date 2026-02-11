@@ -1,11 +1,9 @@
-# WIP
-
-- AST function expression handling
-
-# todo
+# TODO
 
 ## AST
 
+- fix AST operators order
+- AST function expression handling
 - AST types handling (type dimensions?)
 - think if we can use only single id ast node instead of id chain if there is no chaining
 - AST generation unused tokens handling
