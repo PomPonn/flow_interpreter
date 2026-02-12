@@ -157,6 +157,8 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
 
     else if (!parent || parent->type != FL_AST_NODE_TYPE_OPERATOR)
         node = _fl_ast_handle_operator(parent, arr, node);
+    else
+        fl_ast_node_add_child(parent, node);
 
     if (inner)
     {
@@ -363,6 +365,8 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
 }
 
 // tries to generate abstract syntax tree from specified tokens
+// if succeeds, returned root node is 100% valid
+// otherwise errors will be thrown
 fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 {
     fl_token_arr_reset_ptr(arr);
@@ -373,6 +377,10 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 
     // we assume that the whole program is a block
     _fl_ast_handle_block(node, arr, FL_TRUE);
+
+    // execute errors if there are any, because it doesn't make much sense
+    // to go on with wrong syntax tree
+    fl_err_execute();
 
     return node;
 }

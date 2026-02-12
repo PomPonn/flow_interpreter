@@ -55,6 +55,13 @@ struct _fl_ast_type_data
 };
 typedef struct _fl_ast_type_data fl_ast_type_data;
 
+struct _fl_ast_operator_data
+{
+    fl_bool grouped;
+    fl_ushort order;
+};
+typedef struct _fl_ast_operator_data fl_ast_operator_data;
+
 fl_ast_node *fl_ast_gen(fl_token_arr *arr);
 fl_void fl_ast_free(fl_ast_node *node);
 

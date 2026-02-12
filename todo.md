@@ -2,7 +2,8 @@
 
 ## AST
 
-- fix AST operators order
+- finish fl_ast_operator_data struct handling
+- AST operators sorting
 - AST function expression handling
 - AST types handling (type dimensions?)
 - think if we can use only single id ast node instead of id chain if there is no chaining
@@ -27,6 +28,7 @@
 
 # done
 
+- fix AST operators order
 - cleanup optimalizer
 - cleanup tokenizer
 - fix optimalizer space handling

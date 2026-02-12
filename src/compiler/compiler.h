@@ -2,4 +2,4 @@
 
 #include "shared/common.h"
 
-fl_void fl_cmp_compile(fl_char* source_code);
+fl_void fl_comp_compile(fl_char *source_path);

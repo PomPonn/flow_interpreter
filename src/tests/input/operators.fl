@@ -1,29 +1,32 @@
-# T1 (literal - literal) #
+# literal - literal #
 2 == 3;
 
-# T2 (id - literal) #
+# id - literal #
 num equals 2;
 
-# T3 (id - id) #
+# id - id #
 num1 gt num2;
 
-# T4 (expr - id) #
+# expr - id #
 (3 + 2) * ampl;
 
-# T5 (simple expr - simple expr) #
+# simple expr - simple expr #
 (4 pow 3) alt (6 * magnitude);
 
-# T6 (operator chaining 1) #
+# T6 operator chaining 1 #
 4 - 2 + 6 pow 4;
 
-# T7 (operator chaining 2) #
+# operator chaining 2 #
 165 = 2 + (x ^ y) - 18 * w;
 
-# T8 (function call) #
+# operator chaining 3 #
+var = 4 - 2 * 5 / 6 + 1;
+
+# (function call) #
 some_result is mult(4, 9);
 
-# T9 (function call with extended chaining) #
+# function call with extended chaining #
 (my_func(4, (4 * 2) - my_var) as float) / 12 * ring;
 
-# T10 (type assignment) #
+# type assignment #
 x : float = 5.123;

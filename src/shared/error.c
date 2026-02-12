@@ -15,28 +15,11 @@
 fl_err_record _FL_ERRORS[_MAX_ERROR_NUM];
 fl_size _FL_ERRORS_NUM = 0;
 
-// --- STATIC FUNCTION DEFINITIONS ---
-
-static inline const fl_char *_fl_err_type_to_string(fl_err_type type);
-
 // --- IMPLEMENTATIONS ---
-
-static inline const fl_char *_fl_err_type_to_string(fl_err_type type)
-{
-    switch (type)
-    {
-    case FL_ERR_NONE:
-        return "No error";
-    case FL_ERR_AST:
-        return "Invalid syntax";
-    default:
-        return "Undefined error";
-    }
-}
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;
-fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location)
+fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_token_location location)
 {
     if (_FL_ERRORS_NUM + 1 > _MAX_ERROR_NUM)
         // execute errors if current one exceeds the limit
@@ -63,7 +46,7 @@ fl_void fl_err_clear()
 }
 
 // reports an error and ends interpretation
-fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char* near, fl_token_location location)
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_token_location location)
 {
 #if !_SUPPRESS_ERRORS
     fl_err_report(type, message, near, location);
@@ -73,15 +56,33 @@ fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char* ne
 
 fl_void fl_err_execute()
 {
+    if (_FL_ERRORS_NUM == 0)
+        return;
+
     for (fl_size i = 0; i < _FL_ERRORS_NUM; i++)
     {
-        printf(
-            "Error in line %lu, column %lu near '%s':\n%s: %s\n",
-            _FL_ERRORS[i].location.line + 1,
-            _FL_ERRORS[i].location.column + 1,
-            _FL_ERRORS[i].near,
-            _fl_err_type_to_string(_FL_ERRORS[i].type),
-            _FL_ERRORS[i].description);
+        switch (_FL_ERRORS[i].type)
+        {
+        case FL_ERR_FILE:
+            printf("[ERROR] File error while processing file '%s':\n%s\n",
+                   _FL_ERRORS[i].location.description,
+                   _FL_ERRORS[i].description);
+            break;
+        case FL_ERR_AST:
+            printf(
+                "[ERROR] Invalid syntax in %s\n"
+                "line %lu, column %lu near '%s':\n%s\n",
+                _FL_ERRORS[i].location.description,
+                _FL_ERRORS[i].location.line + 1,
+                _FL_ERRORS[i].location.column + 1,
+                _FL_ERRORS[i].near,
+                _FL_ERRORS[i].description);
+            break;
+        default:
+            // unhandled error type
+            assert(FL_FALSE);
+            break;
+        }
     }
 
     // TODO: free program's allocated memory here
