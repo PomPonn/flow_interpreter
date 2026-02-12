@@ -15,7 +15,6 @@
 - implement time measurement on unix systems
 - think if warnings should be a thing (they probably should, but for now I don't have any good use for them)
 - test tokenizer
-- make errors more universal
 - handle other number bases (hex for instance)
 
 # Q&A
@@ -28,6 +27,7 @@
 
 # done
 
+- make errors more universal
 - fix AST operators order
 - cleanup optimalizer
 - cleanup tokenizer
