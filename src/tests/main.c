@@ -1,11 +1,8 @@
-
-#include "framework.h"
-
 #include "compiler/compiler.h"
 
 int main()
 {
-    fl_comp_compile("");
+    fl_comp_compile(_TEST_INPUT_PATH);
 
     return 0;
 }

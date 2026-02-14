@@ -1,6 +1,7 @@
 #include "shared/memory.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 fl_void fl_mem_free(fl_unknown *memory)
 {
@@ -15,4 +16,9 @@ fl_unknown *fl_mem_alloc(fl_size size)
 fl_unknown *fl_mem_alloc_arr(fl_size elem_size, fl_size count)
 {
     return malloc(elem_size * count);
+}
+
+fl_void fl_mem_copy(fl_unknown *src, fl_unknown *dest, fl_size size)
+{
+    memcpy(dest, src, size);
 }

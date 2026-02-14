@@ -28,7 +28,7 @@
 #define init_node_filled(type, value, parent) \
     fl_ast_node_init(&node, type, value, parent, arr->current->location);
 
-// --- STATIC FUNCTIONS DEFINITION ---
+// --- STATIC FUNCTION DEFINITIONS ---
 
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
@@ -68,7 +68,7 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
     }
 
     // id chain handler failed
-    if (parent->children == FL_NULL)
+    if (parent->child == FL_NULL)
         throw_syntax_error("Expected id chain");
 
     return parent;
@@ -171,7 +171,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     return node;
 }
 
-// handles single block ({...}) of code and its children
+// handles single block ({...}) of code and its child
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root)
 {
     // temp variable
@@ -322,15 +322,11 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
     fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent, arr->current->location);
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN || arr->current->type == FL_TOKEN_TYPE_ID)
-    {
         _fl_ast_handle_function_header(func_node, arr);
-    }
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
-    {
         // function block
         _fl_ast_handle_block(func_node, arr, FL_FALSE);
-    }
     else
     {
         // single expression
@@ -367,7 +363,7 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
 // tries to generate abstract syntax tree from specified tokens
 // if succeeds, returned root node is 100% valid
 // otherwise errors will be thrown
-fl_ast_node *fl_ast_gen(fl_token_arr *arr)
+fl_void fl_ast_tree_gen(fl_ast_tree *tree, fl_token_arr *arr)
 {
     fl_token_arr_reset_ptr(arr);
 
@@ -382,20 +378,32 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
     // to go on with wrong syntax tree
     fl_err_execute();
 
-    return node;
+    // init tree struct
+    tree->_data = node;
+    tree->root = node->child;
 }
 
-fl_void fl_ast_free(fl_ast_node *node)
+fl_void fl_ast_tree_free(fl_ast_tree *tree)
+{
+    if (!tree)
+        return;
+
+    if (tree->_data)
+        // Free child recursively
+        fl_ast_node_free(tree->_data);
+}
+
+fl_void fl_ast_node_free(fl_ast_node *node)
 {
     if (!node)
         return;
 
     // Free children recursively
-    fl_ast_node *child = node->children;
+    fl_ast_node *child = node->child;
     while (child)
     {
         fl_ast_node *next_child = child->next;
-        fl_ast_free(child);
+        fl_ast_node_free(child);
         child = next_child;
     }
 
@@ -419,7 +427,7 @@ fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *
 
     n->type = type;
     n->data = data;
-    n->children = FL_NULL;
+    n->child = FL_NULL;
     n->next = FL_NULL;
     n->location = location;
 
@@ -433,7 +441,7 @@ fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 {
-    fl_ast_node *node = parent->children;
+    fl_ast_node *node = parent->child;
     while (node->next)
         node = node->next;
     return node;
@@ -444,14 +452,14 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
     if (!parent)
         return;
 
-    if (!parent->children)
+    if (!parent->child)
     {
         node->parent = parent;
-        parent->children = node;
+        parent->child = node;
         return;
     }
 
-    fl_ast_node *current = parent->children;
+    fl_ast_node *current = parent->child;
 
     while (current->next)
         current = current->next;
