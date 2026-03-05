@@ -18,7 +18,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_FUNCTION,
     FL_AST_NODE_TYPE_FUNC_HEADER,
 };
-typedef fl_ubyte fl_ast_node_type;
+typedef fl_byte fl_ast_node_type;
 
 enum _fl_ast_literal_type
 {
@@ -26,7 +26,7 @@ enum _fl_ast_literal_type
     FL_AST_LITERAL_TYPE_NUMBER,
     FL_AST_LITERAL_TYPE_ARRAY,
 };
-typedef fl_ubyte fl_ast_literal_type;
+typedef fl_byte fl_ast_literal_type;
 
 struct _fl_ast_node
 {

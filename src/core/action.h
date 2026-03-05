@@ -7,7 +7,7 @@ enum _fl_action_type
     FL_ACTION_TYPE_ARITHMETIC,
     FL_ACTION_TYPE_FUNCTION,
 };
-typedef fl_ubyte fl_action_type;
+typedef fl_byte fl_action_type;
 
 struct _fl_action
 {

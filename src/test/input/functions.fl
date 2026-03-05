@@ -1,7 +1,6 @@
 # function type called like a func #
+
 # first arg is a return type #
-
-
 fun1 : func(int, int, float) = () -> {
 
 }

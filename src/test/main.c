@@ -1,5 +1,7 @@
 #include "compiler/compiler.h"
 
+#include <stdio.h>
+
 int main()
 {
     fl_comp_compile(_TEST_INPUT_PATH);

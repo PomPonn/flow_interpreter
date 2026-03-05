@@ -11,7 +11,7 @@ enum _fl_token_type
     FL_TOKEN_TYPE_DELIMITER,
     FL_TOKEN_TYPE_COMMENT
 };
-typedef fl_ubyte fl_token_type;
+typedef fl_byte fl_token_type;
 
 enum _fl_token_alias
 {
@@ -32,7 +32,7 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_STRING,
     FL_TOKEN_ALIAS_NUMBER,
 };
-typedef fl_ubyte fl_token_alias;
+typedef fl_byte fl_token_alias;
 
 struct _fl_token_location
 {

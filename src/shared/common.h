@@ -13,8 +13,7 @@ typedef void fl_unknown;
 typedef void fl_void;
 typedef char fl_char;
 typedef double fl_double;
-typedef uint8_t fl_ubyte;
-typedef int8_t fl_byte;
+typedef uint8_t fl_byte;
 typedef uint16_t fl_ushort;
 typedef int16_t fl_short;
 typedef uint32_t fl_uint;
@@ -28,4 +27,4 @@ enum _fl_bool
     FL_FALSE,
     FL_TRUE,
 };
-typedef fl_ubyte fl_bool;
+typedef fl_byte fl_bool;

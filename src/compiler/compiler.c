@@ -8,18 +8,6 @@
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
 
-// byte code array
-#define FL_VECTOR_NAME byte_code
-#define FL_VECTOR_TYPE fl_ubyte
-#define FL_VECTOR_CAP 1024
-#include "generics/vector.h"
-
-// id table array
-#define FL_VECTOR_NAME id_table
-#define FL_VECTOR_TYPE char *
-#define FL_VECTOR_CAP 16
-#include "generics/vector.h"
-
 #include "core/action.h"
 
 // --- DEFINES ---
@@ -29,12 +17,12 @@
 
 // --- STATIC FUNCTION DEFINITIONS ---
 
-static void _fl_comp_compile_node(fl_ast_node *root, fl_byte_code *bcode);
+static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt);
 
 // --- IMPLEMENTATIONS ---
 
 // compiles source code to intermediete byte code
-fl_void fl_comp_compile(fl_char *source_path)
+fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 {
     fl_char *source_code = fl_file_read(source_path);
 
@@ -53,16 +41,25 @@ fl_void fl_comp_compile(fl_char *source_path)
     fl_ast_tree tree;
     fl_ast_tree_gen(&tree, &token_array);
 
-    fl_byte_code bcode;
-    fl_byte_code_init(&bcode);
-
-    _fl_comp_compile_node(tree.root, &bcode);
+    _fl_comp_compile_node(tree.root, cnt);
 
     fl_token_arr_free(&token_array);
     fl_ast_tree_free(&tree);
 }
 
-static void _fl_comp_compile_node(fl_ast_node *root, fl_byte_code *code)
+fl_void fl_context_init(fl_context *cnt)
+{
+    fl_byte_code_init(&cnt->byte_code);
+    fl_id_table_init(&cnt->id_table);
+}
+
+fl_void fl_context_free(fl_context *cnt)
+{
+    fl_byte_code_free(&cnt->byte_code);
+    fl_id_table_free(&cnt->id_table);
+}
+
+static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
 {
     fl_ast_node *current = root;
     while (current)
@@ -70,12 +67,12 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_byte_code *code)
         switch (current->type)
         {
         case FL_AST_NODE_TYPE_BLOCK:
-            fl_byte_code_push(code, FL_COMP_INSTR_STARTBLOCK);
-            _fl_comp_compile_node(current->child, code);
-            fl_byte_code_push(code, FL_COMP_INSTR_ENDBLOCK);
+            fl_byte_code_push(&cnt->byte_code, FL_COMP_INSTR_STARTBLOCK);
+            _fl_comp_compile_node(current->child, cnt);
+            fl_byte_code_push(&cnt->byte_code, FL_COMP_INSTR_ENDBLOCK);
             break;
         case FL_AST_NODE_TYPE_CALL:
-            fl_byte_code_push(code, FL_COMP_INSTR_CALL);
+            fl_byte_code_push(&cnt->byte_code, FL_COMP_INSTR_CALL);
             break;
         case FL_AST_NODE_TYPE_OPERATOR:
         default:

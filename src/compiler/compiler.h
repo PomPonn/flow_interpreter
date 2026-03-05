@@ -1,6 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
+#include "context/context.h"
 
 enum _fl_comp_instruction
 {
@@ -17,4 +18,4 @@ enum _fl_comp_instruction
     FL_COMP_INSTR_CALL,
 };
 
-fl_void fl_comp_compile(fl_char *source_path);
+fl_void fl_comp_compile(fl_char *source_path, fl_context *context);

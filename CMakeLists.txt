@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.0)
-project(FlowInterpreter VERSION 0.1.0 LANGUAGES C)
+project(FlowInterpreter VERSION 0.1.1 LANGUAGES C)
 
 set(TEST_NAME simple)
 
@@ -15,5 +15,5 @@ add_compile_definitions(
 )
 
 add_library(FlowLibrary STATIC ${SOURCES})
-add_executable(Test ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/main.c)
+add_executable(Test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/main.c)
 target_link_libraries(Test FlowLibrary)
