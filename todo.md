@@ -16,6 +16,7 @@
 - think if warnings should be a thing (they probably should, but for now I don't have any good use for them)
 - test tokenizer
 - handle other number bases (hex for instance)
+- optimalize fl_std_io_put
 
 # Q&A
 

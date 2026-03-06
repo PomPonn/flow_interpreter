@@ -4,7 +4,9 @@
 #include "shared/token_array.h"
 #include "compiler/ast.h"
 
-fl_void fl_prt_print_ast_tree(fl_ast_node *root, fl_ushort nest_level);
+fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level);
+
+fl_void fl_prt_print_ast_tree(fl_ast_tree *tree);
 
 fl_void fl_prt_print_token_entries(fl_token_arr *arr);
 

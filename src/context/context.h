@@ -3,13 +3,13 @@
 #include "shared/common.h"
 
 // byte code array
-#define FL_VECTOR_NAME byte_code
+#define FL_VECTOR_NAME fl_byte_code
 #define FL_VECTOR_TYPE fl_byte
 #define FL_VECTOR_CAP 1024
 #include "generics/vector.h"
 
 // id table array
-#define FL_VECTOR_NAME id_table
+#define FL_VECTOR_NAME fl_id_table
 #define FL_VECTOR_TYPE fl_char *
 #define FL_VECTOR_CAP 16
 #include "generics/vector.h"

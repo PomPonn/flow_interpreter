@@ -9,6 +9,7 @@
 #include "compiler/ast.h"
 
 #include "core/action.h"
+#include "tools/printer.h"
 
 // --- DEFINES ---
 
@@ -40,6 +41,9 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_ast_tree tree;
     fl_ast_tree_gen(&tree, &token_array);
+
+    fl_prt_print_ast_tree(&tree);
+    return;
 
     _fl_comp_compile_node(tree.root, cnt);
 

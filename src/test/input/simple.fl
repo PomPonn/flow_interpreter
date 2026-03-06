@@ -1,1 +1,3 @@
-print(5 + 4);
+import(std . io);
+
+put(5 + 4);

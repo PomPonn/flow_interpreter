@@ -4,7 +4,10 @@
 
 int main()
 {
-    fl_comp_compile(_TEST_INPUT_PATH);
+    fl_context cnt;
+    fl_context_init(&cnt);
+
+    fl_comp_compile(_TEST_INPUT_PATH, &cnt);
 
     return 0;
 }

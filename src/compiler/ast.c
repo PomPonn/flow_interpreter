@@ -374,8 +374,8 @@ fl_void fl_ast_tree_gen(fl_ast_tree *tree, fl_token_arr *arr)
     // we assume that the whole program is a block
     _fl_ast_handle_block(node, arr, FL_TRUE);
 
-    // execute errors if there are any, because it doesn't make much sense
-    // to go on with wrong syntax tree
+    // execute errors if there are any,
+    // because it doesn't make much sense to go on with wrong syntax tree
     fl_err_execute();
 
     // init tree struct

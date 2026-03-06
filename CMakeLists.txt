@@ -8,9 +8,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_compile_definitions(
     _INCLUDE_PROFILER=1
-    _INCLUDE_INLINE_LOGS=1
+    _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
-    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/tests/input/${TEST_NAME}.fl"
+    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/test/input/${TEST_NAME}.fl"
     _PROFILER_LOGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/logs/profiler.txt"
 )
 
