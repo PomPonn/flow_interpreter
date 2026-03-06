@@ -17,7 +17,7 @@ typedef fl_byte fl_lib_type;
 struct _fl_lib_param
 {
     fl_lib_type type;
-    fl_void *data;
+    fl_unknown *data;
 };
 typedef struct _fl_lib_param fl_lib_param;
 
@@ -29,7 +29,7 @@ fl_void fl_lib_param_free(fl_lib_param *param);
 #define FL_ARRAY_PRIMITIVE FL_FALSE
 #include "generics/array.h"
 
-typedef fl_void *(*fl_lib_func_ptr)(fl_lib_params *);
+typedef fl_unknown *(*fl_lib_func_ptr)(fl_lib_params *);
 
 struct _fl_lib_func_entry
 {

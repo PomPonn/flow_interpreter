@@ -8,6 +8,7 @@ enum _fl_err_type
     FL_ERR_NONE,
     FL_ERR_FILE,
     FL_ERR_AST,
+    FL_ERR_COMPILATION,
 };
 typedef fl_ushort fl_err_type;
 

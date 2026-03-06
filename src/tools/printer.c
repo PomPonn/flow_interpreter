@@ -127,7 +127,7 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     // printing node count
     if (nest_level == 0)
     {
-        printf("[NODES COUNT] %lu", nodes_count);
+        printf("[NODES COUNT] %lu\n", nodes_count);
         nodes_count = 0;
     }
 }

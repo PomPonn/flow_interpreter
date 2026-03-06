@@ -35,6 +35,8 @@ fl_void *_fl_std_io_put(fl_lib_params *args)
             break;
         }
     }
+
+    return FL_NULL;
 }
 
 fl_void fl_std_io_register(fl_context *context)

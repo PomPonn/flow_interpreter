@@ -8,6 +8,7 @@
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
+#include "ast.h"
 #endif
 
 // --- DEFINES ---
@@ -466,6 +467,35 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
 
     node->parent = parent;
     current->next = node;
+}
+
+fl_char *fl_ast_stringify_id_chain(fl_ast_node *node, fl_char *buffer, fl_size buffer_size)
+{
+    assert(node->type == FL_AST_NODE_TYPE_ID_CHAIN);
+
+    fl_size total_n = 0;
+    node = node->child;
+
+    while (node)
+    {
+        fl_size n = fl_str_len((fl_char *)node->data);
+        total_n += n;
+        if (total_n > buffer_size)
+            return FL_NULL;
+
+        fl_mem_copy(node->data, buffer, n);
+
+        node = node->next;
+
+        if (node)
+            buffer[total_n] = '.';
+        else
+            buffer[total_n] = '\0';
+
+        buffer += n;
+    }
+
+    return buffer;
 }
 
 fl_void fl_ast_type_data_free(fl_ast_type_data *info)

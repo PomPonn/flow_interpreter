@@ -64,13 +64,24 @@ fl_void fl_err_execute()
         switch (_FL_ERRORS[i].type)
         {
         case FL_ERR_FILE:
-            printf("[ERROR] File error while processing file '%s':\n%s\n",
-                   _FL_ERRORS[i].location.description,
-                   _FL_ERRORS[i].description);
+            printf(
+                "[ERROR] File error while processing file '%s':\n%s\n",
+                _FL_ERRORS[i].location.description,
+                _FL_ERRORS[i].description);
             break;
         case FL_ERR_AST:
             printf(
-                "[ERROR] Invalid syntax in %s\n"
+                "[ERROR] Invalid syntax in '%s'\n"
+                "line %lu, column %lu near '%s':\n%s\n",
+                _FL_ERRORS[i].location.description,
+                _FL_ERRORS[i].location.line + 1,
+                _FL_ERRORS[i].location.column + 1,
+                _FL_ERRORS[i].near,
+                _FL_ERRORS[i].description);
+            break;
+        case FL_ERR_COMPILATION:
+            printf(
+                "[ERROR] Compilation failed while processing '%s'\n"
                 "line %lu, column %lu near '%s':\n%s\n",
                 _FL_ERRORS[i].location.description,
                 _FL_ERRORS[i].location.line + 1,
