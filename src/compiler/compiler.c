@@ -3,13 +3,12 @@
 #include "shared/memory.h"
 #include "tools/file.h"
 #include "shared/error.h"
-#include "shared/token.h"
-#include "shared/token_array.h"
+#include "tokenizer/token.h"
+#include "tokenizer/token_array.h"
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
 #include "compiler/id_view.h"
 
-#include "core/action.h"
 #include "tools/printer.h"
 
 // --- DEFINES ---

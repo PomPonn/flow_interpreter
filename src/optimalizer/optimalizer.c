@@ -1,6 +1,5 @@
 #include "optimalizer.h"
 
-#include "shared/token.h"
 #include "shared/memory.h"
 
 fl_void fl_opt_remove_comments(fl_token_arr *arr)

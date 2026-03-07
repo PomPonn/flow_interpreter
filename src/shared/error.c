@@ -1,7 +1,6 @@
 #include "error.h"
 
 #include "shared/memory.h"
-#include "shared/token.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +14,7 @@
 fl_err_record _FL_ERRORS[_MAX_ERROR_NUM];
 fl_size _FL_ERRORS_NUM = 0;
 
-// --- IMPLEMENTATIONS ---
+// --- DEFINITIONS ---
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;

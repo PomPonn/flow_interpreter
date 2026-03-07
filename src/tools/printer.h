@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "shared/token_array.h"
+#include "tokenizer/token_array.h"
 #include "compiler/ast.h"
 
 fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level);

@@ -1,14 +1,11 @@
-#include "compiler/ast.h"
+#include "ast.h"
 
-#include "shared/token.h"
-#include "shared/token_array.h"
 #include "shared/memory.h"
 #include "shared/error.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
-#include "ast.h"
 #endif
 
 // --- DEFINES ---

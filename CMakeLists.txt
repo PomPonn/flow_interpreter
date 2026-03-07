@@ -4,7 +4,10 @@ project(FlowInterpreter VERSION 0.1.1 LANGUAGES C)
 set(TEST_NAME simple)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
+)
 
 add_compile_definitions(
     _INCLUDE_PROFILER=1
@@ -15,5 +18,5 @@ add_compile_definitions(
 )
 
 add_library(FlowLibrary STATIC ${SOURCES})
-add_executable(Test ${CMAKE_CURRENT_SOURCE_DIR}/src/test/main.c)
+add_executable(Test ${CMAKE_CURRENT_SOURCE_DIR}/test/main.c)
 target_link_libraries(Test FlowLibrary)

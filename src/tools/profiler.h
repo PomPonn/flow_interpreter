@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tools/time.h"
-#include "shared/memory.h"
 #include "shared/common.h"
+#include "shared/memory.h"
+#include "tools/time.h"
 
 #define fl_prof_profile(samples, input_size, input_label, segment)    \
     {                                                                 \
@@ -20,6 +20,9 @@
     }
 
 fl_void _fl_prof_log(
-    const char *log_header, const char *filename,
-    const char *input_label, fl_size input_size,
-    fl_double *measures, fl_size measures_count);
+    const fl_char *log_header,
+    const fl_char *filename,
+    const fl_char *input_label,
+    fl_size input_size,
+    fl_double *measures,
+    fl_size measures_count);

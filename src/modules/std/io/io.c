@@ -1,16 +1,26 @@
-#include "std/modules/io/io.h"
+#include "io.h"
 
-#include "std/lib.h"
+#include "lang/context.h"
 
 #include <stdio.h>
 
 #define _FL_NULL_STR_REPR "<NULL>"
 
-fl_void *_fl_std_io_put(fl_lib_params *args)
+// DECLARATIONS
+
+fl_unknown *_fl_std_io_put(fl_func_params *args);
+
+// DEFINITIONS
+
+fl_void fl_std_io_register(fl_context *context)
+{
+}
+
+fl_unknown *_fl_std_io_put(fl_func_params *args)
 {
     for (fl_size i = 0; i < args->size; i++)
     {
-        fl_lib_param arg = args->data[i];
+        fl_func_param arg = args->data[i];
         switch (arg.type)
         {
         case FL_LIB_TYPE_NULL:
@@ -37,8 +47,4 @@ fl_void *_fl_std_io_put(fl_lib_params *args)
     }
 
     return FL_NULL;
-}
-
-fl_void fl_std_io_register(fl_context *context)
-{
 }

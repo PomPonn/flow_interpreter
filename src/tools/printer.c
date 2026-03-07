@@ -6,18 +6,18 @@
 
 #define _LOCATION_STR_BUFFER_SIZE 16
 
-// --- STATIC FUNCTION DEFINITIONS ---
+// --- DECLARATIONS ---
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
 static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node);
 
-// --- IMPLEMENTATIONS ---
+// --- DEFINITIONS ---
 
 static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
 {
     assert(literal_node->type == FL_AST_NODE_TYPE_LITERAL);
 
-    // temp
+    // TODO: make it better
     return (fl_char *)((fl_ast_literal_data *)literal_node->data)->data;
 }
 

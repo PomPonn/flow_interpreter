@@ -1,6 +1,6 @@
-#include "shared/token.h"
+#include "token.h"
 
-#include "shared/delims.h"
+#include "tokenizer/delims.h"
 #include "shared/memory.h"
 
 #include "stdio.h"

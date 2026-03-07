@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include "tools/time.h"
+#include "time.h"
 
 #include <windows.h>
 

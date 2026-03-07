@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-char *fl_file_read(const fl_char *filename)
+fl_char *fl_file_read(const fl_char *filename)
 {
     FILE *file = fopen(filename, "rb");
     if (!file)
@@ -19,13 +19,13 @@ char *fl_file_read(const fl_char *filename)
         return FL_NULL;
 
     fread(buffer, size, 1, file);
-    buffer[size] = '\0'; // Null-terminate the string
+    buffer[size] = '\0'; // null-terminate the string
 
     fclose(file);
     return buffer;
 }
 
-void fl_file_append(const fl_char *filename, char *data)
+fl_void fl_file_append(const fl_char *filename, fl_char *data)
 {
     FILE *file = fopen(filename, "a");
 

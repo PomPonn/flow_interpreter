@@ -25,9 +25,12 @@ struct _FL_MERGE(_, FL_VECTOR_NAME)
 };
 typedef struct _FL_MERGE(_, FL_VECTOR_NAME) FL_VECTOR_NAME;
 
-inline fl_void _FL_MERGE(FL_VECTOR_NAME, _init)(FL_VECTOR_NAME *arr)
+inline fl_void _FL_MERGE(FL_VECTOR_NAME, _init)(FL_VECTOR_NAME *arr, fl_size capacity)
 {
-    arr->data = (FL_VECTOR_TYPE *)fl_mem_alloc_arr(sizeof(FL_VECTOR_TYPE), FL_VECTOR_CAP);
+    if (!capacity)
+        capacity = FL_VECTOR_CAP;
+
+    arr->data = (FL_VECTOR_TYPE *)fl_mem_alloc_arr(sizeof(FL_VECTOR_TYPE), capacity);
     arr->_capacity = FL_VECTOR_CAP;
     arr->size = 0;
 }
@@ -44,9 +47,9 @@ inline fl_void _FL_MERGE(FL_VECTOR_NAME, _free)(FL_VECTOR_NAME *arr)
     arr->size = 0;
 }
 
-inline fl_void _FL_MERGE(FL_VECTOR_NAME, _reserve)(FL_VECTOR_NAME *arr)
+inline fl_void _FL_MERGE(FL_VECTOR_NAME, _reserve)(FL_VECTOR_NAME *arr, fl_size new_cap)
 {
-    arr->_capacity += FL_VECTOR_CAP;
+    arr->_capacity = new_cap;
     FL_VECTOR_TYPE *recaped = (FL_VECTOR_TYPE *)fl_mem_alloc_arr(sizeof(FL_VECTOR_TYPE), arr->_capacity);
     fl_mem_copy(arr->data, recaped, arr->size);
 }
@@ -54,7 +57,7 @@ inline fl_void _FL_MERGE(FL_VECTOR_NAME, _reserve)(FL_VECTOR_NAME *arr)
 inline fl_void _FL_MERGE(FL_VECTOR_NAME, _push)(FL_VECTOR_NAME *arr, FL_VECTOR_TYPE value)
 {
     if (arr->size + 1 > arr->_capacity)
-        _FL_MERGE(FL_VECTOR_NAME, _reserve)(arr);
+        _FL_MERGE(FL_VECTOR_NAME, _reserve)(arr, arr->_capacity + FL_VECTOR_CAP);
 
     arr->data[arr->size] = value;
     arr->size++;

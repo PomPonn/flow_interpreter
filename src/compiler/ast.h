@@ -1,8 +1,8 @@
 #pragma once
 
 #include "shared/common.h"
-#include "shared/token.h"
-#include "shared/token_array.h"
+#include "tokenizer/token.h"
+#include "tokenizer/token_array.h"
 
 enum _fl_ast_node_type
 {

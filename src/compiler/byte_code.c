@@ -1,4 +1,4 @@
-#include "compiler/byte_code.h"
+#include "byte_code.h"
 
 #include "shared/memory.h"
 

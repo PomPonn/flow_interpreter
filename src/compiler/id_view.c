@@ -1,4 +1,4 @@
-#include "compiler/id_view.h"
+#include "id_view.h"
 
 #include "shared/memory.h"
 #include "shared/str.h"

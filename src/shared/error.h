@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "shared/token.h"
+#include "tokenizer/token.h"
 
 enum _fl_err_type
 {
