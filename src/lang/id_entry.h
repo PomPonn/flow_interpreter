@@ -1,0 +1,19 @@
+#pragma once
+
+#include "shared/common.h"
+
+enum _fl_id_value_type
+{
+    FL_ID_VALUE_TYPE_FUNC,
+};
+typedef fl_byte fl_id_value_type;
+
+// abstract struct (used only as an interface)
+struct _fl_id_entry
+{
+    const fl_char *name;
+    fl_id_value_type type;
+};
+typedef struct _fl_id_entry fl_id_entry;
+
+fl_void fl_id_entry_free(fl_id_entry *entry);

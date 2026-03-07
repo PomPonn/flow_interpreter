@@ -7,7 +7,7 @@
 #include "tokenizer/token_array.h"
 #include "tokenizer/tokenizer.h"
 #include "compiler/ast.h"
-#include "compiler/id_view.h"
+#include "lang/id_tree.h"
 
 #include "tools/printer.h"
 
@@ -71,7 +71,7 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             // first child is a function id chain
             fl_ast_node *child = node->child;
             // check if function id exists by traversing the id view built before
-            if (!fl_id_view_node_valid_id_chain(cnt->id_view, child))
+            if (!fl_id_tree_node_valid_id_chain(cnt->id_tree, child))
             {
                 // throw an error if it's absent
                 fl_char buffer[ID_STRING_BUFFER_SIZE];
@@ -85,7 +85,7 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             }
 
             // include id_chain in view of ids
-            fl_id_view_node_include_id_chain(cnt->id_view, child);
+            fl_id_tree_node_include_id_chain(cnt->id_tree, child);
             // leave an index in byte code to recognise this id later
             fl_size id_index = fl_context_next_id_table_index(cnt);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));

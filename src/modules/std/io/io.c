@@ -8,38 +8,52 @@
 
 // DECLARATIONS
 
-fl_unknown *_fl_std_io_put(fl_func_params *args);
+fl_unknown *_fl_std_io_put(fl_func_param_list *args);
 
 // DEFINITIONS
 
-fl_void fl_std_io_register(fl_context *context)
+fl_void fl_std_io_register(fl_context *cnt)
 {
+    // _fl_std_io_put
+    fl_func_param_list put_params;
+    fl_func_param_list_init(&put_params, 1);
+    fl_func_param_init(&put_params.data[0], FL_DATA_TYPE_ARRAY);
+
+    fl_func_entry put_func;
+    fl_func_entry_init(
+        &put_func,
+        "put",
+        _fl_std_io_put,
+        FL_DATA_TYPE_NULL,
+        put_params);
+
+    fl_func_table_push(&cnt->func_table, put_func);
 }
 
-fl_unknown *_fl_std_io_put(fl_func_params *args)
+fl_unknown *_fl_std_io_put(fl_func_param_list *args)
 {
     for (fl_size i = 0; i < args->size; i++)
     {
         fl_func_param arg = args->data[i];
         switch (arg.type)
         {
-        case FL_LIB_TYPE_NULL:
+        case FL_DATA_TYPE_NULL:
             printf(_FL_NULL_STR_REPR);
             break;
-        case FL_LIB_TYPE_INT:
+        case FL_DATA_TYPE_INT:
             printf("%lli", *(fl_long *)arg.data);
             break;
-        case FL_LIB_TYPE_BOOL:
+        case FL_DATA_TYPE_BOOL:
             printf("%u", *(fl_uint *)arg.data);
             break;
-        case FL_LIB_TYPE_FLOAT:
+        case FL_DATA_TYPE_FLOAT:
             printf("%f", *(fl_double *)arg.data);
             break;
-        case FL_LIB_TYPE_ARRAY:
+        case FL_DATA_TYPE_ARRAY:
             // TODO
             printf("<ARRAY>");
             break;
-        case FL_LIB_TYPE_OBJECT:
+        case FL_DATA_TYPE_OBJECT:
             // TODO
             printf("<OBJECT>");
             break;
