@@ -1,10 +1,13 @@
 #include "printer.h"
 
+#include "ast/id_chain.h"
+
 #include <stdio.h>
 
 // --- DEFINES ---
 
 #define _LOCATION_STR_BUFFER_SIZE 16
+#define _ID_CHAIN_STR_BUFFER_SIZE 256
 
 // --- DECLARATIONS ---
 
@@ -23,6 +26,7 @@ static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
 {
+
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_ROOT:
@@ -43,12 +47,17 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
     case FL_AST_NODE_TYPE_LITERAL:
         printf("<literal> '%s'", _fl_prt_convert_literal(node));
         break;
-    case FL_AST_NODE_TYPE_IDENTIFIER:
-        printf("<id> '%s'", (fl_char *)node->data);
-        break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
-        printf("<id chain>");
+    {
+        fl_char buffer[_ID_CHAIN_STR_BUFFER_SIZE];
+        printf(
+            "<id chain> '%s'",
+            fl_id_chain_to_string(
+                (fl_id_chain *)node->data,
+                buffer,
+                _ID_CHAIN_STR_BUFFER_SIZE));
         break;
+    }
     case FL_AST_NODE_TYPE_OPERATOR:
         printf("<operator>");
         break;

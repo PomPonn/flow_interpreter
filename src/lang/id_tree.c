@@ -3,9 +3,7 @@
 #include "shared/memory.h"
 #include "shared/str.h"
 
-fl_void fl_id_tree_node_init(
-    fl_id_tree_node **node,
-    fl_id_entry *value)
+fl_void fl_id_tree_node_init(fl_id_tree_node **node, fl_id_entry *value)
 {
     *node = fl_mem_alloc(sizeof(fl_id_tree_node));
     (*node)->child = FL_NULL;
@@ -43,39 +41,23 @@ const fl_id_tree_node *fl_id_tree_node_select(const fl_id_tree_node *node, const
     return FL_NULL;
 }
 
-fl_id_tree_node *fl_id_tree_node_seek_id_chain(const fl_id_tree_node *node, const fl_ast_node *id_chain)
+fl_id_entry *fl_id_tree_node_seek_id_chain(const fl_id_tree_node *node, const fl_id_chain *chain)
 {
     if (!node)
         return FL_NULL;
 
-    fl_ast_node *id = id_chain->child;
+    for (fl_size i = 0; i < chain->size; i++)
+        if (!(node = fl_id_tree_node_select(node, chain->data[i])))
+            return FL_NULL;
 
-    while (node = fl_id_tree_node_select(node, (const fl_char *)id->data))
-    {
-        id = id->next;
-        if (!id)
-            return node;
-    }
-
-    return FL_NULL;
+    return node->value;
 }
 
-fl_void fl_id_tree_node_include_id_chain(fl_id_tree_node *parent, const fl_ast_node *id_chain)
-{
-    fl_ast_node *id = id_chain->child;
-
-    while (id)
-    {
-        parent = fl_id_tree_node_append_id(&parent->child, (const fl_char *)id->data);
-        id = id->next;
-    }
-}
-
-fl_id_tree_node *fl_id_tree_node_append_id(fl_id_tree_node **node, const fl_char *name)
+fl_id_tree_node *fl_id_tree_node_append_id(fl_id_tree_node **node, fl_id_entry *entry)
 {
     if (*node == FL_NULL)
     {
-        fl_id_tree_node_init(node, name);
+        fl_id_tree_node_init(node, entry);
         return *node;
     }
 
@@ -83,13 +65,13 @@ fl_id_tree_node *fl_id_tree_node_append_id(fl_id_tree_node **node, const fl_char
     while (ptr->next)
     {
         // break if id already exists
-        if (fl_str_equal(ptr->value->name, name))
+        if (fl_str_equal(ptr->value->name, entry->name))
             return FL_NULL;
 
         ptr = ptr->next;
     }
 
-    fl_id_tree_node_init(&ptr->next, name);
+    fl_id_tree_node_init(&ptr->next, entry);
 
     return ptr->next;
 }

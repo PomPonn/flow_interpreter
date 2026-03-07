@@ -2,6 +2,7 @@
 
 #include "shared/memory.h"
 #include "shared/error.h"
+#include "ast/id_chain.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -26,7 +27,7 @@
 #define init_node_filled(type, value, parent) \
     fl_ast_node_init(&node, type, value, parent, arr->current->location);
 
-// --- STATIC FUNCTION DEFINITIONS ---
+// --- DECLARATIONS ---
 
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
@@ -37,23 +38,20 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
 
-// --- IMPLEMENTATIONS ---
+// --- DEFINITIONS ---
 
 // handles id chain (eg. 'body.hand')
 // guarantees that next token is not null
 inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr)
 {
-    fl_ast_node *node;
+    // init id chain
+    fl_id_chain *chain = fl_mem_alloc(sizeof(fl_id_chain));
+    fl_id_chain_init(chain, 0);
 
-    // init parent (id chain) node
-    init_node_empty(FL_AST_NODE_TYPE_ID_CHAIN, parent);
-    parent = node;
-
-    // iterate over tokens
     while (arr->current->type == FL_TOKEN_TYPE_ID)
     {
-        // create id node
-        init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), parent);
+        // push sub-id
+        fl_id_chain_push(chain, fl_str_dup(arr->current->value));
 
         // check for end of code or chaining dot
         next_token_safe;
@@ -65,11 +63,10 @@ inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *
         next_token_safe;
     }
 
-    // id chain handler failed
-    if (parent->child == FL_NULL)
-        throw_syntax_error("Expected id chain");
+    fl_ast_node *node;
+    init_node_filled(FL_AST_NODE_TYPE_ID_CHAIN, chain, parent);
 
-    return parent;
+    return node;
 }
 
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id)
@@ -263,7 +260,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
 
     // TODO
 
-    fl_ast_node *statement;
+    // fl_ast_node *statement;
     fl_ast_node *node;
     fl_bool parenth = FL_FALSE;
 
@@ -286,7 +283,7 @@ static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr 
         }
 
         // fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
-        init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
+        // init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
 
         next_token_safe;
 
@@ -359,7 +356,7 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
 }
 
 // tries to generate abstract syntax tree from specified tokens
-// if succeeds, returned root node is 100% valid
+// if succeeds, returned tree is 100% valid
 // otherwise errors will be thrown
 fl_void fl_ast_tree_gen(fl_ast_tree *tree, fl_token_arr *arr)
 {
@@ -464,35 +461,6 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
 
     node->parent = parent;
     current->next = node;
-}
-
-fl_char *fl_ast_stringify_id_chain(fl_ast_node *node, fl_char *buffer, fl_size buffer_size)
-{
-    assert(node->type == FL_AST_NODE_TYPE_ID_CHAIN);
-
-    fl_size total_n = 0;
-    node = node->child;
-
-    while (node)
-    {
-        fl_size n = fl_str_len((fl_char *)node->data);
-        total_n += n;
-        if (total_n > buffer_size)
-            return FL_NULL;
-
-        fl_mem_copy(node->data, buffer, n);
-
-        node = node->next;
-
-        if (node)
-            buffer[total_n] = '.';
-        else
-            buffer[total_n] = '\0';
-
-        buffer += n;
-    }
-
-    return buffer;
 }
 
 fl_void fl_ast_type_data_free(fl_ast_type_data *info)

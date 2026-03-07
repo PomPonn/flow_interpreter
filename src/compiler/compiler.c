@@ -6,14 +6,14 @@
 #include "tokenizer/token.h"
 #include "tokenizer/token_array.h"
 #include "tokenizer/tokenizer.h"
-#include "compiler/ast.h"
+#include "ast/ast.h"
 #include "lang/id_tree.h"
 
 #include "tools/printer.h"
 
 // --- DEFINES ---
 
-#define ID_STRING_BUFFER_SIZE 512
+#define _ID_STRING_BUFFER_SIZE 512
 
 #define throw_file_error(message) \
     fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
@@ -68,14 +68,17 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             break;
         case FL_AST_NODE_TYPE_CALL:
             fl_byte_code_push(&bc, FL_COMP_INSTR_CALL);
-            // first child is a function id chain
+            // first child is a function id chain node
             fl_ast_node *child = node->child;
-            // check if function id exists by traversing the id view built before
-            if (!fl_id_tree_node_valid_id_chain(cnt->id_tree, child))
+            fl_id_chain *id_chain = (fl_id_chain *)child->data;
+            // seek for this function id
+            fl_id_entry *func_id = fl_id_tree_node_seek_id_chain(cnt->id_tree, id_chain);
+
+            if (!func_id)
             {
                 // throw an error if it's absent
-                fl_char buffer[ID_STRING_BUFFER_SIZE];
-                fl_ast_stringify_id_chain(child, buffer, ID_STRING_BUFFER_SIZE);
+                fl_char buffer[_ID_STRING_BUFFER_SIZE];
+                fl_id_chain_to_string(id_chain, buffer, _ID_STRING_BUFFER_SIZE);
 
                 fl_err_throw(
                     FL_ERR_COMPILATION,
@@ -84,10 +87,6 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
                     child->location);
             }
 
-            // include id_chain in view of ids
-            fl_id_tree_node_include_id_chain(cnt->id_tree, child);
-            // leave an index in byte code to recognise this id later
-            fl_size id_index = fl_context_next_id_table_index(cnt);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
             // GO ON

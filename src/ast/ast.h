@@ -10,7 +10,6 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_ROOT,
     FL_AST_NODE_TYPE_BLOCK,
     FL_AST_NODE_TYPE_LITERAL,
-    FL_AST_NODE_TYPE_IDENTIFIER,
     FL_AST_NODE_TYPE_ID_CHAIN,
     FL_AST_NODE_TYPE_OPERATOR,
     FL_AST_NODE_TYPE_CALL,
@@ -78,8 +77,4 @@ fl_void fl_ast_literal_data_free(fl_ast_literal_data *info);
 fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_token_location location);
 fl_void fl_ast_node_free(fl_ast_node *node);
 fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
-
-fl_char *fl_ast_id_chain_stringify(fl_ast_node *node, fl_char *buffer, fl_size buffer_size);
-fl_char *fl_ast_id_chain_parse(fl_ast_node *node, fl_char *buffer, fl_size buffer_size);
-
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);
