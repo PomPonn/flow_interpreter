@@ -89,7 +89,7 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             fl_id_view_node_include_id_chain(cnt->id_view, child);
             // leave an index in byte code to recognise this id later
             fl_size id_index = fl_context_next_id_table_index(cnt);
-            fl_byte_code_push_int(&bc, id_index);
+            fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
             // GO ON
 

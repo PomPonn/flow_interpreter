@@ -2,12 +2,12 @@
 
 #include "shared/memory.h"
 
-#define _FL_BYTE_CODE_CAP_STEP 1024
+#define _FL_SPARE_CAP 1024
 
 fl_void fl_byte_code_init(fl_byte_code *bc, fl_size capacity)
 {
     if (!capacity)
-        capacity = _FL_BYTE_CODE_CAP_STEP;
+        capacity = _FL_SPARE_CAP;
 
     bc->data = (fl_byte *)fl_mem_alloc_arr(sizeof(fl_byte), capacity);
     bc->_capacity = capacity;
@@ -22,27 +22,27 @@ fl_void fl_byte_code_free(fl_byte_code *bc)
     bc->size = 0;
 }
 
-fl_void fl_byte_code_reserve(fl_byte_code *bc)
+fl_void fl_byte_code_reserve(fl_byte_code *bc, fl_size new_cap)
 {
-    bc->_capacity += _FL_BYTE_CODE_CAP_STEP;
+    bc->_capacity = new_cap;
     fl_byte *recaped = (fl_byte *)fl_mem_alloc_arr(sizeof(fl_byte), bc->_capacity);
     fl_mem_copy(bc->data, recaped, bc->size);
 }
 
-fl_void fl_byte_code_push_byte(fl_byte_code *bc, fl_byte byte)
+fl_void fl_byte_code_push(fl_byte_code *bc, fl_byte byte)
 {
-    if (bc->size + sizeof(fl_byte) > bc->_capacity)
-        fl_byte_code_reserve(bc);
+    if (bc->size + sizeof(byte) > bc->_capacity)
+        fl_byte_code_reserve(bc, bc->_capacity + 1 + _FL_SPARE_CAP);
 
     bc->data[bc->size] = byte;
-    bc->size++;
+    bc->size += sizeof(fl_byte);
 }
 
-fl_void fl_byte_code_push_int(fl_byte_code *bc, fl_uint value)
+fl_void fl_byte_code_push_mem(fl_byte_code *bc, const fl_unknown *mem, fl_size bytes_n)
 {
-    if (bc->size + sizeof(fl_uint) > bc->_capacity)
-        fl_byte_code_reserve(bc);
+    if (bc->size + bytes_n > bc->_capacity)
+        fl_byte_code_reserve(bc, bc->_capacity + bytes_n + _FL_SPARE_CAP);
 
-    *(fl_uint *)(bc->data + bc->size) = value;
-    bc->size += sizeof(fl_uint);
+    fl_mem_copy(mem, bc->data + bc->size, bytes_n);
+    bc->size += bytes_n;
 }

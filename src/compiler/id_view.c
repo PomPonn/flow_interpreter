@@ -57,13 +57,13 @@ fl_bool fl_id_view_node_valid_id_chain(const fl_id_view_node *node, const fl_ast
     return FL_FALSE;
 }
 
-fl_void fl_id_view_node_include_id_chain(const fl_id_view_node *parent, const fl_ast_node *id_chain)
+fl_void fl_id_view_node_include_id_chain(fl_id_view_node *parent, const fl_ast_node *id_chain)
 {
     fl_ast_node *id = id_chain->child;
 
     while (id)
     {
-        parent = fl_id_view_node_append_id(parent->child, (const fl_char *)id->data);
+        parent = fl_id_view_node_append_id(&parent->child, (const fl_char *)id->data);
         id = id->next;
     }
 }
@@ -73,7 +73,7 @@ fl_id_view_node *fl_id_view_node_append_id(fl_id_view_node **node, const fl_char
     if (*node == FL_NULL)
     {
         fl_id_view_node_init(node, value);
-        return;
+        return *node;
     }
 
     fl_id_view_node *ptr = *node;
