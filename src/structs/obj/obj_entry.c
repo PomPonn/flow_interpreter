@@ -11,5 +11,5 @@ fl_void fl_obj_entry_init(fl_obj_entry **entry, const fl_char *name)
 
 fl_void fl_obj_entry_free(fl_obj_entry *entry)
 {
-    assert(FL_FALSE);
+    fl_mem_free(entry);
 }

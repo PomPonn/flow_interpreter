@@ -1,7 +1,30 @@
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.12.0)
 project(FlowInterpreter VERSION 0.1.1 LANGUAGES C)
 
-set(TEST_NAME simple)
+set(test_name simple)
+set(modules_base_path ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+
+function(build_module_dlls base_path)
+    # match directories
+    file(GLOB submodule_paths ${base_path}/*/)
+    file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/tes.txt ${base_path})
+    # match module sources
+    file(GLOB module_sources RELATIVE base_path *.c)
+    
+    if(${module_sources})
+        cmake_path(GET ${submodule_paths} FILENAME mod_name)
+        add_library(${mod_name} MODULE ${module_sources})
+    endif()
+
+    foreach(path submodule_paths) 
+        build_module_dlls(path)
+    endforeach() 
+     
+
+    build_module_dlls()
+endfunction()
+
+build_module_dlls(${modules_base_path})
 
 # gather source files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
