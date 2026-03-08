@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #define FL_NULL (void *)0
+#define FL_FAIL -1
 
 typedef void fl_unknown;
 typedef void fl_void;

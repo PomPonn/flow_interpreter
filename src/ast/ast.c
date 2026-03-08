@@ -9,7 +9,7 @@
 #include <stdio.h>
 #endif
 
-// --- DEFINES ---
+// ---- DEFINES ----
 
 #define throw_syntax_error(message) \
     fl_err_throw(FL_ERR_AST, message, arr->current->value, arr->current->location)
@@ -27,7 +27,7 @@
 #define init_node_filled(type, value, parent) \
     fl_ast_node_init(&node, type, value, parent, arr->current->location);
 
-// --- DECLARATIONS ---
+// ---- DECLARATIONS ----
 
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
@@ -38,7 +38,7 @@ static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
 
-// --- DEFINITIONS ---
+// ---- DEFINITIONS ----
 
 // handles id chain (eg. 'body.hand')
 // guarantees that next token is not null

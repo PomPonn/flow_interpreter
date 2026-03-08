@@ -1,7 +1,6 @@
 #pragma once
 
 #include "shared/common.h"
-#include "lang/function.h"
 #include "lang/context.h"
 
 fl_void fl_std_register(fl_context *context);

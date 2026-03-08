@@ -11,18 +11,18 @@
 
 #include "tools/printer.h"
 
-// --- DEFINES ---
+// ---- DEFINES ----
 
 #define _ID_STRING_BUFFER_SIZE 512
 
 #define throw_file_error(message) \
     fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
 
-// --- STATIC FUNCTION DEFINITIONS ---
+// ---- DECLARATIONS ----
 
 static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt);
 
-// --- IMPLEMENTATIONS ---
+// ---- DEFINITIONS ----
 
 // compiles source code to intermediete byte code
 fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
@@ -62,17 +62,18 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
         switch (node->type)
         {
         case FL_AST_NODE_TYPE_BLOCK:
-            fl_byte_code_push(&bc, FL_COMP_INSTR_STARTBLOCK);
+            fl_byte_code_push(&bc, FL_INSTR_STARTBLOCK);
             _fl_comp_compile_node(node->child, cnt);
-            fl_byte_code_push(&bc, FL_COMP_INSTR_ENDBLOCK);
+            fl_byte_code_push(&bc, FL_INSTR_ENDBLOCK);
             break;
         case FL_AST_NODE_TYPE_CALL:
-            fl_byte_code_push(&bc, FL_COMP_INSTR_CALL);
+            fl_byte_code_push(&bc, FL_INSTR_CALL);
             // first child is a function id chain node
             fl_ast_node *child = node->child;
             fl_id_chain *id_chain = (fl_id_chain *)child->data;
+
             // seek for this function id
-            fl_id_entry *func_id = fl_id_tree_node_seek_id_chain(cnt->id_tree, id_chain);
+            const fl_id_entry *func_id = fl_id_tree_seek_value(cnt->id_tree, id_chain);
 
             if (!func_id)
             {
@@ -87,6 +88,10 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
                     child->location);
             }
 
+            assert(func_id->type == FL_ID_VALUE_TYPE_FUNC);
+
+            // push id index
+            fl_int id_index = fl_func_list_find(&cnt->func_list, (fl_func_entry *)func_id);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
             // GO ON

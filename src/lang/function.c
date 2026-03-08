@@ -12,19 +12,22 @@ fl_void fl_func_param_free(fl_func_param *param)
 }
 
 fl_void fl_func_entry_init(
-    fl_func_entry *entry,
+    fl_func_entry **entry,
     const fl_char *name,
     fl_func_ptr ptr,
     fl_data_type return_type,
     fl_func_param_list params)
 {
-    entry->name = name;
-    entry->pointer = ptr;
-    entry->return_type = return_type;
-    entry->params = params;
+    *entry = fl_mem_alloc(sizeof(fl_func_entry));
+    (*entry)->type = FL_ID_VALUE_TYPE_FUNC;
+    (*entry)->name = name;
+    (*entry)->pointer = ptr;
+    (*entry)->return_type = return_type;
+    (*entry)->params = params;
 }
 
 fl_void fl_func_entry_free(fl_func_entry *entry)
 {
     fl_func_param_list_free(&entry->params);
+    fl_mem_free(entry);
 }

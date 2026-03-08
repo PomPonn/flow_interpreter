@@ -13,7 +13,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_ID_CHAIN,
     FL_AST_NODE_TYPE_OPERATOR,
     FL_AST_NODE_TYPE_CALL,
-    // --- unused for now
+    // ---- unused for now
     FL_AST_NODE_TYPE_FUNCTION,
     FL_AST_NODE_TYPE_FUNC_HEADER,
 };

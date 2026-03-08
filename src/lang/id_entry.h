@@ -5,6 +5,7 @@
 enum _fl_id_value_type
 {
     FL_ID_VALUE_TYPE_FUNC,
+    FL_ID_VALUE_TYPE_OBJ,
 };
 typedef fl_byte fl_id_value_type;
 

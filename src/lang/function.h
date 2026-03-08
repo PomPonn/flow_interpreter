@@ -25,9 +25,9 @@ fl_void fl_func_param_init(fl_func_param *param, fl_data_type data_type);
 fl_void fl_func_param_free(fl_func_param *param);
 
 // fl_func_param_list array
-#define FL_ARRAY_NAME fl_func_param_list
-#define FL_ARRAY_TYPE fl_func_param
-#define FL_ARRAY_PRIMITIVE FL_FALSE
+#define FL_ARR_NAME fl_func_param_list
+#define FL_ARR_TYPE fl_func_param
+#define FL_ARR_PRIMITIVE FL_FALSE
 #include "generics/array.h"
 
 typedef fl_unknown *(*fl_func_ptr)(fl_func_param_list *);
@@ -43,15 +43,14 @@ struct _fl_func_entry
 };
 typedef struct _fl_func_entry fl_func_entry;
 
-// fl_func_table vector
-#define FL_VECTOR_NAME fl_func_table
-#define FL_VECTOR_TYPE fl_func_entry
-#define FL_VECTOR_CAP 16
-#define FL_VECTOR_STRUCTS FL_TRUE
+#define FL_VEC_NAME fl_func_list
+#define FL_VEC_TYPE fl_func_entry *
+#define FL_VEC_CAP 10
+#define FL_VEC_STRUCTS FL_TRUE
 #include "generics/vector.h"
 
 fl_void fl_func_entry_init(
-    fl_func_entry *entry,
+    fl_func_entry **entry,
     const fl_char *name,
     fl_func_ptr ptr,
     fl_data_type return_type,

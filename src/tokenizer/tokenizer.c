@@ -4,7 +4,7 @@
 #include "shared/memory.h"
 #include "shared/str.h"
 
-// --- DECLARATIONS ---
+// ---- DECLARATIONS ----
 
 static inline fl_size _fl_tok_count_tokens(fl_char *str);
 static inline fl_bool _fl_tok_handle_number(const fl_char **str);
@@ -13,7 +13,7 @@ static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_
 static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
 static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column);
 
-// --- DEFINITIONS ---
+// ---- DEFINITIONS ----
 
 static inline fl_bool _fl_tok_handle_number(const fl_char **str)
 {

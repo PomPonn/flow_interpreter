@@ -1,25 +1,41 @@
 #include "io.h"
 
-#include "lang/context.h"
+#include "lang/object.h"
+#include "lang/function.h"
+#include "shared/error.h"
 
 #include <stdio.h>
 
+// ---- DEFINES ----
+
 #define _FL_NULL_STR_REPR "<NULL>"
 
-// DECLARATIONS
+// ---- DECLARATIONS ----
 
 fl_unknown *_fl_std_io_put(fl_func_param_list *args);
 
-// DEFINITIONS
+// ---- DEFINITIONS ----
 
-fl_void fl_std_io_register(fl_context *cnt)
+fl_bool fl_std_io_register(fl_context *cnt, fl_id_tree_node *parent)
 {
-    // _fl_std_io_put
+    // register 'io' module
+
+    fl_object_entry *io_object;
+    fl_object_entry_init(&io_object, "io");
+    parent = fl_id_tree_push_child(parent, (fl_id_entry *)io_object);
+
+    if (!parent)
+        // TODO: report an error here and in other places
+        // object with this name already exists
+        return FL_FALSE;
+
+    // register 'put' function (_fl_std_io_put)
+
     fl_func_param_list put_params;
     fl_func_param_list_init(&put_params, 1);
     fl_func_param_init(&put_params.data[0], FL_DATA_TYPE_ARRAY);
 
-    fl_func_entry put_func;
+    fl_func_entry *put_func;
     fl_func_entry_init(
         &put_func,
         "put",
@@ -27,7 +43,9 @@ fl_void fl_std_io_register(fl_context *cnt)
         FL_DATA_TYPE_NULL,
         put_params);
 
-    fl_func_table_push(&cnt->func_table, put_func);
+    fl_id_tree_push_child(parent, (fl_id_entry *)put_func);
+
+    return FL_TRUE;
 }
 
 fl_unknown *_fl_std_io_put(fl_func_param_list *args)

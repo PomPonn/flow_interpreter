@@ -1,19 +1,30 @@
 #include "context.h"
 
+// ---- DECLARATIONS ----
+
+// ---- DEFINITIONS ----
+
 fl_void fl_context_init(fl_context *cnt)
 {
     cnt->id_tree = FL_NULL;
     fl_byte_code_init(&cnt->byte_code, 0);
+    fl_func_list_init(&cnt->func_list, 0);
 }
 
 fl_void fl_context_free(fl_context *cnt)
 {
     fl_byte_code_free(&cnt->byte_code);
+    fl_func_list_free(&cnt->func_list);
     fl_id_tree_node_free(cnt->id_tree);
     cnt->id_tree = FL_NULL;
 }
 
-fl_size fl_context_next_id_table_index(fl_context *cnt)
+fl_void fl_context_register_func(fl_context *cnt, fl_func_entry *entry)
 {
-    return cnt->next_id_table_index++;
+    fl_func_list_push(&cnt->func_list, entry);
+}
+
+fl_void fl_context_register_obj(fl_context *cnt, fl_object_entry *entry)
+{
+    assert(FL_FALSE);
 }
