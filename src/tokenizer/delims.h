@@ -1,5 +1,6 @@
 #pragma once
 
+// the order reflects fl_token_alias in 'tokenizer/token.h'
 #define FL_ORDERED_DELIMS ";.,(){}[]"
 #define FL_WHITESPACE " \r\n\t"
 #define FL_ESCAPE_CHAR '\\'

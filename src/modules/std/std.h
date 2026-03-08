@@ -3,4 +3,4 @@
 #include "shared/common.h"
 #include "lang/context.h"
 
-fl_void fl_std_register(fl_context *context);
+fl_bool fl_std_register(fl_context *context);

@@ -1,5 +1,47 @@
 #include "meta.h"
 
-fl_void fl_global_register(fl_context *context)
+// ---- DECLARATIONS ----
+
+fl_unknown *_fl_meta_import(fl_fn_param_list *args);
+
+// ---- DEFINITIONS ----
+
+fl_bool fl_meta_register(fl_context *cnt)
 {
+    fl_obj_entry *meta_object;
+    fl_obj_entry_init(&meta_object, "std");
+
+    fl_id_tree_node *meta = fl_id_tree_push_sibling(
+        &cnt->id_tree,
+        (fl_id_entry *)meta_object);
+
+    if (!meta)
+        // TODO: report an error here and in other places
+        // object with this name already exists
+        return FL_FALSE;
+
+    // register 'import' ct function (_fl_meta_import)
+
+    fl_fn_param_list params;
+    fl_fn_param_list_init(&params, 1);
+    fl_fn_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
+
+    fl_fn_entry *import_fn;
+    fl_fn_entry_init(
+        &import_fn,
+        "import",
+        FL_TRUE,
+        _fl_meta_import,
+        FL_DATA_TYPE_NULL,
+        params);
+
+    fl_context_register_func(cnt, meta, import_fn);
+
+    return FL_TRUE;
+}
+
+fl_unknown *_fl_meta_import(fl_fn_param_list *args)
+{
+
+    return FL_NULL;
 }

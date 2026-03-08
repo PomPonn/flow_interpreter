@@ -3,6 +3,7 @@ project(FlowInterpreter VERSION 0.1.1 LANGUAGES C)
 
 set(TEST_NAME simple)
 
+# gather source files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src

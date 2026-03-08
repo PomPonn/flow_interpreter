@@ -2,7 +2,7 @@
 
 #include "std/io/io.h"
 
-fl_void fl_std_register(fl_context *cnt)
+fl_bool fl_std_register(fl_context *cnt)
 {
     fl_obj_entry *std_object;
     fl_obj_entry_init(&std_object, "std");
@@ -11,5 +11,5 @@ fl_void fl_std_register(fl_context *cnt)
         &cnt->id_tree,
         (fl_id_entry *)std_object);
 
-    fl_std_io_register(cnt, std);
+    return fl_std_io_register(cnt, std);
 }

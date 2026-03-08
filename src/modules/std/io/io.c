@@ -29,19 +29,20 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_tree_node *parent)
 
     // register 'put' function (_fl_std_io_put)
 
-    fl_fn_param_list put_params;
-    fl_fn_param_list_init(&put_params, 1);
-    fl_fn_param_init(&put_params.data[0], FL_DATA_TYPE_ARRAY);
+    fl_fn_param_list params;
+    fl_fn_param_list_init(&params, 1);
+    fl_fn_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
 
-    fl_fn_entry *put_func;
+    fl_fn_entry *put_fn;
     fl_fn_entry_init(
-        &put_func,
+        &put_fn,
+        FL_FALSE,
         "put",
         _fl_std_io_put,
         FL_DATA_TYPE_NULL,
-        put_params);
+        params);
 
-    fl_context_register_func(cnt, parent, put_func);
+    fl_context_register_func(cnt, parent, put_fn);
 
     return FL_TRUE;
 }

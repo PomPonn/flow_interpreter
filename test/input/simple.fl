@@ -1,3 +1,4 @@
-import(std.io);
+#...= import("sth"); #
+io = import("std.io");
 
 io.put(5 + 4);

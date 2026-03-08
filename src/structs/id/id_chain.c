@@ -1,6 +1,7 @@
 #include "id_chain.h"
 
 #include "shared/str.h"
+#include "shared/memory.h"
 
 fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
 {
@@ -26,13 +27,24 @@ fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buff
     return buffer;
 }
 
-fl_void fl_id_chain_init_with(
-    fl_id_chain *chain,
-    const fl_char **ids,
-    fl_size ids_count)
+fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str)
 {
-    fl_id_chain_init(chain, ids_count);
+    fl_id_chain_init(chain, 0);
 
-    for (fl_size i = 0; i < ids_count; i++)
-        fl_id_chain_push(chain, ids[i]);
+    const fl_char *ptr = str;
+    while (*ptr)
+    {
+        while (*ptr && *ptr != '.')
+            *ptr++;
+
+        fl_size n = (fl_size)(ptr - str);
+        fl_char *id = fl_mem_alloc(n);
+        fl_mem_copy(str, id, n - 1);
+        id[n] = '\0';
+
+        fl_id_chain_push(chain, id);
+
+        if (*ptr)
+            ptr++;
+    }
 }

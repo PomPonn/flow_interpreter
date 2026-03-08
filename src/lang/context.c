@@ -21,6 +21,7 @@ fl_void fl_context_free(fl_context *cnt)
 
 fl_void fl_context_register_func(fl_context *cnt, fl_id_tree_node *parent, fl_fn_entry *entry)
 {
+    // TODO: handle push fail
     fl_id_tree_push_child(parent, (fl_id_entry *)entry);
     fl_fn_list_push(&cnt->func_list, entry);
 }

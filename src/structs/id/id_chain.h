@@ -9,9 +9,6 @@
 #define FL_VEC_FREE_INNER FL_TRUE
 #include "generics/vector.h"
 
-fl_void fl_id_chain_init_with(
-    fl_id_chain *chain,
-    const fl_char **ids,
-    fl_size ids_count);
+fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str);
 
 fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buffer_size);
