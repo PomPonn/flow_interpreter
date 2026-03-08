@@ -2,7 +2,7 @@
 
 #include "shared/memory.h"
 #include "shared/error.h"
-#include "ast/id_chain.h"
+#include "structs/id/id_chain.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"

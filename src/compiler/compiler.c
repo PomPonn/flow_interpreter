@@ -6,8 +6,8 @@
 #include "tokenizer/token.h"
 #include "tokenizer/token_array.h"
 #include "tokenizer/tokenizer.h"
+#include "structs/id/id_tree.h"
 #include "ast/ast.h"
-#include "lang/id_tree.h"
 
 #include "tools/printer.h"
 
@@ -88,10 +88,10 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
                     child->location);
             }
 
-            assert(func_id->type == FL_ID_VALUE_TYPE_FUNC);
+            assert(func_id->type == FL_ID_ENTRY_TYPE_FUNC);
 
             // push id index
-            fl_int id_index = fl_func_list_find(&cnt->func_list, (fl_func_entry *)func_id);
+            fl_int id_index = fl_fn_list_find(&cnt->func_list, (fl_fn_entry *)func_id);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
             // GO ON

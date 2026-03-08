@@ -1,6 +1,6 @@
 #include "printer.h"
 
-#include "ast/id_chain.h"
+#include "structs/id/id_chain.h"
 
 #include <stdio.h>
 

@@ -2,8 +2,8 @@
 
 #include "shared/common.h"
 #include "ast/ast.h"
-#include "ast/id_chain.h"
-#include "lang/id_entry.h"
+#include "structs/id/id_chain.h"
+#include "structs/id/id_entry.h"
 
 struct _fl_id_tree_node
 {

@@ -1,6 +1,6 @@
 #include "id_entry.h"
 
-#include "lang/function.h"
+#include "structs/fn/fn_entry.h"
 
 fl_void fl_id_entry_free(fl_id_entry *entry)
 {
@@ -8,8 +8,8 @@ fl_void fl_id_entry_free(fl_id_entry *entry)
 
     switch (entry->type)
     {
-    case FL_ID_VALUE_TYPE_FUNC:
-        fl_func_entry_free((fl_func_entry *)entry);
+    case FL_ID_ENTRY_TYPE_FUNC:
+        fl_fn_entry_free((fl_fn_entry *)entry);
         break;
     default:
         assert(FL_FALSE);
