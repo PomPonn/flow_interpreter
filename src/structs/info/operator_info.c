@@ -1,0 +1,17 @@
+#include "operator_info.h"
+
+#include "shared/memory.h"
+
+fl_void fl_operator_info_init(fl_operator_info **info, fl_uint order)
+{
+    fl_operator_info *i = fl_mem_alloc(sizeof(fl_operator_info));
+
+    i->order = order;
+
+    *info = i;
+}
+
+fl_void fl_operator_info_free(fl_operator_info *info)
+{
+    fl_mem_free(info);
+}

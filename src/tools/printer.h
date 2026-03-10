@@ -2,7 +2,7 @@
 
 #include "shared/common.h"
 #include "tokenizer/token_array.h"
-#include "ast/ast.h"
+#include "ast/ast_tree.h"
 
 fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level);
 

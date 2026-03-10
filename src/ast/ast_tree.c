@@ -1,8 +1,11 @@
-#include "ast.h"
+#include "ast_tree.h"
 
 #include "shared/memory.h"
 #include "shared/error.h"
 #include "structs/id/id_chain.h"
+#include "structs/info/literal_info.h"
+#include "structs/info/operator_info.h"
+#include "structs/info/type_info.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -115,8 +118,8 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
     {
-        fl_ast_literal_data *literal_info;
-        fl_ast_literal_data_init(&literal_info, arr->current->alias, arr->current->value);
+        fl_literal_info *literal_info;
+        fl_literal_info_init(&literal_info, arr->current->alias, arr->current->value);
         init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_info, FL_NULL);
 
         next_token_safe;
@@ -155,7 +158,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
     else
         fl_ast_node_add_child(parent, node);
 
-    if (inner)
+    if (grouped)
     {
         if (arr->current->alias != FL_TOKEN_ALIAS_RPAREN)
             throw_syntax_error("Missing closure of group ')'");
@@ -228,11 +231,11 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     fl_ast_node *node;
 
     // create operator info
-    fl_ast_operator_data *op_info;
-    fl_ast_operator_data_init(&op_info, grouped);
+    fl_operator_info *op_info;
+    fl_operator_info_init(&op_info, grouped);
     // create operator node
     init_node_filled(FL_AST_NODE_TYPE_OPERATOR, op_info, FL_NULL);
-    
+
     // init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
 
     // add operator id node
@@ -248,7 +251,7 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
         _fl_ast_handle_expression(node, arr, FL_FALSE);
 
     if (arr->current->type == FL_TOKEN_TYPE_ID)
-        node = _fl_ast_handle_operator(parent, arr, node);
+        node = _fl_ast_handle_operator(parent, arr, node, FL_FALSE);
     else
         fl_ast_node_add_child(parent, node);
 
@@ -351,8 +354,8 @@ inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_to
     }
 
     // create type descriptor
-    fl_ast_type_data *type_info;
-    fl_ast_type_data_init(&type_info, dimensions);
+    fl_type_info *type_info;
+    fl_type_info_init(&type_info, dimensions);
     type_id->data = type_info;
 }
 
@@ -387,99 +390,4 @@ fl_void fl_ast_tree_free(fl_ast_tree *tree)
     if (tree->_data)
         // Free child recursively
         fl_ast_node_free(tree->_data);
-}
-
-fl_void fl_ast_node_free(fl_ast_node *node)
-{
-    if (!node)
-        return;
-
-    // Free children recursively
-    fl_ast_node *child = node->child;
-    while (child)
-    {
-        fl_ast_node *next_child = child->next;
-        fl_ast_node_free(child);
-        child = next_child;
-    }
-
-    // Free current (root) node
-    fl_mem_free(node->data);
-    fl_mem_free(node);
-}
-
-fl_void fl_ast_type_data_init(fl_ast_type_data **info, fl_uint dimensions)
-{
-    fl_ast_type_data *i = fl_mem_alloc(sizeof(fl_ast_type_data));
-
-    i->dimensions = dimensions;
-
-    *info = i;
-}
-
-fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_token_location location)
-{
-    fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
-
-    n->type = type;
-    n->data = data;
-    n->child = FL_NULL;
-    n->next = FL_NULL;
-    n->location = location;
-
-    if (parent)
-        fl_ast_node_add_child(parent, n);
-    else
-        n->parent = FL_NULL;
-
-    *node = n;
-}
-
-fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
-{
-    fl_ast_node *node = parent->child;
-    while (node->next)
-        node = node->next;
-    return node;
-}
-
-fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
-{
-    if (!parent)
-        return;
-
-    if (!parent->child)
-    {
-        node->parent = parent;
-        parent->child = node;
-        return;
-    }
-
-    fl_ast_node *current = parent->child;
-
-    while (current->next)
-        current = current->next;
-
-    node->parent = parent;
-    current->next = node;
-}
-
-fl_void fl_ast_type_data_free(fl_ast_type_data *info)
-{
-    fl_mem_free(info);
-}
-
-fl_void fl_ast_literal_data_init(fl_ast_literal_data **info, fl_ast_literal_type type, fl_unknown *value)
-{
-    fl_ast_literal_data *i = fl_mem_alloc(sizeof(fl_ast_literal_data));
-
-    i->literal_type = type;
-    i->data = value;
-
-    *info = i;
-}
-
-fl_void fl_ast_literal_data_free(fl_ast_literal_data *info)
-{
-    fl_mem_free(info);
 }

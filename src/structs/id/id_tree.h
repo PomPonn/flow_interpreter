@@ -1,7 +1,6 @@
 #pragma once
 
 #include "shared/common.h"
-#include "ast/ast.h"
 #include "structs/id/id_chain.h"
 #include "structs/id/id_entry.h"
 

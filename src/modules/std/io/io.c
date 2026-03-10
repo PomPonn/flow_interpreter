@@ -36,8 +36,8 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_tree_node *parent)
     fl_fn_entry *put_fn;
     fl_fn_entry_init(
         &put_fn,
-        FL_FALSE,
         "put",
+        FL_FALSE,
         _fl_std_io_put,
         FL_DATA_TYPE_NULL,
         params);

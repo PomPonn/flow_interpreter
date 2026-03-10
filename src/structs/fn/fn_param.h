@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "lang/common.h"
+#include "lang/types.h"
 #include "structs/id/id_entry.h"
 
 struct _fl_fn_param

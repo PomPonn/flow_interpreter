@@ -2,7 +2,7 @@
 
 ## AST
 
-- finish fl_ast_operator_data struct handling
+- finish fl_operator_info struct handling
 - AST operators sorting
 - AST function expression handling
 - AST types handling (type dimensions?)

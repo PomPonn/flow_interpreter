@@ -3,11 +3,9 @@
 #include "shared/memory.h"
 #include "tools/file.h"
 #include "shared/error.h"
-#include "tokenizer/token.h"
-#include "tokenizer/token_array.h"
 #include "tokenizer/tokenizer.h"
 #include "structs/id/id_tree.h"
-#include "ast/ast.h"
+#include "ast/ast_tree.h"
 
 #include "tools/printer.h"
 
@@ -87,9 +85,9 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
                     id_node->location);
             }
 
-            if (func_id->type != FL_ID_TYPE_FUNC)
+            if (func_id->type != FL_ID_ENTRY_TYPE_FUNC)
             {
-                // throw an error if it's absent
+                // throw an error if it's not callable
                 fl_id_chain_to_string(id_chain, buffer, _ID_STRING_BUFFER_SIZE);
                 fl_err_throw(
                     FL_ERR_COMPILATION,
@@ -106,11 +104,11 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             fl_ast_node *arg = id_node->next;
             while (arg)
             {
-                // fl_byte_code_push(  
+                // fl_byte_code_push(
                 // ...
                 arg = arg->next;
             }
-            
+
             break;
         case FL_AST_NODE_TYPE_OPERATOR:
         default:

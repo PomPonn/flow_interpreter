@@ -1,6 +1,7 @@
 #include "printer.h"
 
 #include "structs/id/id_chain.h"
+#include "structs/info/literal_info.h"
 
 #include <stdio.h>
 
@@ -21,7 +22,7 @@ static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
     assert(literal_node->type == FL_AST_NODE_TYPE_LITERAL);
 
     // TODO: make it better
-    return (fl_char *)((fl_ast_literal_data *)literal_node->data)->data;
+    return (fl_char *)((fl_literal_info *)literal_node->data)->data;
 }
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
@@ -36,7 +37,7 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
         printf("<block>");
         break;
     // case FL_AST_NODE_TYPE_TYPE:
-    //     printf("<type> [%u]", ((fl_ast_type_data *)node->data)->dimensions);
+    //     printf("<type> [%u]", ((fl_type_info *)node->data)->dimensions);
     //     break;
     case FL_AST_NODE_TYPE_FUNCTION:
         printf("<function>");

@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <limits.h>
 
+#define FL_UINT_MAX UINT_MAX
 #define FL_NULL (void *)0
 #define FL_FAIL -1
 
