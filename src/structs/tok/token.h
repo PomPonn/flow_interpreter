@@ -1,7 +1,6 @@
 #pragma once
 
 #include "shared/common.h"
-#include "shared/str.h"
 #include "structs/info/file_location_info.h"
 
 enum _fl_token_type

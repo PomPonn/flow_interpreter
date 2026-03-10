@@ -3,7 +3,7 @@
 #include "shared/common.h"
 #include "lang/context.h"
 
-enum _fl_comp_instruction
+enum _fl_cmp_instruction
 {
     // arithmetic
     FL_INSTR_ADD,
@@ -15,6 +15,8 @@ enum _fl_comp_instruction
     // ...
     FL_INSTR_STARTBLOCK,
     FL_INSTR_ENDBLOCK,
+    FL_INSTR_STARTOP,
+    FL_INSTR_ENDOP,
     FL_INSTR_CALL,
 };
 

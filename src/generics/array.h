@@ -1,5 +1,5 @@
 #include "shared/common.h"
-#include "shared/memory.h"
+#include "_macros.h"
 
 #ifndef FL_ARR_NAME
 #define FL_ARR_NAME array
@@ -10,9 +10,6 @@
 #ifndef FL_ARR_PRIMITIVE
 #define FL_ARR_PRIMITIVE FL_TRUE
 #endif
-
-#define _FL_MERGE_INNER(a, b) a##b
-#define _FL_MERGE(a, b) _FL_MERGE_INNER(a, b)
 
 struct _FL_MERGE(_, FL_ARR_NAME)
 {

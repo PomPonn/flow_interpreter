@@ -2,7 +2,7 @@
 
 ### Legend:
 
-- \_INSTR\_<...>\_ - direct instructions, always size of 1B
+- \_INSTR\_<...>\_ - instruction markers, always size of 1B
 
 ## block:
 
@@ -14,3 +14,5 @@ _INSTR_ENDBLOCK_
 
 _INSTR_CALL_  
 {4B} table id index of function id
+
+## operation:

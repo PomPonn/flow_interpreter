@@ -1,7 +1,5 @@
 #include "token_array.h"
 
-#include "shared/memory.h"
-
 fl_void fl_token_arr_init(fl_token_arr *arr, fl_token *data, fl_size token_count)
 {
     arr->_count = token_count;

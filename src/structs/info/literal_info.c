@@ -1,7 +1,5 @@
 #include "literal_info.h"
 
-#include "shared/memory.h"
-
 fl_void fl_literal_info_free(fl_literal_info *info)
 {
     fl_mem_free(info);

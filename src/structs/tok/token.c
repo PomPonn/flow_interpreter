@@ -1,9 +1,7 @@
 #include "token.h"
 
+#include "shared/str.h"
 #include "tokenizer/delims.h"
-#include "shared/memory.h"
-
-#include "stdio.h"
 
 // ---- DEFINES ----
 

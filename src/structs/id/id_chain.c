@@ -1,7 +1,6 @@
 #include "id_chain.h"
 
 #include "shared/str.h"
-#include "shared/memory.h"
 
 fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
 {

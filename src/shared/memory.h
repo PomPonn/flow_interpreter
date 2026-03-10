@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shared/common.h"
+#include "shared/types.h"
 
 fl_void fl_mem_free(fl_unknown *memory);
 

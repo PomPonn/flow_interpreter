@@ -1,7 +1,5 @@
 #include "file.h"
 
-#include "shared/memory.h"
-
 #include <stdio.h>
 
 fl_char *fl_file_read(const fl_char *filename)

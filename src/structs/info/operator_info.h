@@ -2,8 +2,6 @@
 
 #include "shared/common.h"
 
-#include "shared/memory.h"
-
 struct _fl_operator_info
 {
     fl_uint order;

@@ -12,6 +12,7 @@
 
 ## general
 
+- is call_entry.h needed?
 - think if FL_ORDERED_DELIMS can be better
 - implement time measurement on unix systems
 - think if warnings should be a thing (they probably should, but for now I don't have any good use for them)

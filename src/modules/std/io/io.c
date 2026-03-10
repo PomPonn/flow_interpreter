@@ -1,7 +1,10 @@
 #include "io.h"
 
-#include "shared/error.h"
+// ---- INCLUDES ----
 
+#include "shared/error.h"
+#include "structs/call/call_param_list.h"
+#include "structs/fn/fn_entry.h"
 #include <stdio.h>
 
 // ---- DEFINES ----
@@ -10,7 +13,7 @@
 
 // ---- DECLARATIONS ----
 
-fl_unknown *_fl_std_io_put(fl_fn_param_list *args);
+fl_unknown *_fl_std_io_put(fl_call_param_list *args);
 
 // ---- DEFINITIONS ----
 
@@ -29,9 +32,9 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_tree_node *parent)
 
     // register 'put' function (_fl_std_io_put)
 
-    fl_fn_param_list params;
-    fl_fn_param_list_init(&params, 1);
-    fl_fn_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
+    fl_call_param_list params;
+    fl_call_param_list_init(&params, 1);
+    fl_call_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
 
     fl_fn_entry *put_fn;
     fl_fn_entry_init(
@@ -42,16 +45,16 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_tree_node *parent)
         FL_DATA_TYPE_NULL,
         params);
 
-    fl_context_register_func(cnt, parent, put_fn);
+    fl_context_register_id(cnt, parent, (fl_id_entry *)put_fn);
 
     return FL_TRUE;
 }
 
-fl_unknown *_fl_std_io_put(fl_fn_param_list *args)
+fl_unknown *_fl_std_io_put(fl_call_param_list *args)
 {
     for (fl_size i = 0; i < args->size; i++)
     {
-        fl_fn_param arg = args->data[i];
+        fl_call_param arg = args->data[i];
         switch (arg.type)
         {
         case FL_DATA_TYPE_NULL:

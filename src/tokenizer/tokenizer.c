@@ -1,7 +1,6 @@
 #include "tokenizer.h"
 
 #include "tokenizer/delims.h"
-#include "shared/memory.h"
 #include "shared/str.h"
 
 // ---- DECLARATIONS ----

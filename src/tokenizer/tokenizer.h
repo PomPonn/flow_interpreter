@@ -1,6 +1,6 @@
 #pragma once
 
-#include "structs/tok/token_array.h"
 #include "shared/common.h"
+#include "structs/tok/token_array.h"
 
 fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *source_desc);

@@ -3,7 +3,6 @@
 
 #include "tools/file.h"
 #include "tools/time.h"
-
 #include <stdio.h>
 
 #define BUFFER_SIZE 1024

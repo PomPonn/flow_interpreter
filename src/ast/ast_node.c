@@ -1,6 +1,6 @@
 #include "ast_node.h"
 
-#include "shared/memory.h"
+// ---- DEFINITIONS ----
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 {

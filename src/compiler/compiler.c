@@ -1,13 +1,13 @@
 #include "compiler.h"
 
-#include "shared/memory.h"
-#include "tools/file.h"
+// ---- INCLUDES ----
+
 #include "shared/error.h"
 #include "tokenizer/tokenizer.h"
+#include "ast/ast_tree.h"
 #include "structs/id/id_tree.h"
 #include "structs/info/file_location_info.h"
-#include "ast/ast_tree.h"
-
+#include "tools/file.h"
 #include "tools/printer.h"
 
 // ---- DEFINES ----
@@ -19,7 +19,8 @@
 
 // ---- DECLARATIONS ----
 
-static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt);
+static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
+inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context *cnt, fl_byte_code *dest);
 
 // ---- DEFINITIONS ----
 
@@ -45,13 +46,13 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_prt_print_ast_tree(&tree);
 
-    _fl_comp_compile_node(tree.root, cnt);
+    _fl_cmp_compile_node(tree.root, cnt);
 
     fl_token_arr_free(&token_array);
     fl_ast_tree_free(&tree);
 }
 
-static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
+static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt)
 {
     fl_char buffer[_ID_STRING_BUFFER_SIZE];
     fl_ast_node *node = root;
@@ -63,7 +64,7 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
         {
         case FL_AST_NODE_TYPE_BLOCK:
             fl_byte_code_push(&bc, FL_INSTR_STARTBLOCK);
-            _fl_comp_compile_node(node->child, cnt);
+            _fl_cmp_compile_node(node->child, cnt);
             fl_byte_code_push(&bc, FL_INSTR_ENDBLOCK);
             break;
         case FL_AST_NODE_TYPE_CALL:
@@ -98,16 +99,27 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             }
 
             // push id index
-            fl_int id_index = fl_fn_list_find(&cnt->func_list, (fl_fn_entry *)func_id);
+            fl_int id_index = fl_id_list_find(&cnt->id_list, func_id);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
             // process function arguments (if any)
-            fl_ast_node *arg = id_node->next;
-            while (arg)
+            fl_ast_node *arg_node = id_node->next;
+            while (arg_node)
             {
-                // fl_byte_code_push(
-                // ...
-                arg = arg->next;
+                switch (arg_node->type)
+                {
+                case FL_AST_NODE_TYPE_OPERATOR:
+                    fl_byte_code op_code;
+                    // TODO: maybe change capacity to sth lower than default
+                    fl_byte_code_init(&op_code, 0);
+                    _fl_cmp_compile_operation(arg_node, cnt, &op_code);
+                    break;
+                default:
+                    assert(FL_FALSE);
+                    break;
+                }
+
+                arg_node = arg_node->next;
             }
 
             break;
@@ -118,4 +130,15 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
 
         node = node->next;
     }
+}
+
+inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context *cnt, fl_byte_code *dest)
+{
+    fl_byte_code_push(dest, FL_INSTR_STARTOP);
+
+    // first child is an operator id
+    fl_ast_node *id_node = op_node->child;
+    fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
+
+    fl_byte_code_push(dest, FL_INSTR_ENDOP);
 }

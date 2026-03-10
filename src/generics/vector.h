@@ -1,5 +1,5 @@
 #include "shared/common.h"
-#include "shared/memory.h"
+#include "_macros.h"
 
 #ifndef FL_VEC_NAME
 #define FL_VEC_NAME vector
@@ -70,7 +70,7 @@ inline fl_void _FL_MERGE(FL_VEC_NAME, _push)(FL_VEC_NAME *arr, FL_VEC_TYPE value
     arr->size++;
 }
 
-inline fl_int _FL_MERGE(FL_VEC_NAME, _find)(FL_VEC_NAME *arr, FL_VEC_TYPE value)
+inline fl_int _FL_MERGE(FL_VEC_NAME, _find)(FL_VEC_NAME *arr, const FL_VEC_TYPE value)
 {
     for (fl_size i = 0; i < arr->size; i++)
     {

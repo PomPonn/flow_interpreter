@@ -1,8 +1,12 @@
 #include "meta.h"
 
+// ---- INCLUDES ----
+#include "structs/call/call_param_list.h"
+#include "structs/fn/fn_entry.h"
+
 // ---- DECLARATIONS ----
 
-fl_unknown *_fl_meta_import(fl_fn_param_list *args);
+fl_unknown *_fl_meta_import(fl_call_param_list *args);
 
 // ---- DEFINITIONS ----
 
@@ -20,11 +24,11 @@ fl_bool fl_meta_register(fl_context *cnt)
         // object with this name already exists
         return FL_FALSE;
 
-    // register 'import' ct function (_fl_meta_import)
+    // register 'import' compile time function (_fl_meta_import)
 
-    fl_fn_param_list params;
-    fl_fn_param_list_init(&params, 1);
-    fl_fn_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
+    fl_call_param_list params;
+    fl_call_param_list_init(&params, 1);
+    fl_call_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
 
     fl_fn_entry *import_fn;
     fl_fn_entry_init(
@@ -35,12 +39,12 @@ fl_bool fl_meta_register(fl_context *cnt)
         FL_DATA_TYPE_NULL,
         params);
 
-    fl_context_register_func(cnt, meta, import_fn);
+    fl_context_register_id(cnt, meta, (fl_id_entry *)import_fn);
 
     return FL_TRUE;
 }
 
-fl_unknown *_fl_meta_import(fl_fn_param_list *args)
+fl_unknown *_fl_meta_import(fl_call_param_list *args)
 {
 
     return FL_NULL;

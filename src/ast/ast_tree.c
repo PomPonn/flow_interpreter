@@ -1,13 +1,11 @@
 #include "ast_tree.h"
 
-#include "shared/memory.h"
-#include "shared/error.h"
-#include "structs/id/id_chain.h"
-#include "structs/info/file_location_info.h"
-#include "structs/info/operator_info.h"
-#include "structs/info/literal_info.h"
-#include "structs/info/type_info.h"
+// ---- INCLUDES ----
 
+#include "shared/error.h"
+#include "shared/str.h"
+#include "structs/info/all.h"
+#include "structs/id/id_chain.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
