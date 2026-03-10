@@ -60,7 +60,6 @@ typedef struct _fl_ast_type_data fl_ast_type_data;
 
 struct _fl_ast_operator_data
 {
-    fl_bool grouped;
     fl_ushort order;
 };
 typedef struct _fl_ast_operator_data fl_ast_operator_data;
@@ -73,6 +72,9 @@ fl_void fl_ast_type_data_free(fl_ast_type_data *info);
 
 fl_void fl_ast_literal_data_init(fl_ast_literal_data **info, fl_ast_literal_type type, fl_unknown *data);
 fl_void fl_ast_literal_data_free(fl_ast_literal_data *info);
+
+fl_void fl_ast_operator_data_init(fl_ast_operator_data **info, fl_bool grouped);
+fl_void fl_ast_operator_data_free(fl_ast_operator_data *info);
 
 fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_token_location location);
 fl_void fl_ast_node_free(fl_ast_node *node);
