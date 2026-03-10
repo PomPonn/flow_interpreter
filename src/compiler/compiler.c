@@ -54,6 +54,7 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
 static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
 {
+    fl_char buffer[_ID_STRING_BUFFER_SIZE];
     fl_ast_node *node = root;
     fl_byte_code bc = cnt->byte_code;
 
@@ -69,8 +70,8 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
         case FL_AST_NODE_TYPE_CALL:
             fl_byte_code_push(&bc, FL_INSTR_CALL);
             // first child is a function id chain node
-            fl_ast_node *child = node->child;
-            fl_id_chain *id_chain = (fl_id_chain *)child->data;
+            fl_ast_node *id_node = node->child;
+            fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
 
             // seek for this function id
             const fl_id_entry *func_id = fl_id_tree_seek_value(cnt->id_tree, id_chain);
@@ -78,24 +79,38 @@ static void _fl_comp_compile_node(fl_ast_node *root, fl_context *cnt)
             if (!func_id)
             {
                 // throw an error if it's absent
-                fl_char buffer[_ID_STRING_BUFFER_SIZE];
                 fl_id_chain_to_string(id_chain, buffer, _ID_STRING_BUFFER_SIZE);
-
                 fl_err_throw(
                     FL_ERR_COMPILATION,
                     "Use of unknown id",
                     buffer,
-                    child->location);
+                    id_node->location);
             }
 
-            assert(func_id->type == FL_ID_ENTRY_TYPE_FUNC);
+            if (func_id->type != FL_ID_TYPE_FUNC)
+            {
+                // throw an error if it's absent
+                fl_id_chain_to_string(id_chain, buffer, _ID_STRING_BUFFER_SIZE);
+                fl_err_throw(
+                    FL_ERR_COMPILATION,
+                    "id is not callable (not a function)",
+                    buffer,
+                    id_node->location);
+            }
 
             // push id index
             fl_int id_index = fl_fn_list_find(&cnt->func_list, (fl_fn_entry *)func_id);
             fl_byte_code_push_mem(&bc, &id_index, sizeof(id_index));
 
-            // GO ON
-
+            // process function arguments (if any)
+            fl_ast_node *arg = id_node->next;
+            while (arg)
+            {
+                // fl_byte_code_push(  
+                // ...
+                arg = arg->next;
+            }
+            
             break;
         case FL_AST_NODE_TYPE_OPERATOR:
         default:
