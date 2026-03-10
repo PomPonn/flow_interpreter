@@ -4,6 +4,10 @@
 #include "tokenizer/token.h"
 #include "tokenizer/token_array.h"
 
+#include "limits.h"
+
+#define FL_UINT_MAX UINT_MAX
+
 enum _fl_ast_node_type
 {
     FL_AST_NODE_TYPE_UNKNOWN,
@@ -54,13 +58,13 @@ typedef struct _fl_ast_literal_data fl_ast_literal_data;
 
 struct _fl_ast_type_data
 {
-    fl_ushort dimensions;
+    fl_uint dimensions;
 };
 typedef struct _fl_ast_type_data fl_ast_type_data;
 
 struct _fl_ast_operator_data
 {
-    fl_ushort order;
+    fl_uint order;
 };
 typedef struct _fl_ast_operator_data fl_ast_operator_data;
 
