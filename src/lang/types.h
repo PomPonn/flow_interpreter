@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "tokenizer/token.h"
+#include "structs/tok/token.h"
 
 enum _fl_data_type
 {

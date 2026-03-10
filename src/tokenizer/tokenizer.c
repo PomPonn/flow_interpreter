@@ -242,7 +242,7 @@ fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *so
     {
         fl_token_init(tokens + index,
                       fl_str_dup(token),
-                      (fl_token_location){
+                      (fl_file_location_info){
                           .column = column,
                           .line = line,
                           .description = source_desc});

@@ -3,8 +3,9 @@
 #include "shared/memory.h"
 #include "shared/error.h"
 #include "structs/id/id_chain.h"
-#include "structs/info/literal_info.h"
+#include "structs/info/file_location_info.h"
 #include "structs/info/operator_info.h"
+#include "structs/info/literal_info.h"
 #include "structs/info/type_info.h"
 
 #ifndef NDEBUG

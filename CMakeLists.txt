@@ -21,7 +21,7 @@ add_compile_definitions(
     _INCLUDE_PROFILER=1
     _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
-    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/input/${TEST_NAME}.fl"
+    _TEST_INPUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/input/${test_name}.fl"
     _PROFILER_LOGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/logs/profiler.txt"
 )
 

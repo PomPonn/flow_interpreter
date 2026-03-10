@@ -47,7 +47,7 @@ fl_bool fl_token_is_delim(fl_token *token)
     return fl_chr_is_any(*token->value, FL_ORDERED_DELIMS);
 }
 
-fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location location)
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_file_location_info location)
 {
     token->value = value;
     token->location = location;

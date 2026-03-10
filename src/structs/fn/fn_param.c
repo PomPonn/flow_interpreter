@@ -1,5 +1,7 @@
 #include "fn_param.h"
 
+#include "shared/memory.h"
+
 fl_void fl_fn_param_init(fl_fn_param *param, fl_data_type data_type)
 {
     param->data = FL_NULL;

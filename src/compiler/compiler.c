@@ -5,6 +5,7 @@
 #include "shared/error.h"
 #include "tokenizer/tokenizer.h"
 #include "structs/id/id_tree.h"
+#include "structs/info/file_location_info.h"
 #include "ast/ast_tree.h"
 
 #include "tools/printer.h"
@@ -14,7 +15,7 @@
 #define _ID_STRING_BUFFER_SIZE 512
 
 #define throw_file_error(message) \
-    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
+    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_file_location_info){.description = source_path})
 
 // ---- DECLARATIONS ----
 
