@@ -237,8 +237,6 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     // create operator node
     init_node_filled(FL_AST_NODE_TYPE_OPERATOR, op_info, FL_NULL);
 
-    // init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
-
     // add operator id node
     _fl_ast_handle_id(node, arr);
     // add left side of the operator as a child

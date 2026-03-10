@@ -4,7 +4,7 @@
 
 // fl_id_chain vector
 #define FL_VEC_NAME fl_id_chain
-#define FL_VEC_TYPE const fl_char *
+#define FL_VEC_TYPE fl_char *
 #define FL_VEC_CAP 3
 #define FL_VEC_FREE_INNER FL_TRUE
 #include "generics/vector.h"
