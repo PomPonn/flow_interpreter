@@ -32,11 +32,11 @@
 inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_void _fl_ast_handle_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_handle_id(fl_ast_node *parent, fl_token_arr *arr);
-inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left);
+inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
 static fl_void _fl_ast_handle_function_header(fl_ast_node *parent, fl_token_arr *arr);
 static fl_void _fl_ast_handle_function_expression(fl_ast_node *parent, fl_token_arr *arr);
 static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
-static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner);
+static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
 
 // ---- DEFINITIONS ----
 
@@ -102,7 +102,7 @@ inline static fl_ast_node *_fl_ast_handle_function_call(fl_ast_node *parent, fl_
 // almost everything is an expression (apart from blocks)
 // function may contain a single expression, which is 'instantiated' on call
 // it can be a literal, function call, group of operators or a combination of these things
-static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool inner)
+static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped)
 {
     // temp node
     fl_ast_node *node;
@@ -151,7 +151,7 @@ static fl_ast_node *_fl_ast_handle_expression(fl_ast_node *parent, fl_token_arr 
         fl_ast_node_add_child(parent, node);
 
     else if (!parent || parent->type != FL_AST_NODE_TYPE_OPERATOR)
-        node = _fl_ast_handle_operator(parent, arr, node);
+        node = _fl_ast_handle_operator(parent, arr, node, grouped);
     else
         fl_ast_node_add_child(parent, node);
 
@@ -180,9 +180,7 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
     if (!is_root)
     {
         if (arr->current->alias != FL_TOKEN_ALIAS_LBRACE)
-        {
             throw_syntax_error("Expected block opening '{'");
-        }
         else
             next_token_safe;
     }
@@ -225,12 +223,17 @@ static fl_void _fl_ast_handle_block(fl_ast_node *parent, fl_token_arr *arr, fl_b
     }
 }
 
-inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left)
+inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped)
 {
     fl_ast_node *node;
 
+    // create operator info
+    fl_ast_operator_data *op_info;
+    fl_ast_operator_data_init(&op_info, grouped);
     // create operator node
-    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
+    init_node_filled(FL_AST_NODE_TYPE_OPERATOR, op_info, FL_NULL);
+    
+    // init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
 
     // add operator id node
     _fl_ast_handle_id(node, arr);
@@ -238,10 +241,8 @@ inline static fl_ast_node *_fl_ast_handle_operator(fl_ast_node *parent, fl_token
     fl_ast_node_add_child(node, left);
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
-    {
         // handle block on the right side of the operator...
         _fl_ast_handle_block(node, arr, FL_FALSE);
-    }
     else
         // ... else handle expression
         _fl_ast_handle_expression(node, arr, FL_FALSE);
