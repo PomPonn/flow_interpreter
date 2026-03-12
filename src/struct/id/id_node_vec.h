@@ -3,7 +3,6 @@
 #include "id_entry.h"
 
 #define FL_VEC_NAME fl_id_node_vec
-#define FL_VEC_TYPE fl_id_entry *
+#define FL_VEC_TYPE fl_id_node *
 #define FL_VEC_CAP 32
-#define FL_VEC_DESTROYER(elem) fl_id_entry_free(elem)
 #include "generics/vector.h"

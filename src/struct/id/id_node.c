@@ -41,7 +41,7 @@ fl_id_node *fl_id_node_select(const fl_id_node *node, const fl_char *name)
 
 fl_id_node *fl_id_node_push_sibling(fl_id_node **node, fl_id_entry *entry)
 {
-    if (*node == FL_NULL)
+    if (!*node)
     {
         fl_id_node_init(node, entry);
         return *node;

@@ -56,7 +56,7 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
     fl_ast_tree_gen(&tree, &token_arr);
 
     fl_prt_print_ast_tree(&tree);
-    return;
+
     _fl_cmp_compile_node(tree.root, cnt);
 
     fl_token_arr_free(&token_arr);
@@ -94,21 +94,21 @@ static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
 inline static fl_void _fl_cmp_compile_fn_call(fl_ast_node *op_node, fl_context *cnt, fl_byte_code *dest)
 {
     // first child is a function id chain node
-    fl_ast_node *id_node = op_node->child;
-    fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
+    fl_ast_node *node = op_node->child;
+    fl_id_chain *id_chain = (fl_id_chain *)node->data;
     // resolve this function id
-    fl_id_entry *id_entry;
-    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_entry);
+    fl_id_node *id_node;
+    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_node);
 
-    if (!id_entry)
+    if (!id_node)
         // throw an error if it's absent
-        throw_compilation_error(id_node, "Use of unknown id");
+        throw_compilation_error(node, "Use of unknown function id");
 
-    if (id_entry->type != FL_ID_ENTRY_TYPE_FUNC)
-        throw_compilation_error(id_node, "id is not a function");
+    if (id_node->value->type != FL_ID_ENTRY_TYPE_FUNC)
+        throw_compilation_error(node, "id is not a function");
 
     // process function arguments first (if any)
-    fl_ast_node *arg_node = id_node->next;
+    fl_ast_node *arg_node = node->next;
     while (arg_node)
     {
         switch (arg_node->type)
@@ -131,29 +131,29 @@ inline static fl_void _fl_cmp_compile_fn_call(fl_ast_node *op_node, fl_context *
 inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context *cnt, fl_byte_code *dest)
 {
     // first child is an operator id
-    fl_ast_node *id_node = op_node->child;
-    fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
+    fl_ast_node *node = op_node->child;
+    fl_id_chain *id_chain = (fl_id_chain *)node->data;
     // resolve this operator id
-    fl_id_entry *id_entry;
-    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_entry);
+    fl_id_node *id_node;
+    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_node);
 
-    if (!id_entry)
+    if (!id_node)
         // throw an error if it's absent
-        throw_compilation_error(id_node, "Use of unknown id");
+        throw_compilation_error(node, "Use of unknown operator id");
 
-    if (id_entry->type != FL_ID_ENTRY_TYPE_OPR)
-        throw_compilation_error(id_node, "id is not an operator");
+    if (id_node->value->type != FL_ID_ENTRY_TYPE_OPR)
+        throw_compilation_error(node, "id is not an operator");
 
     // get operator args
-    fl_ast_node *left_arg = id_node->next;
+    fl_ast_node *left_arg = node->next;
     fl_ast_node *right_arg = left_arg->next;
 
     // validate left argument
     if (!left_arg)
-        throw_compilation_error(id_node, "Missing left argument of the operator");
+        throw_compilation_error(node, "Missing left argument of the operator");
     // validate right argument
     if (!right_arg)
-        throw_compilation_error(id_node, "Missing right argument of the operator");
+        throw_compilation_error(node, "Missing right argument of the operator");
     // excess node check
     if (right_arg->next)
         throw_compilation_error(right_arg->next, "Excess operator argument");
