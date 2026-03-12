@@ -1,7 +1,7 @@
 #pragma once
 
-#include "structs/call/call_entry.h"
-#include "structs/call/call_param.h"
+#include "struct/call/call_entry.h"
+#include "struct/call/call_param.h"
 
 typedef fl_unknown *(*fl_opr_ptr)(fl_call_param, fl_call_param);
 

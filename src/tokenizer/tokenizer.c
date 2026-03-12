@@ -112,7 +112,7 @@ static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *
     return ptr;
 }
 
-// find next token in a string and returns string copy of it
+// finds next token in a string
 static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
 {
     // start of the next token (used on next function call)
@@ -155,13 +155,11 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     if (!*token_start)
         return FL_NULL;
 
-    if (_fl_tok_handle_wrapper((const fl_char **)&next_pos, &next_line, &next_column))
+    if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
     {
         escape_char = *next_pos;
         if (*next_pos == '\0')
-        {
             next_pos = FL_NULL;
-        }
         else
         {
             *next_pos = '\0';
@@ -172,9 +170,7 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     }
 
     if (_fl_tok_handle_number((const fl_char **)&next_pos))
-    {
         goto __std_return;
-    }
 
     // end if is pointing at delim
     if (fl_chr_is_any(*next_pos, FL_ORDERED_DELIMS))
@@ -194,9 +190,7 @@ __std_return:
     escape_char = *next_pos;
 
     if (*next_pos == '\0')
-    {
         next_pos = FL_NULL;
-    }
     else
     {
         *next_pos = '\0';
@@ -204,7 +198,6 @@ __std_return:
     }
 
     next_column += fl_str_len(token_start);
-
     return token_start;
 }
 

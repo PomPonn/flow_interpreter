@@ -71,19 +71,19 @@ fl_size fl_str_len(const fl_char *str)
     return (fl_size)strlen(str);
 }
 
-fl_bool fl_str_is_num(const fl_char *str)
+fl_bool fl_str_is_num(const fl_char *str, fl_bool *floating)
 {
     const fl_size len = fl_str_len(str);
-    fl_bool dot_found = FL_FALSE;
+    *floating = FL_FALSE;
 
     for (fl_size i = 0; i < len; i++)
     {
         if (str[i] == '.')
         {
-            if (dot_found || i == 0 || i == len - 1)
+            if (*floating || i == 0 || i == len - 1)
                 return FL_FALSE;
             else
-                dot_found = FL_TRUE;
+                *floating = FL_TRUE;
         }
         else if (!fl_chr_is_digit(str[i]))
             return FL_FALSE;

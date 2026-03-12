@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/info/file_location_info.h"
+#include "struct/info/file_location_info.h"
 
 enum _fl_token_type
 {
@@ -28,9 +28,7 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_RBRACE,    // }
     FL_TOKEN_ALIAS_LBRACKET,  // [
     FL_TOKEN_ALIAS_RBRACKET,  // ]
-                              // literals
-    FL_TOKEN_ALIAS_STRING,
-    FL_TOKEN_ALIAS_NUMBER,
+    FL_TOKEN_ALIAS_LITERAL,
 };
 typedef fl_byte fl_token_alias;
 

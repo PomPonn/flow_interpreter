@@ -1,10 +1,10 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/id/id_tree.h"
-#include "structs/id/id_list.h"
-#include "structs/obj/obj_entry.h"
-#include "structs/byte_code.h"
+#include "struct/id/id_tree.h"
+#include "struct/id/id_list.h"
+#include "struct/obj/obj_entry.h"
+#include "struct/byte_code.h"
 
 struct _fl_context
 {
@@ -15,6 +15,8 @@ struct _fl_context
 typedef struct _fl_context fl_context;
 
 fl_void fl_context_init(fl_context *cnt);
+
+fl_int fl_context_resolve_id(fl_context *cnt, fl_id_chain *id_chain, const fl_id_entry **id_value);
 
 fl_void fl_context_register_id(fl_context *cnt, fl_id_tree_node *parent, fl_id_entry *entry);
 

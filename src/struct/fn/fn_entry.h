@@ -1,8 +1,8 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/call/call_param_list.h"
-#include "structs/call/call_entry.h"
+#include "struct/call/call_param_list.h"
+#include "struct/call/call_entry.h"
 
 typedef fl_unknown *(*fl_fn_ptr)(fl_call_param_list *);
 

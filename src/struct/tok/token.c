@@ -2,6 +2,7 @@
 
 #include "shared/str.h"
 #include "tokenizer/delims.h"
+#include "struct/info/literal_info.h"
 
 // ---- DEFINES ----
 
@@ -17,21 +18,13 @@ static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 fl_char *fl_token_as_printable(fl_char *tok)
 {
     if (*tok == '\n')
-    {
         return "\\n";
-    }
     else if (*tok == '\t')
-    {
         return "\\t";
-    }
     else if (*tok == '\r')
-    {
         return "\\r";
-    }
     else
-    {
         return tok;
-    }
 }
 
 fl_void fl_token_free(fl_token *token)
@@ -58,6 +51,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     assert(tok != FL_NULL);
 
     fl_char first_chr = (tok->value) ? *(tok->value) : '\0';
+    fl_bool floating = FL_FALSE;
 
     // is delim
     if (fl_str_find(FL_ORDERED_DELIMS, first_chr))
@@ -66,10 +60,10 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
         tok->alias = _fl_token_delim_enum(first_chr);
     }
     // is number
-    else if (fl_str_is_num(tok->value))
+    else if (fl_str_is_num(tok->value, &floating))
     {
         tok->type = FL_TOKEN_TYPE_LITERAL;
-        tok->alias = FL_TOKEN_ALIAS_NUMBER;
+        tok->alias = floating ? FL_LITERAL_TYPE_FLOAT : FL_LITERAL_TYPE_INT;
     }
     // is comment
     else if (_fl_token_is_wrapper(tok, FL_COMMENT_WRAPPER))
@@ -81,7 +75,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     else if (_fl_token_is_wrapper(tok, FL_STRING_WRAPPER))
     {
         tok->type = FL_TOKEN_TYPE_LITERAL;
-        tok->alias = FL_TOKEN_ALIAS_STRING;
+        tok->alias = FL_LITERAL_TYPE_STRING;
     }
     // is valid identifier
     else if (!fl_chr_is_digit(*tok->value))

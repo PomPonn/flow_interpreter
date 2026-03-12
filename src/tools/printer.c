@@ -1,8 +1,8 @@
 #include "printer.h"
 
 #include "shared/str.h"
-#include "structs/id/id_chain.h"
-#include "structs/info/literal_info.h"
+#include "struct/id/id_chain.h"
+#include "struct/info/literal_info.h"
 #include <stdio.h>
 
 // ---- DEFINES ----

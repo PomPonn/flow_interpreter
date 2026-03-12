@@ -2,8 +2,8 @@
 
 // ---- INCLUDES ----
 
-#include "structs/call/call_param.h"
-#include "structs/opr/opr_entry.h"
+#include "struct/call/call_param.h"
+#include "struct/opr/opr_entry.h"
 #include "lang/data_type.h"
 #include "std/io/io.h"
 
@@ -37,4 +37,6 @@ fl_bool fl_std_register(fl_context *cnt)
 
 fl_unknown *_fl_std_add(fl_call_param x, fl_call_param y)
 {
+    assert(FL_FALSE);
+    return FL_NULL;
 }

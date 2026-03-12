@@ -20,7 +20,7 @@ fl_char *fl_str_find_any(const fl_char *str, const fl_char *chrs);
 
 fl_size fl_str_len(const fl_char *str);
 
-fl_bool fl_str_is_num(const fl_char *str);
+fl_bool fl_str_is_num(const fl_char *str, fl_bool *floating);
 
 fl_char *fl_str_find(const fl_char *str, fl_char chr);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/id/id_entry.h"
+#include "struct/id/id_entry.h"
 
 struct _fl_obj_entry
 {

@@ -2,7 +2,7 @@
 
 #include "shared/common.h"
 #include "lang/data_type.h"
-#include "structs/id/id_entry.h"
+#include "struct/id/id_entry.h"
 
 #define _FL_EXTEND_CALL_ENTRY \
     _FL_EXTEND_ID_ENTRY;      \

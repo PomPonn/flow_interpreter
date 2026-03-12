@@ -4,8 +4,8 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "structs/info/all.h"
-#include "structs/id/id_chain.h"
+#include "struct/info/all.h"
+#include "struct/id/id_chain.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -31,8 +31,8 @@
 
 // ---- DECLARATIONS ----
 
+inline static fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
-inline static fl_void _fl_ast_process_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
 static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
@@ -116,13 +116,8 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
         node = _fl_ast_process_expression(FL_NULL, arr, FL_TRUE);
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
-    {
-        fl_literal_info *literal_info;
-        fl_literal_info_init(&literal_info, arr->current->alias, arr->current->value);
-        init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_info, FL_NULL);
+        node = _fl_ast_process_literal(FL_NULL, arr);
 
-        next_token_safe;
-    }
     // identifier can be either left side of the operator or a function name
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
@@ -134,18 +129,6 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
         // if lparen is next, it's a function
         if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
             node = _fl_ast_process_function_call(FL_NULL, arr, node);
-        // lbrace after id means that we have a dimensions qualifier or array access
-        else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACKET)
-        {
-            /// ???????????????????
-            // next_token_safe;
-            // // if next arr->current is RBRACE it has to be dimensions qualifier
-            // if (arr->current.alias == FL_TOKEN_ALIAS_RBRACKET)
-            // {
-            //     (*i)--;
-            //     _fl_ast_process_type_dimensions(node, arr);
-            // }
-        }
     }
 
     // check if it is the end of expression
@@ -190,11 +173,12 @@ static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_
     // iterate over tokens
     for (; arr->current; next_token)
     {
-        if (arr->current->alias == FL_TOKEN_ALIAS_SEMICOLON)
-            continue;
-        // inner block to handle
-        else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
+        switch (arr->current->alias)
         {
+        case FL_TOKEN_ALIAS_SEMICOLON:
+            continue;
+        case FL_TOKEN_ALIAS_LBRACE:
+            // inner block to handle
             _fl_ast_process_block(parent, arr, FL_FALSE);
 
 #if _INCLUDE_INLINE_LOGS
@@ -202,14 +186,12 @@ static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_
             fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
             printf("\n");
 #endif
-        }
-        else if (arr->current->alias == FL_TOKEN_ALIAS_RBRACE)
-        {
+            break;
+        case FL_TOKEN_ALIAS_RBRACE:
             if (is_root)
                 throw_syntax_error("Unexpected block closure ('}')");
-        }
-        else
-        {
+            break;
+        default:
             _fl_ast_process_expression(parent, arr, FL_FALSE);
 
             // throw error if expression isn't ending with a semicolon
@@ -221,6 +203,7 @@ static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_
             fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
             printf("\n");
 #endif
+            break;
         }
     }
 }
@@ -334,26 +317,18 @@ static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token
     }
 }
 
-// handles type dimensions
-inline static fl_void _fl_ast_process_type_dimensions(fl_ast_node *type_id, fl_token_arr *arr)
+inline static fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token_arr *arr)
 {
-    // handle array dimensions
-    fl_uint dimensions = 0;
-    for (; arr->current->alias == FL_TOKEN_ALIAS_LBRACKET; dimensions++)
-    {
-        next_token_safe;
+    assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
-        // throw error if bracket is not closed
-        if (arr->current->alias != FL_TOKEN_ALIAS_RBRACKET)
-            throw_syntax_error("Bracket not closed");
+    fl_ast_node *node;
+    fl_literal_info *literal_info;
 
-        next_token_safe;
-    }
+    fl_literal_info_init(&literal_info, arr->current->alias, arr->current->value);
+    init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_info, parent);
 
-    // create type descriptor
-    fl_type_info *type_info;
-    fl_type_info_init(&type_info, dimensions);
-    type_id->data = type_info;
+    next_token_safe;
+    return node;
 }
 
 // tries to generate abstract syntax tree from specified tokens

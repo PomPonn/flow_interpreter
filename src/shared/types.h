@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <limits.h>
 
-#define FL_UINT_MAX UINT_MAX
+#define FL_INT_MAX INT_MAX
 
 typedef void fl_unknown;
 typedef void fl_void;
@@ -24,3 +24,6 @@ enum _fl_bool
     FL_TRUE,
 };
 typedef fl_byte fl_bool;
+
+typedef fl_int fl_lang_type_int;
+typedef fl_double fl_lang_type_float;

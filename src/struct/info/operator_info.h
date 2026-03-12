@@ -4,7 +4,7 @@
 
 struct _fl_operator_info
 {
-    fl_uint order;
+    fl_int order;
 };
 typedef struct _fl_operator_info fl_operator_info;
 

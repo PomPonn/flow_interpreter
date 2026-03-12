@@ -2,7 +2,7 @@
 
 #include "shared/common.h"
 #include "ast/ast_node.h"
-#include "structs/tok/token_array.h"
+#include "struct/tok/token_array.h"
 
 struct _fl_ast_tree
 {

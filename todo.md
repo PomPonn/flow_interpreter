@@ -2,6 +2,7 @@
 
 ## AST
 
+- ast nodes optimalization?
 - finish fl_operator_info struct handling
 - AST operators sorting
 - AST function expression handling

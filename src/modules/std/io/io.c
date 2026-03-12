@@ -3,8 +3,8 @@
 // ---- INCLUDES ----
 
 #include "shared/error.h"
-#include "structs/call/call_param_list.h"
-#include "structs/fn/fn_entry.h"
+#include "struct/call/call_param_list.h"
+#include "struct/fn/fn_entry.h"
 #include <stdio.h>
 
 // ---- DEFINES ----

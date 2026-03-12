@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/tok/token.h"
+#include "struct/tok/token.h"
 
 struct _fl_token_arr
 {

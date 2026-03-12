@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "structs/info/file_location_info.h"
+#include "struct/info/file_location_info.h"
 
 enum _fl_ast_node_type
 {

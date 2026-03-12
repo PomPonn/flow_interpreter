@@ -1,7 +1,7 @@
 #include "id_entry.h"
 
-#include "structs/fn/fn_entry.h"
-#include "structs/opr/opr_entry.h"
+#include "struct/fn/fn_entry.h"
+#include "struct/opr/opr_entry.h"
 
 fl_void fl_id_entry_free(fl_id_entry *entry)
 {
