@@ -37,8 +37,8 @@ fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str)
             *ptr++;
 
         fl_size n = (fl_size)(ptr - str);
-        fl_char *id = fl_mem_alloc(n);
-        fl_mem_copy(str, id, n - 1);
+        fl_char *id = fl_mem_alloc(n + 1);
+        fl_mem_copy(str, id, n);
         id[n] = '\0';
 
         fl_id_chain_push(chain, id);

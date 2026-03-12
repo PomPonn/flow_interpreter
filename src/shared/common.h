@@ -17,3 +17,4 @@
         a = b;               \
         b = temp;            \
     }
+#define _FL_MODULE_EXPORT __declspec(dllexport)

@@ -6,8 +6,8 @@
 #include "tokenizer/tokenizer.h"
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
-#include "struct/id/id_tree.h"
-#include "struct/info/file_location_info.h"
+#include "struct/id/id_node.h"
+#include "struct/info/location_info.h"
 #include "struct/info/operator_info.h"
 #include "tools/file.h"
 #include "tools/printer.h"
@@ -17,7 +17,7 @@
 #define _ID_STRING_BUFFER_SIZE 512
 
 #define throw_file_error(message) \
-    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_file_location_info){.description = source_path})
+    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_location_info){.description = source_path})
 
 #define throw_compilation_error(ast_node_ptr, message)                             \
     {                                                                              \
@@ -42,9 +42,9 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
     if (!source_code)
         throw_file_error("Couldn't read the file (does it exist?)");
 
-    fl_token_arr token_array;
-    fl_bool any_token = fl_tok_tokenize(source_code, &token_array, source_path);
-    fl_opt_remove_comments(&token_array);
+    fl_token_arr token_arr;
+    fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
+    fl_opt_remove_comments(&token_arr);
 
     fl_file_free(source_code);
 
@@ -53,13 +53,13 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
         return;
 
     fl_ast_tree tree;
-    fl_ast_tree_gen(&tree, &token_array);
+    fl_ast_tree_gen(&tree, &token_arr);
 
     fl_prt_print_ast_tree(&tree);
     return;
     _fl_cmp_compile_node(tree.root, cnt);
 
-    fl_token_arr_free(&token_array);
+    fl_token_arr_free(&token_arr);
     fl_ast_tree_free(&tree);
 }
 

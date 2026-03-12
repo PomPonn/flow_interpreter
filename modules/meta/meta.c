@@ -1,21 +1,21 @@
 #include "meta.h"
 
 // ---- INCLUDES ----
-#include "struct/call/call_param_list.h"
+#include "struct/call/call_param_vec.h"
 #include "struct/fn/fn_entry.h"
 
 // ---- DECLARATIONS ----
 
-fl_unknown *_fl_meta_import(fl_call_param_list *args);
+fl_unknown *_fl_meta_import(fl_call_param_vec *args);
 
 // ---- DEFINITIONS ----
 
-fl_bool fl_module_register(fl_context *cnt)
+fl_bool fl_module_register(fl_context *cnt, fl_id_chain *chain)
 {
     fl_obj_entry *meta_object;
-    fl_obj_entry_init(&meta_object, "std");
+    fl_obj_entry_init(&meta_object, "meta");
 
-    fl_id_tree_node *meta = fl_id_tree_push_sibling(
+    fl_id_node *meta = fl_id_node_push_sibling(
         &cnt->id_tree,
         (fl_id_entry *)meta_object);
 
@@ -26,8 +26,8 @@ fl_bool fl_module_register(fl_context *cnt)
 
     // register 'import' compile time function (_fl_meta_import)
 
-    fl_call_param_list params;
-    fl_call_param_list_init(&params, 1);
+    fl_call_param_vec params;
+    fl_call_param_vec_init(&params, 1);
     fl_call_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
 
     fl_fn_entry *import_fn;
@@ -44,7 +44,7 @@ fl_bool fl_module_register(fl_context *cnt)
     return FL_TRUE;
 }
 
-fl_unknown *_fl_meta_import(fl_call_param_list *args)
+fl_unknown *_fl_meta_import(fl_call_param_vec *args)
 {
 
     return FL_NULL;

@@ -19,7 +19,7 @@ fl_size _g_errors_num = 0;
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;
-fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_file_location_info location)
+fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_location_info location)
 {
     if (_g_errors_num + 1 > _MAX_ERROR_NUM)
         // execute errors if current one exceeds the limit
@@ -27,7 +27,7 @@ fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *n
 
     _g_errors[_g_errors_num] = (fl_err_record){
         .type = type,
-        .description = message,
+        .message = message,
         .location = location,
         .near = fl_str_dup(near)};
 
@@ -46,7 +46,7 @@ fl_void fl_err_clear()
 }
 
 // reports an error and ends interpretation
-fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_file_location_info location)
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_location_info location)
 {
 #if !_SUPPRESS_ERRORS
     fl_err_report(type, message, near, location);
@@ -67,7 +67,7 @@ fl_void fl_err_execute()
             printf(
                 "[ERROR] File error while processing file '%s':\n%s\n",
                 _g_errors[i].location.description,
-                _g_errors[i].description);
+                _g_errors[i].message);
             break;
         case FL_ERR_AST:
             printf(
@@ -77,7 +77,7 @@ fl_void fl_err_execute()
                 _g_errors[i].location.line + 1,
                 _g_errors[i].location.column + 1,
                 _g_errors[i].near,
-                _g_errors[i].description);
+                _g_errors[i].message);
             break;
         case FL_ERR_COMPILATION:
             printf(
@@ -87,7 +87,14 @@ fl_void fl_err_execute()
                 _g_errors[i].location.line + 1,
                 _g_errors[i].location.column + 1,
                 _g_errors[i].near,
-                _g_errors[i].description);
+                _g_errors[i].message);
+            break;
+        case FL_ERR_IMPORT:
+            printf(
+                "[ERROR] Failed to import '%s' while processing '%s':\n%s",
+                _g_errors[i].near,
+                _g_errors[i].location.description,
+                _g_errors[i].message);
             break;
         default:
             // unhandled error type

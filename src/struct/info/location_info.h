@@ -2,11 +2,11 @@
 
 #include "shared/common.h"
 
-struct _fl_file_location_info
+struct _fl_location_info
 {
     // e.g. filename
     const fl_char *description;
     fl_size line;
     fl_size column;
 };
-typedef struct _fl_file_location_info fl_file_location_info;
+typedef struct _fl_location_info fl_location_info;
