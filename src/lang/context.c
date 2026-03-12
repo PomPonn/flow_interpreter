@@ -1,5 +1,7 @@
 #include "context.h"
 
+#include "tools/lib.h"
+
 // ---- DEFINITIONS ----
 
 fl_void fl_context_init(fl_context *cnt)
@@ -28,4 +30,12 @@ fl_int fl_context_resolve_id(fl_context *cnt, fl_id_chain *id_chain, const fl_id
 {
     *id_value = fl_id_tree_seek_value(cnt->id_tree, id_chain);
     return fl_id_list_find(&cnt->id_list, *id_value);
+}
+
+fl_void fl_context_load_module(fl_context *cnt, fl_id_chain *id_chain)
+{
+    assert(id_chain->size);
+
+    // first id should be module name
+    fl_lib_handle handle = fl_lib_load(id_chain->data[0]);
 }

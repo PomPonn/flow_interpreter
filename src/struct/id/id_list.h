@@ -5,5 +5,5 @@
 #define FL_VEC_NAME fl_id_list
 #define FL_VEC_TYPE fl_id_entry *
 #define FL_VEC_CAP 32
-#define FL_VEC_STRUCTS FL_TRUE
+#define FL_VEC_DESTROYER(elem) fl_id_entry_free(elem)
 #include "generics/vector.h"

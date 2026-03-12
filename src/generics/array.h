@@ -7,9 +7,7 @@
 #ifndef FL_ARR_TYPE
 #define FL_ARR_TYPE fl_int
 #endif
-#ifndef FL_ARR_PRIMITIVE
-#define FL_ARR_PRIMITIVE FL_TRUE
-#endif
+// #define FL_ARR_DESTROYER(elem)
 
 struct _FL_MERGE(_, FL_ARR_NAME)
 {
@@ -26,10 +24,11 @@ inline fl_void _FL_MERGE(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size size)
 
 inline fl_void _FL_MERGE(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
 {
-#if FL_ARR_PRIMITIVE == 0
+#ifdef FL_ARR_DESTROYER
     for (fl_size i = 0; i < sizeof(FL_ARR_TYPE) * arr->size; i++)
-        _FL_MERGE(FL_ARR_TYPE, _free)(&arr->data[i]);
+        FL_ARR_DESTROYER(arr->data[i]);
 #endif
+
     fl_mem_free(arr->data);
     arr->data = FL_NULL;
     arr->size = 0;
@@ -37,4 +36,6 @@ inline fl_void _FL_MERGE(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
 
 #undef FL_ARR_NAME
 #undef FL_ARR_TYPE
-#undef FL_ARR_PRIMITIVE
+#ifdef FL_ARR_DESTROYER
+#undef FL_ARR_DESTROYER
+#endif

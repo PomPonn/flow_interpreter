@@ -10,15 +10,7 @@
 #ifndef FL_VEC_CAP
 #define FL_VEC_CAP 16
 #endif
-#ifndef FL_VEC_STRUCTS
-#define FL_VEC_STRUCTS 0
-#endif
-#ifndef FL_VEC_FREE_INNER
-#define FL_VEC_FREE_INNER 0
-#endif
-
-#define _FL_MERGE_INNER(a, b) a##b
-#define _FL_MERGE(a, b) _FL_MERGE_INNER(a, b)
+// #define FL_VEC_DESTROYER(elem)
 
 struct _FL_MERGE(_, FL_VEC_NAME)
 {
@@ -40,13 +32,11 @@ inline fl_void _FL_MERGE(FL_VEC_NAME, _init)(FL_VEC_NAME *arr, fl_size capacity)
 
 inline fl_void _FL_MERGE(FL_VEC_NAME, _free)(FL_VEC_NAME *arr)
 {
-#if FL_VEC_STRUCTS == 1
+#ifdef FL_VEC_DESTROYER
     for (fl_size i = 0; i < sizeof(FL_VEC_TYPE) * arr->size; i++)
-        _FL_MERGE(FL_VEC_TYPE, _free)(&arr->data[i]);
-#elif FL_VEC_FREE_INNER == 1
-    for (fl_size i = 0; i < sizeof(FL_VEC_TYPE) * arr->size; i++)
-        fl_mem_free(arr->data[i]);
+        FL_VEC_DESTROYER(arr->data[i]);
 #endif
+
     fl_mem_free(arr->data);
     arr->data = FL_NULL;
     arr->_capacity = 0;
@@ -84,5 +74,6 @@ inline fl_int _FL_MERGE(FL_VEC_NAME, _find)(FL_VEC_NAME *arr, const FL_VEC_TYPE 
 #undef FL_VEC_NAME
 #undef FL_VEC_TYPE
 #undef FL_VEC_CAP
-#undef FL_VEC_STRUCTS
-#undef FL_VEC_FREE_INNER
+#ifdef FL_VEC_DESTROYER
+#undef FL_VEC_DESTROYER
+#endif

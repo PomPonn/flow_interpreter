@@ -12,7 +12,6 @@ include_directories(
 
 link_libraries(flow)
 
-
 function(build_module_dlls)
     file(GLOB module_paths CONFIGURE_DEPENDS ${modules_base_path}/*/)
     list(FILTER module_paths EXCLUDE REGEX "\\..*$")
