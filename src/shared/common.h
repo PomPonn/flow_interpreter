@@ -10,3 +10,10 @@
 
 #define FL_NULL (void *)0
 #define FL_FAIL -1
+
+#define _fl_swap(type, a, b) \
+    {                        \
+        type temp = a;       \
+        a = b;               \
+        b = temp;            \
+    }

@@ -10,7 +10,7 @@ fl_unknown *_fl_meta_import(fl_call_param_list *args);
 
 // ---- DEFINITIONS ----
 
-fl_bool fl_meta_register(fl_context *cnt)
+fl_bool fl_module_register(fl_context *cnt)
 {
     fl_obj_entry *meta_object;
     fl_obj_entry_init(&meta_object, "std");

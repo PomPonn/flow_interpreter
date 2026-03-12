@@ -1,5 +1,5 @@
 #include "compiler/compiler.h"
-#include "modules/std/std.h"
+#include "modules/meta/meta.h"
 
 #include <stdio.h>
 
@@ -8,7 +8,7 @@ int main()
     fl_context cnt;
     fl_context_init(&cnt);
 
-    fl_std_register(&cnt);
+    fl_meta_register(&cnt);
 
     fl_comp_compile(_TEST_INPUT_PATH, &cnt);
 

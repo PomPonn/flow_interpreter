@@ -8,6 +8,7 @@
 #include "ast/ast_tree.h"
 #include "struct/id/id_tree.h"
 #include "struct/info/file_location_info.h"
+#include "struct/info/operator_info.h"
 #include "tools/file.h"
 #include "tools/printer.h"
 
@@ -130,32 +131,45 @@ inline static fl_void _fl_cmp_compile_fn_call(fl_ast_node *op_node, fl_context *
 inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context *cnt, fl_byte_code *dest)
 {
     // first child is an operator id
-    fl_ast_node *inner_node = op_node->child;
-    fl_id_chain *id_chain = (fl_id_chain *)inner_node->data;
+    fl_ast_node *id_node = op_node->child;
+    fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
     // resolve this operator id
     fl_id_entry *id_entry;
     fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_entry);
 
     if (!id_entry)
         // throw an error if it's absent
-        throw_compilation_error(inner_node, "Use of unknown id");
+        throw_compilation_error(id_node, "Use of unknown id");
 
     if (id_entry->type != FL_ID_ENTRY_TYPE_OPR)
-        throw_compilation_error(inner_node, "id is not an operator");
+        throw_compilation_error(id_node, "id is not an operator");
 
-    inner_node = inner_node->next;
+    // get operator args
+    fl_ast_node *left_arg = id_node->next;
+    fl_ast_node *right_arg = left_arg->next;
+
     // validate left argument
-    if (!inner_node)
-        throw_compilation_error(inner_node, "Missing left argument of the operator");
-    // compile left argument
-    _fl_cmp_compile_node(inner_node, cnt);
-
-    inner_node = inner_node->next;
+    if (!left_arg)
+        throw_compilation_error(id_node, "Missing left argument of the operator");
     // validate right argument
-    if (!inner_node)
-        throw_compilation_error(inner_node, "Missing right argument of the operator");
-    // compile right argument
-    _fl_cmp_compile_node(inner_node, cnt);
+    if (!right_arg)
+        throw_compilation_error(id_node, "Missing right argument of the operator");
+    // excess node check
+    if (right_arg->next)
+        throw_compilation_error(right_arg->next, "Excess operator argument");
+
+    // compile arguments in appropiate order
+    if (left_arg->type == FL_AST_NODE_TYPE_OPERATOR && right_arg->type == FL_AST_NODE_TYPE_OPERATOR)
+    {
+        fl_operator_info *left_info = left_arg->data;
+        fl_operator_info *right_info = right_arg->data;
+        // reverse processing order if right operator order is higher
+        if (right_info->order > left_info->order)
+            _fl_swap(fl_ast_node *, right_arg, left_arg);
+    }
+
+    _fl_cmp_compile_node(left_arg, cnt);
+    _fl_cmp_compile_node(right_arg, cnt);
 
     // push operator id
     fl_byte_code_push_mem(dest, &id_index, sizeof(id_index));

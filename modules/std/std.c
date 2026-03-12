@@ -13,7 +13,7 @@ fl_unknown *_fl_std_add(fl_call_param x, fl_call_param y);
 
 // ---- DEFINITIONS -----
 
-fl_bool fl_std_register(fl_context *cnt)
+fl_bool fl_module_register(fl_context *cnt)
 {
     fl_obj_entry *std_object;
     fl_obj_entry_init(&std_object, "std");
