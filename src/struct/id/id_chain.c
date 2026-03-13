@@ -34,7 +34,7 @@ fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str)
     while (*ptr)
     {
         while (*ptr && *ptr != '.')
-            *ptr++;
+            ptr++;
 
         fl_size n = (fl_size)(ptr - str);
         fl_char *id = fl_mem_alloc(n + 1);

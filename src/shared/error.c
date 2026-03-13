@@ -72,7 +72,7 @@ fl_void fl_err_execute()
         case FL_ERR_AST:
             printf(
                 "[ERROR] Invalid syntax in '%s'\n"
-                "line %lu, column %lu near '%s':\n%s\n",
+                "line %u, column %u near '%s':\n%s\n",
                 _g_errors[i].location.description,
                 _g_errors[i].location.line + 1,
                 _g_errors[i].location.column + 1,
@@ -82,7 +82,7 @@ fl_void fl_err_execute()
         case FL_ERR_COMPILATION:
             printf(
                 "[ERROR] Compilation failed while processing '%s'\n"
-                "line %lu, column %lu near '%s':\n%s\n",
+                "line %u, column %u near '%s':\n%s\n",
                 _g_errors[i].location.description,
                 _g_errors[i].location.line + 1,
                 _g_errors[i].location.column + 1,

@@ -73,11 +73,11 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
 
 fl_void fl_prt_print_token_entries(fl_token_arr *arr)
 {
-    printf("<%lu entries>\n", arr->_count);
+    printf("<%u entries>\n", arr->_count);
 
     while (arr->current)
     {
-        printf("[%lu, %lu] ", arr->current->location.line + 1, arr->current->location.column + 1);
+        printf("[%u, %u] ", arr->current->location.line + 1, arr->current->location.column + 1);
         printf("'%s'\n", fl_token_as_printable(arr->current->value));
         fl_token_arr_next(arr);
     }
@@ -111,7 +111,7 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
         printf("[LOCATION] %s\n", last_desc);
     }
 
-    sprintf(location_str_buffer, "[%lu, %lu]", root->location.line + 1, root->location.column + 1);
+    sprintf(location_str_buffer, "[%u, %u]", root->location.line + 1, root->location.column + 1);
     printf("%-*s", _LOCATION_STR_BUFFER_SIZE, location_str_buffer);
 
     for (fl_ushort i = 0; i < nest_level; i++)
@@ -137,7 +137,7 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     // printing node count
     if (nest_level == 0)
     {
-        printf("[NODES COUNT] %lu\n", nodes_count);
+        printf("[NODES COUNT] %u\n", nodes_count);
         nodes_count = 0;
     }
 }

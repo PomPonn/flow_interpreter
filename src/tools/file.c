@@ -29,7 +29,7 @@ fl_void fl_file_append(const fl_char *filename, fl_char *data)
 
     assert(file);
 
-    fprintf(file, data);
+    fputs(data, file);
 
     fclose(file);
 }

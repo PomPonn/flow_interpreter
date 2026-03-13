@@ -40,6 +40,7 @@ fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_en
     fl_id_node *node;
 
     if (!parent)
+    {
         if (cnt->id_tree)
             parent = cnt->id_tree;
         else
@@ -48,6 +49,7 @@ fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_en
             node = cnt->id_tree;
             goto __res;
         }
+    }
 
     // TODO: handle push fail
     node = fl_id_node_push_child(parent, entry);

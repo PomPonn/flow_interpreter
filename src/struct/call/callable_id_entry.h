@@ -8,7 +8,7 @@ typedef fl_unknown *(*fl_fn_ptr)(fl_call_param_vec *);
 
 struct _fl_callable_id_entry
 {
-    struct _fl_id_entry;
+    FL_EXTEND_ID_ENTRY;
     fl_bool compile_time;
     fl_fn_ptr pointer;
     fl_data_type return_type;
