@@ -3,7 +3,7 @@
 #include "shared/common.h"
 #include "struct/id/id_node.h"
 #include "struct/id/id_node_vec.h"
-#include "struct/obj/obj_entry.h"
+#include "struct/obj/obj_id_entry.h"
 #include "struct/byte_code.h"
 #include "struct/lib/lib_handle_vec.h"
 

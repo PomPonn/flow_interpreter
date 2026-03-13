@@ -155,7 +155,7 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
     if (!*token_start)
         return FL_NULL;
 
-    if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
+    if (_fl_tok_handle_wrapper((const fl_char **)&next_pos, &next_line, &next_column))
     {
         escape_char = *next_pos;
         if (*next_pos == '\0')

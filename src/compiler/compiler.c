@@ -98,7 +98,7 @@ inline static fl_void _fl_cmp_compile_fn_call(fl_ast_node *op_node, fl_context *
     fl_id_chain *id_chain = (fl_id_chain *)node->data;
     // resolve this function id
     fl_id_node *id_node;
-    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_node);
+    fl_int id_index = fl_context_resolve_id(cnt, id_chain, (const fl_id_node **)&id_node);
 
     if (!id_node)
         // throw an error if it's absent
@@ -135,7 +135,7 @@ inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context
     fl_id_chain *id_chain = (fl_id_chain *)node->data;
     // resolve this operator id
     fl_id_node *id_node;
-    fl_int id_index = fl_context_resolve_id(cnt, id_chain, &id_node);
+    fl_int id_index = fl_context_resolve_id(cnt, id_chain, (const fl_id_node **)&id_node);
 
     if (!id_node)
         // throw an error if it's absent

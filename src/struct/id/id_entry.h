@@ -9,7 +9,7 @@ enum _fl_id_entry_type
 };
 typedef fl_byte fl_id_entry_type;
 
-// abstract struct (used only as an interface)
+// abstract struct (used as an interface)
 struct _fl_id_entry
 {
     const fl_char *name;

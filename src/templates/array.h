@@ -16,13 +16,13 @@ struct _FL_MERGE(_, FL_ARR_NAME)
 };
 typedef struct _FL_MERGE(_, FL_ARR_NAME) FL_ARR_NAME;
 
-inline fl_void _FL_MERGE(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size size)
+FL_TEMPLATE_FN fl_void _FL_MERGE(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size size)
 {
     arr->data = (FL_ARR_TYPE *)fl_mem_alloc_arr(sizeof(FL_ARR_TYPE), size);
     arr->size = size;
 }
 
-inline fl_void _FL_MERGE(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
+FL_TEMPLATE_FN fl_void _FL_MERGE(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
 {
 #ifdef FL_ARR_DESTROYER
     for (fl_size i = 0; i < sizeof(FL_ARR_TYPE) * arr->size; i++)

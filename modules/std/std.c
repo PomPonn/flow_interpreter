@@ -14,8 +14,8 @@ fl_unknown *_fl_std_add(fl_call_param x, fl_call_param y);
 
 fl_bool fl_module_register(fl_context *cnt)
 {
-    fl_obj_entry *std_object;
-    fl_obj_entry_init(&std_object, "std");
+    fl_obj_id_entry *std_object;
+    fl_obj_id_entry_init(&std_object, "std");
 
     fl_id_node *std = fl_id_node_push_sibling(
         &cnt->id_tree,

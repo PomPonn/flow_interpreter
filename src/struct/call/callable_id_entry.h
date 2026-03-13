@@ -6,7 +6,7 @@
 
 typedef fl_unknown *(*fl_fn_ptr)(fl_call_param_vec *);
 
-struct _fl_callable_entry
+struct _fl_callable_id_entry
 {
     struct _fl_id_entry;
     fl_bool compile_time;
@@ -14,14 +14,14 @@ struct _fl_callable_entry
     fl_data_type return_type;
     fl_call_param_vec params;
 };
-typedef struct _fl_callable_entry fl_callable_entry;
+typedef struct _fl_callable_id_entry fl_callable_id_entry;
 
-fl_void fl_callable_entry_init(
-    fl_callable_entry **entry,
+fl_void fl_callable_id_entry_init(
+    fl_callable_id_entry **entry,
     const fl_char *name,
     fl_bool compile_time,
     fl_fn_ptr ptr,
     fl_data_type return_type,
     fl_call_param_vec params);
 
-fl_void fl_callable_entry_free(fl_callable_entry *entry);
+fl_void fl_callable_id_entry_free(fl_callable_id_entry *entry);

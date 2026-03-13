@@ -4,7 +4,7 @@
 
 #include "shared/error.h"
 #include "struct/call/call_param_vec.h"
-#include "struct/call/callable_entry.h"
+#include "struct/call/callable_id_entry.h"
 #include <stdio.h>
 
 // ---- DEFINES ----
@@ -21,8 +21,8 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_node *parent)
 {
     // register 'io' module
 
-    fl_obj_entry *io_object;
-    fl_obj_entry_init(&io_object, "io");
+    fl_obj_id_entry *io_object;
+    fl_obj_id_entry_init(&io_object, "io");
     parent = fl_id_node_push_child(parent, (fl_id_entry *)io_object);
 
     if (!parent)
@@ -36,8 +36,8 @@ fl_bool fl_std_io_register(fl_context *cnt, fl_id_node *parent)
     fl_call_param_vec_init(&params, 1);
     fl_call_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
 
-    fl_callable_entry *put_fn;
-    fl_callable_entry_init(
+    fl_callable_id_entry *put_fn;
+    fl_callable_id_entry_init(
         &put_fn,
         "put",
         FL_FALSE,

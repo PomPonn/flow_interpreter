@@ -1,0 +1,13 @@
+#include "obj_id_entry.h"
+
+fl_void fl_obj_id_entry_init(fl_obj_id_entry **entry, const fl_char *name)
+{
+    *entry = fl_mem_alloc(sizeof(fl_obj_id_entry));
+    (*entry)->type = FL_ID_ENTRY_TYPE_OBJ;
+    (*entry)->name = name;
+}
+
+fl_void fl_obj_id_entry_free(fl_obj_id_entry *entry)
+{
+    fl_mem_free(entry);
+}
