@@ -5,7 +5,7 @@
 
 struct _fl_obj_entry
 {
-    _FL_EXTEND_ID_ENTRY;
+    struct _fl_id_entry;
     // ?...
 };
 typedef struct _fl_obj_entry fl_obj_entry;

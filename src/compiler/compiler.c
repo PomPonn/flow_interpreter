@@ -104,7 +104,7 @@ inline static fl_void _fl_cmp_compile_fn_call(fl_ast_node *op_node, fl_context *
         // throw an error if it's absent
         throw_compilation_error(node, "Use of unknown function id");
 
-    if (id_node->value->type != FL_ID_ENTRY_TYPE_FUNC)
+    if (id_node->value->type != FL_ID_ENTRY_TYPE_CALLABLE)
         throw_compilation_error(node, "id is not a function");
 
     // process function arguments first (if any)
@@ -141,8 +141,8 @@ inline static fl_void _fl_cmp_compile_operation(fl_ast_node *op_node, fl_context
         // throw an error if it's absent
         throw_compilation_error(node, "Use of unknown operator id");
 
-    if (id_node->value->type != FL_ID_ENTRY_TYPE_OPR)
-        throw_compilation_error(node, "id is not an operator");
+    if (id_node->value->type != FL_ID_ENTRY_TYPE_CALLABLE)
+        throw_compilation_error(node, "id is not callable");
 
     // get operator args
     fl_ast_node *left_arg = node->next;

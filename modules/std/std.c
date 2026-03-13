@@ -3,7 +3,6 @@
 // ---- INCLUDES ----
 
 #include "struct/call/call_param.h"
-#include "struct/opr/opr_entry.h"
 #include "lang/data_type.h"
 #include "io/io.h"
 

@@ -2,14 +2,9 @@
 
 #include "shared/common.h"
 
-#define _FL_EXTEND_ID_ENTRY \
-    const fl_char *name;    \
-    fl_id_entry_type type
-
 enum _fl_id_entry_type
 {
-    FL_ID_ENTRY_TYPE_FUNC,
-    FL_ID_ENTRY_TYPE_OPR,
+    FL_ID_ENTRY_TYPE_CALLABLE,
     FL_ID_ENTRY_TYPE_OBJ,
 };
 typedef fl_byte fl_id_entry_type;
@@ -17,7 +12,8 @@ typedef fl_byte fl_id_entry_type;
 // abstract struct (used only as an interface)
 struct _fl_id_entry
 {
-    _FL_EXTEND_ID_ENTRY;
+    const fl_char *name;
+    fl_id_entry_type type;
 };
 typedef struct _fl_id_entry fl_id_entry;
 
