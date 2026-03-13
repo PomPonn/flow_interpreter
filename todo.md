@@ -13,6 +13,7 @@
 
 ## general
 
+- make fl_id_entry an anonymous struct and use it this way in inheriting structs
 - is call_entry.h needed?
 - think if FL_ORDERED_DELIMS can be better
 - implement time measurement on unix systems
