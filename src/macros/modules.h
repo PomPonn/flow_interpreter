@@ -30,9 +30,11 @@
 #define FL_DATA_TYPES(...) \
     (fl_data_type[]) { __VA_ARGS__ }
 
-#define fl_throw_import_error(message)                                          \
-    fl_id_chain_to_string(FL_PARAM_ID_CHAIN, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
-    fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION)
+#define fl_throw_import_error(message)                                              \
+    {                                                                               \
+        fl_id_chain_to_string(FL_PARAM_ID_CHAIN, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
+        fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);            \
+    }
 
 #define FL_MODULE_CALLABLE(name) \
     fl_unknown *_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name)(fl_call_param_vec * args)
@@ -50,7 +52,7 @@
     fl_obj_id_entry *_FL_MERGE2(name, _entry);                                                                \
     fl_obj_id_entry_init(&_FL_MERGE2(name, _entry), _FL_STRINGIFY(name));                                     \
     fl_id_node *name = fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry)); \
-    if (!_FL_MERGE2(name, _entry))                                                                            \
+    if (!name)                                                                                                \
     fl_throw_import_error("Failed to register object")
 
 #define FL_REGISTER_RT_CALLABLE(name, return_type, param_types) \

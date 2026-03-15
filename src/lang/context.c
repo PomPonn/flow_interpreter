@@ -59,9 +59,33 @@ __res:
     return node;
 }
 
-fl_int fl_context_resolve_id(fl_context *cnt, fl_id_chain *id_chain, const fl_id_node **id_node)
+fl_int fl_context_resolve_id(
+    fl_context *cnt,
+    fl_id_node *scope,
+    fl_id_chain *id_chain,
+    const fl_id_node **id_node)
 {
-    *id_node = fl_id_node_seek(cnt->id_tree, id_chain);
+    *id_node = FL_NULL;
+
+    if (scope)
+        // seek in private scope
+        *id_node = fl_id_node_seek(scope, id_chain);
+
+    if (!*id_node)
+    {
+        // seek in root scope
+        *id_node = fl_id_node_seek(cnt->id_tree, id_chain);
+
+        if (!*id_node)
+            // seek in global scopes
+            for (fl_size i = 0; i < cnt->global_scopes.size; i++)
+            {
+                *id_node = fl_id_node_seek(cnt->global_scopes.data[i]->child, id_chain);
+                if (*id_node)
+                    break;
+            }
+    }
+
     return fl_id_node_vec_find(&cnt->id_list, *id_node);
 }
 

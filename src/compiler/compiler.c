@@ -66,20 +66,20 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
 {
-    fl_byte_code bc = cnt->byte_code;
+    fl_byte_code *bc = &cnt->byte_code;
 
     while (node)
     {
         switch (node->type)
         {
         case FL_AST_NODE_TYPE_BLOCK:
-            fl_byte_code_push(&bc, FL_INSTR_STARTBLOCK);
+            fl_byte_code_push(bc, FL_INSTR_STARTBLOCK);
             _fl_cmp_compile_node(node->child, cnt);
-            fl_byte_code_push(&bc, FL_INSTR_ENDBLOCK);
+            fl_byte_code_push(bc, FL_INSTR_ENDBLOCK);
             break;
         case FL_AST_NODE_TYPE_FN_CALL:
         case FL_AST_NODE_TYPE_OPERATOR:
-            _fl_cmp_compile_callable(node, cnt, &bc);
+            _fl_cmp_compile_callable(node, cnt, bc);
             break;
         default:
             break;
@@ -96,7 +96,7 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
     fl_id_chain *id_chain = (fl_id_chain *)node->data;
     // resolve this callable id
     fl_id_node *id_node;
-    fl_int id_index = fl_context_resolve_id(cnt, id_chain, (const fl_id_node **)&id_node);
+    fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
 
     if (!id_node)
         // throw an error if id is absent
@@ -170,6 +170,8 @@ inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chai
             _fl_swap(fl_ast_node *, right_arg, left_arg);
     }
 
-    _fl_cmp_compile_node(left_arg, cnt);
+    if (left_arg->type = FL_AST_NODE_TYPE_ID_CHAIN)
+
+        _fl_cmp_compile_node(left_arg, cnt);
     _fl_cmp_compile_node(right_arg, cnt);
 }

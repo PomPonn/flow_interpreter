@@ -27,7 +27,6 @@ fl_void fl_id_node_free(fl_id_node *node)
 
 fl_id_node *fl_id_node_select(const fl_id_node *node, const fl_char *name)
 {
-    node = node->child;
     while (node)
     {
         if (fl_str_equal(node->value->name, name))
@@ -80,9 +79,13 @@ fl_id_node *fl_id_node_seek(const fl_id_node *node, const fl_id_chain *chain)
     if (!node)
         return FL_NULL;
 
-    for (fl_size i = 0; i < chain->size; i++)
-        if (!(node = fl_id_node_select(node, chain->data[i])))
-            return FL_NULL;
+    fl_size i = 0;
+    while (node = fl_id_node_select(node, chain->data[i]))
+    {
+        i++;
+        if (i == chain->size)
+            return (fl_id_node *)node;
+    }
 
-    return (fl_id_node *)node;
+    return FL_NULL;
 }

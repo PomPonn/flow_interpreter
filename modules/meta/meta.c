@@ -20,7 +20,7 @@ FL_MODULE_CALLABLE(power);
 // basic memory operations
 FL_MODULE_CALLABLE(assign);
 
-// compile time callables
+// compile time id's
 FL_MODULE_CALLABLE(import);
 
 // ---- DEFINITIONS ----
@@ -34,6 +34,7 @@ fl_id_node *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_I
     if (FL_PARAM_ID_CHAIN->size >= 1)
     {
         // import top level ids
+        FL_REGISTER_CT_CALLABLE(assign, FL_DATA_TYPE_NULL, FL_DATA_TYPES(FL_DATA_TYPE_ARRAY));
         FL_REGISTER_CT_CALLABLE(import, FL_DATA_TYPE_NULL, FL_DATA_TYPES(FL_DATA_TYPE_ARRAY));
         FL_REGISTER_RT_CALLABLE(add, FL_DATA_TYPE_INT, FL_DATA_TYPES(FL_DATA_TYPE_ARRAY));
     }
