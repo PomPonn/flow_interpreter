@@ -1,5 +1,5 @@
 #include "shared/common.h"
-#include "shared/_macros.h"
+#include "macros/basic.h"
 
 #ifndef FL_ARR_NAME
 #define FL_ARR_NAME array
@@ -9,20 +9,20 @@
 #endif
 // #define FL_ARR_DESTROYER(elem)
 
-struct _FL_MERGE(_, FL_ARR_NAME)
+struct _FL_MERGE2(_, FL_ARR_NAME)
 {
     fl_size size;
     FL_ARR_TYPE *data;
 };
-typedef struct _FL_MERGE(_, FL_ARR_NAME) FL_ARR_NAME;
+typedef struct _FL_MERGE2(_, FL_ARR_NAME) FL_ARR_NAME;
 
-FL_TEMPLATE_FN fl_void _FL_MERGE(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size size)
+FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size size)
 {
     arr->data = (FL_ARR_TYPE *)fl_mem_alloc_arr(sizeof(FL_ARR_TYPE), size);
     arr->size = size;
 }
 
-FL_TEMPLATE_FN fl_void _FL_MERGE(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
+FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
 {
 #ifdef FL_ARR_DESTROYER
     for (fl_size i = 0; i < sizeof(FL_ARR_TYPE) * arr->size; i++)

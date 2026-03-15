@@ -62,7 +62,7 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
     case FL_AST_NODE_TYPE_OPERATOR:
         printf("<operator>");
         break;
-    case FL_AST_NODE_TYPE_CALL:
+    case FL_AST_NODE_TYPE_FN_CALL:
         printf("<call>");
         break;
     default:

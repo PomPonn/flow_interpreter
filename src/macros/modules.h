@@ -1,8 +1,10 @@
 #pragma once
 
+#include "macros/basic.h"
 #include "shared/common.h"
 #include "shared/error.h"
-#include "shared/_macros.h"
+#include "struct/call/call_param_vec.h"
+#include "struct/call/callable_id_entry.h"
 
 // ---- PRIVATE ----
 
@@ -11,15 +13,15 @@
 
 #define _FL_REG_CLL_BASE(parent, comp, name, return_type, param_types) \
     FL_PARAMS(param_types);                                            \
-    fl_callable_id_entry *_FL_MERGE(name, _entry);                     \
+    fl_callable_id_entry *_FL_MERGE2(name, _entry);                    \
     fl_callable_id_entry_init(                                         \
-        &_FL_MERGE(name, _entry),                                      \
+        &_FL_MERGE2(name, _entry),                                     \
         #name,                                                         \
         comp,                                                          \
-        _FL_MERGE3(_fl_, parent, _FL_MERGE(_, name)),                  \
+        _FL_MERGE4(_fl_, parent, _, name),                             \
         return_type,                                                   \
         params);                                                       \
-    fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE(name, _entry))
+    fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry))
 
 // ---- PUBLIC ----
 
@@ -33,30 +35,26 @@
     fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION)
 
 #define FL_MODULE_CALLABLE(name) \
-    fl_unknown *_FL_MERGE3(_fl_, FL_MODULE, _FL_MERGE(_, name))(fl_call_param_vec * args)
+    fl_unknown *_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name)(fl_call_param_vec * args)
 
 #define FL_REGISTER_START                     \
     fl_char buffer[_FL_ID_CHAIN_BUFFER_SIZE]; \
-    fl_call_param_vec params;                 \
-    FL_REGISTER_OBJ(FL_NULL, FL_MODULE)
+    fl_call_param_vec params;
 
 #define FL_PARAMS(types)                               \
     fl_call_param_vec_init(&params, _FL_SSIZE(types)); \
     for (fl_size _i = 0; _i < params.size; _i++)       \
     fl_call_param_init(&params.data[_i], types[_i])
 
-#define FL_REGISTER_OBJ(parent, name)                                                                        \
-    fl_obj_id_entry *_FL_MERGE(name, _entry);                                                                \
-    fl_obj_id_entry_init(&_FL_MERGE(name, _entry), #name);                                                   \
-    fl_id_node *name = fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE(name, _entry)); \
-    if (!_FL_MERGE(name, _entry))                                                                            \
+#define FL_REGISTER_OBJ(parent, name)                                                                         \
+    fl_obj_id_entry *_FL_MERGE2(name, _entry);                                                                \
+    fl_obj_id_entry_init(&_FL_MERGE2(name, _entry), _FL_QUOTED(name));                                        \
+    fl_id_node *name = fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry)); \
+    if (!_FL_MERGE2(name, _entry))                                                                            \
     fl_throw_import_error("Failed to register object")
 
-#define FL_REGISTER_ROOT(name) \
-    FL_REGISTER_OBJ(FL_NULL, name)
+#define FL_REGISTER_RT_CALLABLE(name, return_type, param_types) \
+    _FL_REG_CLL_BASE(FL_MODULE_NAME, FL_FALSE, name, return_type, param_types)
 
-#define FL_REGISTER_CALLABLE_RT(parent, name, return_type, param_types) \
-    _FL_REG_CLL_BASE(parent, FL_FALSE, name, return_type, param_types)
-
-#define FL_REGISTER_CALLABLE_CT(parent, name, return_type, param_types) \
-    _FL_REG_CLL_BASE(parent, FL_TRUE, name, return_type, param_types)
+#define FL_REGISTER_CT_CALLABLE(name, return_type, param_types) \
+    _FL_REG_CLL_BASE(FL_MODULE_NAME, FL_TRUE, name, return_type, param_types)

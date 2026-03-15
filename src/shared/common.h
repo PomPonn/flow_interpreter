@@ -17,4 +17,6 @@
         a = b;               \
         b = temp;            \
     }
-#define _FL_MODULE_EXPORT __declspec(dllexport)
+
+#define FL_MODULE_EXPORT __declspec(dllexport)
+#define FL_TEMPLATE_FN static inline

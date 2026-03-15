@@ -2,40 +2,29 @@
 
 // ---- INCLUDES ----
 
-#include "struct/call/call_param.h"
-#include "lang/data_type.h"
+#include "macros/modules.h"
 #include "io/io.h"
 
 // ---- DECLARATIONS ----
 
-fl_unknown *_fl_std_add(fl_call_param x, fl_call_param y);
+#define FL_MODULE_NAME std
 
 // ---- DEFINITIONS -----
 
-fl_bool fl_module_register(fl_context *cnt)
+fl_id_node *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
 {
-    fl_obj_id_entry *std_object;
-    fl_obj_id_entry_init(&std_object, "std");
+    if (FL_PARAM_ID_CHAIN->size == 0)
+        return FL_NULL;
 
-    fl_id_node *std = fl_id_node_push_sibling(
-        &cnt->id_tree,
-        (fl_id_entry *)std_object);
+    FL_REGISTER_START;
 
-    // fl_opr_entry *add_op;
-    // fl_opr_entry_init(
-    //     &add_op,
-    //     "+",
-    //     FL_FALSE,
-    //     _fl_std_add,
-    //     FL_DATA_TYPE_INT, );
+    FL_REGISTER_OBJ(FL_NULL, FL_MODULE_NAME);
 
-    // fl_context_register_id(cnt, std, add_op);
+    if (FL_PARAM_ID_CHAIN->size > 1)
+    {
+        if (FL_PARAM_ID_CHAIN->data[1] == "io")
+            fl_std_io_register(FL_PARAM_CNT, std, FL_PARAM_ID_CHAIN);
+    }
 
-    return fl_std_io_register(cnt, std);
-}
-
-fl_unknown *_fl_std_add(fl_call_param x, fl_call_param y)
-{
-    assert(FL_FALSE);
-    return FL_NULL;
+    return fl_id_node_seek(FL_PARAM_CNT->id_tree, FL_PARAM_ID_CHAIN);
 }

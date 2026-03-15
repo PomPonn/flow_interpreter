@@ -74,7 +74,7 @@ inline static fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr 
 inline static fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id)
 {
     fl_ast_node *node;
-    init_node_empty(FL_AST_NODE_TYPE_CALL, parent);
+    init_node_empty(FL_AST_NODE_TYPE_FN_CALL, parent);
     parent = node;
 
     // add id as a first child

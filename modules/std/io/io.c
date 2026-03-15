@@ -2,55 +2,29 @@
 
 // ---- INCLUDES ----
 
-#include "shared/error.h"
-#include "struct/call/call_param_vec.h"
-#include "struct/call/callable_id_entry.h"
+#include "macros/modules.h"
 #include <stdio.h>
 
 // ---- DEFINES ----
 
-#define _FL_NULL_STR_REPR "<NULL>"
+#define FL_MODULE_NAME io
 
 // ---- DECLARATIONS ----
 
-fl_unknown *_fl_std_io_put(fl_call_param_vec *args);
+FL_MODULE_CALLABLE(put);
 
 // ---- DEFINITIONS ----
 
-fl_bool fl_std_io_register(fl_context *cnt, fl_id_node *parent)
+fl_void fl_std_io_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN, fl_id_node *parent)
 {
-    // register 'io' module
+    FL_REGISTER_START;
 
-    fl_obj_id_entry *io_object;
-    fl_obj_id_entry_init(&io_object, "io");
-    parent = fl_id_node_push_child(parent, (fl_id_entry *)io_object);
+    FL_REGISTER_OBJ(parent, FL_MODULE_NAME);
 
-    if (!parent)
-        // TODO: report an error here and in other places
-        // object with this name already exists
-        return FL_FALSE;
-
-    // register 'put' function (_fl_std_io_put)
-
-    fl_call_param_vec params;
-    fl_call_param_vec_init(&params, 1);
-    fl_call_param_init(&params.data[0], FL_DATA_TYPE_ARRAY);
-
-    fl_callable_id_entry *put_fn;
-    fl_callable_id_entry_init(
-        &put_fn,
-        "put",
-        FL_FALSE,
-        _fl_std_io_put,
-        FL_DATA_TYPE_NULL,
-        params);
-
-    fl_context_register_id(cnt, parent, (fl_id_entry *)put_fn);
-
-    return FL_TRUE;
+    FL_REGISTER_CT_CALLABLE(put, FL_DATA_TYPE_NULL, FL_DATA_TYPES(FL_DATA_TYPE_ARRAY));
 }
 
-fl_unknown *_fl_std_io_put(fl_call_param_vec *args)
+FL_MODULE_CALLABLE(put)
 {
     for (fl_size i = 0; i < args->size; i++)
     {
