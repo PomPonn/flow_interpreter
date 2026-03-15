@@ -65,7 +65,7 @@ fl_int fl_context_resolve_id(fl_context *cnt, fl_id_chain *id_chain, const fl_id
     return fl_id_node_vec_find(&cnt->id_list, *id_node);
 }
 
-fl_void fl_context_load_module(fl_context *cnt, fl_id_chain *id_chain, fl_bool global_scope)
+fl_id_node *fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain)
 {
     assert(id_chain->size);
 
@@ -89,7 +89,27 @@ fl_void fl_context_load_module(fl_context *cnt, fl_id_chain *id_chain, fl_bool g
         fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain", buffer, (fl_location_info){.description = "global context"});
     }
 
-    // add id to gobal scopes
-    if (global_scope && fl_id_node_vec_find(&cnt->global_scopes, leaf) == -1)
-        fl_id_node_vec_push(&cnt->global_scopes, leaf);
+    return leaf;
+}
+
+fl_id_node *fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str)
+{
+    fl_id_chain _chain;
+    fl_id_chain_init_parse(&_chain, id_str);
+
+    fl_id_node *res = fl_context_load_module_by_id(cnt, &_chain);
+
+    fl_id_chain_free(&_chain);
+    return res;
+}
+
+fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node)
+{
+    if (fl_id_node_vec_find(&cnt->global_scopes, id_node) == FL_FAIL)
+    {
+        fl_id_node_vec_push(&cnt->global_scopes, id_node);
+        return FL_TRUE;
+    }
+
+    return FL_FALSE;
 }

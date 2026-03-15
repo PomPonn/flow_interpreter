@@ -16,7 +16,7 @@
     fl_callable_id_entry *_FL_MERGE2(name, _entry);                    \
     fl_callable_id_entry_init(                                         \
         &_FL_MERGE2(name, _entry),                                     \
-        #name,                                                         \
+        _FL_STRINGIFY(name),                                           \
         comp,                                                          \
         _FL_MERGE4(_fl_, parent, _, name),                             \
         return_type,                                                   \
@@ -48,7 +48,7 @@
 
 #define FL_REGISTER_OBJ(parent, name)                                                                         \
     fl_obj_id_entry *_FL_MERGE2(name, _entry);                                                                \
-    fl_obj_id_entry_init(&_FL_MERGE2(name, _entry), _FL_QUOTED(name));                                        \
+    fl_obj_id_entry_init(&_FL_MERGE2(name, _entry), _FL_STRINGIFY(name));                                     \
     fl_id_node *name = fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry)); \
     if (!_FL_MERGE2(name, _entry))                                                                            \
     fl_throw_import_error("Failed to register object")

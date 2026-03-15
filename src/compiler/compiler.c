@@ -29,8 +29,8 @@
 // ---- DECLARATIONS ----
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
-inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_context *cnt, fl_byte_code *dest);
-inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_context *cnt, fl_byte_code *dest);
+inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest);
+inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest);
 inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_code *dest);
 
 // ---- DEFINITIONS ----

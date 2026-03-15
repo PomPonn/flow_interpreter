@@ -3,6 +3,7 @@
 // ---- INCLUDES ----
 
 #include "macros/modules.h"
+#include "shared/str.h"
 #include "io/io.h"
 
 // ---- DECLARATIONS ----
@@ -22,8 +23,8 @@ fl_id_node *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_I
 
     if (FL_PARAM_ID_CHAIN->size > 1)
     {
-        if (FL_PARAM_ID_CHAIN->data[1] == "io")
-            fl_std_io_register(FL_PARAM_CNT, std, FL_PARAM_ID_CHAIN);
+        if (fl_str_equal(FL_PARAM_ID_CHAIN->data[1], "io"))
+            fl_std_io_register(FL_PARAM_CNT, FL_PARAM_ID_CHAIN, std);
     }
 
     return fl_id_node_seek(FL_PARAM_CNT->id_tree, FL_PARAM_ID_CHAIN);
