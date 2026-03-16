@@ -10,7 +10,7 @@
 #ifndef FL_VEC_CAP
 #define FL_VEC_CAP 16
 #endif
-// #define FL_VEC_DESTROYER(elem)
+// #define FL_VEC_DESTRUCTOR(elem)
 
 struct _FL_MERGE2(_, FL_VEC_NAME)
 {
@@ -32,9 +32,9 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *arr, fl_size 
 
 FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *arr)
 {
-#ifdef FL_VEC_DESTROYER
+#ifdef FL_VEC_DESTRUCTOR
     for (fl_size i = 0; i < sizeof(FL_VEC_TYPE) * arr->size; i++)
-        FL_VEC_DESTROYER(arr->data[i]);
+        FL_VEC_DESTRUCTOR(arr->data[i]);
 #endif
 
     fl_mem_free(arr->data);
@@ -74,6 +74,6 @@ FL_TEMPLATE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *arr, const FL_
 #undef FL_VEC_NAME
 #undef FL_VEC_TYPE
 #undef FL_VEC_CAP
-#ifdef FL_VEC_DESTROYER
-#undef FL_VEC_DESTROYER
+#ifdef FL_VEC_DESTRUCTOR
+#undef FL_VEC_DESTRUCTOR
 #endif
