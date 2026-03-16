@@ -16,8 +16,6 @@ fl_void fl_id_node_init(fl_id_node **node, const fl_id_entry *value);
 
 fl_id_node *fl_id_node_select(const fl_id_node *node, const fl_char *name);
 
-const fl_id_entry *fl_id_node_seek_value(const fl_id_node *node, const fl_id_chain *chain);
-
 fl_id_node *fl_id_node_seek(const fl_id_node *node, const fl_id_chain *chain);
 
 fl_id_node *fl_id_node_push_sibling(fl_id_node **node, fl_id_entry *entry);

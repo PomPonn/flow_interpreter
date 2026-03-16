@@ -66,12 +66,6 @@ fl_id_node *fl_id_node_push_child(fl_id_node *node, fl_id_entry *entry)
     return fl_id_node_push_sibling(&node->child, entry);
 }
 
-const fl_id_entry *fl_id_node_seek_value(const fl_id_node *node, const fl_id_chain *chain)
-{
-    const fl_id_node *seek = fl_id_node_seek(node, chain);
-    return seek ? seek->value : FL_NULL;
-}
-
 fl_id_node *fl_id_node_seek(const fl_id_node *node, const fl_id_chain *chain)
 {
     assert(chain->size != 0);

@@ -143,18 +143,20 @@ inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain
 
 inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
+    fl_ast_node *op_id_node = arg_node->parent->child;
+
     // get operator args
     fl_ast_node *left_arg = arg_node;
 
     // validate left argument
     if (!left_arg)
-        throw_compilation_error(arg_node->parent->child, "Missing left argument of the operator");
+        throw_compilation_error(op_id_node, "Missing left argument of the operator");
 
     fl_ast_node *right_arg = left_arg->next;
 
     // validate right argument
     if (!right_arg)
-        throw_compilation_error(arg_node->parent->child, "Missing right argument of the operator");
+        throw_compilation_error(op_id_node, "Missing right argument of the operator");
 
     // excess node check
     if (right_arg->next)
@@ -170,8 +172,6 @@ inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chai
             _fl_swap(fl_ast_node *, right_arg, left_arg);
     }
 
-    if (left_arg->type = FL_AST_NODE_TYPE_ID_CHAIN)
-
-        _fl_cmp_compile_node(left_arg, cnt);
+    _fl_cmp_compile_node(left_arg, cnt);
     _fl_cmp_compile_node(right_arg, cnt);
 }

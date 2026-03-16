@@ -9,9 +9,9 @@ struct _fl_call_param
 };
 typedef struct _fl_call_param fl_call_param;
 
-FL_HEADER_FN fl_void fl_call_param_init(fl_call_param *param, fl_data_type data_type)
+FL_HEADER_FN fl_void fl_call_param_init(fl_call_param *param, fl_data_type_mix type_mix)
 {
-    param->type = data_type;
+    param->type = type_mix;
 }
 
 FL_HEADER_FN fl_void fl_call_param_free(fl_call_param *param)
