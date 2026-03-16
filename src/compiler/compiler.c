@@ -29,9 +29,9 @@
 // ---- DECLARATIONS ----
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
-inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest);
-inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest);
-inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_code *dest);
+inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
+inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
+inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_vec *dest);
 
 // ---- DEFINITIONS ----
 
@@ -66,16 +66,16 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
 {
-    fl_byte_code *bc = &cnt->byte_code;
+    fl_byte_vec *bc = &cnt->byte_vec;
 
     while (node)
     {
         switch (node->type)
         {
         case FL_AST_NODE_TYPE_BLOCK:
-            fl_byte_code_push(bc, FL_INSTR_STARTBLOCK);
+            fl_byte_vec_push(bc, FL_INSTR_STARTBLOCK);
             _fl_cmp_compile_node(node->child, cnt);
-            fl_byte_code_push(bc, FL_INSTR_ENDBLOCK);
+            fl_byte_vec_push(bc, FL_INSTR_ENDBLOCK);
             break;
         case FL_AST_NODE_TYPE_FN_CALL:
         case FL_AST_NODE_TYPE_OPERATOR:
@@ -89,7 +89,7 @@ static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
     }
 }
 
-inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_code *dest)
+inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_vec *dest)
 {
     // first child is a callable id chain node
     fl_ast_node *node = cll_node->child;
@@ -120,10 +120,10 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
     }
 
     // push id index
-    fl_byte_code_push_mem(dest, &id_index, sizeof(id_index));
+    fl_byte_vec_push_mem(dest, &id_index, sizeof(id_index));
 }
 
-inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest)
+inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
     while (arg_node)
     {
@@ -141,7 +141,7 @@ inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain
     }
 }
 
-inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_code *dest)
+inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
     // get operator args
     fl_ast_node *left_arg = arg_node;

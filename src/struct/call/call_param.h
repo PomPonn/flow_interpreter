@@ -9,5 +9,12 @@ struct _fl_call_param
 };
 typedef struct _fl_call_param fl_call_param;
 
-fl_void fl_call_param_init(fl_call_param *param, fl_data_type data_type);
-fl_void fl_call_param_free(fl_call_param *param);
+FL_HEADER_FN fl_void fl_call_param_init(fl_call_param *param, fl_data_type data_type)
+{
+    param->type = data_type;
+}
+
+FL_HEADER_FN fl_void fl_call_param_free(fl_call_param *param)
+{
+    assert(FL_FALSE);
+}

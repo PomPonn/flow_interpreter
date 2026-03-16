@@ -22,4 +22,9 @@ typedef struct _fl_literal_info fl_literal_info;
 
 // copies data arg
 fl_void fl_literal_info_init(fl_literal_info **info, fl_literal_type type, const fl_unknown *data);
-fl_void fl_literal_info_free(fl_literal_info *info);
+
+FL_HEADER_FN fl_void fl_literal_info_free(fl_literal_info *info)
+{
+    fl_mem_free(info->data);
+    fl_mem_free(info);
+}

@@ -33,8 +33,3 @@ fl_void fl_file_append(const fl_char *filename, fl_char *data)
 
     fclose(file);
 }
-
-fl_void fl_file_free(fl_char *buffer)
-{
-    fl_mem_free(buffer);
-}

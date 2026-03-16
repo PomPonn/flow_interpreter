@@ -1,6 +1,6 @@
 #include "id_entry.h"
 
-#include "struct/call/callable_id_entry.h"
+#include "struct/id/callable_id_entry.h"
 
 fl_void fl_id_entry_free(fl_id_entry *entry)
 {

@@ -16,7 +16,7 @@ fl_void fl_context_init(fl_context *cnt)
 {
     fl_id_node_vec_init(&cnt->global_scopes, 8);
     fl_lib_handle_vec_init(&cnt->lib_handles, 0);
-    fl_byte_code_init(&cnt->byte_code, 0);
+    fl_byte_vec_init(&cnt->byte_vec, 0);
     fl_id_node_vec_init(&cnt->id_list, 0);
 
     cnt->id_tree = FL_NULL;
@@ -26,7 +26,7 @@ fl_void fl_context_free(fl_context *cnt)
 {
     fl_id_node_vec_free(&cnt->global_scopes);
     fl_lib_handle_vec_free(&cnt->lib_handles);
-    fl_byte_code_free(&cnt->byte_code);
+    fl_byte_vec_free(&cnt->byte_vec);
     fl_id_node_vec_free(&cnt->id_list);
     fl_id_node_free(cnt->id_tree);
 

@@ -3,12 +3,6 @@
 #include "shared/str.h"
 #include <stdlib.h>
 
-fl_void fl_literal_info_free(fl_literal_info *info)
-{
-    fl_mem_free(info->data);
-    fl_mem_free(info);
-}
-
 fl_void fl_literal_info_init(fl_literal_info **info, fl_literal_type type, const fl_unknown *data)
 {
     fl_literal_info *i = fl_mem_alloc(sizeof(fl_literal_info));

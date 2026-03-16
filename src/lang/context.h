@@ -1,11 +1,10 @@
 #pragma once
 
 #include "shared/common.h"
-#include "struct/id/id_node.h"
 #include "struct/id/id_node_vec.h"
-#include "struct/obj/obj_id_entry.h"
-#include "struct/byte_code.h"
-#include "struct/lib/lib_handle_vec.h"
+#include "struct/id/obj_id_entry.h"
+#include "struct/byte_vec.h"
+#include "struct/lib_handle_vec.h"
 
 struct _fl_context
 {
@@ -13,7 +12,7 @@ struct _fl_context
     fl_lib_handle_vec lib_handles;
     fl_id_node *id_tree;
     fl_id_node_vec id_list;
-    fl_byte_code byte_code;
+    fl_byte_vec byte_vec;
 };
 typedef struct _fl_context fl_context;
 

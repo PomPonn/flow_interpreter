@@ -4,7 +4,7 @@
 #include "shared/common.h"
 #include "shared/error.h"
 #include "struct/call/call_param_vec.h"
-#include "struct/call/callable_id_entry.h"
+#include "struct/id/callable_id_entry.h"
 
 // ---- PRIVATE ----
 

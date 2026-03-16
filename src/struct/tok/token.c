@@ -27,12 +27,6 @@ fl_char *fl_token_as_printable(fl_char *tok)
         return tok;
 }
 
-fl_void fl_token_free(fl_token *token)
-{
-    if (token->value)
-        fl_mem_free(token->value);
-}
-
 fl_bool fl_token_is_delim(fl_token *token)
 {
     return fl_chr_is_any(*token->value, FL_ORDERED_DELIMS);
