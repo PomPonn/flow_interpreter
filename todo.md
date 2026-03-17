@@ -1,35 +1,18 @@
 # TODO
 
-## AST
-
-- ast nodes optimalization?
-- finish fl_operator_info struct handling
+- AST optimalization
 - AST operators sorting
-- AST function expression handling
-- AST types handling (type dimensions?)
-- think if we can use only single id ast node instead of id chain if there is no chaining
+- AST function definitions handling
+- AST type dimensions(?) handling
 - AST generation unused tokens handling
-- remember to implement convertion of literal info data field to appropiate type
-
-## general
-
 - think how to split source code into libraries optimally
-- make fl_id_entry an anonymous struct and use it this way in inheriting structs
-- is call_entry.h needed?
-- think if FL_ORDERED_DELIMS can be better
 - implement time measurement on unix systems
-- think if warnings should be a thing (they probably should, but for now I don't have any good use for them)
-- test tokenizer
+- think if warnings should be a thing
+- create unit tests
 - handle other number bases (hex for instance)
 - optimalize fl_std_io_put
-
-# Q&A
-
-- what to do with errors? How to report them when we free tokens and don't now the line?
-- how to handle types? Are they predefined?
-    - Yes, they are. a use of type is essentially a id chain and (optionally) dimensions qualifier
-    - We won't now in advance if use of type should be next
-- How to represent language structures in interpreter code?
+- revise error handling
+- types handling
 
 # done
 
