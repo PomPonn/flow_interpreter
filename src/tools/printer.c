@@ -30,9 +30,6 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
 
     switch (node->type)
     {
-    case FL_AST_NODE_TYPE_ROOT:
-        printf("<root>");
-        break;
     case FL_AST_NODE_TYPE_BLOCK:
         printf("<block>");
         break;
@@ -90,11 +87,6 @@ fl_void fl_prt_print_tokens_joined(fl_token_arr *arr)
         printf("%s", arr->current->value);
         fl_token_arr_next(arr);
     }
-}
-
-fl_void fl_prt_print_ast_tree(fl_ast_tree *tree)
-{
-    fl_prt_print_ast_node(tree->root, 0);
 }
 
 fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)

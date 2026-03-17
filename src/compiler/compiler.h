@@ -1,10 +1,25 @@
+/**
+ * ---- compiler.h ----
+ *
+ * Declares compiler logic.
+ *
+ */
+
 #pragma once
 
-#include "shared/common.h"
+// ---- DEPENDENCIES ----
+
 #include "lang/context.h"
 
+// ---- TYPE DEFINITIONS ----
+
+/**
+ * @brief Represents byte code instructions.
+ */
 enum _fl_cmp_instruction
 {
+    // TODO: comment this when finished
+
     // arithmetic
     FL_INSTR_ADD,
     FL_INSTR_SUBS,
@@ -20,4 +35,11 @@ enum _fl_cmp_instruction
     FL_INSTR_CALL,
 };
 
+// ---- DECLARATIONS ----
+
+/**
+ * @brief Compiles source file pointed by `source_path` to byte code.
+ * @param source_path Source file to compile.
+ * @param context Context of compilation. Compiler reades & writes to this structure.
+ */
 fl_void fl_cmp_compile(fl_char *source_path, fl_context *context);

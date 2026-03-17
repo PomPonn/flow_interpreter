@@ -1,15 +1,23 @@
+/**
+ * ---- ast_tree.h ----
+ *
+ * Declares general Abstract Syntax Tree logic.
+ *
+ */
+
 #pragma once
 
-#include "shared/common.h"
+// ---- DEPENDENCIES ----
+
 #include "ast/ast_node.h"
 #include "struct/tok/token_arr.h"
 
-struct _fl_ast_tree
-{
-    fl_ast_node *_data;
-    fl_ast_node *root;
-};
-typedef struct _fl_ast_tree fl_ast_tree;
+// ---- DECLARATIONS ----
 
-fl_void fl_ast_tree_gen(fl_ast_tree *tree, fl_token_arr *arr);
-fl_void fl_ast_tree_free(fl_ast_tree *tree);
+/**
+ * @brief Generates Abstract Syntax Tree from specified token array.
+ * @param arr Array of tokens from which to generate the tree.
+ * @throw - `FL_ERR_AST`
+ * @return Abstract Syntax Tree root block node.
+ */
+fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr);

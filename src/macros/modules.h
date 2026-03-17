@@ -11,7 +11,7 @@
 #define _FL_ID_CHAIN_BUFFER_SIZE 256
 
 // FIX ME
-#define _FL_TEMP_LOCATION (fl_location_info){.description = ""}
+#define _FL_TEMP_LOCATION (fl_file_location_info){.description = ""}
 
 #define _FL_TYPES(...) \
     (fl_data_type_mix[]) { __VA_ARGS__ }

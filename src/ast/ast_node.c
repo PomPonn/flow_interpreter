@@ -1,3 +1,10 @@
+/**
+ * ---- ast_node.c ----
+ *
+ * Implements Abstract Syntax Tree node logic.
+ *
+ */
+
 #include "ast_node.h"
 
 // ---- DEFINITIONS ----
@@ -5,8 +12,13 @@
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 {
     fl_ast_node *node = parent->child;
+
+    if (!node)
+        return FL_NULL;
+
     while (node->next)
         node = node->next;
+
     return node;
 }
 
@@ -45,12 +57,17 @@ fl_void fl_ast_node_free(fl_ast_node *node)
         child = next_child;
     }
 
-    // Free current (root) node
+    // Free current node and it's data
     fl_mem_free(node->data);
     fl_mem_free(node);
 }
 
-fl_void fl_ast_node_init(fl_ast_node **node, fl_ast_node_type type, fl_unknown *data, fl_ast_node *parent, fl_location_info location)
+fl_void fl_ast_node_init(
+    fl_ast_node **node,
+    fl_ast_node_type type,
+    fl_unknown *data,
+    fl_ast_node *parent,
+    fl_file_location_info location)
 {
     fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
 

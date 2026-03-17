@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shared/common.h"
-#include "struct/info/location_info.h"
+#include "struct/info/file_location_info.h"
 
 enum _fl_token_type
 {
@@ -37,11 +37,11 @@ struct _fl_token
     fl_token_type type;
     fl_token_alias alias;
     fl_char *value;
-    fl_location_info location;
+    fl_file_location_info location;
 };
 typedef struct _fl_token fl_token;
 
-fl_bool fl_token_init(fl_token *token, fl_char *value, fl_location_info location);
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_file_location_info location);
 
 fl_char *fl_token_as_printable(fl_char *token_str);
 

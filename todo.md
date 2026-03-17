@@ -1,5 +1,7 @@
 # TODO
 
+- comment code
+- templates optimalization (move some functions to specializations)
 - AST optimalization
 - AST operators sorting
 - AST function definitions handling

@@ -1,10 +1,22 @@
+/**
+ * ---- context.h ----
+ *
+ * Declares language context logic.
+ *
+ */
+
 #pragma once
 
-#include "shared/common.h"
+// ---- DEPENDENCIES ----
+
 #include "struct/id/id_node_vec.h"
 #include "struct/id/obj_id_entry.h"
 #include "struct/byte_vec.h"
 #include "struct/lib_handle_vec.h"
+
+// ---- TYPE DEFINITIONS ----
+
+// ...
 
 struct _fl_context
 {

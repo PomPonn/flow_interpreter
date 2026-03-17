@@ -1,6 +1,13 @@
+/**
+ * ---- compiler.c ----
+ *
+ * Implements compiler logic.
+ *
+ */
+
 #include "compiler.h"
 
-// ---- INCLUDES ----
+// ---- DEPENDENCIES ----
 
 #include "shared/error.h"
 #include "tokenizer/tokenizer.h"
@@ -10,15 +17,26 @@
 #include "struct/id/callable_id_entry.h"
 #include "struct/info/all.h"
 #include "tools/file.h"
+#ifndef NDEBUG
 #include "tools/printer.h"
+#endif
 
 // ---- DEFINES ----
 
+/**
+ * @brief Size of id chain string buffer.
+ */
 #define _ID_STRING_BUFFER_SIZE 512
 
+/**
+ * @brief Shorthand for throwing a file error.
+ */
 #define throw_file_error(message) \
-    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_location_info){.description = source_path})
+    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_file_location_info){.description = source_path})
 
+/**
+ * @brief Shorthand for throwing a compilation error.
+ */
 #define throw_compilation_error(ast_node_ptr, message)                             \
     {                                                                              \
         fl_char buffer[_ID_STRING_BUFFER_SIZE];                                    \
@@ -28,6 +46,8 @@
 
 // ---- DECLARATIONS ----
 
+// TODO: comment these declarations
+
 static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
 inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
 inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
@@ -36,7 +56,6 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
 
 // ---- DEFINITIONS ----
 
-// compiles source code to intermediete byte code
 fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 {
     fl_char *source_code = fl_file_read(source_path);
@@ -54,15 +73,16 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
         // there are no tokens in the file
         return;
 
-    fl_ast_tree tree;
-    fl_ast_tree_gen(&tree, &token_arr);
+    fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
-    fl_prt_print_ast_tree(&tree);
+#ifndef NDEBUG
+    fl_prt_print_ast_tree(tree);
+#endif
 
-    _fl_cmp_compile_node(tree.root, cnt);
+    _fl_cmp_compile_node(tree, cnt);
 
     fl_token_arr_free(&token_arr);
-    fl_ast_tree_free(&tree);
+    fl_ast_node_free(tree);
 }
 
 inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)

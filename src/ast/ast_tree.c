@@ -1,6 +1,13 @@
+/**
+ * ---- ast_tree.c ----
+ *
+ * Implements general Abstract Syntax Tree logic.
+ *
+ */
+
 #include "ast_tree.h"
 
-// ---- INCLUDES ----
+// ---- DEPENDENCIES ----
 
 #include "shared/error.h"
 #include "shared/str.h"
@@ -13,34 +20,66 @@
 
 // ---- DEFINES ----
 
+/**
+ * @brief Shorthand for throwing syntax error.
+ */
 #define throw_syntax_error(message) \
     fl_err_throw(FL_ERR_AST, message, arr->current->value, arr->current->location)
 
+/**
+ * @brief Shorthand for incrementing token pointer.
+ */
 #define next_token \
     fl_token_arr_next(arr)
 
+/**
+ * @brief Shorthand for incrementing token pointer, and throwing an error if it's end of code.
+ */
 #define next_token_safe \
     if (!next_token)    \
     fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator].value, arr->_data[arr->_iterator].location)
 
+/**
+ * @brief Shorthand for creating empty AST node.
+ */
 #define init_node_empty(type, parent) \
     fl_ast_node_init(&node, type, FL_NULL, parent, arr->current->location);
 
+/**
+ * @brief Shorthand for creating AST node filled with some value.
+ */
 #define init_node_filled(type, value, parent) \
     fl_ast_node_init(&node, type, value, parent, arr->current->location);
 
 // ---- DECLARATIONS ----
 
+// TODO: Comment these declarations
+
 inline static fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 inline static fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 inline static fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
+inline static fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
 static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
-static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
 
 // ---- DEFINITIONS ----
+
+fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
+{
+    fl_token_arr_reset_ptr(arr);
+
+    // we assume that the whole program is a block
+    fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
+
+    // TODO: check this when correct error handling will be implemented
+    // execute errors if there are any,
+    // because it doesn't make much sense to go on with wrong syntax tree
+    fl_err_execute();
+
+    return node;
+}
 
 // handles id chain (eg. 'body.hand')
 // guarantees that next token is not null
@@ -117,7 +156,6 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
         node = _fl_ast_process_literal(FL_NULL, arr);
-
     // identifier can be either left side of the operator or a function name
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
@@ -152,7 +190,7 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
 }
 
 // handles single block ({...}) of code and its child
-static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root)
+static inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root)
 {
     // temp variable
     fl_ast_node *node;
@@ -206,6 +244,8 @@ static fl_void _fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_
             break;
         }
     }
+
+    return parent;
 }
 
 inline static fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped)
@@ -329,37 +369,4 @@ inline static fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token
 
     next_token_safe;
     return node;
-}
-
-// tries to generate abstract syntax tree from specified tokens
-// if succeeds, returned tree is 100% valid
-// otherwise errors will be thrown
-fl_void fl_ast_tree_gen(fl_ast_tree *tree, fl_token_arr *arr)
-{
-    fl_token_arr_reset_ptr(arr);
-
-    // create root node with no related data
-    fl_ast_node *node;
-    init_node_empty(FL_AST_NODE_TYPE_ROOT, FL_NULL);
-
-    // we assume that the whole program is a block
-    _fl_ast_process_block(node, arr, FL_TRUE);
-
-    // execute errors if there are any,
-    // because it doesn't make much sense to go on with wrong syntax tree
-    fl_err_execute();
-
-    // init tree struct
-    tree->_data = node;
-    tree->root = node->child;
-}
-
-fl_void fl_ast_tree_free(fl_ast_tree *tree)
-{
-    if (!tree)
-        return;
-
-    if (tree->_data)
-        // Free child recursively
-        fl_ast_node_free(tree->_data);
 }

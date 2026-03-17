@@ -19,7 +19,7 @@ fl_size _g_errors_num = 0;
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;
-fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_location_info location)
+fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_file_location_info location)
 {
     if (_g_errors_num + 1 > _MAX_ERROR_NUM)
         // execute errors if current one exceeds the limit
@@ -46,7 +46,7 @@ fl_void fl_err_clear()
 }
 
 // reports an error and ends interpretation
-fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_location_info location)
+fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_file_location_info location)
 {
 #if !_SUPPRESS_ERRORS
     fl_err_report(type, message, near, location);
