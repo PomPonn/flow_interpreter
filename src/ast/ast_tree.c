@@ -214,7 +214,7 @@ inline static fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_toke
 
     // create operator info
     fl_operator_info *op_info;
-    fl_operator_info_init(&op_info, grouped);
+    fl_operator_info_init(&op_info, grouped ? FL_OPR_ORDER_MAX : FL_OPR_ORDER_DEFAULT);
     // create operator node
     init_node_filled(FL_AST_NODE_TYPE_OPERATOR, op_info, FL_NULL);
 
