@@ -20,4 +20,4 @@ enum _fl_cmp_instruction
     FL_INSTR_CALL,
 };
 
-fl_void fl_comp_compile(fl_char *source_path, fl_context *context);
+fl_void fl_cmp_compile(fl_char *source_path, fl_context *context);

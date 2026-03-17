@@ -4,7 +4,8 @@
 
 #define FL_EXTEND_ID_ENTRY \
     fl_id_entry_type type; \
-    const fl_char *name
+    const fl_char *name;   \
+    fl_bool constant
 
 enum _fl_id_entry_type
 {

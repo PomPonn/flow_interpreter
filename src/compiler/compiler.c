@@ -7,8 +7,8 @@
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
 #include "struct/id/id_node.h"
-#include "struct/info/location_info.h"
-#include "struct/info/operator_info.h"
+#include "struct/id/callable_id_entry.h"
+#include "struct/info/all.h"
 #include "tools/file.h"
 #include "tools/printer.h"
 
@@ -29,6 +29,7 @@
 // ---- DECLARATIONS ----
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
+inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
 inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_vec *dest);
@@ -36,7 +37,7 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
 // ---- DEFINITIONS ----
 
 // compiles source code to intermediete byte code
-fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
+fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 {
     fl_char *source_code = fl_file_read(source_path);
 
@@ -62,6 +63,31 @@ fl_void fl_comp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_token_arr_free(&token_arr);
     fl_ast_tree_free(&tree);
+}
+
+inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
+{
+    switch (node->type)
+    {
+    case FL_AST_NODE_TYPE_LITERAL:
+        return FL_TRUE;
+    case FL_AST_NODE_TYPE_OPERATOR:
+    case FL_AST_NODE_TYPE_FN_CALL:
+    {
+        // first child is a callable id chain node
+        fl_ast_node *node = node->child;
+        fl_id_chain *id_chain = (fl_id_chain *)node->data;
+        // resolve this callable id
+        fl_id_node *id_node;
+        fl_context_resolve_id(cnt, FL_NULL, id_chain, &id_node);
+        fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
+
+        return callable_id->constant;
+    }
+    default:
+        assert(FL_FALSE);
+        break;
+    }
 }
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
@@ -97,6 +123,7 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
     // resolve this callable id
     fl_id_node *id_node;
     fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
+    fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
 
     if (!id_node)
         // throw an error if id is absent
@@ -109,13 +136,51 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
     switch (cll_node->type)
     {
     case FL_AST_NODE_TYPE_FN_CALL:
-        _fl_cmp_compile_fn_args(node->next, id_chain, cnt, dest);
+        node = node->next;
+        while (node)
+        {
+            switch (node->type)
+            {
+            case FL_AST_NODE_TYPE_OPERATOR:
+                // _fl_cmp_compile_node(arg_node, cnt);
+                // break;
+            default:
+                assert(FL_FALSE);
+                break;
+            }
+
+            node = node->next;
+        }
         break;
     case FL_AST_NODE_TYPE_OPERATOR:
-        _fl_cmp_compile_opr_args(node->next, id_chain, cnt, dest);
+        // get operator args
+        fl_ast_node *left_arg = node->next;
+
+        // validate left argument
+        if (!left_arg)
+            throw_compilation_error(cll_node->child, "Missing left argument of the operator");
+
+        fl_ast_node *right_arg = left_arg->next;
+
+        // validate right argument
+        if (!right_arg)
+            throw_compilation_error(cll_node->child, "Missing right argument of the operator");
+
+        // excess node check
+        if (right_arg->next)
+            throw_compilation_error(right_arg->next, "Excess operator argument");
+
+        // compile arguments in appropiate order
+        if (left_arg->type == FL_AST_NODE_TYPE_OPERATOR && right_arg->type == FL_AST_NODE_TYPE_OPERATOR)
+        {
+            fl_operator_info *left_info = left_arg->data;
+            fl_operator_info *right_info = right_arg->data;
+            // reverse processing order if right operator order is higher
+            if (right_info->order > left_info->order)
+                _fl_swap(fl_ast_node *, right_arg, left_arg);
+        }
         break;
-    default:
-        assert(FL_FALSE);
+
         break;
     }
 
@@ -125,53 +190,11 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
 
 inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
-    while (arg_node)
-    {
-        switch (arg_node->type)
-        {
-        case FL_AST_NODE_TYPE_OPERATOR:
-            _fl_cmp_compile_node(arg_node, cnt);
-            break;
-        default:
-            assert(FL_FALSE);
-            break;
-        }
-
-        arg_node = arg_node->next;
-    }
 }
 
 inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
-    fl_ast_node *op_id_node = arg_node->parent->child;
 
-    // get operator args
-    fl_ast_node *left_arg = arg_node;
-
-    // validate left argument
-    if (!left_arg)
-        throw_compilation_error(op_id_node, "Missing left argument of the operator");
-
-    fl_ast_node *right_arg = left_arg->next;
-
-    // validate right argument
-    if (!right_arg)
-        throw_compilation_error(op_id_node, "Missing right argument of the operator");
-
-    // excess node check
-    if (right_arg->next)
-        throw_compilation_error(right_arg->next, "Excess operator argument");
-
-    // compile arguments in appropiate order
-    if (left_arg->type == FL_AST_NODE_TYPE_OPERATOR && right_arg->type == FL_AST_NODE_TYPE_OPERATOR)
-    {
-        fl_operator_info *left_info = left_arg->data;
-        fl_operator_info *right_info = right_arg->data;
-        // reverse processing order if right operator order is higher
-        if (right_info->order > left_info->order)
-            _fl_swap(fl_ast_node *, right_arg, left_arg);
-    }
-
-    _fl_cmp_compile_node(left_arg, cnt);
-    _fl_cmp_compile_node(right_arg, cnt);
+    // _fl_cmp_compile_node(left_arg, cnt);
+    // _fl_cmp_compile_node(right_arg, cnt);
 }

@@ -14,6 +14,7 @@ FL_HEADER_FN fl_void fl_obj_id_entry_init(fl_obj_id_entry **entry, const fl_char
 {
     *entry = fl_mem_alloc(sizeof(fl_obj_id_entry));
     (*entry)->type = FL_ID_ENTRY_TYPE_OBJ;
+    (*entry)->constant = FL_ID_ENTRY_TYPE_OBJ;
     (*entry)->name = name;
 }
 
