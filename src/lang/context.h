@@ -16,7 +16,7 @@
 
 // ---- TYPE DEFINITIONS ----
 
-// ...
+// TODO: comment when finished
 
 struct _fl_context
 {
@@ -26,16 +26,38 @@ struct _fl_context
     fl_id_node_vec id_list;
     fl_byte_vec byte_vec;
 };
+/**
+ * @brief Describes language context, storing global information (?).
+ */
 typedef struct _fl_context fl_context;
 
+/**
+ * @brief Initializes context structure.
+ * @param cnt Context ot initialize.
+ */
 fl_void fl_context_init(fl_context *cnt);
 
+/**
+ * @brief Resolves id chain with given context.
+ * @param cnt Context to use.
+ * @param scope ???
+ * @param id_chain Id chain to resolve.
+ * @param [out] id_node Resolved node or `FL_NULL` if failed to resolve.
+ * @return Index of id node in context id list.
+ */
 fl_int fl_context_resolve_id(
     fl_context *cnt,
     fl_id_node *scope,
     fl_id_chain *id_chain,
-    const fl_id_node **id_node);
+    fl_id_node **id_node);
 
+/**
+ * @brief
+ * @param cnt
+ * @param parent
+ * @param entry
+ * @return
+ */
 fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_entry *entry);
 
 fl_id_node *fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain);

@@ -63,7 +63,7 @@ fl_int fl_context_resolve_id(
     fl_context *cnt,
     fl_id_node *scope,
     fl_id_chain *id_chain,
-    const fl_id_node **id_node)
+    fl_id_node **id_node)
 {
     *id_node = FL_NULL;
 

@@ -46,7 +46,7 @@
 
 // ---- DECLARATIONS ----
 
-// TODO: comment these declarations
+// TODO: comment these declarations when finished
 
 static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
 inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
