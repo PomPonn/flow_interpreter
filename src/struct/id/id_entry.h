@@ -22,6 +22,8 @@ struct _fl_id_entry
 };
 typedef struct _fl_id_entry fl_id_entry;
 
+fl_void fl_id_entry_free(fl_id_entry **entry);
+
 FL_HEADER_FN fl_void fl_id_entry_fill(
     fl_id_entry *entry,
     const fl_char *name,
@@ -30,8 +32,6 @@ FL_HEADER_FN fl_void fl_id_entry_fill(
     entry->name = name;
     entry->constant = constant;
 }
-
-fl_void fl_id_entry_free(fl_id_entry **entry);
 
 FL_HEADER_FN fl_bool fl_id_entry_callable(const fl_id_entry *entry)
 {

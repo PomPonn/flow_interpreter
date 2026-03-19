@@ -1,6 +1,6 @@
 # TODO
 
-- change *_free functions to receive ptr to ptr (**) so the pointer can be nulled by the function.
+- can I optimalize project building?
 - comment code
 - templates optimalization (move some functions to specializations)
 - AST optimalization
@@ -19,6 +19,7 @@
 
 # done
 
+- change \*\_free functions to receive ptr to ptr (\*\*) so the pointer can be nulled by the function.
 - make errors more universal
 - fix AST operators order
 - cleanup optimalizer

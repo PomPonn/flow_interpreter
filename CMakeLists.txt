@@ -44,10 +44,7 @@ function(build_tests)
     foreach(test_file ${test_files})
         cmake_path(GET test_file FILENAME test_name)
         add_executable(${test_name} ${test_file} ${UNITY_SOURCE})
-        add_test(
-            NAME ${test_name} 
-            COMMAND ${test_name} 
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME ${test_name} COMMAND ${test_name})
     endforeach()
 endfunction()
 

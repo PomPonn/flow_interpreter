@@ -2,7 +2,7 @@
 #include "macros/basic.h"
 
 #ifndef FL_VEC_NAME
-#define FL_VEC_NAME vector
+#define FL_VEC_NAME fl_vector
 #endif
 #ifndef FL_VEC_TYPE
 #define FL_VEC_TYPE fl_int
@@ -33,7 +33,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *arr, fl_size 
 FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *arr)
 {
 #ifdef FL_VEC_DESTRUCTOR
-    for (fl_size i = 0; i < sizeof(FL_VEC_TYPE) * arr->size; i++)
+    for (fl_size i = 0; i < arr->size; i++)
         FL_VEC_DESTRUCTOR(arr->data[i]);
 #endif
 
@@ -47,7 +47,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *arr, fl_si
 {
     arr->_capacity = new_cap;
     FL_VEC_TYPE *recaped = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), arr->_capacity);
-    fl_mem_copy(arr->data, recaped, arr->size);
+    fl_mem_copy(arr->data, recaped, sizeof(FL_VEC_TYPE) * arr->size);
     arr->data = recaped;
 }
 

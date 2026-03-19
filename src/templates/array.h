@@ -2,7 +2,7 @@
 #include "macros/basic.h"
 
 #ifndef FL_ARR_NAME
-#define FL_ARR_NAME array
+#define FL_ARR_NAME fl_array
 #endif
 #ifndef FL_ARR_TYPE
 #define FL_ARR_TYPE fl_int
@@ -25,7 +25,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_ARR_NAME, _init)(FL_ARR_NAME *arr, fl_size 
 FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_ARR_NAME, _free)(FL_ARR_NAME *arr)
 {
 #ifdef FL_ARR_DESTRUCTOR
-    for (fl_size i = 0; i < sizeof(FL_ARR_TYPE) * arr->size; i++)
+    for (fl_size i = 0; i < arr->size; i++)
         FL_ARR_DESTRUCTOR(arr->data[i]);
 #endif
 

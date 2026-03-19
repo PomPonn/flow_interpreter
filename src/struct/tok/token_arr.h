@@ -16,7 +16,7 @@ FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_size count)
 {
     arr->_data = fl_mem_alloc_arr(sizeof(fl_token), count);
     arr->current = FL_NULL;
-    arr->_count = 0;
+    arr->_count = count;
     arr->_iterator = 0;
 }
 

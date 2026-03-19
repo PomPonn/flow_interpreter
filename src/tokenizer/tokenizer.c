@@ -14,6 +14,34 @@ static fl_char *_fl_tok_next_token(fl_char *str, fl_size *line, fl_size *column)
 
 // ---- DEFINITIONS ----
 
+// returns FL_FALSE if source has no tokens
+fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char *src_desc)
+{
+    fl_uint count = _fl_tok_count_tokens(source);
+    if (!count)
+        return FL_FALSE;
+
+    // Initialize token array
+    fl_token_arr_init(token_arr, count);
+
+    // Tokenize the string
+    fl_size line, column;
+    fl_char *token_str = _fl_tok_next_token(source, &line, &column);
+
+    for (fl_size index = 0; token_str; index++)
+    {
+        fl_token_init(token_arr->_data + index,
+                      fl_str_dup(token_str),
+                      (fl_file_location_info){
+                          .column = column,
+                          .line = line,
+                          .description = src_desc});
+        token_str = _fl_tok_next_token(FL_NULL, &line, &column);
+    }
+
+    return FL_TRUE;
+}
+
 static inline fl_bool _fl_tok_handle_number(const fl_char **str)
 {
     fl_bool dot_found = FL_FALSE;
@@ -214,32 +242,4 @@ static inline fl_size _fl_tok_count_tokens(fl_char *str)
         count++;
 
     return count;
-}
-
-// returns FL_FALSE if source has no tokens
-fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *source_desc)
-{
-    fl_uint count = _fl_tok_count_tokens(str);
-    if (!count)
-        return FL_FALSE;
-
-    // Initialize token array
-    fl_token_arr_init(token_arr, count);
-
-    // Tokenize the string
-    fl_size line, column;
-    fl_char *token_str = _fl_tok_next_token(str, &line, &column);
-
-    for (fl_size index = 0; token_str; index++)
-    {
-        fl_token_init(token_arr->_data + index,
-                      fl_str_dup(token_str),
-                      (fl_file_location_info){
-                          .column = column,
-                          .line = line,
-                          .description = source_desc});
-        token_str = _fl_tok_next_token(FL_NULL, &line, &column);
-    }
-
-    return FL_TRUE;
 }
