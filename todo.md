@@ -1,5 +1,6 @@
 # TODO
 
+- change *_free functions to receive ptr to ptr (**) so the pointer can be nulled by the function.
 - comment code
 - templates optimalization (move some functions to specializations)
 - AST optimalization
