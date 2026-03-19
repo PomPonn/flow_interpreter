@@ -12,11 +12,11 @@ struct _fl_token_arr
 };
 typedef struct _fl_token_arr fl_token_arr;
 
-FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_token *data, fl_size token_count)
+FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_size count)
 {
-    arr->_count = token_count;
-    arr->_data = data;
-    arr->current = data;
+    arr->_data = fl_mem_alloc_arr(sizeof(fl_token), count);
+    arr->current = FL_NULL;
+    arr->_count = 0;
     arr->_iterator = 0;
 }
 

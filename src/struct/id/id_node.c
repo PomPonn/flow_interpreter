@@ -10,19 +10,23 @@ fl_void fl_id_node_init(fl_id_node **node, const fl_id_entry *value)
     (*node)->value = value;
 }
 
-fl_void fl_id_node_free(fl_id_node *node)
+fl_void fl_id_node_free(fl_id_node **node)
 {
-    if (!node)
+    fl_id_node *curr = *node;
+
+    if (!curr)
         return;
 
-    while (node)
+    while (curr)
     {
-        fl_id_node_free(node->child);
+        fl_id_node_free(&curr->child);
 
-        fl_id_node *temp = node->next;
+        fl_id_node *temp = curr->next;
         fl_mem_free(node);
-        node = temp;
+        curr = temp;
     }
+
+    *node = FL_NULL;
 }
 
 fl_id_node *fl_id_node_select(const fl_id_node *node, const fl_char *name)

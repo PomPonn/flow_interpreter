@@ -1,12 +1,23 @@
 cmake_minimum_required(VERSION 4.0.0)
 project(FlowInterpreter VERSION 0.1.2 LANGUAGES C)
+include(CTest)
 
 # ---- GLOBAL VARIABLES -----
 
 # base directory for language modules
 set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+# base directory for unit tests
+set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# base directory to core functionality
+set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+# base directory for logs
+set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/logs)
+# base directory to third party libraries
+set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 # path to the sample flow code to use
-set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test/samples/simple.fl)
+set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple.fl)
+# path to unity library source file
+set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 
 # ---- FUNCTIONS ----
 
@@ -15,7 +26,6 @@ function(add_module_libs)
     file(GLOB module_paths CONFIGURE_DEPENDS ${MODULES_DIR}/*/)
     # exclude elements with an extension
     list(FILTER module_paths EXCLUDE REGEX "\\..*$")
-    
     foreach(module_path ${module_paths})
         cmake_path(GET module_path FILENAME module_name)
         # gather all module sources
@@ -23,37 +33,52 @@ function(add_module_libs)
         # add library target if there are any sources
         if (module_sources)
             add_library(${module_name} SHARED ${module_sources})
-            target_include_directories(${module_name} PRIVATE ${module_path})
+            target_include_directories(${module_name} PUBLIC ${module_path})
         endif()
     endforeach()
 endfunction()
+
+# make an executable from every test file in TESTS_DIR directory
+function(build_tests)
+    file(GLOB_RECURSE test_files CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
+    foreach(test_file ${test_files})
+        cmake_path(GET test_file FILENAME test_name)
+        add_executable(${test_name} ${test_file} ${UNITY_SOURCE})
+        add_test(
+            NAME ${test_name} 
+            COMMAND ${test_name} 
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+    endforeach()
+endfunction()
+
 
 # ---- TARGETS ----
 
 add_library(flow STATIC)
 link_libraries(flow)
+add_executable(main)
 add_module_libs()
-add_executable(test)
+build_tests()
 
 # ---- CONFIG ----
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+include_directories(${CORE_DIR} ${LIBS_DIR})
 
 add_compile_definitions(
     _INCLUDE_PROFILER=1
     _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
     _TEST_INPUT_PATH="${SAMPLE_PATH}"
-    _PROFILER_LOGS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/logs/profiler.txt"
+    _PROFILER_LOGS_PATH="${LOG_DIR}/profiler.txt"
 )
 
 # ---- SOURCES ----
 
 # gather main source files
-file(GLOB_RECURSE flow_sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
+file(GLOB_RECURSE flow_sources CONFIGURE_DEPENDS ${CORE_DIR}/*.c)
+file(GLOB_RECURSE tests_sources CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
+file(GLOB_RECURSE unity_sources CONFIGURE_DEPENDS ${LIBS_DIR}/unity/*.c)
 
 # add sources
-target_sources(flow PRIVATE ${flow_sources})
-target_sources(test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/main.c)
+target_sources(flow PUBLIC ${flow_sources})
+target_sources(main PUBLIC ${CMAKE_SOURCE_DIR}/main.c)

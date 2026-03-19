@@ -2,7 +2,6 @@
 
 fl_void fl_opt_remove_comments(fl_token_arr *arr)
 {
-    fl_token *opted;
     fl_size opted_size = arr->_count;
 
     for (fl_token_arr_reset_ptr(arr); arr->current; fl_token_arr_next(arr))
@@ -15,16 +14,17 @@ fl_void fl_opt_remove_comments(fl_token_arr *arr)
     }
 
     fl_size j = 0;
-    opted = fl_mem_alloc_arr(opted_size, sizeof(fl_token));
+    fl_token_arr opted;
+    fl_token_arr_init(&opted, opted_size);
 
     for (fl_token_arr_reset_ptr(arr); arr->current; fl_token_arr_next(arr))
     {
         if (arr->current->type == FL_TOKEN_TYPE_COMMENT)
             continue;
 
-        opted[j++] = *arr->current;
+        opted._data[j++] = *arr->current;
     }
 
     fl_mem_free(arr->_data);
-    fl_token_arr_init(arr, opted, opted_size);
+    *arr = opted;
 }

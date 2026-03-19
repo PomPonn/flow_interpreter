@@ -17,7 +17,8 @@ FL_HEADER_FN fl_void fl_type_info_init(fl_type_info **info, fl_uint dimensions)
     *info = i;
 }
 
-FL_HEADER_FN fl_void fl_type_info_free(fl_type_info *info)
+FL_HEADER_FN fl_void fl_type_info_free(fl_type_info **info)
 {
-    fl_mem_free(info);
+    fl_mem_free(*info);
+    *info = FL_NULL;
 }

@@ -28,7 +28,7 @@ fl_void fl_context_free(fl_context *cnt)
     fl_lib_handle_vec_free(&cnt->lib_handles);
     fl_byte_vec_free(&cnt->byte_vec);
     fl_id_node_vec_free(&cnt->id_list);
-    fl_id_node_free(cnt->id_tree);
+    fl_id_node_free(&cnt->id_tree);
 
     cnt->id_tree = FL_NULL;
 }

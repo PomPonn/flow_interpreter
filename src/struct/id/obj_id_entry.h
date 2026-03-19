@@ -18,7 +18,8 @@ FL_HEADER_FN fl_void fl_obj_id_entry_init(fl_obj_id_entry **entry, const fl_char
     (*entry)->name = name;
 }
 
-FL_HEADER_FN fl_void fl_obj_id_entry_free(fl_obj_id_entry *entry)
+FL_HEADER_FN fl_void fl_obj_id_entry_free(fl_obj_id_entry **entry)
 {
-    fl_mem_free(entry);
+    fl_mem_free(*entry);
+    *entry = FL_NULL;
 }

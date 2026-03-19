@@ -223,24 +223,23 @@ fl_bool fl_tok_tokenize(fl_char *str, fl_token_arr *token_arr, const fl_char *so
     if (!count)
         return FL_FALSE;
 
-    // Allocate memory for tokens
-    fl_token *tokens = fl_mem_alloc_arr(count, sizeof(fl_token));
+    // Initialize token array
+    fl_token_arr_init(token_arr, count);
 
     // Tokenize the string
     fl_size line, column;
-    fl_char *token = _fl_tok_next_token(str, &line, &column);
+    fl_char *token_str = _fl_tok_next_token(str, &line, &column);
 
-    for (fl_size index = 0; token; index++)
+    for (fl_size index = 0; token_str; index++)
     {
-        fl_token_init(tokens + index,
-                      fl_str_dup(token),
+        fl_token_init(token_arr->_data + index,
+                      fl_str_dup(token_str),
                       (fl_file_location_info){
                           .column = column,
                           .line = line,
                           .description = source_desc});
-        token = _fl_tok_next_token(FL_NULL, &line, &column);
+        token_str = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 
-    fl_token_arr_init(token_arr, tokens, count);
     return FL_TRUE;
 }

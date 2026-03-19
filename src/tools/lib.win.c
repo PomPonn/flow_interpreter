@@ -16,9 +16,11 @@ fl_unknown *fl_lib_get_address(fl_lib_handle handle, const fl_char *fn_name)
     return GetProcAddress(handle, fn_name);
 }
 
-fl_bool fl_lib_free(fl_lib_handle handle)
+fl_bool fl_lib_free(fl_lib_handle *handle)
 {
-    return FreeLibrary(handle);
+    fl_bool res = FreeLibrary(*handle);
+    *handle = FL_NULL;
+    return res;
 }
 
 #endif

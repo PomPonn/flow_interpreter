@@ -66,5 +66,4 @@ fl_id_node *fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 
-fl_void
-fl_context_free(fl_context *cnt);
+fl_void fl_context_free(fl_context *cnt);

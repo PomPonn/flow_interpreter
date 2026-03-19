@@ -2,7 +2,8 @@
 
 #include "shared/common.h"
 
-enum _fl_operator_order {
+enum _fl_operator_order
+{
     FL_OPR_ORDER_DEFAULT = 0,
     FL_OPR_ORDER_ARITHM_LOW = 1000,
     FL_OPR_ORDER_ARITHM_MED = 2000,
@@ -25,7 +26,8 @@ FL_HEADER_FN fl_void fl_operator_info_init(fl_operator_info **info, fl_operator_
     *info = i;
 }
 
-FL_HEADER_FN fl_void fl_operator_info_free(fl_operator_info *info)
+FL_HEADER_FN fl_void fl_operator_info_free(fl_operator_info **info)
 {
-    fl_mem_free(info);
+    fl_mem_free(*info);
+    *info = FL_NULL;
 }

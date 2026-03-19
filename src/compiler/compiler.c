@@ -67,7 +67,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
     fl_opt_remove_comments(&token_arr);
 
-    fl_file_free(source_code);
+    fl_file_free(&source_code);
 
     if (!any_token)
         // there are no tokens in the file
@@ -82,7 +82,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     _fl_cmp_compile_node(tree, cnt);
 
     fl_token_arr_free(&token_arr);
-    fl_ast_node_free(tree);
+    fl_ast_node_free(&tree);
 }
 
 inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
@@ -149,7 +149,7 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
         // throw an error if id is absent
         throw_compilation_error(node, "Use of unknown callable id");
 
-    if (id_node->value->type != FL_ID_ENTRY_TYPE_CALLABLE)
+    if (!fl_id_entry_callable(id_node->value))
         throw_compilation_error(node, "id is not callable");
 
     // process callable arguments

@@ -1,42 +1,37 @@
 #pragma once
 
-#include "shared/common.h"
+// ---- DEPENDENCIES ----
+
 #include "struct/id/id_entry.h"
 #include "struct/call/call_param_vec.h"
 
-typedef fl_unknown *(*fl_fn_ptr)(fl_call_param_vec *);
+// ---- DEFINES ----
+
+#define FL_EXTEND_CALLABLE_ID_ENTRY \
+    FL_EXTEND_ID_ENTRY;             \
+    fl_data_type return_type;       \
+    fl_call_param_vec params
+
+// ---- TYPE DEFINITIONS ----
 
 struct _fl_callable_id_entry
 {
-    FL_EXTEND_ID_ENTRY;
-    fl_fn_ptr pointer;
-    fl_data_type return_type;
-    fl_call_param_vec params;
+    FL_EXTEND_CALLABLE_ID_ENTRY;
 };
+/**
+ * @brief Abstract callable id entry;
+ * contains information about callable, but without a body.
+ */
 typedef struct _fl_callable_id_entry fl_callable_id_entry;
 
-FL_HEADER_FN fl_void fl_callable_id_entry_init(
-    fl_callable_id_entry **entry,
+FL_HEADER_FN fl_void fl_callable_id_entry_fill(
+    fl_callable_id_entry *entry,
     const fl_char *name,
     fl_bool constant,
-    fl_fn_ptr ptr,
     fl_data_type return_type,
     fl_call_param_vec params)
 {
-    fl_callable_id_entry *val = fl_mem_alloc(sizeof(fl_callable_id_entry));
-
-    val->type = FL_ID_ENTRY_TYPE_CALLABLE;
-    val->name = name;
-    val->constant = constant;
-    val->pointer = ptr;
-    val->return_type = return_type;
-    val->params = params;
-
-    *entry = val;
-}
-
-FL_HEADER_FN fl_void fl_callable_id_entry_free(fl_callable_id_entry *entry)
-{
-    fl_call_param_vec_free(&entry->params);
-    fl_mem_free(entry);
+    fl_id_entry_fill((fl_id_entry *)entry, name, constant);
+    entry->return_type = return_type;
+    entry->params = params;
 }

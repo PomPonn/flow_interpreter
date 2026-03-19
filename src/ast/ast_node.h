@@ -103,7 +103,7 @@ typedef struct _fl_ast_node fl_ast_node;
 
 /**
  * @brief Initalizes `fl_ast_node` structure.
- * @param [out] node Node to initialize.
+ * @param [out] node Node to initialize, allocated on heap.
  * @param type Node type.
  * @param data Node data.
  * @param parent Node parent.
@@ -120,7 +120,7 @@ fl_void fl_ast_node_init(
  * @brief Frees `fl_ast_node` structure.
  * @param node Node to free (the pointer is freed too).
  */
-fl_void fl_ast_node_free(fl_ast_node *node);
+fl_void fl_ast_node_free(fl_ast_node **node);
 
 /**
  * @brief Adds child to the node at the end of children list.

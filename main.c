@@ -1,6 +1,6 @@
 #include "compiler/compiler.h"
 
-int main()
+fl_int main()
 {
     fl_context cnt;
     fl_context_init(&cnt);

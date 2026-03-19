@@ -40,6 +40,13 @@
 
 ## byte code
 
+### Example byte code:
+
+_INSTR_START
+\_INSTR_STARTBLOCK_
+
+_INSTR_ENDBLOCK_
+
 #### Legend:
 
 - \_INSTR\_<...>\_ - instruction markers, always size of 1B

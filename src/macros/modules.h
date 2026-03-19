@@ -4,7 +4,7 @@
 #include "shared/common.h"
 #include "shared/error.h"
 #include "struct/call/call_param_vec.h"
-#include "struct/id/callable_id_entry.h"
+#include "struct/id/c_callable_id_entry.h"
 
 // ---- PRIVATE ----
 
@@ -22,16 +22,16 @@
     for (fl_size _i = 0; _i < params.size; _i++)                        \
     fl_call_param_init(&params.data[_i], _FL_TYPES(__VA_ARGS__)[_i])
 
-#define _FL_REG_CLL_BASE(parent, comp, name, return_type, ...) \
-    FL_PARAMS(__VA_ARGS__);                                    \
-    fl_callable_id_entry *_FL_MERGE2(name, _entry);            \
-    fl_callable_id_entry_init(                                 \
-        &_FL_MERGE2(name, _entry),                             \
-        _FL_STRINGIFY(name),                                   \
-        comp,                                                  \
-        _FL_MERGE4(_fl_, parent, _, name),                     \
-        return_type,                                           \
-        params);                                               \
+#define _FL_REG_CLL_BASE(parent, constant, name, return_type, ...) \
+    FL_PARAMS(__VA_ARGS__);                                        \
+    fl_c_callable_id_entry *_FL_MERGE2(name, _entry);              \
+    fl_c_callable_id_entry_init(                                   \
+        &_FL_MERGE2(name, _entry),                                 \
+        _FL_STRINGIFY(name),                                       \
+        constant,                                                  \
+        return_type,                                               \
+        params,                                                    \
+        _FL_MERGE4(_fl_, parent, _, name));                        \
     fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry))
 
 // ---- PUBLIC ----

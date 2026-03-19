@@ -22,4 +22,4 @@ fl_id_node *fl_id_node_push_sibling(fl_id_node **node, fl_id_entry *entry);
 
 fl_id_node *fl_id_node_push_child(fl_id_node *node, fl_id_entry *entry);
 
-fl_void fl_id_node_free(fl_id_node *node);
+fl_void fl_id_node_free(fl_id_node **node);
