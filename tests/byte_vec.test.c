@@ -1,27 +1,32 @@
 /**
- * ---- <module filename>.test.c ----
+ * ---- byte_vec.test.c ----
  *
- * Defines tests for '<path to the module>'.
+ * Defines tests for 'src/struct/byte_vec.h'.
  *
  */
 
-// #include "<module include>"
+#include "struct/byte_vec.h"
 #include <unity/unity.h>
 
 // ---- GLOBALS ----
 
-// ...
+#define INIT_SIZE 24
+fl_byte_vec vec;
 
 // ---- SETUP FUNCTIONS ----
 
 void setUp()
 {
-    // Setup code...
+    fl_byte_vec_init(&vec, INIT_SIZE);
+    for (fl_size i = 0; i < INIT_SIZE; i++)
+    {
+        vec.data[i] = i;
+    }
 }
 
 void tearDown()
 {
-    // Cleanup code...
+    fl_byte_vec_free(&vec);
 }
 
 // ---- TESTS ----
