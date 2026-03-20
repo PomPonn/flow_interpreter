@@ -16,6 +16,7 @@
 #include "struct/id/id_node.h"
 #include "struct/id/callable_id_entry.h"
 #include "struct/info/all.h"
+#include "lang/scope.h"
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -48,11 +49,14 @@
 
 // TODO: comment these declarations when finished
 
-static fl_void _fl_cmp_compile_node(fl_ast_node *root, fl_context *cnt);
-inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
-inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
-inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
-inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_vec *dest);
+static fl_byte_vec _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt, fl_scope *local);
+static inline fl_byte_vec _fl_cmp_compile_block(fl_ast_node *node, fl_context *cnt, fl_scope *local);
+static inline fl_byte_vec _fl_cmp_compile_callable(fl_ast_node *callable_node, fl_context *cnt, fl_scope *local);
+// revise - |
+//          v
+static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
+static inline fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
+static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 
 // ---- DEFINITIONS ----
 
@@ -79,71 +83,59 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_prt_print_ast_tree(tree);
 #endif
 
-    _fl_cmp_compile_node(tree, cnt);
+    _fl_cmp_compile_node(tree, cnt, FL_NULL);
 
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 }
 
-inline static fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
+static fl_byte_vec _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt, fl_scope *local)
 {
     switch (node->type)
     {
-    case FL_AST_NODE_TYPE_LITERAL:
-        return FL_TRUE;
-    case FL_AST_NODE_TYPE_OPERATOR:
+    case FL_AST_NODE_TYPE_BLOCK:
+        return _fl_cmp_compile_block(node, cnt, local);
     case FL_AST_NODE_TYPE_FN_CALL:
-    {
-        // first child is a callable id chain node
-        fl_ast_node *node = node->child;
-        fl_id_chain *id_chain = (fl_id_chain *)node->data;
-        // resolve this callable id
-        fl_id_node *id_node;
-        fl_context_resolve_id(cnt, FL_NULL, id_chain, &id_node);
-        fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
-
-        return callable_id->constant;
-    }
+    case FL_AST_NODE_TYPE_OPERATOR:
+        return _fl_cmp_compile_callable(node, cnt, bc);
     default:
-        assert(FL_FALSE);
         break;
     }
 }
 
-static fl_void _fl_cmp_compile_node(fl_ast_node *node, fl_context *cnt)
+static inline fl_byte_vec _fl_cmp_compile_block(fl_ast_node *node, fl_context *cnt, fl_scope *local)
 {
-    fl_byte_vec *bc = &cnt->byte_vec;
+    fl_byte_vec code;
+    fl_byte_vec_init(&code, 0);
 
+    fl_scope inner_scope;
+    fl_scope_init(&inner_scope);
+
+    node = node->child;
     while (node)
     {
-        switch (node->type)
-        {
-        case FL_AST_NODE_TYPE_BLOCK:
-            fl_byte_vec_push(bc, FL_INSTR_STARTBLOCK);
-            _fl_cmp_compile_node(node->child, cnt);
-            fl_byte_vec_push(bc, FL_INSTR_ENDBLOCK);
-            break;
-        case FL_AST_NODE_TYPE_FN_CALL:
-        case FL_AST_NODE_TYPE_OPERATOR:
-            _fl_cmp_compile_callable(node, cnt, bc);
-            break;
-        default:
-            break;
-        }
-
+        fl_byte_vec sub = _fl_cmp_compile_node(node, cnt, &inner_scope);
         node = node->next;
     }
 }
 
-inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context *cnt, fl_byte_vec *dest)
+static inline fl_byte_vec _fl_cmp_compile_callable(fl_ast_node *callable_node, fl_context *cnt, fl_scope *local)
 {
     // first child is a callable id chain node
-    fl_ast_node *node = cll_node->child;
+    fl_ast_node *node = callable_node->child;
     fl_id_chain *id_chain = (fl_id_chain *)node->data;
-    // resolve this callable id
-    fl_id_node *id_node;
-    fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
-    fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
+
+    // seek for callable id in local scope
+    fl_int_vec inds = fl_id_entry_vec_seek(&local->ids, id_chain);
+    fl_id_entry *id = fl_id_entry_vec_traverse(&local->ids, inds);
+
+    if (!id)
+    {
+    }
+
+    // fl_id_node_vec_find(&local->ids, id_node);
+    // fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
+    // fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
 
     if (!id_node)
         // throw an error if id is absent
@@ -153,7 +145,7 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
         throw_compilation_error(node, "id is not callable");
 
     // process callable arguments
-    switch (cll_node->type)
+    switch (callable_node->type)
     {
     case FL_AST_NODE_TYPE_FN_CALL:
         node = node->next;
@@ -178,13 +170,13 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
 
         // validate left argument
         if (!left_arg)
-            throw_compilation_error(cll_node->child, "Missing left argument of the operator");
+            throw_compilation_error(callable_node->child, "Missing left argument of the operator");
 
         fl_ast_node *right_arg = left_arg->next;
 
         // validate right argument
         if (!right_arg)
-            throw_compilation_error(cll_node->child, "Missing right argument of the operator");
+            throw_compilation_error(callable_node->child, "Missing right argument of the operator");
 
         // excess node check
         if (right_arg->next)
@@ -208,11 +200,36 @@ inline static fl_void _fl_cmp_compile_callable(fl_ast_node *cll_node, fl_context
     fl_byte_vec_push_mem(dest, &id_index, sizeof(id_index));
 }
 
-inline static fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
+static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
+{
+    switch (node->type)
+    {
+    case FL_AST_NODE_TYPE_LITERAL:
+        return FL_TRUE;
+    case FL_AST_NODE_TYPE_OPERATOR:
+    case FL_AST_NODE_TYPE_FN_CALL:
+    {
+        // first child is a callable id chain node
+        fl_ast_node *node = node->child;
+        fl_id_chain *id_chain = (fl_id_chain *)node->data;
+        // resolve this callable id
+        fl_id_node *id_node;
+        fl_context_resolve_id(cnt, FL_NULL, id_chain, &id_node);
+        fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
+
+        return callable_id->constant;
+    }
+    default:
+        assert(FL_FALSE);
+        break;
+    }
+}
+
+static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
 }
 
-inline static fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
+static inline fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
 {
 
     // _fl_cmp_compile_node(left_arg, cnt);

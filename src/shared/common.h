@@ -9,7 +9,7 @@
 #include <assert.h>
 
 #define FL_NULL (void *)0
-#define FL_FAIL -1
+#define FL_FIND_FAIL -1
 
 #define _fl_swap(type, a, b) \
     {                        \

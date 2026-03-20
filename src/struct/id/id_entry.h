@@ -27,8 +27,10 @@ fl_void fl_id_entry_free(fl_id_entry **entry);
 FL_HEADER_FN fl_void fl_id_entry_fill(
     fl_id_entry *entry,
     const fl_char *name,
+    fl_id_entry_type type,
     fl_bool constant)
 {
+    entry->type = type;
     entry->name = name;
     entry->constant = constant;
 }

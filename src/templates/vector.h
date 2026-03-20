@@ -60,16 +60,21 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_T
     vec->size++;
 }
 
-FL_TEMPLATE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *vec, const FL_VEC_TYPE value)
+FL_TEMPLATE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _empty)(FL_VEC_NAME *vec)
 {
-    for (fl_size i = 0; i < vec->size; i++)
-    {
-        if (vec->data[i] == value)
-            return (fl_int)i;
-    }
-
-    return -1;
+    return vec->data == FL_NULL;
 }
+
+// FL_TEMPLATE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *vec, const FL_VEC_TYPE value)
+// {
+//     for (fl_size i = 0; i < vec->size; i++)
+//     {
+//         if (vec->data[i] == value)
+//             return (fl_int)i;
+//     }
+
+//     return -1;
+// }
 
 #undef FL_VEC_NAME
 #undef FL_VEC_TYPE

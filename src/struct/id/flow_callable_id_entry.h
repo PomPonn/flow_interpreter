@@ -21,7 +21,13 @@ FL_HEADER_FN fl_void fl_flow_callable_id_entry_init(
     fl_byte_vec body)
 {
     fl_flow_callable_id_entry *val = fl_mem_alloc(sizeof(fl_flow_callable_id_entry));
-    fl_flowallable_id_entry_fill((fl_callable_id_entry *)entry, name, constant, return_type, params);
+    fl_callable_id_entry_fill(
+        (fl_callable_id_entry *)entry,
+        name,
+        FL_ID_ENTRY_TYPE_FLOW_CALLABLE,
+        constant,
+        return_type,
+        params);
     val->body = body;
 }
 

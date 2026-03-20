@@ -16,8 +16,6 @@
 
 // ---- TYPE DEFINITIONS ----
 
-// TODO: comment when finished
-
 struct _fl_context
 {
     fl_id_node_vec global_scopes;
@@ -50,6 +48,8 @@ fl_int fl_context_resolve_id(
     fl_id_node *scope,
     fl_id_chain *id_chain,
     fl_id_node **id_node);
+
+// TODO: comment when finished
 
 /**
  * @brief

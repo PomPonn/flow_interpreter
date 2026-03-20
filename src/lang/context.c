@@ -86,7 +86,7 @@ fl_int fl_context_resolve_id(
             }
     }
 
-    return fl_id_node_vec_find(&cnt->id_list, *id_node);
+    // return fl_id_node_vec_find(&cnt->id_list, *id_node);
 }
 
 fl_id_node *fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain)
@@ -129,7 +129,7 @@ fl_id_node *fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node)
 {
-    if (fl_id_node_vec_find(&cnt->global_scopes, id_node) == FL_FAIL)
+    if (fl_id_node_vec_find(&cnt->global_scopes, id_node) == FL_FIND_FAIL)
     {
         fl_id_node_vec_push(&cnt->global_scopes, id_node);
         return FL_TRUE;
