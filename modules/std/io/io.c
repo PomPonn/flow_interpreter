@@ -47,7 +47,7 @@ FL_MODULE_CALLABLE(put)
         //     // TODO
         //     printf("<ARRAY>");
         //     break;
-        // case FL_DATA_TYPE_OBJECT:
+        // case FL_DATA_TYPE_SCOPE:
         //     // TODO
         //     printf("<OBJECT>");
         //     break;

@@ -16,6 +16,7 @@
 #define FL_VEC_NAME fl_id_entry_vec
 #define FL_VEC_TYPE fl_id_entry *
 #define FL_VEC_CAP 16
+#define FL_VEC_DESTRUCTOR(elem) fl_id_entry_free(&elem)
 #include "templates/vector.h"
 
 fl_int fl_id_entry_vec_find(fl_id_entry_vec *vec, const fl_char *id_name);

@@ -3,14 +3,15 @@
 // ---- DEPENDENCIES ----
 
 #include "struct/id/id_entry.h"
-#include "struct/call/call_param_vec.h"
+#include "struct/param_vec.h"
 
 // ---- DEFINES ----
 
 #define FL_EXTEND_CALLABLE_ID_ENTRY \
     FL_EXTEND_ID_ENTRY;             \
     fl_data_type return_type;       \
-    fl_call_param_vec params
+    fl_bool constant;               \
+    fl_param_vec params
 
 // ---- TYPE DEFINITIONS ----
 
@@ -30,9 +31,10 @@ FL_HEADER_FN fl_void fl_callable_id_entry_fill(
     fl_id_entry_type type,
     fl_bool constant,
     fl_data_type return_type,
-    fl_call_param_vec params)
+    fl_param_vec params)
 {
-    fl_id_entry_fill((fl_id_entry *)entry, name, type, constant);
+    fl_id_entry_fill((fl_id_entry *)entry, name, type);
     entry->return_type = return_type;
+    entry->constant = constant;
     entry->params = params;
 }

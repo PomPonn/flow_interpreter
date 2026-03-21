@@ -10,7 +10,7 @@
 // ---- DEPENDENCIES ----
 
 #include "struct/id/id_node_vec.h"
-#include "struct/id/obj_id_entry.h"
+#include "struct/id/scope_id_entry.h"
 #include "struct/byte_vec.h"
 #include "struct/lib_handle_vec.h"
 

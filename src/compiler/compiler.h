@@ -28,11 +28,15 @@ enum _fl_cmp_instruction
     FL_INSTR_POW,
     FL_INSTR_MOD,
     // ...
+    FL_INSTR_CALL,
+    FL_INSTR_GET,
+    FL_INSTR_NEW,
+    // use questioned
     FL_INSTR_STARTBLOCK,
     FL_INSTR_ENDBLOCK,
     FL_INSTR_STARTOP,
     FL_INSTR_ENDOP,
-    FL_INSTR_CALL,
+
 };
 
 // ---- DECLARATIONS ----

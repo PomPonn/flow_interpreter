@@ -16,7 +16,7 @@ FL_HEADER_FN fl_void fl_c_callable_id_entry_init(
     const fl_char *name,
     fl_bool constant,
     fl_data_type return_type,
-    fl_call_param_vec params,
+    fl_param_vec params,
     fl_c_callable_ptr pointer)
 {
 
@@ -34,7 +34,7 @@ FL_HEADER_FN fl_void fl_c_callable_id_entry_init(
 FL_HEADER_FN fl_void fl_c_callable_id_entry_free(fl_c_callable_id_entry **entry)
 {
     fl_c_callable_id_entry *ptr = *entry;
-    fl_call_param_vec_free(&ptr->params);
+    fl_param_vec_free(&ptr->params);
     fl_mem_free(ptr);
     *entry = FL_NULL;
 }

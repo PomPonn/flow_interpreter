@@ -4,7 +4,6 @@
 
 #define _FL_BC_CAP_STEP 128
 
-// fl_id_chain vector
 #define FL_VEC_NAME fl_byte_vec
 #define FL_VEC_TYPE fl_byte
 #define FL_VEC_CAP _FL_BC_CAP_STEP
