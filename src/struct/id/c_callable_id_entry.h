@@ -1,8 +1,9 @@
 #pragma once
 
 #include "struct/id/callable_id_entry.h"
+#include "struct/arg_vec.h"
 
-typedef fl_unknown *(*fl_c_callable_ptr)(fl_unknown *);
+typedef fl_unknown *(*fl_c_callable_ptr)(fl_arg_vec args);
 
 struct _fl_c_callable_id_entry
 {

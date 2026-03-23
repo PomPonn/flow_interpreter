@@ -13,14 +13,14 @@
 // FIX ME
 #define _FL_TEMP_LOCATION (fl_file_location_info){.description = ""}
 
-#define _FL_TYPES(...) \
-    (fl_data_type[]) { __VA_ARGS__ }
+#define _FL_TDESCS(...) \
+    (fl_data_type_desc[]) { __VA_ARGS__ }
 
-// reguires use of FL_REGISTER_START macro before
-#define FL_PARAMS(...)                                             \
-    fl_param_vec_init(&params, _FL_SSIZE(_FL_TYPES(__VA_ARGS__))); \
-    for (fl_size _i = 0; _i < params.size; _i++)                   \
-    params.data[_i] = _FL_TYPES(__VA_ARGS__)[_i]
+// requires use of FL_REGISTER_START macro before
+#define FL_PARAMS(...)                                              \
+    fl_param_vec_init(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
+    for (fl_size _i = 0; _i < params.size; _i++)                    \
+    params.data[_i] = _FL_TDESCS(__VA_ARGS__)[_i]
 
 #define _FL_REG_CLL_BASE(parent, constant, name, return_type, ...) \
     FL_PARAMS(__VA_ARGS__);                                        \
@@ -32,7 +32,7 @@
         return_type,                                               \
         params,                                                    \
         _FL_MERGE4(_fl_, parent, _, name));                        \
-    fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry))
+    fl_context_register_id(FL_PARAM_CNT, &parent->scope, (fl_id_entry *)_FL_MERGE2(name, _entry))
 
 // ---- PUBLIC ----
 
@@ -47,16 +47,16 @@
     }
 
 #define FL_MODULE_CALLABLE(name) \
-    fl_unknown *_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name)(fl_param_vec * args)
+    fl_unknown *_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name)(fl_arg_vec args)
 
 #define FL_REGISTER_START \
     fl_param_vec params;
 
-#define FL_REGISTER_OBJ(parent, name)                                                                         \
-    fl_scope_id_entry *_FL_MERGE2(name, _entry);                                                              \
-    fl_scope_id_entry_init(&_FL_MERGE2(name, _entry), _FL_STRINGIFY(name));                                   \
-    fl_id_node *name = fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)_FL_MERGE2(name, _entry)); \
-    if (!name)                                                                                                \
+#define FL_REGISTER_OBJ(parent, name)                                  \
+    fl_scope_id_entry *name;                                           \
+    fl_scope_id_entry_init(&name, _FL_STRINGIFY(name), parent);        \
+    fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)name); \
+    if (!name)                                                         \
     fl_throw_import_error("Failed to register object")
 
 #define FL_REGISTER_RT_CALLABLE(name, return_type, ...) \

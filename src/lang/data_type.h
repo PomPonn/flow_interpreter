@@ -12,7 +12,6 @@ enum _fl_data_type
     FL_DATA_TYPE_NUMBER = 0b00001000,
     FL_DATA_TYPE_ARRAY = 0b00010000,
     FL_DATA_TYPE_STRING = 0b00100000,
-    FL_DATA_TYPE_STRING = 0b01000000,
 };
 typedef fl_byte fl_data_type;
 

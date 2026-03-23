@@ -11,11 +11,14 @@ fl_void fl_id_entry_free(fl_id_entry **entry)
     switch ((*entry)->type)
     {
     case FL_ID_ENTRY_TYPE_C_CALLABLE:
-        return fl_c_callable_id_entry_free((fl_c_callable_id_entry **)entry);
+        fl_c_callable_id_entry_free((fl_c_callable_id_entry **)entry);
+        break;
     case FL_ID_ENTRY_TYPE_FLOW_CALLABLE:
-        return fl_flow_callable_id_entry_free((fl_flow_callable_id_entry **)entry);
+        fl_flow_callable_id_entry_free((fl_flow_callable_id_entry **)entry);
+        break;
     case FL_ID_ENTRY_TYPE_SCOPE:
-        return fl_scope_id_entry_free((fl_scope_id_entry **)entry);
+        fl_scope_id_entry_free((fl_scope_id_entry **)entry);
+        break;
     default:
         assert(FL_FALSE);
         break;

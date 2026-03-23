@@ -17,7 +17,7 @@ FL_HEADER_FN fl_void fl_scope_id_entry_init(
     const fl_scope *outer_scope)
 {
     fl_scope_id_entry *val = fl_mem_alloc(sizeof(fl_scope_id_entry));
-    fl_id_entry_fill(val, name, FL_ID_ENTRY_TYPE_SCOPE);
+    fl_id_entry_fill((fl_id_entry *)val, name, FL_ID_ENTRY_TYPE_SCOPE);
     fl_scope_init(&val->scope, outer_scope);
     *entry = val;
 }

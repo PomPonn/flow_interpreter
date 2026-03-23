@@ -15,18 +15,20 @@ FL_MODULE_CALLABLE(put);
 
 // ---- DEFINITIONS ----
 
-fl_void fl_std_io_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN, fl_id_node *parent)
+fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *scope)
 {
     FL_REGISTER_START;
 
-    FL_REGISTER_OBJ(parent, FL_MODULE_NAME);
-
-    FL_REGISTER_CT_CALLABLE(put, FL_DATA_TYPE_NULL, FL_DATA_TYPE_ARRAY);
+    FL_REGISTER_OBJ(scope, FL_MODULE_NAME);
+    FL_REGISTER_CT_CALLABLE(
+        put,
+        FL_DATA_TYPE_NULL,
+        FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_ARRAY));
 }
 
 FL_MODULE_CALLABLE(put)
 {
-    for (fl_size i = 0; i < args->size; i++)
+    for (fl_size i = 0; i < args.size; i++)
     {
         // fl_call_param arg = args->data[i];
         // switch (arg.type)

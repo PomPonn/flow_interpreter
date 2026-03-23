@@ -18,7 +18,7 @@
 
 struct _fl_context
 {
-    fl_id_node_vec global_scopes;
+    fl_scope main_scope;
     fl_lib_handle_vec lib_handles;
     fl_id_node *id_tree;
     fl_id_node_vec id_list;
@@ -58,11 +58,13 @@ fl_int fl_context_resolve_id(
  * @param entry
  * @return
  */
-fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_entry *entry);
+// fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_entry *entry);
 
-fl_id_node *fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain);
+fl_void fl_context_register_id(fl_context *cnt, fl_scope *scope, fl_id_entry *entry);
 
-fl_id_node *fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
+fl_void fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain);
+
+fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 

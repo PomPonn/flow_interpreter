@@ -60,7 +60,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_T
     vec->size++;
 }
 
-FL_TEMPLATE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _empty)(FL_VEC_NAME *vec)
+FL_TEMPLATE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(FL_VEC_NAME *vec)
 {
     return vec->data == FL_NULL;
 }

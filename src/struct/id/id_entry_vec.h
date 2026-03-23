@@ -19,7 +19,7 @@
 #define FL_VEC_DESTRUCTOR(elem) fl_id_entry_free(&elem)
 #include "templates/vector.h"
 
-fl_int fl_id_entry_vec_find(fl_id_entry_vec *vec, const fl_char *id_name);
+fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name);
 
 fl_int_vec fl_id_entry_vec_seek(fl_id_entry_vec *vec, fl_id_chain *id_chain);
 

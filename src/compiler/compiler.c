@@ -15,7 +15,9 @@
 #include "ast/ast_tree.h"
 #include "struct/id/id_node.h"
 #include "struct/id/callable_id_entry.h"
+#include "struct/id/value_id_entry.h"
 #include "struct/info/all.h"
+#include "struct/arg_vec.h"
 #include "lang/scope.h"
 #include "lang/data_type_desc.h"
 #include "tools/file.h"
@@ -107,7 +109,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_byte_vec code;
     fl_byte_vec_init(&code, 0);
 
-    _fl_cmp_compile_node(tree, cnt, FL_NULL, &code, FL_NULL);
+    _fl_cmp_compile_node(tree, cnt, FL_NULL, &code);
 
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
@@ -131,6 +133,8 @@ static fl_data_type_desc _fl_cmp_compile_node(
     case FL_AST_NODE_TYPE_ID_CHAIN:
         return _fl_cmp_compile_plain_id_chain(node, cnt, scope, code);
     default:
+        assert(FL_FALSE);
+        return FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_NULL);
         break;
     }
 }
@@ -170,9 +174,30 @@ static inline fl_void _fl_cmp_compile_callable(
         // throw an error if id does not exist
         throw_compilation_error(node, "Use of unknown callable id");
 
-    if (!fl_id_entry_callable(id))
+    if (!fl_id_entry_callable((const fl_id_entry *)id))
         // throw an error if id is not callable
         throw_compilation_error(node, "id is not callable");
+
+    if (id->constant)
+    {
+        if (id->type == FL_ID_ENTRY_TYPE_C_CALLABLE)
+        {
+            fl_c_callable_ptr fn_ptr = ((fl_c_callable_id_entry *)id)->pointer;
+
+            fl_arg_vec args;
+            fl_arg_vec_init(&args, id->params.size + 1);
+            // pass actual args
+            // temp: it's a literal ""
+            args.data[0] = node->next->data;
+
+            fl_byte_vec *res_code = fn_ptr(args);
+            // push resulting code (expand this callable call in compile time)
+            fl_byte_vec_push_mem(code, res_code->data, res_code->size);
+            // free local code
+            fl_byte_vec_free(res_code);
+        }
+        return;
+    }
 
     // start CALL instruction
     fl_byte_vec_push(code, FL_INSTR_CALL);
@@ -283,17 +308,23 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
         // push actual indexes
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
+        fl_int_vec_free(&inds);
         return FL_DATA_TYPE_DESC_ASSIGNABLE(fl_id_entry_resolve_type(id));
     }
-    else
+
+    if (id_chain->size == 1)
     {
         // push information to create new id
         fl_byte_vec_push(code, FL_INSTR_NEW);
 
-        // create id in this scope
-
-        return FL_DATA_TYPE_DESC_ASSIGNABLE(FL_DATA_TYPE_NULL);
+        // create dummy id in this scope
+        fl_value_id_entry *entry;
+        fl_value_id_entry_init(&entry, id_chain->data[0], FL_NULL);
+        fl_id_entry_vec_push(&scope->ids, (fl_id_entry *)entry);
     }
+
+    fl_int_vec_free(&inds);
+    return FL_DATA_TYPE_DESC_ASSIGNABLE(FL_DATA_TYPE_NULL);
 }
 
 static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)

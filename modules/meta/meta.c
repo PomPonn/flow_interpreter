@@ -25,7 +25,7 @@ FL_MODULE_CALLABLE(import);
 
 // ---- DEFINITIONS ----
 
-fl_id_node *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
+fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
 {
     FL_REGISTER_START;
 
@@ -34,12 +34,19 @@ fl_id_node *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_I
     if (FL_PARAM_ID_CHAIN->size >= 1)
     {
         // import top level ids
-        FL_REGISTER_CT_CALLABLE(import, FL_DATA_TYPE_SCOPE, FL_DATA_TYPE_STRING);
+        FL_REGISTER_CT_CALLABLE(
+            import,
+            FL_DATA_TYPE_SCOPE,
+            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_STRING));
         FL_REGISTER_RT_CALLABLE(assign, FL_DATA_TYPE_ANY, FL_DATA_TYPE_ANY, FL_DATA_TYPE_ANY);
         FL_REGISTER_RT_CALLABLE(add, FL_DATA_TYPE_NUMBER, FL_DATA_TYPE_NUMBER, FL_DATA_TYPE_NUMBER);
     }
 
-    return fl_id_node_seek(FL_PARAM_CNT->id_tree, FL_PARAM_ID_CHAIN);
+    fl_uint offset;
+    fl_int_vec inds = fl_scope_resolve_id(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN, &offset);
+    fl_id_entry *id = fl_scope_traverse(&FL_PARAM_CNT->main_scope, inds, offset);
+    fl_int_vec_free(&inds);
+    return id;
 }
 
 FL_MODULE_CALLABLE(add)

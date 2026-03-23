@@ -2,6 +2,8 @@
 
 #include "shared/common.h"
 
+#include "lang/data_type.h"
+
 #define FL_EXTEND_ID_ENTRY \
     fl_id_entry_type type; \
     const fl_char *name

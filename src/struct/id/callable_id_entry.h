@@ -38,3 +38,8 @@ FL_HEADER_FN fl_void fl_callable_id_entry_fill(
     entry->constant = constant;
     entry->params = params;
 }
+
+// ---- RELATED ----
+
+#include "struct/id/c_callable_id_entry.h"
+#include "struct/id/flow_callable_id_entry.h"
