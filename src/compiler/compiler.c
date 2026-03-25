@@ -178,19 +178,20 @@ static inline fl_void _fl_cmp_compile_callable(
         // throw an error if id is not callable
         throw_compilation_error(node, "id is not callable");
 
-    fl_callable_id_data *data = (fl_callable_id_data *)id->data;
+    fl_callable_id_data *data = id->data;
 
     if (data->constant)
     {
         if (data->c_defined)
         {
-            fl_c_definition_ptr fn_ptr = data->pointer;
+            fl_c_callable_ptr fn_ptr = data->pointer;
 
             fl_arg_vec args;
             fl_arg_vec_init(&args, data->params.size + 1);
             // pass context as a first arg
             args.data[0] = cnt;
             // pass actual args
+            // copy data?
             args.data[1] = node->next->data;
 
             fl_byte_vec *res_code = fn_ptr(args);
@@ -285,7 +286,7 @@ static inline fl_void _fl_cmp_compile_callable(
         if (!fl_data_type_desc_match(data->params.data[1], td))
             throw_compilation_error(left_arg, "Argument cannot be used in this context");
 
-        break;
+                break;
     default:
         assert(FL_FALSE);
         break;

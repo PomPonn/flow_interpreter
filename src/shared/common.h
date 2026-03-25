@@ -19,5 +19,4 @@
     }
 
 #define FL_MODULE_EXPORT __declspec(dllexport)
-#define FL_TEMPLATE_FN static inline
 #define FL_HEADER_FN static inline

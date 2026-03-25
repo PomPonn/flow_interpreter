@@ -20,7 +20,3 @@
 #include "templates/vector.h"
 
 fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name);
-
-// fl_int_vec fl_id_entry_vec_seek(fl_id_entry_vec *vec, fl_id_chain *id_chain);
-
-// fl_id_entry *fl_id_entry_vec_traverse(fl_id_entry_vec *vec, fl_int_vec inds);

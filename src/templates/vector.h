@@ -20,7 +20,7 @@ struct _FL_MERGE2(_, FL_VEC_NAME)
 };
 typedef struct _FL_MERGE2(_, FL_VEC_NAME) FL_VEC_NAME;
 
-FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec, fl_size capacity)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec, fl_size capacity)
 {
     if (!capacity)
         capacity = FL_VEC_CAP;
@@ -30,7 +30,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec, fl_size 
     vec->size = 0;
 }
 
-FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 {
 #ifdef FL_VEC_DESTRUCTOR
     for (fl_size i = 0; i < vec->size; i++)
@@ -43,7 +43,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
     vec->size = 0;
 }
 
-FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
 {
     vec->_capacity = new_cap;
     FL_VEC_TYPE *recaped = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), vec->_capacity);
@@ -51,7 +51,7 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_si
     vec->data = recaped;
 }
 
-FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
 {
     if (vec->size + 1 > vec->_capacity)
         _FL_MERGE2(FL_VEC_NAME, _reserve)(vec, vec->_capacity + 1 + FL_VEC_CAP);
@@ -60,12 +60,17 @@ FL_TEMPLATE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_T
     vec->size++;
 }
 
-FL_TEMPLATE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(FL_VEC_NAME *vec)
+FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
 {
     return vec->data == FL_NULL;
 }
 
-// FL_TEMPLATE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *vec, const FL_VEC_TYPE value)
+FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _peek)(const FL_VEC_NAME *vec)
+{
+    return vec->size == 0 ? FL_NULL : vec->data[vec->size - 1];
+}
+
+// FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *vec, const FL_VEC_TYPE value)
 // {
 //     for (fl_size i = 0; i < vec->size; i++)
 //     {

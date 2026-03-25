@@ -8,7 +8,7 @@
 
 // ---- TYPE DEFINITIONS ----
 
-typedef fl_unknown *(*fl_c_definition_ptr)(fl_arg_vec args);
+typedef fl_unknown *(*fl_c_callable_ptr)(fl_arg_vec args);
 
 struct _fl_callable_id_data
 {
@@ -18,7 +18,7 @@ struct _fl_callable_id_data
     fl_param_arr params;
     union
     {
-        fl_c_definition_ptr pointer;
+        fl_c_callable_ptr pointer;
         fl_byte_vec body;
     };
 };

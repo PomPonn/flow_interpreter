@@ -1,5 +1,6 @@
 #pragma once
 
+#include "shared/str.h"
 #include "macros/basic.h"
 #include "shared/error.h"
 #include "struct/param_arr.h"
@@ -34,7 +35,7 @@
     fl_id_entry *_FL_MERGE2(name, _entry);                         \
     fl_id_entry_init(                                              \
         &_FL_MERGE2(name, _entry),                                 \
-        _FL_STRINGIFY(name),                                       \
+        fl_str_dup(_FL_STRINGIFY(name)),                           \
         FL_DATA_TYPE_CALLABLE,                                     \
         _FL_MERGE2(name, _data));                                  \
                                                                    \
@@ -61,13 +62,13 @@
 #define FL_REGISTER_START \
     fl_param_arr params;
 
-#define FL_REGISTER_SCOPE(parent_scope, name)                                                  \
-    fl_scope_id_data *_FL_MERGE2(name, _data);                                                 \
-    fl_scope_id_data_init(&_FL_MERGE2(name, _data), parent_scope);                             \
-    fl_id_entry *name;                                                                         \
-    fl_id_entry_init(&name, _FL_STRINGIFY(name), FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _data)); \
-    fl_context_register_id(FL_PARAM_CNT, parent_scope, (fl_id_entry *)name);                   \
-    if (!name)                                                                                 \
+#define FL_REGISTER_SCOPE(parent_scope, name)                                                              \
+    fl_scope_id_data *_FL_MERGE2(name, _data);                                                             \
+    fl_scope_id_data_init(&_FL_MERGE2(name, _data), parent_scope);                                         \
+    fl_id_entry *name;                                                                                     \
+    fl_id_entry_init(&name, fl_str_dup(_FL_STRINGIFY(name)), FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _data)); \
+    fl_context_register_id(FL_PARAM_CNT, parent_scope, (fl_id_entry *)name);                               \
+    if (!name)                                                                                             \
     fl_throw_import_error("Failed to register scope")
 
 #define FL_REGISTER_RT_CALLABLE(name, return_type, ...) \
