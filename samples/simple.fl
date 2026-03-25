@@ -1,4 +1,4 @@
 #...set import("sth"); #
-io assign import("std.io");
+io meta.assign meta.import("std.io");
 
 io.put(5 add 4);

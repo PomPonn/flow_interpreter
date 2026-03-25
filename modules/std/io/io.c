@@ -19,7 +19,7 @@ fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *sco
 {
     FL_REGISTER_START;
 
-    FL_REGISTER_OBJ(scope, FL_MODULE_NAME);
+    FL_REGISTER_SCOPE(scope, FL_MODULE_NAME);
     FL_REGISTER_CT_CALLABLE(
         put,
         FL_DATA_TYPE_NULL,

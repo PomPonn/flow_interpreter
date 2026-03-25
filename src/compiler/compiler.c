@@ -10,6 +10,7 @@
 // ---- DEPENDENCIES ----
 
 #include "shared/error.h"
+#include "shared/str.h"
 #include "tokenizer/tokenizer.h"
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
@@ -109,7 +110,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_byte_vec code;
     fl_byte_vec_init(&code, 0);
 
-    _fl_cmp_compile_node(tree, cnt, FL_NULL, &code);
+    _fl_cmp_compile_node(tree, cnt, &cnt->main_scope, &code);
 
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
@@ -186,15 +187,18 @@ static inline fl_void _fl_cmp_compile_callable(
 
             fl_arg_vec args;
             fl_arg_vec_init(&args, id->params.size + 1);
+            // pass context as a first arg
+            args.data[0] = cnt;
             // pass actual args
-            // temp: it's a literal ""
-            args.data[0] = node->next->data;
+            args.data[1] = node->next->data;
 
             fl_byte_vec *res_code = fn_ptr(args);
             // push resulting code (expand this callable call in compile time)
             fl_byte_vec_push_mem(code, res_code->data, res_code->size);
-            // free local code
+            // cleanup
             fl_byte_vec_free(res_code);
+            fl_arg_vec_free(&args);
+            fl_int_vec_free(&inds);
         }
         return;
     }
@@ -208,6 +212,8 @@ static inline fl_void _fl_cmp_compile_callable(
     fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
     // push actual indexes
     fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
+
+    fl_int_vec_free(&inds);
 
     // fl_id_node_vec_find(&scope->ids, id_node);
     // fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
@@ -270,12 +276,12 @@ static inline fl_void _fl_cmp_compile_callable(
 
         fl_data_type_desc td = _fl_cmp_compile_node(left_arg, cnt, scope, code);
         // check if argument type descriptors are fine
-        if (!fl_data_type_desc_match(td, id->params.data[0]))
+        if (!fl_data_type_desc_match(id->params.data[0], td))
             throw_compilation_error(left_arg, "Argument cannot be used in this context");
 
         td = _fl_cmp_compile_node(right_arg, cnt, scope, code);
         // same with second argument
-        if (!fl_data_type_desc_match(td, id->params.data[1]))
+        if (!fl_data_type_desc_match(id->params.data[1], td))
             throw_compilation_error(left_arg, "Argument cannot be used in this context");
 
         break;
@@ -319,7 +325,7 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
 
         // create dummy id in this scope
         fl_value_id_entry *entry;
-        fl_value_id_entry_init(&entry, id_chain->data[0], FL_NULL);
+        fl_value_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_NULL);
         fl_id_entry_vec_push(&scope->ids, (fl_id_entry *)entry);
     }
 

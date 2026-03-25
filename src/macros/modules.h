@@ -52,12 +52,12 @@
 #define FL_REGISTER_START \
     fl_param_vec params;
 
-#define FL_REGISTER_OBJ(parent, name)                                  \
-    fl_scope_id_entry *name;                                           \
-    fl_scope_id_entry_init(&name, _FL_STRINGIFY(name), parent);        \
-    fl_context_register_id(FL_PARAM_CNT, parent, (fl_id_entry *)name); \
-    if (!name)                                                         \
-    fl_throw_import_error("Failed to register object")
+#define FL_REGISTER_SCOPE(parent_scope, name)                                \
+    fl_scope_id_entry *name;                                                 \
+    fl_scope_id_entry_init(&name, _FL_STRINGIFY(name), parent_scope);        \
+    fl_context_register_id(FL_PARAM_CNT, parent_scope, (fl_id_entry *)name); \
+    if (!name)                                                               \
+    fl_throw_import_error("Failed to register scope")
 
 #define FL_REGISTER_RT_CALLABLE(name, return_type, ...) \
     _FL_REG_CLL_BASE(FL_MODULE_NAME, FL_FALSE, name, return_type, __VA_ARGS__)

@@ -29,17 +29,25 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
 {
     FL_REGISTER_START;
 
-    FL_REGISTER_OBJ(FL_NULL, FL_MODULE_NAME);
+    FL_REGISTER_SCOPE(&cnt->main_scope, FL_MODULE_NAME);
 
     if (FL_PARAM_ID_CHAIN->size >= 1)
     {
         // import top level ids
+
         FL_REGISTER_CT_CALLABLE(
-            import,
-            FL_DATA_TYPE_SCOPE,
+            import, FL_DATA_TYPE_SCOPE,
             FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_STRING));
-        FL_REGISTER_RT_CALLABLE(assign, FL_DATA_TYPE_ANY, FL_DATA_TYPE_ANY, FL_DATA_TYPE_ANY);
-        FL_REGISTER_RT_CALLABLE(add, FL_DATA_TYPE_NUMBER, FL_DATA_TYPE_NUMBER, FL_DATA_TYPE_NUMBER);
+
+        FL_REGISTER_RT_CALLABLE(
+            assign, FL_DATA_TYPE_ANY,
+            FL_DATA_TYPE_DESC_ASSIGNABLE(FL_DATA_TYPE_ANY),
+            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_ANY));
+
+        FL_REGISTER_RT_CALLABLE(
+            add, FL_DATA_TYPE_INT,
+            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_INT),
+            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_INT));
     }
 
     fl_uint offset;
@@ -52,6 +60,11 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
 FL_MODULE_CALLABLE(add)
 {
     fl_lang_type_int *res = fl_mem_alloc(sizeof(fl_lang_type_int));
+
+    fl_lang_type_int a = *(fl_lang_type_int *)args.data[0];
+    fl_lang_type_int b = *(fl_lang_type_int *)args.data[1];
+    *res = a + b;
+
     return res;
 }
 
@@ -77,7 +90,7 @@ FL_MODULE_CALLABLE(power)
 
 FL_MODULE_CALLABLE(assign)
 {
-    return FL_NULL;
+    0 return FL_NULL;
 }
 
 FL_MODULE_CALLABLE(import)

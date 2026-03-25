@@ -20,16 +20,17 @@ FL_HEADER_FN fl_void fl_c_callable_id_entry_init(
     fl_param_vec params,
     fl_c_callable_ptr pointer)
 {
-
     fl_c_callable_id_entry *val = fl_mem_alloc(sizeof(fl_c_callable_id_entry));
     fl_callable_id_entry_fill(
-        (fl_callable_id_entry *)entry,
+        (fl_callable_id_entry *)val,
         name,
         FL_ID_ENTRY_TYPE_C_CALLABLE,
         constant,
         return_type,
         params);
     val->pointer = pointer;
+
+    *entry = val;
 }
 
 FL_HEADER_FN fl_void fl_c_callable_id_entry_free(fl_c_callable_id_entry **entry)

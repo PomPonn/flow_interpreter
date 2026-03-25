@@ -19,7 +19,7 @@ fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_
         {
             fl_int ind = fl_id_entry_vec_find(&scope->ids, id_chain->data[i]);
             if (ind == FL_FIND_FAIL)
-                continue;
+                break;
 
             fl_int_vec_push(&indexes, ind);
 
@@ -65,7 +65,7 @@ fl_id_entry *fl_scope_traverse(const fl_scope *scope, fl_int_vec inds, fl_uint b
     {
         int index = inds.data[i];
 
-        if (ids.size >= index)
+        if (index >= ids.size)
             return FL_NULL;
 
         if (i == inds.size - 1)

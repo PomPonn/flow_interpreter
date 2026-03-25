@@ -19,7 +19,7 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
 
     FL_REGISTER_START;
 
-    FL_REGISTER_OBJ(FL_NULL, FL_MODULE_NAME);
+    FL_REGISTER_SCOPE(FL_NULL, FL_MODULE_NAME);
 
     if (FL_PARAM_ID_CHAIN->size > 1)
     {
