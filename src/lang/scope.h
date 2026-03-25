@@ -7,14 +7,11 @@
 
 #pragma once
 
-// ---- FORWARD TYPEDEFS ----
-
-struct _fl_scope_vec;
-
 // ---- DEPENDENCIES ----
 
 #include "struct/id/id_entry_vec.h"
 #include "struct/int_vec.h"
+#include "struct/id/id_chain.h"
 
 // ---- TYPE DEFINITIONS ----
 

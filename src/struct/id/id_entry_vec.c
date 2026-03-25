@@ -1,7 +1,7 @@
 #include "id_entry_vec.h"
 
 #include "shared/str.h"
-#include "struct/id/scope_id_entry.h"
+#include "struct/id/scope_id_data.h"
 
 fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
 {
@@ -29,8 +29,8 @@ fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
 //             return indexes;
 //         else
 //         {
-//             assert(vec->data[ind]->type == FL_ID_ENTRY_TYPE_SCOPE);
-//             vec = &((fl_scope_id_entry *)vec->data[ind])->inner_ids;
+//             assert(vec->data[ind]->type == FL_ID_ENTRY_VALUE_TYPE_SCOPE);
+//             vec = &((fl_scope_id_data *)vec->data[ind])->inner_ids;
 //         }
 //     }
 
@@ -52,8 +52,8 @@ fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
 //             return vec->data[index];
 //         else
 //         {
-//             assert(vec->data[index]->type == FL_ID_ENTRY_TYPE_SCOPE);
-//             vec = &((fl_scope_id_entry *)vec->data[index])->inner_ids;
+//             assert(vec->data[index]->type == FL_ID_ENTRY_VALUE_TYPE_SCOPE);
+//             vec = &((fl_scope_id_data *)vec->data[index])->inner_ids;
 //         }
 //     }
 

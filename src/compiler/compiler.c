@@ -15,8 +15,7 @@
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
 #include "struct/id/id_node.h"
-#include "struct/id/callable_id_entry.h"
-#include "struct/id/value_id_entry.h"
+#include "struct/id/callable_id_data.h"
 #include "struct/info/all.h"
 #include "struct/arg_vec.h"
 #include "lang/scope.h"
@@ -169,24 +168,26 @@ static inline fl_void _fl_cmp_compile_callable(
 
     fl_uint offset;
     fl_int_vec inds = fl_scope_resolve_id(scope, id_chain, &offset);
-    fl_callable_id_entry *id = (fl_callable_id_entry *)fl_scope_traverse(scope, inds, offset);
+    fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
 
     if (!id)
         // throw an error if id does not exist
         throw_compilation_error(node, "Use of unknown callable id");
 
-    if (!fl_id_entry_callable((const fl_id_entry *)id))
+    if (id->data_type != FL_DATA_TYPE_CALLABLE)
         // throw an error if id is not callable
         throw_compilation_error(node, "id is not callable");
 
-    if (id->constant)
+    fl_callable_id_data *data = (fl_callable_id_data *)id->data;
+
+    if (data->constant)
     {
-        if (id->type == FL_ID_ENTRY_TYPE_C_CALLABLE)
+        if (data->c_defined)
         {
-            fl_c_callable_ptr fn_ptr = ((fl_c_callable_id_entry *)id)->pointer;
+            fl_c_definition_ptr fn_ptr = data->pointer;
 
             fl_arg_vec args;
-            fl_arg_vec_init(&args, id->params.size + 1);
+            fl_arg_vec_init(&args, data->params.size + 1);
             // pass context as a first arg
             args.data[0] = cnt;
             // pass actual args
@@ -217,7 +218,7 @@ static inline fl_void _fl_cmp_compile_callable(
 
     // fl_id_node_vec_find(&scope->ids, id_node);
     // fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
-    // fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
+    // fl_callable_id_data *callable_id = (fl_callable_id_data *)id_node->value;
 
     // if (!id_node)
     //     // throw an error if id is absent
@@ -276,12 +277,12 @@ static inline fl_void _fl_cmp_compile_callable(
 
         fl_data_type_desc td = _fl_cmp_compile_node(left_arg, cnt, scope, code);
         // check if argument type descriptors are fine
-        if (!fl_data_type_desc_match(id->params.data[0], td))
+        if (!fl_data_type_desc_match(data->params.data[0], td))
             throw_compilation_error(left_arg, "Argument cannot be used in this context");
 
         td = _fl_cmp_compile_node(right_arg, cnt, scope, code);
         // same with second argument
-        if (!fl_data_type_desc_match(id->params.data[1], td))
+        if (!fl_data_type_desc_match(data->params.data[1], td))
             throw_compilation_error(left_arg, "Argument cannot be used in this context");
 
         break;
@@ -315,7 +316,7 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
         fl_int_vec_free(&inds);
-        return FL_DATA_TYPE_DESC_ASSIGNABLE(fl_id_entry_resolve_type(id));
+        return FL_DATA_TYPE_DESC_ASSIGNABLE(fl_id_entry_final_data_type(id));
     }
 
     if (id_chain->size == 1)
@@ -324,9 +325,9 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
         fl_byte_vec_push(code, FL_INSTR_NEW);
 
         // create dummy id in this scope
-        fl_value_id_entry *entry;
-        fl_value_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_NULL);
-        fl_id_entry_vec_push(&scope->ids, (fl_id_entry *)entry);
+        fl_id_entry *entry;
+        fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_NULL);
+        fl_id_entry_vec_push(&scope->ids, entry);
     }
 
     fl_int_vec_free(&inds);
@@ -348,7 +349,7 @@ static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
         // resolve this callable id
         fl_id_node *id_node;
         fl_context_resolve_id(cnt, FL_NULL, id_chain, &id_node);
-        fl_callable_id_entry *callable_id = (fl_callable_id_entry *)id_node->value;
+        fl_callable_id_data *callable_id = (fl_callable_id_data *)id_node->value;
 
         return callable_id->constant;
     }

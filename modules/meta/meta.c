@@ -90,7 +90,7 @@ FL_MODULE_CALLABLE(power)
 
 FL_MODULE_CALLABLE(assign)
 {
-    0 return FL_NULL;
+    return FL_NULL;
 }
 
 FL_MODULE_CALLABLE(import)

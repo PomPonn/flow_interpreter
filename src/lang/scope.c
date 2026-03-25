@@ -1,7 +1,8 @@
 #include "scope.h"
 
 #include "struct/id/id_entry_vec.h"
-#include "struct/id/scope_id_entry.h"
+#include "struct/id/scope_id_data.h"
+#include "struct/id/id_chain.h"
 
 static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
 
@@ -28,8 +29,8 @@ fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_
             else
             {
                 fl_id_entry *curr = scope->ids.data[ind];
-                assert(curr->type == FL_ID_ENTRY_TYPE_SCOPE);
-                scope = &((fl_scope_id_entry *)curr)->scope;
+                assert(curr->data_type == FL_DATA_TYPE_SCOPE);
+                scope = &((fl_scope_id_data *)curr->data)->scope;
             }
         }
 
@@ -72,8 +73,8 @@ fl_id_entry *fl_scope_traverse(const fl_scope *scope, fl_int_vec inds, fl_uint b
             return ids.data[index];
         else
         {
-            assert(ids.data[index]->type == FL_ID_ENTRY_TYPE_SCOPE);
-            ids = ((fl_scope_id_entry *)ids.data[index])->scope.ids;
+            assert(ids.data[index]->data_type == FL_DATA_TYPE_SCOPE);
+            ids = ((fl_scope_id_data *)ids.data[index])->scope.ids;
         }
     }
 

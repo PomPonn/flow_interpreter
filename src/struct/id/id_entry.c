@@ -1,41 +1,26 @@
 #include "id_entry.h"
 
-#include "struct/id/c_callable_id_entry.h"
-#include "struct/id/flow_callable_id_entry.h"
-#include "struct/id/scope_id_entry.h"
+#include "struct/id/callable_id_data.h"
+#include "struct/id/scope_id_data.h"
 
 fl_void fl_id_entry_free(fl_id_entry **entry)
 {
-    // free the 'name' field?
+    fl_id_entry *ptr = *entry;
 
-    switch ((*entry)->type)
+    fl_mem_free(ptr->name);
+
+    switch (ptr->data_type)
     {
-    case FL_ID_ENTRY_TYPE_C_CALLABLE:
-        fl_c_callable_id_entry_free((fl_c_callable_id_entry **)entry);
+    case FL_DATA_TYPE_CALLABLE:
+        fl_callable_id_data_free(&(fl_callable_id_data *)ptr->data);
         break;
-    case FL_ID_ENTRY_TYPE_FLOW_CALLABLE:
-        fl_flow_callable_id_entry_free((fl_flow_callable_id_entry **)entry);
-        break;
-    case FL_ID_ENTRY_TYPE_SCOPE:
-        fl_scope_id_entry_free((fl_scope_id_entry **)entry);
+    case FL_DATA_TYPE_SCOPE:
+        fl_scope_id_data_free(&(fl_scope_id_data *)ptr->data);
         break;
     default:
-        assert(FL_FALSE);
+        fl_mem_free(ptr->data);
         break;
     }
-}
 
-fl_data_type fl_id_entry_resolve_type(fl_id_entry *entry)
-{
-    switch (entry->type)
-    {
-    case FL_ID_ENTRY_TYPE_C_CALLABLE:
-    case FL_ID_ENTRY_TYPE_FLOW_CALLABLE:
-        return ((fl_callable_id_entry *)entry)->return_type;
-    case FL_ID_ENTRY_TYPE_SCOPE:
-        return FL_DATA_TYPE_SCOPE;
-    default:
-        assert(FL_FALSE);
-        return FL_DATA_TYPE_NULL;
-    }
+    *entry = FL_NULL;
 }

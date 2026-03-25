@@ -1,42 +1,34 @@
 #pragma once
 
-#include "shared/common.h"
-
 #include "lang/data_type.h"
+#include "callable_id_data.h"
 
-#define FL_EXTEND_ID_ENTRY \
-    fl_id_entry_type type; \
-    const fl_char *name
-
-enum _fl_id_entry_type
-{
-    FL_ID_ENTRY_TYPE_C_CALLABLE,
-    FL_ID_ENTRY_TYPE_FLOW_CALLABLE,
-    FL_ID_ENTRY_TYPE_SCOPE,
-};
-typedef fl_byte fl_id_entry_type;
-
-// abstract struct (used as an interface)
 struct _fl_id_entry
 {
-    FL_EXTEND_ID_ENTRY;
+    fl_char *name;
+    fl_data_type data_type;
+    fl_unknown *data;
 };
 typedef struct _fl_id_entry fl_id_entry;
 
-fl_void fl_id_entry_free(fl_id_entry **entry);
-
-fl_data_type fl_id_entry_resolve_type(fl_id_entry *entry);
-
-FL_HEADER_FN fl_void fl_id_entry_fill(
-    fl_id_entry *entry,
-    const fl_char *name,
-    fl_id_entry_type type)
+FL_HEADER_FN fl_data_type fl_id_entry_final_data_type(const fl_id_entry *entry)
 {
-    entry->type = type;
-    entry->name = name;
+    return entry->data_type == FL_DATA_TYPE_CALLABLE ? ((fl_callable_id_data *)entry)->return_type
+                                                     : entry->data_type;
 }
 
-FL_HEADER_FN fl_bool fl_id_entry_callable(const fl_id_entry *entry)
+fl_void fl_id_entry_free(fl_id_entry **entry);
+
+FL_HEADER_FN fl_void fl_id_entry_init(
+    fl_id_entry **entry,
+    fl_char *name,
+    fl_data_type data_type,
+    fl_unknown *data)
 {
-    return entry->type == FL_ID_ENTRY_TYPE_C_CALLABLE || entry->type == FL_ID_ENTRY_TYPE_FLOW_CALLABLE;
+    fl_id_entry *val = fl_mem_alloc(sizeof(fl_id_entry));
+    val->name = name;
+    val->data_type = data_type;
+    val->data = data;
+
+    *entry = val;
 }
