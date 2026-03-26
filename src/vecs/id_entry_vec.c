@@ -1,7 +1,7 @@
 #include "id_entry_vec.h"
 
 #include "shared/str.h"
-#include "struct/id/scope_id_data.h"
+#include "lang/id/scope_id_data.h"
 
 fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
 {

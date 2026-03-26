@@ -1,7 +1,7 @@
 #include "printer.h"
 
 #include "shared/str.h"
-#include "struct/id/id_chain.h"
+#include "lang/id/id_chain.h"
 #include "ast/literal_info.h"
 #include <stdio.h>
 

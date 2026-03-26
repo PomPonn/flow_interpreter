@@ -11,7 +11,7 @@
 
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
-#include "struct/id/id_chain.h"
+#include "lang/id/id_chain.h"
 
 // ---- TYPE DEFINITIONS ----
 

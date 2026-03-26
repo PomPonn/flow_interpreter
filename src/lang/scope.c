@@ -1,8 +1,8 @@
 #include "scope.h"
 
 #include "vecs/id_entry_vec.h"
-#include "struct/id/scope_id_data.h"
-#include "struct/id/id_chain.h"
+#include "lang/id/scope_id_data.h"
+#include "lang/id/id_chain.h"
 
 static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
 

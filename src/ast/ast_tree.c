@@ -11,11 +11,11 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "struct/id/id_chain.h"
+#include "lang/id/id_chain.h"
 #include "tokenizer/token_location.h"
 #include "ast/literal_info.h"
 // may be temp
-#include "struct/info/operator_info.h"
+#include "revise_me/info/operator_info.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
