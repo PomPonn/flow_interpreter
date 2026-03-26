@@ -65,22 +65,6 @@ FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
     return vec->data == FL_NULL;
 }
 
-FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _peek)(const FL_VEC_NAME *vec)
-{
-    return vec->size == 0 ? FL_NULL : vec->data[vec->size - 1];
-}
-
-// FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(FL_VEC_NAME *vec, const FL_VEC_TYPE value)
-// {
-//     for (fl_size i = 0; i < vec->size; i++)
-//     {
-//         if (vec->data[i] == value)
-//             return (fl_int)i;
-//     }
-
-//     return -1;
-// }
-
 #undef FL_VEC_NAME
 #undef FL_VEC_TYPE
 #undef FL_VEC_CAP

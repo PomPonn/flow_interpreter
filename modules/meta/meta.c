@@ -11,17 +11,17 @@
 // ---- DECLARATIONS ----
 
 // arithmetics
-FL_MODULE_CALLABLE(add);
-FL_MODULE_CALLABLE(substract);
-FL_MODULE_CALLABLE(multiply);
-FL_MODULE_CALLABLE(divide);
-FL_MODULE_CALLABLE(power);
+FL_MODULE_FN(add);
+FL_MODULE_FN(substract);
+FL_MODULE_FN(multiply);
+FL_MODULE_FN(divide);
+FL_MODULE_FN(power);
 
 // basic memory operations
-FL_MODULE_CALLABLE(assign);
+FL_MODULE_FN(assign);
 
 // compile time id's
-FL_MODULE_CALLABLE(import);
+FL_MODULE_FN(import);
 
 // ---- DEFINITIONS ----
 
@@ -35,19 +35,19 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
     {
         // import top level ids
 
-        FL_REGISTER_CT_CALLABLE(
+        FL_REGISTER_CT_FN(
             import, FL_DATA_TYPE_SCOPE,
-            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_STRING));
+            fl_value_desc_create(FL_DATA_TYPE_STRING), FL_FALSE);
 
-        FL_REGISTER_RT_CALLABLE(
+        FL_REGISTER_RT_FN(
             assign, FL_DATA_TYPE_ANY,
-            FL_DATA_TYPE_DESC_ASSIGNABLE(FL_DATA_TYPE_ANY),
-            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_ANY));
+            fl_value_desc_create(FL_DATA_TYPE_ANY, FL_TRUE),
+            fl_value_desc_create(FL_DATA_TYPE_ANY), FL_FALSE);
 
-        FL_REGISTER_RT_CALLABLE(
+        FL_REGISTER_RT_FN(
             add, FL_DATA_TYPE_INT,
-            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_INT),
-            FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_INT));
+            fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE),
+            fl_value_desc_create(FL_DATA_TYPE_INT), FL_FALSE);
     }
 
     fl_uint offset;
@@ -57,7 +57,7 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
     return id;
 }
 
-FL_MODULE_CALLABLE(add)
+FL_MODULE_FN(add)
 {
     fl_lang_type_int *res = fl_mem_alloc(sizeof(fl_lang_type_int));
 
@@ -68,32 +68,32 @@ FL_MODULE_CALLABLE(add)
     return res;
 }
 
-FL_MODULE_CALLABLE(substract)
+FL_MODULE_FN(substract)
 {
     return FL_NULL;
 }
 
-FL_MODULE_CALLABLE(multiply)
+FL_MODULE_FN(multiply)
 {
     return FL_NULL;
 }
 
-FL_MODULE_CALLABLE(divide)
+FL_MODULE_FN(divide)
 {
     return FL_NULL;
 }
 
-FL_MODULE_CALLABLE(power)
+FL_MODULE_FN(power)
 {
     return FL_NULL;
 }
 
-FL_MODULE_CALLABLE(assign)
+FL_MODULE_FN(assign)
 {
     return FL_NULL;
 }
 
-FL_MODULE_CALLABLE(import)
+FL_MODULE_FN(import)
 {
     return FL_NULL;
 }

@@ -11,7 +11,7 @@
 
 // ---- DECLARATIONS ----
 
-FL_MODULE_CALLABLE(put);
+FL_MODULE_FN(put);
 
 // ---- DEFINITIONS ----
 
@@ -20,13 +20,13 @@ fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *sco
     FL_REGISTER_START;
 
     FL_REGISTER_SCOPE(scope, FL_MODULE_NAME);
-    FL_REGISTER_CT_CALLABLE(
+    FL_REGISTER_CT_FN(
         put,
         FL_DATA_TYPE_NULL,
-        FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_ARRAY));
+        fl_value_desc_create(FL_DATA_TYPE_ARRAY), FL_FALSE);
 }
 
-FL_MODULE_CALLABLE(put)
+FL_MODULE_FN(put)
 {
     for (fl_size i = 0; i < args.size; i++)
     {

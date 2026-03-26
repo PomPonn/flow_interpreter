@@ -15,11 +15,11 @@
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
 #include "struct/id/id_node.h"
-#include "struct/id/callable_id_data.h"
+#include "struct/id/fn_id_data.h"
 #include "struct/info/all.h"
 #include "struct/arg_vec.h"
 #include "lang/scope.h"
-#include "lang/data_type_desc.h"
+#include "lang/value_desc.h"
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -52,7 +52,7 @@
 
 // TODO: comment these declarations when finished
 
-static fl_data_type_desc _fl_cmp_compile_node(
+static fl_value_desc _fl_cmp_compile_node(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -64,13 +64,13 @@ static inline fl_void _fl_cmp_compile_block(
     fl_scope *scope,
     fl_byte_vec *code);
 
-static inline fl_void _fl_cmp_compile_callable(
-    fl_ast_node *callable_node,
+static inline fl_void _fl_cmp_compile_fn(
+    fl_ast_node *fn_node,
     fl_context *cnt,
     fl_scope *scope,
     fl_byte_vec *codes);
 
-static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
+static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -115,7 +115,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_ast_node_free(&tree);
 }
 
-static fl_data_type_desc _fl_cmp_compile_node(
+static fl_value_desc _fl_cmp_compile_node(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -125,16 +125,16 @@ static fl_data_type_desc _fl_cmp_compile_node(
     {
     case FL_AST_NODE_TYPE_BLOCK:
         _fl_cmp_compile_block(node, cnt, scope, code);
-        return FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_SCOPE);
+        return fl_value_desc_create(FL_DATA_TYPE_SCOPE, FL_FALSE);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
-        _fl_cmp_compile_callable(node, cnt, scope, code);
-        return FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_CALLABLE);
+        _fl_cmp_compile_fn(node, cnt, scope, code);
+        return fl_value_desc_create(FL_DATA_TYPE_FN, FL_FALSE);
     case FL_AST_NODE_TYPE_ID_CHAIN:
         return _fl_cmp_compile_plain_id_chain(node, cnt, scope, code);
     default:
         assert(FL_FALSE);
-        return FL_DATA_TYPE_DESC_DEFAULT(FL_DATA_TYPE_NULL);
+        return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_FALSE);
         break;
     }
 }
@@ -156,15 +156,14 @@ static inline fl_void _fl_cmp_compile_block(
     }
 }
 
-static inline fl_void _fl_cmp_compile_callable(
-    fl_ast_node *callable_node,
+static inline fl_void _fl_cmp_compile_fn(
+    fl_ast_node *fn_node,
     fl_context *cnt,
     fl_scope *scope,
     fl_byte_vec *code)
 {
-    // first child is a callable id chain node
-    fl_ast_node *node = callable_node->child;
-    fl_id_chain *id_chain = (fl_id_chain *)node->data;
+    fl_ast_node *id_node = fn_node->child;
+    fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
 
     fl_uint offset;
     fl_int_vec inds = fl_scope_resolve_id(scope, id_chain, &offset);
@@ -172,128 +171,140 @@ static inline fl_void _fl_cmp_compile_callable(
 
     if (!id)
         // throw an error if id does not exist
-        throw_compilation_error(node, "Use of unknown callable id");
+        throw_compilation_error(id_node, "Use of unknown fn id");
 
-    if (id->data_type != FL_DATA_TYPE_CALLABLE)
-        // throw an error if id is not callable
-        throw_compilation_error(node, "id is not callable");
+    if (id->data_type != FL_DATA_TYPE_FN)
+        // throw an error if id is not fn
+        throw_compilation_error(id_node, "id is not fn");
 
-    fl_callable_id_data *data = id->data;
+    fl_fn_id_data *data = id->data;
 
-    if (data->constant)
+    // compile arguments to deduce function variant
+    fl_ast_node *arg_node = id_node->next;
+    while (arg_node)
     {
-        if (data->c_defined)
-        {
-            fl_c_callable_ptr fn_ptr = data->pointer;
+        fl_byte_vec arg_code;
+        fl_byte_vec_init(&arg_code, 0);
 
-            fl_arg_vec args;
-            fl_arg_vec_init(&args, data->params.size + 1);
-            // pass context as a first arg
-            args.data[0] = cnt;
-            // pass actual args
-            // copy data?
-            args.data[1] = node->next->data;
+        fl_value_desc td = _fl_cmp_compile_node(arg_node, cnt, scope, &arg_code);
 
-            fl_byte_vec *res_code = fn_ptr(args);
-            // push resulting code (expand this callable call in compile time)
-            fl_byte_vec_push_mem(code, res_code->data, res_code->size);
-            // cleanup
-            fl_byte_vec_free(res_code);
-            fl_arg_vec_free(&args);
-            fl_int_vec_free(&inds);
-        }
-        return;
+        arg_node = arg_node->next;
     }
 
-    // start CALL instruction
-    fl_byte_vec_push(code, FL_INSTR_CALL);
-    // push information how to access id
-    // push scope back offset
-    fl_byte_vec_push_mem(code, &offset, sizeof(offset));
-    // push size of indexes
-    fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
-    // push actual indexes
-    fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
+    // if (data->constant)
+    // {
+    //     if (data->c_defined)
+    //     {
+    //         fl_c_fn_ptr fn_ptr = data->pointer;
 
-    fl_int_vec_free(&inds);
+    //         fl_arg_vec args;
+    //         fl_arg_vec_init(&args, data->params.size + 1);
+    //         // pass context as a first arg
+    //         args.data[0] = cnt;
+    //         // pass actual args
+    //         // copy data?
+    //         args.data[1] = node->next->data;
 
-    // fl_id_node_vec_find(&scope->ids, id_node);
-    // fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
-    // fl_callable_id_data *callable_id = (fl_callable_id_data *)id_node->value;
+    //         fl_byte_vec *res_code = fn_ptr(args);
+    //         // push resulting code (expand this fn call in compile time)
+    //         fl_byte_vec_push_mem(code, res_code->data, res_code->size);
+    //         // cleanup
+    //         fl_byte_vec_free(res_code);
+    //         fl_arg_vec_free(&args);
+    //         fl_int_vec_free(&inds);
+    //     }
+    //     return;
+    // }
 
-    // if (!id_node)
-    //     // throw an error if id is absent
-    //     throw_compilation_error(node, "Use of unknown callable id");
+    // // start CALL instruction
+    // fl_byte_vec_push(code, FL_INSTR_CALL);
+    // // push information how to access id
+    // // push scope back offset
+    // fl_byte_vec_push_mem(code, &offset, sizeof(offset));
+    // // push size of indexes
+    // fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
+    // // push actual indexes
+    // fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
-    // if (!fl_id_entry_callable(id_node->value))
-    //     throw_compilation_error(node, "id is not callable");
+    // fl_int_vec_free(&inds);
 
-    // process callable arguments
-    switch (callable_node->type)
-    {
-    case FL_AST_NODE_TYPE_FN_CALL:
-        node = node->next;
-        while (node)
-        {
-            switch (node->type)
-            {
-            case FL_AST_NODE_TYPE_OPERATOR:
-                // _fl_cmp_compile_node(arg_node, cnt);
-                // break;
-            default:
-                assert(FL_FALSE);
-                break;
-            }
+    // // fl_id_node_vec_find(&scope->ids, id_node);
+    // // fl_int id_index = fl_context_resolve_id(cnt, FL_NULL, id_chain, (const fl_id_node **)&id_node);
+    // // fl_fn_id_data *fn_id = (fl_fn_id_data *)id_node->value;
 
-            node = node->next;
-        }
-        break;
-    case FL_AST_NODE_TYPE_OPERATOR:
-        // get operator args
-        fl_ast_node *left_arg = node->next;
+    // // if (!id_node)
+    // //     // throw an error if id is absent
+    // //     throw_compilation_error(node, "Use of unknown fn id");
 
-        // validate left argument
-        if (!left_arg)
-            throw_compilation_error(callable_node->child, "Missing left argument of the operator");
+    // // if (!fl_id_entry_fn(id_node->value))
+    // //     throw_compilation_error(node, "id is not fn");
 
-        fl_ast_node *right_arg = left_arg->next;
+    // // process fn arguments
+    // switch (fn_node->type)
+    // {
+    // case FL_AST_NODE_TYPE_FN_CALL:
+    //     node = node->next;
+    //     while (node)
+    //     {
+    //         switch (node->type)
+    //         {
+    //         case FL_AST_NODE_TYPE_OPERATOR:
+    //             // _fl_cmp_compile_node(arg_node, cnt);
+    //             // break;
+    //         default:
+    //             assert(FL_FALSE);
+    //             break;
+    //         }
 
-        // validate right argument
-        if (!right_arg)
-            throw_compilation_error(callable_node->child, "Missing right argument of the operator");
+    //         node = node->next;
+    //     }
+    //     break;
+    // case FL_AST_NODE_TYPE_OPERATOR:
+    //     // get operator args
+    //     fl_ast_node *left_arg = node->next;
 
-        // excess node check
-        if (right_arg->next)
-            throw_compilation_error(right_arg->next, "Excess operator argument");
+    //     // validate left argument
+    //     if (!left_arg)
+    //         throw_compilation_error(fn_node->child, "Missing left argument of the operator");
 
-        // compile arguments in appropiate order
-        if (left_arg->type == FL_AST_NODE_TYPE_OPERATOR && right_arg->type == FL_AST_NODE_TYPE_OPERATOR)
-        {
-            fl_operator_info *left_info = left_arg->data;
-            fl_operator_info *right_info = right_arg->data;
-            // reverse processing order if right operator order is higher
-            if (right_info->order > left_info->order)
-                _fl_swap(fl_ast_node *, right_arg, left_arg);
-        }
+    //     fl_ast_node *right_arg = left_arg->next;
 
-        fl_data_type_desc td = _fl_cmp_compile_node(left_arg, cnt, scope, code);
-        // check if argument type descriptors are fine
-        if (!fl_data_type_desc_match(data->params.data[0], td))
-            throw_compilation_error(left_arg, "Argument cannot be used in this context");
+    //     // validate right argument
+    //     if (!right_arg)
+    //         throw_compilation_error(fn_node->child, "Missing right argument of the operator");
 
-        td = _fl_cmp_compile_node(right_arg, cnt, scope, code);
-        // same with second argument
-        if (!fl_data_type_desc_match(data->params.data[1], td))
-            throw_compilation_error(left_arg, "Argument cannot be used in this context");
+    //     // excess node check
+    //     if (right_arg->next)
+    //         throw_compilation_error(right_arg->next, "Excess operator argument");
 
-                break;
-    default:
-        assert(FL_FALSE);
-        break;
-    }
+    //     // compile arguments in appropiate order
+    //     if (left_arg->type == FL_AST_NODE_TYPE_OPERATOR && right_arg->type == FL_AST_NODE_TYPE_OPERATOR)
+    //     {
+    //         fl_operator_info *left_info = left_arg->data;
+    //         fl_operator_info *right_info = right_arg->data;
+    //         // reverse processing order if right operator order is higher
+    //         if (right_info->order > left_info->order)
+    //             _fl_swap(fl_ast_node *, right_arg, left_arg);
+    //     }
+
+    //     fl_value_desc td = _fl_cmp_compile_node(left_arg, cnt, scope, code);
+    //     // check if argument type descriptors are fine
+    //     if (!fl_value_desc_match(data->params.data[0], td))
+    //         throw_compilation_error(left_arg, "Argument cannot be used in this context");
+
+    //     td = _fl_cmp_compile_node(right_arg, cnt, scope, code);
+    //     // same with second argument
+    //     if (!fl_value_desc_match(data->params.data[1], td))
+    //         throw_compilation_error(left_arg, "Argument cannot be used in this context");
+
+    //     break;
+    // default:
+    //     assert(FL_FALSE);
+    //     break;
+    // }
 }
 
-static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
+static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -317,7 +328,7 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
         fl_int_vec_free(&inds);
-        return FL_DATA_TYPE_DESC_ASSIGNABLE(fl_id_entry_final_data_type(id));
+        return fl_value_desc_create(fl_id_entry_final_data_type(id), FL_TRUE);
     }
 
     if (id_chain->size == 1)
@@ -332,32 +343,7 @@ static inline fl_data_type_desc _fl_cmp_compile_plain_id_chain(
     }
 
     fl_int_vec_free(&inds);
-    return FL_DATA_TYPE_DESC_ASSIGNABLE(FL_DATA_TYPE_NULL);
-}
-
-static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt)
-{
-    switch (node->type)
-    {
-    case FL_AST_NODE_TYPE_LITERAL:
-        return FL_TRUE;
-    case FL_AST_NODE_TYPE_OPERATOR:
-    case FL_AST_NODE_TYPE_FN_CALL:
-    {
-        // first child is a callable id chain node
-        fl_ast_node *node = node->child;
-        fl_id_chain *id_chain = (fl_id_chain *)node->data;
-        // resolve this callable id
-        fl_id_node *id_node;
-        fl_context_resolve_id(cnt, FL_NULL, id_chain, &id_node);
-        fl_callable_id_data *callable_id = (fl_callable_id_data *)id_node->value;
-
-        return callable_id->constant;
-    }
-    default:
-        assert(FL_FALSE);
-        break;
-    }
+    return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_TRUE);
 }
 
 static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)

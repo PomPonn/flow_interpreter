@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lang/data_type.h"
-#include "callable_id_data.h"
+#include "fn_id_data.h"
 
 struct _fl_id_entry
 {
@@ -10,12 +10,6 @@ struct _fl_id_entry
     fl_unknown *data;
 };
 typedef struct _fl_id_entry fl_id_entry;
-
-FL_HEADER_FN fl_data_type fl_id_entry_final_data_type(const fl_id_entry *entry)
-{
-    return entry->data_type == FL_DATA_TYPE_CALLABLE ? ((fl_callable_id_data *)entry)->return_type
-                                                     : entry->data_type;
-}
 
 fl_void fl_id_entry_free(fl_id_entry **entry);
 
