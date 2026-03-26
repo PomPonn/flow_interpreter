@@ -32,7 +32,7 @@ fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char 
     {
         fl_token_init(token_arr->_data + index,
                       fl_str_dup(token_str),
-                      (fl_file_location_info){
+                      (fl_token_location){
                           .column = column,
                           .line = line,
                           .description = src_desc});

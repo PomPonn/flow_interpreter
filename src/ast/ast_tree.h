@@ -10,7 +10,7 @@
 // ---- DEPENDENCIES ----
 
 #include "ast/ast_node.h"
-#include "struct/tok/token_arr.h"
+#include "tokenizer/token_arr.h"
 
 // ---- DECLARATIONS ----
 

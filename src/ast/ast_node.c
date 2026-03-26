@@ -66,7 +66,7 @@ fl_void fl_ast_node_init(
     fl_ast_node_type type,
     fl_unknown *data,
     fl_ast_node *parent,
-    fl_file_location_info location)
+    fl_token_location location)
 {
     fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
 

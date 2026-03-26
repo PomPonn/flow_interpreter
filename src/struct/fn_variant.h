@@ -2,9 +2,9 @@
 
 // ---- DEPENDENCIES ----
 
-#include "struct/value_desc_vec.h"
-#include "struct/arg_vec.h"
-#include "struct/byte_vec.h"
+#include "vecs/value_desc_vec.h"
+#include "vecs/arg_vec.h"
+#include "vecs/byte_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 

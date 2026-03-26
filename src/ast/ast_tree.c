@@ -11,8 +11,11 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "struct/info/all.h"
 #include "struct/id/id_chain.h"
+#include "tokenizer/token_location.h"
+#include "ast/literal_info.h"
+// may be temp
+#include "struct/info/operator_info.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -55,7 +58,7 @@
 
 // TODO: Comment these declarations
 
-static inline fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token_arr *arr);
+static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
 static inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
 static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 static inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
@@ -142,7 +145,7 @@ static inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl
 // handles any kind of expression
 // almost everything is an expression (apart from blocks)
 // function may contain a single expression, which is 'instantiated' on call
-// it can be a literal, function call, group of operators or a combination of these things
+// it can be a ast_literal, function call, group of operators or a combination of these things
 static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped)
 {
     // temp node
@@ -155,7 +158,7 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
         node = _fl_ast_process_expression(FL_NULL, arr, FL_TRUE);
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
-        node = _fl_ast_process_literal(FL_NULL, arr);
+        node = _fl_ast_process_ast_literal(FL_NULL, arr);
     // identifier can be either left side of the operator or a function name
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
@@ -357,15 +360,15 @@ static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token
     }
 }
 
-static inline fl_ast_node *_fl_ast_process_literal(fl_ast_node *parent, fl_token_arr *arr)
+static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr)
 {
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
     fl_ast_node *node;
-    fl_literal_info *literal_info;
+    fl_ast_literal_info *ast_literal_info;
 
-    fl_literal_info_init(&literal_info, arr->current->alias, arr->current->value);
-    init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_info, parent);
+    fl_ast_literal_info_init(&ast_literal_info, arr->current->alias, arr->current->value);
+    init_node_filled(FL_AST_NODE_TYPE_LITERAL, ast_literal_info, parent);
 
     next_token_safe;
     return node;

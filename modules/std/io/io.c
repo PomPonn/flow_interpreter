@@ -23,7 +23,7 @@ fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *sco
     FL_REGISTER_CT_FN(
         put,
         FL_DATA_TYPE_NULL,
-        fl_value_desc_create(FL_DATA_TYPE_ARRAY), FL_FALSE);
+        fl_value_desc_create(FL_DATA_TYPE_ARRAY, FL_FALSE));
 }
 
 FL_MODULE_FN(put)

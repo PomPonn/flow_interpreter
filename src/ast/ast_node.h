@@ -9,7 +9,7 @@
 
 // ---- DEPENDENCIES ----
 
-#include "struct/info/file_location_info.h"
+#include "tokenizer/token_location.h"
 
 // ---- TYPE DEFINITIONS ----
 
@@ -26,7 +26,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_BLOCK,
 
     /**
-     * @brief Constant, hard-coded literal - a number, string, array etc.
+     * @brief Constant, hard-coded ast_literal - a number, string, array etc.
      */
     FL_AST_NODE_TYPE_LITERAL,
 
@@ -86,7 +86,7 @@ struct _fl_ast_node
     /**
      * @brief File location of this node.
      */
-    fl_file_location_info location;
+    fl_token_location location;
 
     /**
      * @brief Data associated with this node.
@@ -114,7 +114,7 @@ fl_void fl_ast_node_init(
     fl_ast_node_type type,
     fl_unknown *data,
     fl_ast_node *parent,
-    fl_file_location_info location);
+    fl_token_location location);
 
 /**
  * @brief Frees `fl_ast_node` structure.

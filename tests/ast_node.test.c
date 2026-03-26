@@ -12,7 +12,7 @@
 
 fl_ast_node *parent;
 fl_ast_node *node;
-fl_file_location_info loc_info = {
+fl_token_location loc_info = {
     .column = 0,
     .line = 0,
     .description = "",

@@ -2,7 +2,7 @@
 
 #include "shared/str.h"
 #include "struct/id/id_chain.h"
-#include "struct/info/literal_info.h"
+#include "ast/literal_info.h"
 #include <stdio.h>
 
 // ---- DEFINES ----
@@ -13,16 +13,16 @@
 // ---- DECLARATIONS ----
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
-static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node);
+static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *ast_literal_node);
 
 // ---- DEFINITIONS ----
 
-static inline fl_char *_fl_prt_convert_literal(fl_ast_node *literal_node)
+static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *ast_literal_node)
 {
-    assert(literal_node->type == FL_AST_NODE_TYPE_LITERAL);
+    assert(ast_literal_node->type == FL_AST_NODE_TYPE_LITERAL);
 
     // TODO: make it better
-    return (fl_char *)((fl_literal_info *)literal_node->data)->data;
+    return (fl_char *)((fl_ast_literal_info *)ast_literal_node->data)->data;
 }
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
@@ -43,7 +43,7 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
         printf("<header>");
         break;
     case FL_AST_NODE_TYPE_LITERAL:
-        printf("<literal> '%s'", _fl_prt_convert_literal(node));
+        printf("<ast_literal> '%s'", _fl_prt_convert_ast_literal(node));
         break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {

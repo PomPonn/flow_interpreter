@@ -16,8 +16,7 @@
 #include "ast/ast_tree.h"
 #include "struct/id/id_node.h"
 #include "struct/id/fn_id_data.h"
-#include "struct/info/all.h"
-#include "struct/arg_vec.h"
+#include "vecs/arg_vec.h"
 #include "lang/scope.h"
 #include "lang/value_desc.h"
 #include "tools/file.h"
@@ -36,7 +35,7 @@
  * @brief Shorthand for throwing a file error.
  */
 #define throw_file_error(message) \
-    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_file_location_info){.description = source_path})
+    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
 
 /**
  * @brief Shorthand for throwing a compilation error.
@@ -328,7 +327,7 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
         fl_int_vec_free(&inds);
-        return fl_value_desc_create(fl_id_entry_final_data_type(id), FL_TRUE);
+        return fl_value_desc_create(id->data_type, FL_TRUE);
     }
 
     if (id_chain->size == 1)

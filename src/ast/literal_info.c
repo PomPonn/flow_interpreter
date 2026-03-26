@@ -3,13 +3,13 @@
 #include "shared/str.h"
 #include <stdlib.h>
 
-fl_void fl_literal_info_init(fl_literal_info **info, fl_literal_type type, const fl_unknown *data)
+fl_void fl_ast_literal_info_init(fl_ast_literal_info **info, fl_ast_literal_type type, const fl_unknown *data)
 {
-    fl_literal_info *i = fl_mem_alloc(sizeof(fl_literal_info));
+    fl_ast_literal_info *i = fl_mem_alloc(sizeof(fl_ast_literal_info));
 
-    i->literal_type = type;
+    i->ast_literal_type = type;
 
-    // set decide how to use data with literal type
+    // set decide how to use data with ast_literal type
     switch (type)
     {
     case FL_LITERAL_TYPE_FLOAT:

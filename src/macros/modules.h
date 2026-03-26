@@ -3,7 +3,7 @@
 #include "shared/str.h"
 #include "macros/basic.h"
 #include "shared/error.h"
-#include "struct/param_arr.h"
+#include "vecs/value_desc_vec.h"
 #include "struct/id/fn_id_data.h"
 
 // ---- PRIVATE ----
@@ -11,7 +11,7 @@
 #define _FL_ID_CHAIN_BUFFER_SIZE 256
 
 // FIX ME
-#define _FL_TEMP_LOCATION (fl_file_location_info){.description = ""}
+#define _FL_TEMP_LOCATION (fl_token_location){.description = ""}
 
 #define _FL_TDESCS(...) \
     (fl_value_desc[]) { __VA_ARGS__ }

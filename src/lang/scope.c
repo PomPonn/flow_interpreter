@@ -1,6 +1,6 @@
 #include "scope.h"
 
-#include "struct/id/id_entry_vec.h"
+#include "vecs/id_entry_vec.h"
 #include "struct/id/scope_id_data.h"
 #include "struct/id/id_chain.h"
 

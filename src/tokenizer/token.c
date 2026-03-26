@@ -2,7 +2,7 @@
 
 #include "shared/str.h"
 #include "tokenizer/delims.h"
-#include "struct/info/literal_info.h"
+#include "ast/literal_info.h"
 
 // ---- DEFINES ----
 
@@ -32,7 +32,7 @@ fl_bool fl_token_is_delim(fl_token *token)
     return fl_chr_is_any(*token->value, FL_ORDERED_DELIMS);
 }
 
-fl_bool fl_token_init(fl_token *token, fl_char *value, fl_file_location_info location)
+fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location location)
 {
     token->value = value;
     token->location = location;

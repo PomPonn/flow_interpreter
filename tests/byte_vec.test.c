@@ -5,7 +5,7 @@
  *
  */
 
-#include "struct/byte_vec.h"
+#include "vecs/byte_vec.h"
 #include <unity/unity.h>
 
 // ---- GLOBALS ----

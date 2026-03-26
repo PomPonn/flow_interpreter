@@ -2,20 +2,20 @@
 
 #include "shared/common.h"
 
-struct _fl_file_location_info
+struct _fl_token_location
 {
     const fl_char *description;
     fl_size line;
     fl_size column;
 };
-typedef struct _fl_file_location_info fl_file_location_info;
+typedef struct _fl_token_location fl_token_location;
 
-FL_HEADER_FN fl_file_location_info fl_file_location_info_create(
+FL_HEADER_FN fl_token_location fl_token_location_create(
     const fl_char *description,
     fl_size line,
     fl_size column)
 {
-    return (fl_file_location_info){
+    return (fl_token_location){
         .description = description,
         .line = line,
         .column = column,

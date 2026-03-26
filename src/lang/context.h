@@ -9,10 +9,10 @@
 
 // ---- DEPENDENCIES ----
 
-#include "struct/id/id_node_vec.h"
+#include "vecs/id_node_vec.h"
 #include "struct/id/scope_id_data.h"
-#include "struct/byte_vec.h"
-#include "struct/lib_handle_vec.h"
+#include "vecs/byte_vec.h"
+#include "vecs/lib_handle_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 

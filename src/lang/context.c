@@ -109,20 +109,20 @@ fl_void fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain)
     fl_lib_handle handle = fl_lib_load(id_chain->data[0]);
     // TODO: change error params
     if (!handle)
-        fl_err_throw(FL_ERR_IMPORT, "Couldn't find the library", id_chain->data[0], (fl_file_location_info){.description = "global context"});
+        fl_err_throw(FL_ERR_IMPORT, "Couldn't find the library", id_chain->data[0], (fl_token_location){.description = "global context"});
 
     fl_lib_handle_vec_push(&cnt->lib_handles, handle);
 
     fl_module_register_fn reg_fn = (fl_module_register_fn)fl_lib_get_address(handle, _FL_MODULE_REGISTER_FN_NAME);
     if (!reg_fn)
-        fl_err_throw(FL_ERR_IMPORT, "Couldn't find module registration function", id_chain->data[0], (fl_file_location_info){.description = "global context"});
+        fl_err_throw(FL_ERR_IMPORT, "Couldn't find module registration function", id_chain->data[0], (fl_token_location){.description = "global context"});
 
     fl_id_entry *leaf = reg_fn(cnt, id_chain);
     if (!leaf)
     {
         fl_char buffer[_FL_ID_CHAIN_STRING_MAX_SIZE];
         fl_id_chain_to_string(id_chain, buffer, _FL_ID_CHAIN_STRING_MAX_SIZE);
-        fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain", buffer, (fl_file_location_info){.description = "global context"});
+        fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain", buffer, (fl_token_location){.description = "global context"});
     }
 
     fl_id_entry_vec_push(&cnt->main_scope.ids, leaf);

@@ -37,17 +37,17 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
 
         FL_REGISTER_CT_FN(
             import, FL_DATA_TYPE_SCOPE,
-            fl_value_desc_create(FL_DATA_TYPE_STRING), FL_FALSE);
+            fl_value_desc_create(FL_DATA_TYPE_STRING, FL_FALSE));
 
         FL_REGISTER_RT_FN(
             assign, FL_DATA_TYPE_ANY,
             fl_value_desc_create(FL_DATA_TYPE_ANY, FL_TRUE),
-            fl_value_desc_create(FL_DATA_TYPE_ANY), FL_FALSE);
+            fl_value_desc_create(FL_DATA_TYPE_ANY, FL_FALSE));
 
         FL_REGISTER_RT_FN(
             add, FL_DATA_TYPE_INT,
             fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE),
-            fl_value_desc_create(FL_DATA_TYPE_INT), FL_FALSE);
+            fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE));
     }
 
     fl_uint offset;

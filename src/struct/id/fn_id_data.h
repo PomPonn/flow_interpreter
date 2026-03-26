@@ -2,7 +2,7 @@
 
 // ---- DEPENDENCIES ----
 
-#include "struct/fn_variant_vec.h"
+#include "vecs/fn_variant_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 
