@@ -11,7 +11,7 @@
 
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
-#include "lang/id/id_chain.h"
+#include "lang/id_chain.h"
 
 // ---- TYPE DEFINITIONS ----
 
@@ -23,6 +23,24 @@ struct _fl_scope
 typedef struct _fl_scope fl_scope;
 
 // ---- DECLARATIONS ----
+
+FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer);
+FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope);
+FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
+    const fl_scope *scope,
+    const fl_id_chain *id_chain);
+
+fl_int_vec fl_scope_find_id_path(
+    const fl_scope *scope,
+    const fl_id_chain *id_chain,
+    fl_uint *outer_offset);
+
+fl_id_entry *fl_scope_traverse(
+    const fl_scope *scope,
+    const fl_int_vec inds,
+    fl_uint back_offset);
+
+// ---- HEADER-ONLY IMPLEMENTATIONS ----
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer)
 {
@@ -36,6 +54,15 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
     scope->outer = FL_NULL;
 }
 
-fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_uint *outer_offset);
+FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
+    const fl_scope *scope,
+    const fl_id_chain *id_chain)
+{
+    fl_uint offset;
+    fl_int_vec inds = fl_scope_find_id_path(scope, id_chain, &offset);
 
-fl_id_entry *fl_scope_traverse(const fl_scope *scope, fl_int_vec inds, fl_uint back_offset);
+    fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
+
+    fl_int_vec_free(&inds);
+    return id;
+}

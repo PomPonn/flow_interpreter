@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 #define _MAX_ERROR_NUM 32
 

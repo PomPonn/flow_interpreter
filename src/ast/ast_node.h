@@ -31,7 +31,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_LITERAL,
 
     /**
-     * @brief Chain if identifiers, that point at some kind of value.
+     * @brief Chained identifiers, that point at some kind of value.
      */
     FL_AST_NODE_TYPE_ID_CHAIN,
 

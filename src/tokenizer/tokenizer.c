@@ -30,12 +30,11 @@ fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char 
 
     for (fl_size index = 0; token_str; index++)
     {
-        fl_token_init(token_arr->_data + index,
-                      fl_str_dup(token_str),
-                      (fl_token_location){
-                          .column = column,
-                          .line = line,
-                          .description = src_desc});
+        fl_token_init(
+            token_arr->_data + index,
+            fl_str_dup(token_str),
+            fl_token_location_create(src_desc, line, column));
+
         token_str = _fl_tok_next_token(FL_NULL, &line, &column);
     }
 

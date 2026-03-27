@@ -1,11 +1,11 @@
 #include "printer.h"
 
 #include "shared/str.h"
-#include "lang/id/id_chain.h"
-#include "ast/literal_info.h"
+#include "lang/id_chain.h"
+#include "lang/value.h"
 #include <stdio.h>
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 #define _LOCATION_STR_BUFFER_SIZE 16
 #define _ID_CHAIN_STR_BUFFER_SIZE 256
@@ -13,16 +13,15 @@
 // ---- DECLARATIONS ----
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
-static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *ast_literal_node);
+static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
 
 // ---- DEFINITIONS ----
 
-static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *ast_literal_node)
+static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
-    assert(ast_literal_node->type == FL_AST_NODE_TYPE_LITERAL);
+    assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
-    // TODO: make it better
-    return (fl_char *)((fl_ast_literal_info *)ast_literal_node->data)->data;
+    return ((fl_value *)lit_node->data)->data;
 }
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
@@ -33,9 +32,6 @@ static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
     case FL_AST_NODE_TYPE_BLOCK:
         printf("<block>");
         break;
-    // case FL_AST_NODE_TYPE_TYPE:
-    //     printf("<type> [%u]", ((fl_type_info *)node->data)->dimensions);
-    //     break;
     case FL_AST_NODE_TYPE_FUNCTION:
         printf("<function>");
         break;

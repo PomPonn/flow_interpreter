@@ -5,7 +5,7 @@
 #include "macros/modules.h"
 #include <stdio.h>
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 #define FL_MODULE_NAME io
 

@@ -20,7 +20,9 @@ struct _fl_value_desc
 };
 typedef struct _fl_value_desc fl_value_desc;
 
-FL_HEADER_FN fl_value_desc fl_value_desc_create(fl_data_type type, fl_bool named)
+FL_HEADER_FN fl_value_desc fl_value_desc_create(
+    fl_data_type type,
+    fl_bool named)
 {
     return (fl_value_desc){.type = type, .named = named};
 }

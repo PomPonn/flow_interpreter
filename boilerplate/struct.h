@@ -1,7 +1,7 @@
 /**
- * ---- filename.h ----
+ * ---- name.h ----
  *
- * Declares filename logic.
+ * Declares name logic.
  *
  */
 
@@ -13,20 +13,25 @@
 
 // ---- TYPE DEFINITIONS ----
 
-struct _fl_filename
+struct _fl_name
 {
     // fields...
 };
-typedef struct _fl_filename fl_filename;
+typedef struct _fl_name fl_name;
 
 // ---- DECLARATIONS ----
 
-FL_HEADER_FN fl_void fl_filename_init(fl_filename *name)
+FL_HEADER_FN fl_void fl_name_init(fl_name *name);
+FL_HEADER_FN fl_void fl_name_free(fl_name *name);
+
+// ---- HEADER-ONLY DEFINITIONS ----
+
+FL_HEADER_FN fl_void fl_name_init(fl_name *name)
 {
     // init...
 }
 
-FL_HEADER_FN fl_void fl_filename_free(fl_filename *name)
+FL_HEADER_FN fl_void fl_name_free(fl_name *name)
 {
     // free...
 }

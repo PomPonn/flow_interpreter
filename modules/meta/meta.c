@@ -51,7 +51,7 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
     }
 
     fl_uint offset;
-    fl_int_vec inds = fl_scope_resolve_id(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN, &offset);
+    fl_int_vec inds = fl_scope_find_id_path(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN, &offset);
     fl_id_entry *id = fl_scope_traverse(&FL_PARAM_CNT->main_scope, inds, offset);
     fl_int_vec_free(&inds);
     return id;

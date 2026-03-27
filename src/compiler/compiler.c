@@ -15,16 +15,17 @@
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
 #include "revise_me/id/id_node.h"
-#include "lang/id/fn_id_data.h"
 #include "vecs/arg_vec.h"
+#include "vecs/fn_variant_vec.h"
 #include "lang/scope.h"
 #include "lang/value_desc.h"
+#include "lang/value.h"
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #endif
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 /**
  * @brief Size of id chain string buffer.
@@ -74,9 +75,13 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
     fl_context *cnt,
     fl_scope *scope,
     fl_byte_vec *code);
+
+static inline fl_value_desc _fl_cmp_deduce_value_desc(
+    const fl_ast_node *node,
+    const fl_scope *scope);
+
 // revise - |
 //          v
-static inline fl_bool _fl_cmp_is_constant(fl_ast_node *node, fl_context *cnt);
 static inline fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 
@@ -165,18 +170,16 @@ static inline fl_void _fl_cmp_compile_fn(
     fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
 
     fl_uint offset;
-    fl_int_vec inds = fl_scope_resolve_id(scope, id_chain, &offset);
+    fl_int_vec inds = fl_scope_find_id_path(scope, id_chain, &offset);
     fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
 
     if (!id)
         // throw an error if id does not exist
         throw_compilation_error(id_node, "Use of unknown fn id");
 
-    if (id->data_type != FL_DATA_TYPE_FN)
+    if (id->value.data_type != FL_DATA_TYPE_FN)
         // throw an error if id is not fn
         throw_compilation_error(id_node, "id is not fn");
-
-    fl_fn_id_data *data = id->data;
 
     // compile arguments to deduce function variant
     fl_ast_node *arg_node = id_node->next;
@@ -312,7 +315,7 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
     fl_id_chain *id_chain = (fl_id_chain *)node->data;
 
     fl_uint offset;
-    fl_int_vec inds = fl_scope_resolve_id(scope, id_chain, &offset);
+    fl_int_vec inds = fl_scope_find_id_path(scope, id_chain, &offset);
     fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
 
     if (id)
@@ -327,7 +330,7 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 
         fl_int_vec_free(&inds);
-        return fl_value_desc_create(id->data_type, FL_TRUE);
+        return fl_value_desc_create(id->value.data_type, FL_TRUE);
     }
 
     if (id_chain->size == 1)
@@ -337,7 +340,7 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
 
         // create dummy id in this scope
         fl_id_entry *entry;
-        fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_NULL);
+        fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_VALUE_EMPTY);
         fl_id_entry_vec_push(&scope->ids, entry);
     }
 
@@ -354,4 +357,26 @@ static inline fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chai
 
     // _fl_cmp_compile_node(left_arg, cnt);
     // _fl_cmp_compile_node(right_arg, cnt);
+}
+
+static inline fl_value_desc _fl_cmp_deduce_value_desc(
+    const fl_ast_node *node,
+    const fl_scope *scope)
+{
+    switch (node->type)
+    {
+    case FL_AST_NODE_TYPE_BLOCK:
+        return fl_value_desc_create(FL_DATA_TYPE_SCOPE, FL_FALSE);
+    case FL_AST_NODE_TYPE_FN_CALL:
+    case FL_AST_NODE_TYPE_OPERATOR:
+        return fl_value_desc_create(FL_DATA_TYPE_FN, FL_FALSE);
+    case FL_AST_NODE_TYPE_ID_CHAIN:
+        fl_id_entry *id = fl_scope_resolve_id(scope, node->data);
+        return fl_value_desc_create(id->value.data_type, FL_TRUE);
+    case FL_AST_NODE_TYPE_LITERAL:
+        return fl_value_desc_create(((fl_value *)node->data)->data_type, FL_FALSE);
+    default:
+        assert(FL_FALSE);
+        return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_FALSE);
+    }
 }

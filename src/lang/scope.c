@@ -1,12 +1,14 @@
 #include "scope.h"
 
 #include "vecs/id_entry_vec.h"
-#include "lang/id/scope_id_data.h"
-#include "lang/id/id_chain.h"
+#include "lang/id_chain.h"
 
 static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
 
-fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_uint *outer_offset)
+fl_int_vec fl_scope_find_id_path(
+    const fl_scope *scope,
+    const fl_id_chain *id_chain,
+    fl_uint *outer_offset)
 {
     fl_int_vec indexes;
     fl_int_vec_init(&indexes, id_chain->size);
@@ -28,9 +30,9 @@ fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_
                 return indexes;
             else
             {
-                fl_id_entry *curr = scope->ids.data[ind];
-                assert(curr->data_type == FL_DATA_TYPE_SCOPE);
-                scope = &((fl_scope_id_data *)curr->data)->scope;
+                fl_value id_value = scope->ids.data[ind]->value;
+                assert(id_value.data_type == FL_DATA_TYPE_SCOPE);
+                scope = (fl_scope *)id_value.data;
             }
         }
 
@@ -53,7 +55,10 @@ fl_int_vec fl_scope_resolve_id(const fl_scope *scope, fl_id_chain *id_chain, fl_
     return indexes;
 }
 
-fl_id_entry *fl_scope_traverse(const fl_scope *scope, fl_int_vec inds, fl_uint back_offset)
+fl_id_entry *fl_scope_traverse(
+    const fl_scope *scope,
+    const fl_int_vec inds,
+    fl_uint back_offset)
 {
     scope = _fl_scope_go_back(scope, back_offset);
 
@@ -73,8 +78,9 @@ fl_id_entry *fl_scope_traverse(const fl_scope *scope, fl_int_vec inds, fl_uint b
             return ids.data[index];
         else
         {
-            assert(ids.data[index]->data_type == FL_DATA_TYPE_SCOPE);
-            ids = ((fl_scope_id_data *)ids.data[index])->scope.ids;
+            fl_value id_value = scope->ids.data[index]->value;
+            assert(id_value.data_type == FL_DATA_TYPE_SCOPE);
+            ids = ((fl_scope *)id_value.data)->ids;
         }
     }
 

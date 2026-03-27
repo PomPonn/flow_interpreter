@@ -2,9 +2,9 @@
 
 #include "shared/str.h"
 #include "tokenizer/delims.h"
-#include "ast/literal_info.h"
+#include "lang/data_type.h"
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 #define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + 1)
 
@@ -57,7 +57,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     else if (fl_str_is_num(tok->value, &floating))
     {
         tok->type = FL_TOKEN_TYPE_LITERAL;
-        tok->alias = floating ? FL_LITERAL_TYPE_FLOAT : FL_LITERAL_TYPE_INT;
+        tok->alias = floating ? FL_DATA_TYPE_FLOAT : FL_DATA_TYPE_INT;
     }
     // is comment
     else if (_fl_token_is_wrapper(tok, FL_COMMENT_WRAPPER))
@@ -69,7 +69,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     else if (_fl_token_is_wrapper(tok, FL_STRING_WRAPPER))
     {
         tok->type = FL_TOKEN_TYPE_LITERAL;
-        tok->alias = FL_LITERAL_TYPE_STRING;
+        tok->alias = FL_DATA_TYPE_STRING;
     }
     // is valid identifier
     else if (!fl_chr_is_digit(*tok->value))

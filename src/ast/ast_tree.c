@@ -11,9 +11,9 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "lang/id/id_chain.h"
+#include "lang/id_chain.h"
+#include "lang/value.h"
 #include "tokenizer/token_location.h"
-#include "ast/literal_info.h"
 // may be temp
 #include "revise_me/info/operator_info.h"
 #ifndef NDEBUG
@@ -21,7 +21,7 @@
 #include <stdio.h>
 #endif
 
-// ---- DEFINES ----
+// ---- MACROS ----
 
 /**
  * @brief Shorthand for throwing syntax error.
@@ -365,10 +365,10 @@ static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_t
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
     fl_ast_node *node;
-    fl_ast_literal_info *ast_literal_info;
+    fl_value *literal_value = fl_mem_alloc(sizeof(fl_value));
+    *literal_value = fl_value_from_literal(arr->current->alias, arr->current->value);
 
-    fl_ast_literal_info_init(&ast_literal_info, arr->current->alias, arr->current->value);
-    init_node_filled(FL_AST_NODE_TYPE_LITERAL, ast_literal_info, parent);
+    init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_value, parent);
 
     next_token_safe;
     return node;

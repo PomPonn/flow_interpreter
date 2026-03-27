@@ -4,7 +4,6 @@
 #include "macros/basic.h"
 #include "shared/error.h"
 #include "vecs/value_desc_vec.h"
-#include "lang/id/fn_id_data.h"
 
 // ---- PRIVATE ----
 
