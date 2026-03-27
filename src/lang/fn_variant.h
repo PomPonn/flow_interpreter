@@ -45,6 +45,22 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant)
 {
     fl_value_desc_vec_free(&variant->params);
+
     if (variant->c_defined)
         fl_byte_vec_free(&variant->body);
+}
+
+FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant var1, fl_fn_variant var2)
+{
+    if (var1.params.size == 0 && var2.params.size == 0)
+        return FL_TRUE;
+
+    if (var1.params.size != var2.params.size)
+        return FL_TRUE;
+
+    for (fl_size i = 0; i < var1.params.size; i++)
+        if (var1.params.data[i].type != var2.params.data[i].type)
+            return FL_TRUE;
+
+    return FL_FALSE;
 }

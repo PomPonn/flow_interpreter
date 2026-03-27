@@ -4,10 +4,6 @@
 
 #include "macros/modules.h"
 
-// ---- DEFINITIONS ----
-
-#define FL_MODULE_NAME meta
-
 // ---- DECLARATIONS ----
 
 // arithmetics
@@ -27,27 +23,42 @@ FL_MODULE_FN(import);
 
 fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
 {
-    FL_REGISTER_START;
-
-    FL_REGISTER_SCOPE(&cnt->main_scope, FL_MODULE_NAME);
+    FL_REGISTER_SCOPE(&cnt->main_scope, meta);
 
     if (FL_PARAM_ID_CHAIN->size >= 1)
     {
         // import top level ids
 
-        FL_REGISTER_CT_FN(
+        FL_REGISTER_FN(meta, import);
+        FL_OVERLOAD_FN(
             import, FL_DATA_TYPE_SCOPE,
             fl_value_desc_create(FL_DATA_TYPE_STRING, FL_FALSE));
 
-        FL_REGISTER_RT_FN(
+        FL_REGISTER_FN(meta, assign);
+        FL_OVERLOAD_FN(
             assign, FL_DATA_TYPE_ANY,
             fl_value_desc_create(FL_DATA_TYPE_ANY, FL_TRUE),
             fl_value_desc_create(FL_DATA_TYPE_ANY, FL_FALSE));
 
-        FL_REGISTER_RT_FN(
+        FL_REGISTER_FN(meta, add);
+        FL_OVERLOAD_FN(
             add, FL_DATA_TYPE_INT,
-            fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE),
+            fl_value_desc_create(FL_DATA_TYPE_INT, FL_TRUE),
             fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE));
+
+        // FL_REGISTER_CT_FN(
+        //     import, FL_DATA_TYPE_SCOPE,
+        //     fl_value_desc_create(FL_DATA_TYPE_STRING, FL_FALSE));
+
+        // FL_REGISTER_RT_FN(
+        //     assign, FL_DATA_TYPE_ANY,
+        //     fl_value_desc_create(FL_DATA_TYPE_ANY, FL_TRUE),
+        //     fl_value_desc_create(FL_DATA_TYPE_ANY, FL_FALSE));
+
+        // FL_REGISTER_RT_FN(
+        //     add, FL_DATA_TYPE_INT,
+        //     fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE),
+        //     fl_value_desc_create(FL_DATA_TYPE_INT, FL_FALSE));
     }
 
     fl_uint offset;

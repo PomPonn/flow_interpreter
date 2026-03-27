@@ -4,13 +4,21 @@
 #ifndef FL_VEC_NAME
 #define FL_VEC_NAME fl_vector
 #endif
+
 #ifndef FL_VEC_TYPE
 #define FL_VEC_TYPE fl_int
 #endif
+
 #ifndef FL_VEC_CAP
 #define FL_VEC_CAP 16
 #endif
-// #define FL_VEC_DESTRUCTOR(elem)
+
+#ifndef FL_VEC_COMPARE
+#define FL_VEC_COMPARE(a, b) (a == b)
+#endif
+
+// #define FL_VEC_DESTROY(elem)
+// #define FL_VEC_EXCLUDE_FIND
 
 struct _FL_MERGE2(_, FL_VEC_NAME)
 {
@@ -32,9 +40,10 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec, fl_size ca
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 {
-#ifdef FL_VEC_DESTRUCTOR
+
+#ifdef FL_VEC_DESTROY
     for (fl_size i = 0; i < vec->size; i++)
-        FL_VEC_DESTRUCTOR(vec->data[i]);
+        FL_VEC_DESTROY(vec->data[i]);
 #endif
 
     fl_mem_free(vec->data);
@@ -65,9 +74,24 @@ FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
     return vec->data == FL_NULL;
 }
 
+#ifndef FL_VEC_EXCLUDE_FIND
+
+FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, const FL_VEC_TYPE elem)
+{
+    for (fl_int i = 0; i < vec->size; i++)
+        if (FL_VEC_COMPARE(vec->data[i], elem))
+            return i;
+
+    return -1;
+}
+
+#endif
+
 #undef FL_VEC_NAME
 #undef FL_VEC_TYPE
 #undef FL_VEC_CAP
-#ifdef FL_VEC_DESTRUCTOR
-#undef FL_VEC_DESTRUCTOR
+#undef FL_VEC_COMPARE
+
+#ifdef FL_VEC_DESTROY
+#undef FL_VEC_DESTROY
 #endif
