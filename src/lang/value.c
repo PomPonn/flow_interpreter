@@ -2,6 +2,7 @@
 
 #include "vecs/fn_variant_vec.h"
 #include "lang/scope.h"
+#include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)
 {
@@ -36,10 +37,10 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
         *((fl_lang_type_float *)res_data) = atof(lit_data);
         break;
     case FL_DATA_TYPE_INT:
-        assert(sizeof(fl_lang_type_int) == sizeof(int));
+        assert(sizeof(fl_lang_type_int) == sizeof(long long));
 
         res_data = fl_mem_alloc(sizeof(fl_lang_type_int));
-        *((fl_lang_type_int *)res_data) = atoi(lit_data);
+        *((fl_lang_type_int *)res_data) = atoll(lit_data);
         break;
     case FL_DATA_TYPE_STRING:
     {
