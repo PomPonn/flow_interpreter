@@ -28,6 +28,7 @@ typedef struct _fl_value fl_value;
 // ---- DECLARATIONS ----
 
 FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
+FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
 
 fl_void fl_value_free(fl_value *value);
 fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data);
@@ -40,6 +41,11 @@ FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data)
         .data = data,
         .data_type = type,
     };
+}
+
+FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2)
+{
+    return v1.data_type == v2.data_type && v1.data == v2.data;
 }
 
 FL_HEADER_FN fl_bool fl_value_fn_overload(fl_value *fn_value, fl_fn_variant new_variant)

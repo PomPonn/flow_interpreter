@@ -17,7 +17,7 @@ fl_byte_vec vec;
 
 void setUp()
 {
-    fl_byte_vec_init(&vec, INIT_SIZE);
+    fl_byte_vec_initc(&vec, INIT_SIZE);
     for (fl_size i = 0; i < INIT_SIZE; i++)
     {
         vec.data[i] = i;

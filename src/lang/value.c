@@ -2,6 +2,7 @@
 
 #include "vecs/fn_variant_vec.h"
 #include "lang/scope.h"
+#include "shared/str.h"
 #include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)

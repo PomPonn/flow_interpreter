@@ -21,10 +21,10 @@
     (fl_value_desc[]) { __VA_ARGS__ }
 
 // requires use of FL_REGISTER_START macro before
-#define _FL_INIT_PARAMS(...)                                             \
-    fl_value_desc_vec params;                                            \
-    fl_value_desc_vec_init(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
-    for (fl_size _i = 0; _i < params.size; _i++)                         \
+#define _FL_INIT_PARAMS(...)                                              \
+    fl_value_desc_vec params;                                             \
+    fl_value_desc_vec_initc(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
+    for (fl_size _i = 0; _i < params.size; _i++)                          \
     params.data[_i] = _FL_TDESCS(__VA_ARGS__)[_i]
 
 #define _FL_OVERLOAD_FN(name, overload, constant, return_type, ...)                           \
@@ -52,7 +52,7 @@
 
 #define FL_REGISTER_FN(parent_id, name)                                                   \
     fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc(sizeof(fl_fn_variant_vec)); \
-    fl_fn_variant_vec_init(_FL_MERGE2(name, _data), 0);                                   \
+    fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                      \
                                                                                           \
     fl_id_entry *name;                                                                    \
     fl_id_entry_init(                                                                     \

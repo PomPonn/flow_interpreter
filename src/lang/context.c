@@ -14,23 +14,18 @@ typedef fl_id_entry *(*fl_module_register_fn)(fl_context *cnt, fl_id_chain *chai
 
 fl_void fl_context_init(fl_context *cnt)
 {
+    fl_lib_handle_vec_init(&cnt->lib_handles);
     fl_scope_init(&cnt->main_scope, FL_NULL);
-    fl_lib_handle_vec_init(&cnt->lib_handles, 0);
-    fl_byte_vec_init(&cnt->byte_vec, 0);
-    fl_id_node_vec_init(&cnt->id_list, 0);
-
-    cnt->id_tree = FL_NULL;
+    fl_scope_vec_init(&cnt->usings);
+    fl_value_vec_init(&cnt->literals);
 }
 
 fl_void fl_context_free(fl_context *cnt)
 {
-    fl_scope_free(&cnt->main_scope);
     fl_lib_handle_vec_free(&cnt->lib_handles);
-    fl_byte_vec_free(&cnt->byte_vec);
-    fl_id_node_vec_free(&cnt->id_list);
-    fl_id_node_free(&cnt->id_tree);
-
-    cnt->id_tree = FL_NULL;
+    fl_scope_free(&cnt->main_scope);
+    fl_scope_vec_free(&cnt->usings);
+    fl_value_vec_free(&cnt->literals);
 }
 
 // fl_id_node *fl_context_register_id(fl_context *cnt, fl_id_node *parent, fl_id_entry *entry)
@@ -84,7 +79,7 @@ fl_int fl_context_resolve_id(
     if (!*id_node)
     {
         // seek in root scope
-        *id_node = fl_id_node_seek(cnt->id_tree, id_chain);
+        // *id_node = fl_id_node_seek(cnt->id_tree, id_chain);
 
         // if (!*id_node)
         // seek in global scopes
@@ -126,16 +121,6 @@ fl_void fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain)
     }
 
     fl_id_entry_vec_push(&cnt->main_scope.ids, leaf);
-}
-
-fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str)
-{
-    fl_id_chain _chain;
-    fl_id_chain_init_parse(&_chain, id_str);
-
-    fl_context_load_module_by_id(cnt, &_chain);
-
-    fl_id_chain_free(&_chain);
 }
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node)

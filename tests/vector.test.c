@@ -17,7 +17,7 @@ fl_vector vec;
 
 void setUp()
 {
-    fl_vector_init(&vec, 16);
+    fl_vector_initc(&vec, 16);
     for (fl_int i = 0; i < INIT_SIZE; i++)
         fl_vector_push(&vec, i);
 }

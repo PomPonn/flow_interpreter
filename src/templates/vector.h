@@ -28,12 +28,18 @@ struct _FL_MERGE2(_, FL_VEC_NAME)
 };
 typedef struct _FL_MERGE2(_, FL_VEC_NAME) FL_VEC_NAME;
 
-FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec, fl_size capacity)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
 {
-    if (!capacity)
-        capacity = FL_VEC_CAP;
+    vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), FL_VEC_CAP);
+    vec->_capacity = FL_VEC_CAP;
+    vec->size = 0;
+}
 
-    vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), capacity);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _initc)(FL_VEC_NAME *vec, fl_size capacity)
+{
+    if (capacity != 0)
+        vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), capacity);
+
     vec->_capacity = capacity;
     vec->size = 0;
 }
@@ -94,4 +100,7 @@ FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, const
 
 #ifdef FL_VEC_DESTROY
 #undef FL_VEC_DESTROY
+#endif
+#ifdef FL_VEC_EXCLUDE_FIND
+#undef FL_VEC_EXCLUDE_FIND
 #endif

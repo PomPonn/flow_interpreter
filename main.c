@@ -1,5 +1,7 @@
 #include "compiler/compiler.h"
 
+#include <stdio.h>
+
 fl_int main()
 {
     fl_context cnt;

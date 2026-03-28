@@ -44,7 +44,7 @@ fl_id_entry *fl_scope_traverse(
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer)
 {
-    fl_id_entry_vec_init(&scope->ids, 0);
+    fl_id_entry_vec_init(&scope->ids);
     scope->outer = outer;
 }
 

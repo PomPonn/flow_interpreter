@@ -90,7 +90,7 @@ static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr 
 {
     // init id chain
     fl_id_chain *chain = fl_mem_alloc(sizeof(fl_id_chain));
-    fl_id_chain_init(chain, 0);
+    fl_id_chain_init(chain);
 
     while (arr->current->type == FL_TOKEN_TYPE_ID)
     {

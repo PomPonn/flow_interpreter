@@ -28,7 +28,7 @@ fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buff
 
 fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str)
 {
-    fl_id_chain_init(chain, 0);
+    fl_id_chain_init(chain);
 
     const fl_char *ptr = str;
     while (*ptr)

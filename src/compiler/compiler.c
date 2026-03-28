@@ -20,6 +20,7 @@
 #include "lang/scope.h"
 #include "lang/value_desc.h"
 #include "lang/value.h"
+#include "lang/instructions.h"
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -52,7 +53,7 @@
 
 // TODO: comment these declarations when finished
 
-static fl_value_desc _fl_cmp_compile_node(
+static fl_void _fl_cmp_compile_node(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -70,7 +71,13 @@ static inline fl_void _fl_cmp_compile_fn(
     fl_scope *scope,
     fl_byte_vec *codes);
 
-static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
+static inline fl_void _fl_cmp_compile_plain_id_chain(
+    fl_ast_node *node,
+    fl_context *cnt,
+    fl_scope *scope,
+    fl_byte_vec *code);
+
+static inline fl_void _fl_cmp_compile_literal(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -111,7 +118,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 #endif
 
     fl_byte_vec code;
-    fl_byte_vec_init(&code, 0);
+    fl_byte_vec_init(&code);
 
     _fl_cmp_compile_node(tree, cnt, &cnt->main_scope, &code);
 
@@ -119,7 +126,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_ast_node_free(&tree);
 }
 
-static fl_value_desc _fl_cmp_compile_node(
+static fl_void _fl_cmp_compile_node(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -129,16 +136,19 @@ static fl_value_desc _fl_cmp_compile_node(
     {
     case FL_AST_NODE_TYPE_BLOCK:
         _fl_cmp_compile_block(node, cnt, scope, code);
-        return fl_value_desc_create(FL_DATA_TYPE_SCOPE, FL_FALSE);
+        break;
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
         _fl_cmp_compile_fn(node, cnt, scope, code);
-        return fl_value_desc_create(FL_DATA_TYPE_FN, FL_FALSE);
+        break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
-        return _fl_cmp_compile_plain_id_chain(node, cnt, scope, code);
+        _fl_cmp_compile_plain_id_chain(node, cnt, scope, code);
+        break;
+    case FL_AST_NODE_TYPE_LITERAL:
+
+        break;
     default:
         assert(FL_FALSE);
-        return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_FALSE);
         break;
     }
 }
@@ -175,23 +185,67 @@ static inline fl_void _fl_cmp_compile_fn(
 
     if (!id)
         // throw an error if id does not exist
-        throw_compilation_error(id_node, "Use of unknown fn id");
+        throw_compilation_error(id_node, "Use of unknown function id");
 
     if (id->value.data_type != FL_DATA_TYPE_FN)
         // throw an error if id is not fn
-        throw_compilation_error(id_node, "id is not fn");
+        throw_compilation_error(id_node, "id is not a function");
 
-    // compile arguments to deduce function variant
+    // deduce function argument types
     fl_ast_node *arg_node = id_node->next;
+    fl_value_desc_vec v_descs;
+    fl_value_desc_vec_init(&v_descs);
+
     while (arg_node)
     {
-        fl_byte_vec arg_code;
-        fl_byte_vec_init(&arg_code, 0);
-
-        fl_value_desc td = _fl_cmp_compile_node(arg_node, cnt, scope, &arg_code);
-
+        fl_value_desc vd = _fl_cmp_deduce_value_desc(arg_node, scope);
+        fl_value_desc_vec_push(&v_descs, vd);
         arg_node = arg_node->next;
     }
+
+    fl_value_desc_vec_free(&v_descs);
+    fl_fn_variant *fn_var = fl_fn_variant_vec_match(id->value.data, v_descs);
+
+    // TODO: better error message needed
+    if (!fn_var)
+        throw_compilation_error(id_node, "couldn't find function overload for given arguments");
+
+    fl_byte_vec args_code;
+    fl_byte_vec_init(&args_code);
+
+    arg_node = id_node->next;
+    while (arg_node)
+    {
+        _fl_cmp_compile_node(arg_node, cnt, scope, &args_code);
+        arg_node = arg_node->next;
+    }
+
+    if (fn_var->constant)
+    {
+        // run this function immidiately and inline it
+        if (fn_var->c_defined)
+        {
+        }
+    }
+    else
+    {
+        // compile this function call to byte code
+
+        // start CALL instruction
+        fl_byte_vec_push(code, FL_INSTR_CALL);
+        // push information how to access id
+        // push scope back offset
+        fl_byte_vec_push_mem(code, &offset, sizeof(offset));
+        // push size of indexes
+        fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
+        // push actual indexes
+        fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
+
+        // push args code
+        fl_byte_vec_push_mem(code, args_code.data, args_code.size);
+    }
+
+    fl_byte_vec_free(&args_code);
 
     // if (data->constant)
     // {
@@ -200,7 +254,7 @@ static inline fl_void _fl_cmp_compile_fn(
     //         fl_c_fn_ptr fn_ptr = data->pointer;
 
     //         fl_arg_vec args;
-    //         fl_arg_vec_init(&args, data->params.size + 1);
+    //         fl_arg_vec_initc(&args, data->params.size + 1);
     //         // pass context as a first arg
     //         args.data[0] = cnt;
     //         // pass actual args
@@ -306,7 +360,20 @@ static inline fl_void _fl_cmp_compile_fn(
     // }
 }
 
-static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
+static inline fl_void _fl_cmp_compile_literal(
+    fl_ast_node *node,
+    fl_context *cnt,
+    fl_scope *scope,
+    fl_byte_vec *code)
+{
+    fl_value *value = node->data;
+    fl_uint index = fl_context_make_literal(cnt, *value);
+
+    fl_byte_vec_push(code, FL_INSTR_GET_LITERAL);
+    fl_byte_vec_push_mem(code, &index, sizeof(index));
+}
+
+static inline fl_void _fl_cmp_compile_plain_id_chain(
     fl_ast_node *node,
     fl_context *cnt,
     fl_scope *scope,
@@ -321,19 +388,15 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
     if (id)
     {
         // push information to access id
-        fl_byte_vec_push(code, FL_INSTR_GET);
+        fl_byte_vec_push(code, FL_INSTR_GET_ID);
         // push scope back offset
         fl_byte_vec_push_mem(code, &offset, sizeof(offset));
         // push size of indexes
         fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
         // push actual indexes
         fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
-
-        fl_int_vec_free(&inds);
-        return fl_value_desc_create(id->value.data_type, FL_TRUE);
     }
-
-    if (id_chain->size == 1)
+    else if (id_chain->size == 1)
     {
         // push information to create new id
         fl_byte_vec_push(code, FL_INSTR_NEW);
@@ -343,9 +406,13 @@ static inline fl_value_desc _fl_cmp_compile_plain_id_chain(
         fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_VALUE_EMPTY);
         fl_id_entry_vec_push(&scope->ids, entry);
     }
+    else
+    {
+        // error: undefined id
+        assert(FL_FALSE);
+    }
 
     fl_int_vec_free(&inds);
-    return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_TRUE);
 }
 
 static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest)
@@ -363,15 +430,18 @@ static inline fl_value_desc _fl_cmp_deduce_value_desc(
     const fl_ast_node *node,
     const fl_scope *scope)
 {
+    fl_id_entry *id = FL_NULL;
+
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_BLOCK:
         return fl_value_desc_create(FL_DATA_TYPE_SCOPE, FL_FALSE);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
-        return fl_value_desc_create(FL_DATA_TYPE_FN, FL_FALSE);
+        id = fl_scope_resolve_id(scope, node->child->data);
+        return fl_value_desc_create(id->value.data_type, FL_FALSE);
     case FL_AST_NODE_TYPE_ID_CHAIN:
-        fl_id_entry *id = fl_scope_resolve_id(scope, node->data);
+        id = fl_scope_resolve_id(scope, node->data);
         return fl_value_desc_create(id->value.data_type, FL_TRUE);
     case FL_AST_NODE_TYPE_LITERAL:
         return fl_value_desc_create(((fl_value *)node->data)->data_type, FL_FALSE);

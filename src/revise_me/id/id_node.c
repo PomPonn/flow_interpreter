@@ -78,7 +78,7 @@ fl_id_node *fl_id_node_seek(const fl_id_node *node, const fl_id_chain *chain)
         return FL_NULL;
 
     fl_size i = 0;
-    while (node = fl_id_node_select(node, chain->data[i]))
+    while ((node = fl_id_node_select(node, chain->data[i])))
     {
         i++;
         if (i == chain->size)
