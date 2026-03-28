@@ -9,9 +9,8 @@
 
 // ---- DEPENDENCIES ----
 
-// #include "lang/id_chain.h"
-// #include "vecs/int_vec.h"
 #include "lang/id_entry.h"
+#include "shared/str.h"
 
 #define FL_VEC_NAME fl_id_entry_vec
 #define FL_VEC_TYPE fl_id_entry *
@@ -20,4 +19,11 @@
 #define FL_VEC_EXCLUDE_FIND
 #include "templates/vector.h"
 
-fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name);
+FL_HEADER_FN fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
+{
+    for (fl_int i = 0; i < vec->size; i++)
+        if (fl_str_equal(vec->data[i]->name, id_name))
+            return i;
+
+    return FL_FIND_FAIL;
+}

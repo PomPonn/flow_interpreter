@@ -15,7 +15,6 @@
 #include "optimalizer/optimalizer.h"
 #include "ast/ast_tree.h"
 #include "revise_me/id/id_node.h"
-#include "vecs/arg_vec.h"
 #include "vecs/fn_variant_vec.h"
 #include "lang/scope.h"
 #include "lang/value_desc.h"
@@ -86,6 +85,25 @@ static inline fl_void _fl_cmp_compile_literal(
 static inline fl_value_desc _fl_cmp_deduce_value_desc(
     const fl_ast_node *node,
     const fl_scope *scope);
+
+// try to reduce given ast node to some constant value
+static inline fl_bool _fl_cmp_const_reduce(
+    const fl_ast_node *node,
+    fl_context *cnt,
+    const fl_scope *scope,
+    fl_value *reduced_value);
+
+// reduced args have to be initialized
+static inline fl_bool _fl_cmp_const_reduce_fn_args(
+    const fl_ast_node *node,
+    fl_context *cnt,
+    const fl_scope *scope,
+    fl_value_vec *reduced_args);
+
+static inline fl_fn_variant *_fl_cmp_get_fn_overload(
+    const fl_ast_node *arg_node,
+    const fl_scope *scope,
+    const fl_fn_variant_vec *variants);
 
 // revise - |
 //          v
@@ -192,44 +210,40 @@ static inline fl_void _fl_cmp_compile_fn(
         throw_compilation_error(id_node, "id is not a function");
 
     // deduce function argument types
-    fl_ast_node *arg_node = id_node->next;
-    fl_value_desc_vec v_descs;
-    fl_value_desc_vec_init(&v_descs);
-
-    while (arg_node)
-    {
-        fl_value_desc vd = _fl_cmp_deduce_value_desc(arg_node, scope);
-        fl_value_desc_vec_push(&v_descs, vd);
-        arg_node = arg_node->next;
-    }
-
-    fl_value_desc_vec_free(&v_descs);
-    fl_fn_variant *fn_var = fl_fn_variant_vec_match(id->value.data, v_descs);
+    fl_fn_variant *fn_var = _fl_cmp_get_fn_overload(id_node->next, scope, id->value.data);
 
     // TODO: better error message needed
     if (!fn_var)
         throw_compilation_error(id_node, "couldn't find function overload for given arguments");
 
-    fl_byte_vec args_code;
-    fl_byte_vec_init(&args_code);
-
-    arg_node = id_node->next;
-    while (arg_node)
-    {
-        _fl_cmp_compile_node(arg_node, cnt, scope, &args_code);
-        arg_node = arg_node->next;
-    }
-
     if (fn_var->constant)
     {
         // run this function immidiately and inline it
-        if (fn_var->c_defined)
+
+        // resolve arguments
+        fl_value_vec args;
+        fl_value_vec_initc(&args, fn_var->params.size);
+
+        if (!_fl_cmp_const_reduce_fn_args(id_node->next, cnt, scope, &args))
         {
+            fl_value_vec_free(&args);
+            assert(FL_FALSE);
         }
+
+        fl_value res = fl_fn_variant_call(fn_var, args);
     }
     else
     {
         // compile this function call to byte code
+        fl_byte_vec args_code;
+        fl_byte_vec_init(&args_code);
+
+        fl_ast_node *arg_node = id_node->next;
+        while (arg_node)
+        {
+            _fl_cmp_compile_node(arg_node, cnt, scope, &args_code);
+            arg_node = arg_node->next;
+        }
 
         // start CALL instruction
         fl_byte_vec_push(code, FL_INSTR_CALL);
@@ -243,9 +257,9 @@ static inline fl_void _fl_cmp_compile_fn(
 
         // push args code
         fl_byte_vec_push_mem(code, args_code.data, args_code.size);
-    }
 
-    fl_byte_vec_free(&args_code);
+        fl_byte_vec_free(&args_code);
+    }
 
     // if (data->constant)
     // {
@@ -449,4 +463,116 @@ static inline fl_value_desc _fl_cmp_deduce_value_desc(
         assert(FL_FALSE);
         return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_FALSE);
     }
+}
+
+static inline fl_bool _fl_cmp_const_reduce(
+    const fl_ast_node *node,
+    fl_context *cnt,
+    const fl_scope *scope,
+    fl_value *reduced_value)
+{
+    fl_id_entry *id = FL_NULL;
+
+    switch (node->type)
+    {
+    case FL_AST_NODE_TYPE_BLOCK:
+    {
+        fl_scope *inner = fl_mem_alloc(sizeof(fl_scope));
+        fl_scope_init(inner, scope);
+
+        // ???
+
+        // fl_ast_node *scope_node = node->child;
+        // while (scope_node)
+        // {
+        //     fl_value reduced;
+        //     if (!_fl_cmp_const_reduce(scope_node, cnt, &inner, &reduced))
+        //     {
+        //         fl_scope_free(scope_node);
+        //         return FL_FALSE;
+        //     }
+        // }
+
+        *reduced_value = fl_value_create(FL_DATA_TYPE_SCOPE, inner);
+        break;
+    }
+    case FL_AST_NODE_TYPE_FN_CALL:
+    case FL_AST_NODE_TYPE_OPERATOR:
+        id = fl_scope_resolve_id(scope, node->child->data);
+
+        if (id->value.data_type != FL_DATA_TYPE_FN)
+            return FL_FALSE;
+
+        fl_fn_variant *fn = _fl_cmp_get_fn_overload(node->child->next, scope, id->value.data);
+
+        if (!fn || !fn->constant)
+            return FL_FALSE;
+
+        fl_value_vec args;
+        fl_value_vec_initc(&args, fn->params.size);
+
+        if (!_fl_cmp_const_reduce_fn_args(node->child->next, cnt, scope, &args))
+        {
+            fl_value_vec_free(&args);
+            return FL_FALSE;
+        }
+
+        *reduced_value = fl_fn_variant_call(fn, args);
+        break;
+    case FL_AST_NODE_TYPE_ID_CHAIN:
+        id = fl_scope_resolve_id(scope, node->data);
+        *reduced_value = id->value;
+        break;
+    case FL_AST_NODE_TYPE_LITERAL:
+    {
+        fl_value lit_value = *(fl_value *)node->data;
+        *reduced_value = lit_value;
+        break;
+    }
+    default:
+        assert(FL_FALSE);
+        break;
+    }
+
+    return FL_TRUE;
+}
+
+static inline fl_bool _fl_cmp_const_reduce_fn_args(
+    const fl_ast_node *node,
+    fl_context *cnt,
+    const fl_scope *scope,
+    fl_value_vec *reduced_args)
+{
+    fl_ast_node *arg_node = node->child->next;
+    while (arg_node)
+    {
+        fl_value arg_value;
+        if (!_fl_cmp_const_reduce(arg_node, cnt, scope, &arg_value))
+            return FL_FALSE;
+
+        fl_value_vec_push(reduced_args, arg_value);
+
+        arg_node = arg_node->next;
+    }
+
+    return FL_TRUE;
+}
+
+static inline fl_fn_variant *_fl_cmp_get_fn_overload(
+    const fl_ast_node *arg_node,
+    const fl_scope *scope,
+    const fl_fn_variant_vec *variants)
+{
+    fl_value_desc_vec v_descs;
+    fl_value_desc_vec_init(&v_descs);
+
+    while (arg_node)
+    {
+        fl_value_desc vd = _fl_cmp_deduce_value_desc(arg_node, scope);
+        fl_value_desc_vec_push(&v_descs, vd);
+        arg_node = arg_node->next;
+    }
+
+    fl_value_desc_vec_free(&v_descs);
+    return fl_fn_variant_vec_match(variants, v_descs);
 }

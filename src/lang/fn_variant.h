@@ -3,12 +3,12 @@
 // ---- DEPENDENCIES ----
 
 #include "vecs/value_desc_vec.h"
-#include "vecs/arg_vec.h"
+#include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 
-typedef fl_unknown *(*fl_c_fn_ptr)(fl_arg_vec args);
+typedef fl_value (*fl_c_fn_ptr)(fl_value_vec args);
 
 struct _fl_fn_variant
 {
@@ -27,6 +27,16 @@ struct _fl_fn_variant
  * contains information about function variant (overload).
  */
 typedef struct _fl_fn_variant fl_fn_variant;
+
+FL_HEADER_FN fl_void fl_fn_variant_init(
+    fl_fn_variant *variant,
+    fl_bool c_defined,
+    fl_bool constant,
+    fl_data_type return_type,
+    fl_value_desc_vec params);
+FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant);
+FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant var1, fl_fn_variant var2);
+FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec args);
 
 FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *variant,
@@ -63,4 +73,9 @@ FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant var1, fl_fn_variant va
             return FL_TRUE;
 
     return FL_FALSE;
+}
+
+FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec args)
+{
+    return variant->c_defined ? variant->pointer(args) : FL_VALUE_EMPTY; // variant->body ??
 }

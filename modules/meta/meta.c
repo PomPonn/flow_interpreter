@@ -63,30 +63,30 @@ FL_MODULE_FN_HEAD(add, int)
 {
     fl_lang_type_int *res = fl_mem_alloc(sizeof(fl_lang_type_int));
 
-    fl_lang_type_int a = *(fl_lang_type_int *)args.data[0];
-    fl_lang_type_int b = *(fl_lang_type_int *)args.data[1];
+    fl_lang_type_int a = *(fl_lang_type_int *)args.data[0].data;
+    fl_lang_type_int b = *(fl_lang_type_int *)args.data[1].data;
     *res = a + b;
 
-    return res;
+    return fl_value_create(FL_DATA_TYPE_INT, res);
 }
 
 FL_MODULE_FN_HEAD(add, float)
 {
     fl_lang_type_float *res = fl_mem_alloc(sizeof(fl_lang_type_float));
 
-    fl_lang_type_float a = *(fl_lang_type_float *)args.data[0];
-    fl_lang_type_float b = *(fl_lang_type_float *)args.data[1];
+    fl_lang_type_float a = *(fl_lang_type_float *)args.data[0].data;
+    fl_lang_type_float b = *(fl_lang_type_float *)args.data[1].data;
     *res = a + b;
 
-    return res;
+    return fl_value_create(FL_DATA_TYPE_INT, res);
 }
 
-FL_MODULE_FN_HEAD(assign, )
+FL_MODULE_FN_HEAD_ONCE(assign)
 {
-    return FL_NULL;
+    return FL_VALUE_EMPTY;
 }
 
-FL_MODULE_FN_HEAD(import, )
+FL_MODULE_FN_HEAD_ONCE(import)
 {
-    return FL_NULL;
+    return FL_VALUE_EMPTY;
 }

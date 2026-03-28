@@ -1,5 +1,6 @@
 # TODO
 
+- revise in-context literal creation
 - can I optimalize project building?
 - comment code
 - templates optimalization (move some functions to specializations)

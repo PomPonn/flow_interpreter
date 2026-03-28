@@ -5,10 +5,8 @@
 #include "shared/error.h"
 #include "lang/scope.h"
 #include "lang/data_type.h"
-#include "lang/value.h"
 #include "vecs/value_desc_vec.h"
 #include "vecs/fn_variant_vec.h"
-#include "vecs/arg_vec.h"
 
 // ---- PRIVATE ----
 
@@ -33,7 +31,7 @@
         fl_fn_variant variant;                                                                \
         fl_fn_variant_init(&variant, FL_TRUE, constant, return_type, params);                 \
         variant.pointer = _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload); \
-        fl_bool success = fl_value_fn_overload(&name->value, variant);                        \
+        fl_bool success = fl_fn_variant_vec_overload(name->value.data, variant);              \
         assert(success);                                                                      \
     }
 
@@ -76,7 +74,7 @@
     _FL_OVERLOAD_FN(name, , FL_FALSE, return_type, __VA_ARGS__)
 
 #define FL_MODULE_FN_HEAD(name, overload) \
-    fl_unknown *_FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload)(fl_arg_vec args)
+    fl_value _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload)(fl_value_vec args)
 
 #define FL_MODULE_FN_HEAD_ONCE(name) \
     FL_MODULE_FN_HEAD(name, )

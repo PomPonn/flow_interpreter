@@ -55,5 +55,5 @@ FL_MODULE_FN_HEAD_ONCE(put)
         // }
     }
 
-    return FL_NULL;
+    return FL_VALUE_EMPTY;
 }
