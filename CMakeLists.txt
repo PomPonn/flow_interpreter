@@ -18,6 +18,8 @@ set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple.fl)
 # path to unity library source file
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
+# base binary directory for tests compilation output
+set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
 
 # ---- FUNCTIONS ----
 
@@ -40,14 +42,15 @@ endfunction()
 
 # make an executable from every test file in TESTS_DIR directory
 function(build_tests)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TESTS_BIN_DIR})
     file(GLOB_RECURSE test_files CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
     foreach(test_file ${test_files})
         cmake_path(GET test_file FILENAME test_name)
         add_executable(${test_name} ${test_file} ${UNITY_SOURCE})
         add_test(NAME ${test_name} COMMAND ${test_name})
     endforeach()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
-
 
 # ---- TARGETS ----
 
@@ -55,7 +58,10 @@ add_library(flow STATIC)
 link_libraries(flow)
 add_executable(main)
 add_module_libs()
-build_tests()
+
+if (BUILD_TESTING)
+    build_tests()
+endif()
 
 # ---- CONFIG ----
 
@@ -77,5 +83,5 @@ file(GLOB_RECURSE tests_sources CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
 file(GLOB_RECURSE unity_sources CONFIGURE_DEPENDS ${LIBS_DIR}/unity/*.c)
 
 # add sources
-target_sources(flow PUBLIC ${flow_sources})
-target_sources(main PUBLIC ${CMAKE_SOURCE_DIR}/main.c)
+target_sources(flow PRIVATE ${flow_sources})
+target_sources(main PRIVATE ${CMAKE_SOURCE_DIR}/main.c)

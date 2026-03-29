@@ -1,7 +1,6 @@
 # TODO
 
 - revise in-context literal creation
-- can I optimalize project building?
 - comment code
 - templates optimalization (move some functions to specializations)
 - AST optimalization
@@ -20,6 +19,7 @@
 
 # done
 
+- can I optimalize project building?
 - change \*\_free functions to receive ptr to ptr (\*\*) so the pointer can be nulled by the function.
 - make errors more universal
 - fix AST operators order
