@@ -14,7 +14,7 @@
 #include "lang/id_chain.h"
 #include "lang/value.h"
 #include "tokenizer/token_location.h"
-// may be temp
+// may be to remove
 #include "revise_me/info/operator_info.h"
 #ifndef NDEBUG
 #include "tools/printer.h"

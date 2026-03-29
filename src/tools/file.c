@@ -23,13 +23,15 @@ fl_char *fl_file_read(const fl_char *filename)
     return buffer;
 }
 
-fl_void fl_file_append(const fl_char *filename, fl_char *data)
+fl_void fl_file_append(const fl_char *filename, const fl_char *content)
 {
-    FILE *file = fopen(filename, "a");
+    FILE *file = fopen(filename, "ab");
 
     assert(file);
+    if (!file)
+        return;
 
-    fputs(data, file);
+    fputs(content, file);
 
     fclose(file);
 }
