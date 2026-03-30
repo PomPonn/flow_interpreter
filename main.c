@@ -1,5 +1,6 @@
 #include "compiler/compiler.h"
-
+#include "tools/profiler.h"
+#include "tools/byte_reader.h"
 #include <stdio.h>
 
 fl_int main()

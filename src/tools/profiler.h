@@ -3,7 +3,7 @@
 #include "shared/common.h"
 #include "tools/time.h"
 
-#define fl_prof_profile(samples, input_size, input_label, segment)    \
+#define fl_prof_profile(samples, input_size, input_unit, segment)     \
     {                                                                 \
         fl_double *ms = fl_mem_alloc_arr(samples, sizeof(fl_double)); \
                                                                       \
@@ -11,17 +11,19 @@
         {                                                             \
             fl_timestamp __start = fl_time_get();                     \
             segment;                                                  \
-            ms[i] = fl_time_diff(__start, fl_time_get()) * 1e6;       \
+            fl_timestamp __end = fl_time_get();                       \
+            ms[i] = fl_time_diff(__start, __end);                     \
         }                                                             \
         _fl_prof_log(                                                 \
             #segment, _PROFILER_LOGS_PATH,                            \
-            input_label, input_size, ms, samples);                    \
+            input_unit, input_size, ms, samples);                     \
+        fl_mem_free(ms);                                              \
     }
 
 fl_void _fl_prof_log(
-    const fl_char *log_header,
+    const fl_char *what,
     const fl_char *filename,
-    const fl_char *input_label,
+    const fl_char *input_unit,
     fl_size input_size,
     fl_double *measures,
     fl_size measures_count);

@@ -18,16 +18,15 @@
 #define _FL_TDESCS(...) \
     (fl_value_desc[]) { __VA_ARGS__ }
 
-// requires use of FL_REGISTER_START macro before
-#define _FL_INIT_PARAMS(...)                                              \
+#define _FL_PARAMS(...)                                                   \
     fl_value_desc_vec params;                                             \
     fl_value_desc_vec_initc(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
-    for (fl_size _i = 0; _i < params.size; _i++)                          \
-    params.data[_i] = _FL_TDESCS(__VA_ARGS__)[_i]
+    for (fl_size _i = 0; _i < params._capacity; _i++)                     \
+    fl_value_desc_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
 
 #define _FL_OVERLOAD_FN(name, overload, constant, return_type, ...)                           \
     {                                                                                         \
-        _FL_INIT_PARAMS(__VA_ARGS__);                                                         \
+        _FL_PARAMS(__VA_ARGS__);                                                              \
         fl_fn_variant variant;                                                                \
         fl_fn_variant_init(&variant, FL_TRUE, constant, return_type, params);                 \
         variant.pointer = _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload); \

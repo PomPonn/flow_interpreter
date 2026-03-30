@@ -62,3 +62,27 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
 
     return fl_value_create(lit_type, res_data);
 }
+
+fl_bool fl_value_indentical(fl_value v1, fl_value v2)
+{
+    if (v1.data_type != v2.data_type)
+        return FL_FALSE;
+
+    if (v1.data == v2.data)
+        return FL_TRUE;
+    else
+    {
+        switch (v1.data_type)
+        {
+        case FL_DATA_TYPE_STRING:
+            return fl_str_equal(v1.data, v2.data);
+        case FL_DATA_TYPE_INT:
+            return *(fl_lang_type_int *)v1.data == *(fl_lang_type_int *)v2.data;
+        case FL_DATA_TYPE_FLOAT:
+            return *(fl_lang_type_float *)v1.data == *(fl_lang_type_float *)v2.data;
+        default:
+            assert(FL_FALSE);
+            break;
+        }
+    }
+}

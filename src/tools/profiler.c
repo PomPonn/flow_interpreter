@@ -5,20 +5,24 @@
 #include "tools/time.h"
 #include <stdio.h>
 
-#define BUFFER_SIZE 1024
+#define FLOAT_PRECISION "3"
+
+// 10 KB
+#define BUFFER_SIZE 1024 * 10
 
 fl_char buffer[BUFFER_SIZE];
 
 fl_void _fl_prof_log(
-    const fl_char *log_header,
+    const fl_char *what,
     const fl_char *filename,
-    const fl_char *input_label,
+    const fl_char *input_unit,
     fl_size input_size,
     fl_double *measures,
     fl_size measures_count)
 {
     fl_double sum = 0;
     fl_double max = 0, min = INT32_MAX;
+    fl_double med = measures[(fl_size)(measures_count / 2)];
 
     for (fl_size i = 0; i < measures_count; i++)
     {
@@ -34,6 +38,7 @@ fl_void _fl_prof_log(
         "[PROFILER LOG ENTRY]\n"
         "Timestamp: %s"
         "Expression: '%s'\n"
+        "Compiler: '%s'\n"
 #ifdef NDEBUG
         "Build: Release\n"
 #else
@@ -41,12 +46,14 @@ fl_void _fl_prof_log(
 #endif
         "Samples: %u calls\n"
         "Input: %u %s\n"
-        "Average: %.2f microseconds\n"
-        "Minimum: %.2f microseconds\n"
-        "Maximum: %.2f microseconds\n"
-        "Total: %.2f miliseconds (%.2f microseconds)\n\n",
-        fl_time_date_str(), log_header, measures_count, input_size, input_label,
-        sum / measures_count, min, max, sum * 1e-3, sum);
+        "Average: %." FLOAT_PRECISION "f microseconds\n"
+        "Median: %." FLOAT_PRECISION "f microseconds\n"
+        "Minimum: %." FLOAT_PRECISION "f microseconds\n"
+        "Maximum: %." FLOAT_PRECISION "f microseconds\n"
+        "Total: %." FLOAT_PRECISION "f miliseconds (%." FLOAT_PRECISION "f microseconds)\n\n",
+        fl_time_date_str(), what, _C_COMPILER_PATH,
+        measures_count, input_size, input_unit,
+        sum / measures_count, med, min, max, sum * 1e-3, sum);
 
     fl_file_append(filename, buffer);
 }

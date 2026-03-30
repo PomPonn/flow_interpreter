@@ -13,8 +13,12 @@
 #define FL_VEC_CAP 16
 #endif
 
+#ifndef FL_VEC_CONST
+#define FL_VEC_CONST const
+#endif
+
 #ifndef FL_VEC_COMPARE
-#define FL_VEC_COMPARE(a, b) (a == b)
+#define FL_VEC_COMPARE(a, b) a == b
 #endif
 
 // #define FL_VEC_DESTROY(elem)
@@ -82,13 +86,13 @@ FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
 
 #ifndef FL_VEC_EXCLUDE_FIND
 
-FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, const FL_VEC_TYPE elem)
+FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem)
 {
-    for (fl_int i = 0; i < vec->size; i++)
+    for (fl_size i = 0; i < vec->size; i++)
         if (FL_VEC_COMPARE(vec->data[i], elem))
-            return i;
+            return (fl_int)i;
 
-    return -1;
+    return FL_FIND_FAIL;
 }
 
 #endif
@@ -97,6 +101,7 @@ FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, const
 #undef FL_VEC_TYPE
 #undef FL_VEC_CAP
 #undef FL_VEC_COMPARE
+#undef FL_VEC_CONST
 
 #ifdef FL_VEC_DESTROY
 #undef FL_VEC_DESTROY

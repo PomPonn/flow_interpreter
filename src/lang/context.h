@@ -10,7 +10,7 @@
 // ---- DEPENDENCIES ----
 
 #include "vecs/id_node_vec.h"
-#include "vecs/scope_vec.h"
+#include "vecs/const_scope_vec.h"
 #include "vecs/byte_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/lib_handle_vec.h"
@@ -21,7 +21,7 @@ struct _fl_context
 {
     fl_lib_handle_vec lib_handles;
     fl_scope main_scope;
-    fl_scope_vec usings;
+    fl_const_scope_vec usings;
     fl_value_vec literals;
     // fl_byte_vec byte_vec;
 };
@@ -69,7 +69,7 @@ fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 
 FL_HEADER_FN fl_uint fl_context_make_literal(fl_context *cnt, fl_value lit_value)
 {
-    fl_uint ind = fl_value_vec_find(&cnt->literals, lit_value);
+    fl_uint ind = fl_value_vec_find_identical(&cnt->literals, lit_value);
 
     if (ind == FL_FIND_FAIL)
         fl_value_vec_push(&cnt->literals, lit_value);

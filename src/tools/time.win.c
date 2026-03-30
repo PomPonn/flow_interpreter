@@ -10,6 +10,7 @@ fl_timestamp fl_time_get()
     return ticks.QuadPart;
 }
 
+// returns number of microseconds
 fl_double fl_time_diff(fl_timestamp start, fl_timestamp end)
 {
     static LARGE_INTEGER frequency = {.QuadPart = 0};
@@ -19,7 +20,7 @@ fl_double fl_time_diff(fl_timestamp start, fl_timestamp end)
         QueryPerformanceFrequency(&frequency);
     }
 
-    return (fl_double)(end - start) / frequency.QuadPart;
+    return (end - start) * 1.0e6 / frequency.QuadPart;
 }
 
 #endif

@@ -11,6 +11,7 @@
 
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
+#include "vecs/byte_vec.h"
 #include "lang/id_chain.h"
 
 // ---- TYPE DEFINITIONS ----
@@ -39,6 +40,8 @@ fl_id_entry *fl_scope_traverse(
     const fl_scope *scope,
     const fl_int_vec inds,
     fl_uint back_offset);
+
+fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
 // ---- HEADER-ONLY IMPLEMENTATIONS ----
 

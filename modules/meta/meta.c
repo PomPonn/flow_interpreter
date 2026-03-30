@@ -31,7 +31,7 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
         // import top level ids
 
         FL_REGISTER_FN(FL_MODULE_NAME, import);
-        FL_OVERLOAD_FN_ONCE(
+        FL_OVERLOAD_FN_ONCE_CONST(
             import, FL_DATA_TYPE_SCOPE,
             fl_value_desc_create(FL_DATA_TYPE_STRING, FL_FALSE));
 
@@ -52,11 +52,7 @@ fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_
             fl_value_desc_create(FL_DATA_TYPE_FLOAT, FL_FALSE));
     }
 
-    fl_uint offset;
-    fl_int_vec inds = fl_scope_find_id_path(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN, &offset);
-    fl_id_entry *id = fl_scope_traverse(&FL_PARAM_CNT->main_scope, inds, offset);
-    fl_int_vec_free(&inds);
-    return id;
+    return fl_scope_resolve_id(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN);
 }
 
 FL_MODULE_FN_HEAD(add, int)

@@ -16,7 +16,7 @@ fl_void fl_context_init(fl_context *cnt)
 {
     fl_lib_handle_vec_init(&cnt->lib_handles);
     fl_scope_init(&cnt->main_scope, FL_NULL);
-    fl_scope_vec_init(&cnt->usings);
+    fl_const_scope_vec_init(&cnt->usings);
     fl_value_vec_init(&cnt->literals);
 }
 
@@ -24,7 +24,7 @@ fl_void fl_context_free(fl_context *cnt)
 {
     fl_lib_handle_vec_free(&cnt->lib_handles);
     fl_scope_free(&cnt->main_scope);
-    fl_scope_vec_free(&cnt->usings);
+    fl_const_scope_vec_free(&cnt->usings);
     fl_value_vec_free(&cnt->literals);
 }
 

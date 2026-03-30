@@ -1,8 +1,5 @@
 #include "scope.h"
 
-#include "vecs/id_entry_vec.h"
-#include "lang/id_chain.h"
-
 static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
 
 fl_int_vec fl_scope_find_id_path(
@@ -53,6 +50,15 @@ fl_int_vec fl_scope_find_id_path(
     *outer_offset = 0;
 
     return indexes;
+}
+
+fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec)
+{
+    fl_id_entry_vec ids = scope->ids;
+
+    for (fl_size i = 0; i < ids.size; i++)
+    {
+        }
 }
 
 fl_id_entry *fl_scope_traverse(

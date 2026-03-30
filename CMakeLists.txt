@@ -71,6 +71,7 @@ add_compile_definitions(
     _INCLUDE_PROFILER=1
     _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
+    _C_COMPILER_PATH="${CMAKE_C_COMPILER}"
     _TEST_INPUT_PATH="${SAMPLE_PATH}"
     _PROFILER_LOGS_PATH="${LOG_DIR}/profiler.txt"
 )
