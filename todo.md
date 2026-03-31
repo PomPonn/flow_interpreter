@@ -1,8 +1,7 @@
 # TODO
 
-- revise in-context literal creation
+- revise c modules registration
 - comment code
-- templates optimalization (move some functions to specializations)
 - AST optimalization
 - AST operators sorting
 - AST function definitions handling
@@ -19,6 +18,8 @@
 
 # done
 
+- templates optimalization (move some functions to specializations)
+- revise in-context literal creation
 - can I optimalize project building?
 - change \*\_free functions to receive ptr to ptr (\*\*) so the pointer can be nulled by the function.
 - make errors more universal

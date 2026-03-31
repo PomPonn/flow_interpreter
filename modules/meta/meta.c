@@ -22,8 +22,12 @@ FL_MODULE_FN_HEAD_ONCE(import);
 
 // ---- DEFINITIONS ----
 
+const fl_context *context = FL_NULL;
+
 fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
 {
+    context = FL_PARAM_CNT;
+
     FL_REGISTER_SCOPE(&cnt->main_scope, FL_MODULE_NAME);
 
     if (FL_PARAM_ID_CHAIN->size >= 1)
