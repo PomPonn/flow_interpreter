@@ -6,6 +6,7 @@
 #define FL_VEC_TYPE fl_value
 #define FL_VEC_CAP 8
 #define FL_VEC_COMPARE(a, b) fl_value_equal(a, b)
+#define FL_VEC_DESTROY(elem) fl_value_free(&elem)
 #include "templates/vector.h"
 
 FL_HEADER_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem)

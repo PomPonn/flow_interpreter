@@ -6,5 +6,5 @@
 #define FL_VEC_TYPE fl_char *
 #define FL_VEC_CAP 8
 #define FL_VEC_COMPARE(a, b) fl_str_equal(a, b)
-#define FL_VEC_DESTRUCTOR(elem) fl_mem_free(elem)
+#define FL_VEC_DESTROY(elem) fl_mem_free(elem)
 #include "templates/vector.h"

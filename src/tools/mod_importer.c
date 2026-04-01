@@ -2,7 +2,6 @@
 
 #include "tools/lib.h"
 #include "shared/error.h"
-#include "tokenizer/token_location.h"
 
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_register"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512

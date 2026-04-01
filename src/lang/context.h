@@ -9,12 +9,14 @@
 
 // ---- DEPENDENCIES ----
 
-#include "vecs/id_node_vec.h"
 #include "vecs/const_scope_vec.h"
-#include "vecs/byte_vec.h"
-#include "vecs/value_vec.h"
 #include "vecs/lib_handle_vec.h"
 #include "vecs/predef_vec.h"
+#include "vecs/value_vec.h"
+#include "vecs/byte_vec.h"
+#include "vecs/cstr_vec.h"
+// removable
+#include "vecs/id_node_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 
@@ -79,3 +81,5 @@ FL_HEADER_FN fl_uint fl_context_make_literal(fl_context *cnt, fl_value lit_value
 }
 
 fl_void fl_context_free(fl_context *cnt);
+
+fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);

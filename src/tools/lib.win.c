@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#define _FL_MAX_LIB_NAME_LEN 128
+
 fl_lib_handle fl_lib_load(const fl_char *lib_name)
 {
     fl_char buffer[_FL_MAX_LIB_NAME_LEN];

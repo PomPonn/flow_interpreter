@@ -13,6 +13,7 @@
 fl_void fl_context_init(fl_context *cnt)
 {
     fl_lib_handle_vec_init(&cnt->lib_handles);
+    fl_cstr_vec_init(&cnt->lib_names);
     fl_scope_init(&cnt->main_scope, FL_NULL);
     fl_const_scope_vec_init(&cnt->usings);
     fl_value_vec_init(&cnt->literals);
@@ -22,6 +23,7 @@ fl_void fl_context_init(fl_context *cnt)
 fl_void fl_context_free(fl_context *cnt)
 {
     fl_lib_handle_vec_free(&cnt->lib_handles);
+    fl_cstr_vec_free(&cnt->lib_names);
     fl_scope_free(&cnt->main_scope);
     fl_const_scope_vec_free(&cnt->usings);
     fl_value_vec_free(&cnt->literals);
@@ -96,12 +98,6 @@ fl_int fl_context_resolve_id(
     return FL_FIND_FAIL;
 }
 
-FL_HEADER_FN fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str)
-{
-    fl_id_entry *id = fl_mimp_import_id(cnt, id_str);
-    fl_id_entry_vec_push(&cnt->main_scope.ids, id);
-}
-
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node)
 {
     // if (fl_id_node_vec_find(&cnt->global_scopes, id_node) == FL_FIND_FAIL)
@@ -111,4 +107,12 @@ fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node)
     // }
 
     return FL_FALSE;
+}
+
+fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str)
+{
+    fl_id_entry *id = fl_mimp_import_id(cnt, id_str);
+    assert(id);
+
+    fl_id_entry_vec_push(&cnt->main_scope.ids, id);
 }

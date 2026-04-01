@@ -32,20 +32,16 @@ struct _FL_MERGE2(_, FL_VEC_NAME)
 };
 typedef struct _FL_MERGE2(_, FL_VEC_NAME) FL_VEC_NAME;
 
-FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _initc)(FL_VEC_NAME *vec, fl_size capacity)
 {
-    vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), FL_VEC_CAP);
-    vec->_capacity = FL_VEC_CAP;
+    vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), capacity);
+    vec->_capacity = capacity;
     vec->size = 0;
 }
 
-FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _initc)(FL_VEC_NAME *vec, fl_size capacity)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
 {
-    if (capacity != 0)
-        vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), capacity);
-
-    vec->_capacity = capacity;
-    vec->size = 0;
+    _FL_MERGE2(FL_VEC_NAME, _initc)(vec, FL_VEC_CAP);
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
@@ -63,14 +59,14 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
 {
+    vec->data = (FL_VEC_TYPE *)fl_mem_realloc_arr(vec->data, sizeof(FL_VEC_TYPE), new_cap);
     vec->_capacity = new_cap;
-    FL_VEC_TYPE *recaped = (FL_VEC_TYPE *)fl_mem_realloc(vec->data, vec->_capacity);
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
 {
-    if (vec->size + 1 > vec->_capacity)
-        _FL_MERGE2(FL_VEC_NAME, _reserve)(vec, vec->_capacity + 1 + FL_VEC_CAP);
+    if (vec->size == vec->_capacity)
+        _FL_MERGE2(FL_VEC_NAME, _reserve)(vec, vec->_capacity + FL_VEC_CAP);
 
     vec->data[vec->size] = value;
     vec->size++;
@@ -78,7 +74,7 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYP
 
 FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
 {
-    return vec->data == FL_NULL;
+    return vec->size == 0;
 }
 
 #ifndef FL_VEC_EXCLUDE_FIND

@@ -5,19 +5,19 @@
 
 // ---- DECLARATIONS ----
 
-static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_cstr_vec *escapes);
+static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
 static inline fl_bool _fl_tok_handle_number(const fl_char **str);
 static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
 static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
 static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
 static fl_char *_fl_tok_next_token(
     fl_char *str,
-    const fl_cstr_vec *escapes,
+    const fl_const_cstr_vec *escapes,
     fl_size *line,
     fl_size *column);
 static inline fl_bool _fl_tok_handle_escapement(
     const fl_char **str,
-    const fl_cstr_vec *escapes);
+    const fl_const_cstr_vec *escapes);
 
 // ---- DEFINITIONS ----
 
@@ -25,7 +25,7 @@ static inline fl_bool _fl_tok_handle_escapement(
 fl_bool fl_tok_tokenize(
     fl_char *source,
     fl_token_arr *token_arr,
-    const fl_cstr_vec *escapes,
+    const fl_const_cstr_vec *escapes,
     const fl_char *src_location)
 {
     fl_uint count = _fl_tok_count_tokens(source, escapes);
@@ -54,7 +54,7 @@ fl_bool fl_tok_tokenize(
 
 static inline fl_bool _fl_tok_handle_escapement(
     const fl_char **str,
-    const fl_cstr_vec *escapes)
+    const fl_const_cstr_vec *escapes)
 {
     const fl_char *ptr = *str;
 
@@ -173,7 +173,7 @@ static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *
 // finds next token in a string
 static fl_char *_fl_tok_next_token(
     fl_char *str,
-    const fl_cstr_vec *escapes,
+    const fl_const_cstr_vec *escapes,
     fl_size *line,
     fl_size *column)
 {
@@ -217,7 +217,7 @@ static fl_char *_fl_tok_next_token(
     if (!*token_start)
         return FL_NULL;
 
-    if (_fl_tok_handle_wrapper(&next_pos, &next_line, &next_column))
+    if (_fl_tok_handle_wrapper((const fl_char **)&next_pos, &next_line, &next_column))
     {
         escape_char = *next_pos;
         if (*next_pos == '\0')
@@ -231,7 +231,7 @@ static fl_char *_fl_tok_next_token(
         return token_start;
     }
 
-    if (_fl_tok_handle_number(&next_pos))
+    if (_fl_tok_handle_number((const fl_char **)&next_pos))
         goto __std_return;
 
     // end if is pointing at delim
@@ -242,7 +242,7 @@ static fl_char *_fl_tok_next_token(
     }
 
     // check if it is an escapement
-    if (_fl_tok_handle_escapement(&next_pos, escapes))
+    if (_fl_tok_handle_escapement((const fl_char **)&next_pos, escapes))
         goto __std_return;
 
     // find ending position for this token
@@ -267,7 +267,7 @@ __std_return:
     return token_start;
 }
 
-static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_cstr_vec *escapes)
+static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes)
 {
     fl_size count = 0;
 

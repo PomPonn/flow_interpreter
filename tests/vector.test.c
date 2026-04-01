@@ -17,7 +17,7 @@ fl_vector vec;
 
 void setUp()
 {
-    fl_vector_initc(&vec, 16);
+    fl_vector_initc(&vec, 14);
     for (fl_int i = 0; i < INIT_SIZE; i++)
         fl_vector_push(&vec, i);
 }
@@ -44,7 +44,7 @@ void test_vector_push(void)
     fl_size old_size = vec.size;
     fl_vector_push(&vec, val);
 
-    TEST_ASSERT_EQUAL_UINT64(old_size, vec.size - 1);
+    TEST_ASSERT_EQUAL_UINT32(old_size, vec.size - 1);
     TEST_ASSERT_EQUAL_INT(val, vec.data[vec.size - 1]);
 }
 

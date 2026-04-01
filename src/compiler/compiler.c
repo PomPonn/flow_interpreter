@@ -16,6 +16,7 @@
 #include "ast/ast_tree.h"
 #include "revise_me/id/id_node.h"
 #include "vecs/fn_variant_vec.h"
+#include "vecs/const_cstr_vec.h"
 #include "lang/scope.h"
 #include "lang/value_desc.h"
 #include "lang/value.h"
@@ -133,9 +134,13 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
         throw_file_error("Couldn't read the file (does it exist?)");
 
     fl_token_arr token_arr;
-    fl_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
+    fl_const_cstr_vec predef_escapes;
+    fl_const_cstr_vec_init(&predef_escapes);
+    fl_const_cstr_vec_reserve(&predef_escapes, 2);
+    fl_const_cstr_vec_push(&predef_escapes, "Cześć!");
+    // fl_const_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, &predef_escapes, source_path);
-    fl_cstr_vec_free(&predef_escapes);
+    fl_const_cstr_vec_free(&predef_escapes);
 
 #ifndef NDEBUG
     fl_prt_print_token_entries(&token_arr);
@@ -145,9 +150,9 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_file_free(&source_code);
 
-    if (!any_token)
-        // there are no meaningful tokens in the file
-        return;
+    // if (!any_token)
+    //     // there are no meaningful tokens in the file
+    //     return;
 
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
@@ -407,30 +412,31 @@ static inline fl_bool _fl_cmp_resolve_node_const(
     }
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
-        id = fl_scope_resolve_id(scope, node->child->data);
+    {
+        fl_ast_node *id_node = node->child;
+        fl_ast_node *arg_node = id_node->data;
+        id = fl_scope_resolve_id(scope, id_node->data);
 
         // error?
         if (id->value.data_type != FL_DATA_TYPE_FN || !id->constant)
             return FL_FALSE;
 
-        fl_fn_variant *fn = _fl_cmp_infer_fn_overload(node->child->next, scope, id->value.data);
+        fl_fn_variant *fn = _fl_cmp_infer_fn_overload(arg_node, scope, id->value.data);
 
         // error?
         if (!fn)
             return FL_FALSE;
 
-        fl_value_vec args;
-        fl_value_vec_initc(&args, fn->params.size);
+        fl_value_vec *args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn->params);
 
-        if (!_fl_cmp_const_resolve_args(node->child->next, cnt, scope, &args))
-        {
-            fl_value_vec_free(&args);
+        if (!args)
             return FL_FALSE;
-        }
 
         if (reduced_value)
-            *reduced_value = fl_fn_variant_call(fn, args);
+            *reduced_value = fl_fn_variant_call(fn, *args);
         break;
+    }
+
     case FL_AST_NODE_TYPE_ID_CHAIN:
         id = fl_scope_resolve_id(scope, node->data);
 

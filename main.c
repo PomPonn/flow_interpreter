@@ -16,9 +16,8 @@ fl_int main()
     pd = fl_predef_create(FL_PREDEF_TYPE_ASSIGN, fl_str_dup("="), FL_TRUE);
     fl_predef_vec_push(&cnt.predefines, pd);
 
-    fl_context_load_module_by_str(&cnt, "meta");
-
     fl_cmp_compile(_TEST_INPUT_PATH, &cnt);
 
+    fl_context_free(&cnt);
     fl_predef_free_internal();
 }

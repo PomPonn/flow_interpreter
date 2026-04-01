@@ -2,8 +2,6 @@
 
 #include "shared/common.h"
 
-#define _FL_MAX_LIB_NAME_LEN 128
-
 typedef fl_unknown *fl_lib_handle;
 
 // loads shared library dynamically
