@@ -1,17 +1,19 @@
 /**
- * ---- <module filename>.test.c ----
+ * ---------- <module filename>.test.c ----------
  *
  * Defines tests for '<path to the module>'.
  *
+ * ----------------------------------------
  */
 
+#include "shared/common.h"
 #include <unity/unity.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 // ...
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -23,14 +25,14 @@ void tearDown()
     // Cleanup code...
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_some_function_Sth(void)
 {
     // ...
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.0.0)
 project(FlowInterpreter VERSION 0.1.2 LANGUAGES C)
 include(CTest)
 
-# ---- GLOBAL VARIABLES -----
+# ---------- GLOBAL VARIABLES -----------
 
 # base directory for dynamic language modules
 set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules/dynamic)
@@ -21,7 +21,7 @@ set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output
 set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
 
-# ---- FUNCTIONS ----
+# ---------- FUNCTIONS ----------
 
 # add every top level module in MODULES_DIR as separate shared library
 function(add_lang_modules)
@@ -52,7 +52,7 @@ function(add_tests)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
 
-# ---- TARGETS ----
+# ---------- TARGETS ----------
 
 add_library(flow STATIC)
 link_libraries(flow)
@@ -63,7 +63,7 @@ if (BUILD_TESTING)
     add_tests()
 endif()
 
-# ---- CONFIG ----
+# ---------- CONFIG ----------
 
 include_directories(${CORE_DIR} ${LIBS_DIR})
 
@@ -76,7 +76,7 @@ add_compile_definitions(
     _PROFILER_LOGS_PATH="${LOG_DIR}/profiler.txt"
 )
 
-# ---- SOURCES ----
+# ---------- SOURCES ----------
 
 # gather main source files
 file(GLOB_RECURSE flow_sources CONFIGURE_DEPENDS ${CORE_DIR}/*.c)

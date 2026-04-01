@@ -1,13 +1,14 @@
 /**
- * ---- ast_tree.c ----
+ * ---------- ast_tree.c ------------------------
  *
  * Implements general Abstract Syntax Tree logic.
  *
+ * ----------------------------------------------
  */
 
 #include "ast_tree.h"
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES -----------
 
 #include "shared/error.h"
 #include "shared/str.h"
@@ -21,7 +22,7 @@
 #include <stdio.h>
 #endif
 
-// ---- MACROS ----
+// ---------- MACROS ----------------
 
 /**
  * @brief Shorthand for throwing syntax error.
@@ -46,15 +47,15 @@
  * @brief Shorthand for creating empty AST node.
  */
 #define init_node_empty(type, parent) \
-    fl_ast_node_init(&node, type, FL_NULL, parent, arr->current->location);
+    fl_ast_node_init(&node, type, FL_NULL, parent, arr->current->location)
 
 /**
  * @brief Shorthand for creating AST node filled with some value.
  */
 #define init_node_filled(type, value, parent) \
-    fl_ast_node_init(&node, type, value, parent, arr->current->location);
+    fl_ast_node_init(&node, type, value, parent, arr->current->location)
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 // TODO: Comment these declarations
 
@@ -67,7 +68,7 @@ static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr
 static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
 static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
 {

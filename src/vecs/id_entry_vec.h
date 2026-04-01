@@ -1,5 +1,5 @@
 /**
- * ---- id_entry.h ----
+ * ---------- id_entry.h ----------
  *
  * Declares flow id entry vector logic.
  *
@@ -7,7 +7,7 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "lang/id_entry.h"
 #include "shared/str.h"

@@ -1,5 +1,5 @@
 /**
- * ---- predef.h ----
+ * ---------- predef.h ----------
  *
  * Declares predefine logic.
  *
@@ -7,7 +7,7 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "shared/common.h"
 #include "vecs/value_vec.h"
@@ -16,7 +16,7 @@
 // REMEMBER TO KEEP IT UP-TO-DATE
 #define FL_PREDEF_TYPES_COUNT FL_PREDEF_TYPE_POW
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 // must match start of _fl_cmp_instruction enum from lang/instructions.h
 // when add new predefs before FL_PREDEF_TYPE_POW to avoid dependency problems
@@ -41,7 +41,7 @@ struct _fl_predef
 };
 typedef struct _fl_predef fl_predef;
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_predef fl_predef_create(
     fl_predef_type type,

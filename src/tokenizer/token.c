@@ -4,16 +4,16 @@
 #include "tokenizer/delims.h"
 #include "lang/data_type.h"
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + 1)
 
-// ---- STATIC FUNCTION DEFINITIONS ----
+// ---------- STATIC FUNCTION DEFINITIONS ----------
 
 static inline fl_bool _fl_token_deduce(fl_token *tok);
 static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
-// ---- IMPLEMENTATIONS ----
+// ---------- IMPLEMENTATIONS ----------
 
 fl_char *fl_token_as_printable(fl_char *tok)
 {

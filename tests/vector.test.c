@@ -1,5 +1,5 @@
 /**
- * ---- vector.test.c ----
+ * ---------- vector.test.c ----------
  *
  * Defines tests for 'src/templates/vector'.
  *
@@ -8,12 +8,12 @@
 #include "templates/vector.h"
 #include <unity/unity.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 #define INIT_SIZE 14
 fl_vector vec;
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -27,7 +27,7 @@ void tearDown()
     fl_vector_free(&vec);
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_vector_reserve_Copying(void)
 {
@@ -59,7 +59,7 @@ void test_vector_find(void)
     //     TEST_ASSERT_EQUAL_INT(val, vec.data[ind]);
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

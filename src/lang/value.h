@@ -1,5 +1,5 @@
 /**
- * ---- value.h ----
+ * ---------- value.h ----------
  *
  * Declares id value logic.
  *
@@ -7,15 +7,15 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "lang/data_type.h"
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define FL_VALUE_EMPTY fl_value_create(FL_DATA_TYPE_NULL, FL_NULL)
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_value
 {
@@ -24,7 +24,7 @@ struct _fl_value
 };
 typedef struct _fl_value fl_value;
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
 FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
@@ -33,7 +33,7 @@ fl_void fl_value_free(fl_value *value);
 fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data);
 fl_bool fl_value_indentical(fl_value v1, fl_value v2);
 
-// ---- HEADER-ONLY DEFINITIONS ----
+// ---------- HEADER-ONLY DEFINITIONS ----------
 
 FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data)
 {

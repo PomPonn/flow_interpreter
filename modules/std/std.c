@@ -1,16 +1,16 @@
 #include "std.h"
 
-// ---- INCLUDES ----
+// ---------- INCLUDES ----------
 
 #include "macros/modules.h"
 #include "shared/str.h"
 #include "io/io.h"
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 #define FL_MODULE_NAME std
 
-// ---- DEFINITIONS -----
+// ---------- DEFINITIONS -----------
 
 fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
 {

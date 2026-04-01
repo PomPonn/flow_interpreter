@@ -4,11 +4,11 @@
 #include "shared/error.h"
 #include "tools/mod_importer.h"
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 256
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 fl_void fl_context_init(fl_context *cnt)
 {

@@ -1,17 +1,18 @@
 /**
- * ---- ast_node.h ----
+ * ---------- ast_node.h -------------------
  *
  * Declares Abstract Syntax Tree node logic.
  *
+ * -----------------------------------------
  */
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES --------------
 
 #include "tokenizer/token_location.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 enum _fl_ast_node_type
 {
@@ -45,7 +46,7 @@ enum _fl_ast_node_type
      */
     FL_AST_NODE_TYPE_FN_CALL,
 
-    // ---- UNUSED ----
+    // ---------- UNUSED ----------
 
     // TODO: comment here when finished
 
@@ -99,7 +100,7 @@ struct _fl_ast_node
  */
 typedef struct _fl_ast_node fl_ast_node;
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 /**
  * @brief Initalizes `fl_ast_node` structure.

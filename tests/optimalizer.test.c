@@ -1,5 +1,5 @@
 /**
- * ---- optimalizer.test.c ----
+ * ---------- optimalizer.test.c ----------
  *
  * Defines tests for 'src/optimalizer/optimalizer.h'.
  *
@@ -10,7 +10,7 @@
 #include <unity/unity.h>
 #include <stdlib.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 fl_token_arr tok_array;
 fl_char *source =
@@ -22,7 +22,7 @@ fl_char *source =
     "#I guess it's the last one...#"
     "#Maybe some \\# escape at last#";
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -36,7 +36,7 @@ void tearDown()
     fl_token_arr_free(&tok_array);
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_opt_remove_comments_Accuracy(void)
 {
@@ -47,7 +47,7 @@ void test_opt_remove_comments_Accuracy(void)
     TEST_ASSERT_EQUAL_UINT64(comments_num, old_count - tok_array._count);
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

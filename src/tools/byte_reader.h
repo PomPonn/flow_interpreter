@@ -1,5 +1,5 @@
 /**
- * ---- byte_reader.h ----
+ * ---------- byte_reader.h ----------
  *
  * Declares byte reader logic.
  *
@@ -7,12 +7,12 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "shared/common.h"
 #include "vecs/byte_vec.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_byte_reader
 {
@@ -21,17 +21,17 @@ struct _fl_byte_reader
 };
 typedef struct _fl_byte_reader fl_byte_reader;
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define fl_byte_reader_next(reader, value_type) \
     (*(value_type *)_fl_byte_reader_next(&reader, sizeof(value_type)))
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes);
 FL_HEADER_FN fl_unknown *_fl_byte_reader_next(fl_byte_reader *reader, fl_size size);
 
-// ---- HEADER-ONLY DEFINITIONS ----
+// ---------- HEADER-ONLY DEFINITIONS ----------
 
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes)
 {

@@ -1,5 +1,5 @@
 /**
- * ---- context.h ----
+ * ---------- context.h ----------
  *
  * Declares language context logic.
  *
@@ -7,7 +7,7 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "vecs/const_scope_vec.h"
 #include "vecs/lib_handle_vec.h"
@@ -18,7 +18,7 @@
 // removable
 #include "vecs/id_node_vec.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_context
 {

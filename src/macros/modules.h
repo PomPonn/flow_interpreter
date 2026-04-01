@@ -8,7 +8,7 @@
 #include "vecs/value_desc_vec.h"
 #include "vecs/fn_variant_vec.h"
 
-// ---- PRIVATE ----
+// ---------- PRIVATE ----------
 
 #define _FL_ID_CHAIN_BUFFER_SIZE 256
 
@@ -34,7 +34,7 @@
         assert(success);                                                                      \
     }
 
-// ---- PUBLIC ----
+// ---------- PUBLIC ----------
 
 #define FL_PARAM_CNT cnt
 #define FL_PARAM_ID_CHAIN id_chain

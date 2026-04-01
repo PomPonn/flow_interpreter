@@ -1,5 +1,5 @@
 /**
- * ---- value_desc.h ----
+ * ---------- value_desc.h ----------
  *
  * Declares data type description logic.
  *
@@ -7,11 +7,11 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "lang/data_type.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_value_desc
 {

@@ -1,12 +1,12 @@
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "vecs/value_desc_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 typedef fl_value (*fl_c_fn_ptr)(fl_value_vec args);
 

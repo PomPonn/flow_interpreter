@@ -1,5 +1,5 @@
 /**
- * ---- ast_node.test.c ----
+ * ---------- ast_node.test.c ----------
  *
  * Defines tests for 'src/ast/ast_node.h'.
  *
@@ -8,7 +8,7 @@
 #include "ast/ast_node.h"
 #include <unity/unity.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 fl_ast_node *parent;
 fl_ast_node *node;
@@ -18,7 +18,7 @@ fl_token_location loc_info = {
     .description = "",
 };
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -31,7 +31,7 @@ void tearDown()
     fl_ast_node_free(&parent);
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_ast_node_init_ParentHandling(void)
 {
@@ -62,7 +62,7 @@ void test_ast_node_add_child_CorrectRelation(void)
     TEST_ASSERT_EQUAL_PTR(new_node2, fl_ast_node_peek_child(node));
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

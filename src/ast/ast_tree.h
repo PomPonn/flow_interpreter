@@ -1,18 +1,19 @@
 /**
- * ---- ast_tree.h ----
+ * ---------- ast_tree.h ----------------------
  *
  * Declares general Abstract Syntax Tree logic.
  *
+ * --------------------------------------------
  */
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES --------------
 
 #include "ast/ast_node.h"
 #include "tokenizer/token_arr.h"
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS --------------
 
 /**
  * @brief Generates Abstract Syntax Tree from specified token array.

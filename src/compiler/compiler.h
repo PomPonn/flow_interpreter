@@ -1,17 +1,18 @@
 /**
- * ---- compiler.h ----
+ * ---------- compiler.h --------------
  *
  * Declares compiler logic.
  *
+ * ------------------------------------
  */
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES -----------
 
 #include "lang/context.h"
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS -----------
 
 /**
  * @brief Compiles source file pointed by `source_path` to byte code.

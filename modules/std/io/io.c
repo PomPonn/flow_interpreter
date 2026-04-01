@@ -1,19 +1,19 @@
 #include "io.h"
 
-// ---- INCLUDES ----
+// ---------- INCLUDES ----------
 
 #include "macros/modules.h"
 #include <stdio.h>
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define FL_MODULE_NAME io
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_MODULE_FN_HEAD_ONCE(put);
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *scope)
 {

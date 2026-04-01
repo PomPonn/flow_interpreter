@@ -1,17 +1,18 @@
 /**
- * ---- name.h ----
+ * ---------- name.h ----------
  *
  * Declares name logic.
  *
+ * ----------------------------
  */
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "shared/common.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_name
 {
@@ -19,12 +20,12 @@ struct _fl_name
 };
 typedef struct _fl_name fl_name;
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_void fl_name_init(fl_name *name);
 FL_HEADER_FN fl_void fl_name_free(fl_name *name);
 
-// ---- HEADER-ONLY DEFINITIONS ----
+// ---------- HEADER-ONLY DEFINITIONS ----------
 
 FL_HEADER_FN fl_void fl_name_init(fl_name *name)
 {

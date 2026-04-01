@@ -1,5 +1,5 @@
 /**
- * ---- scope.h ----
+ * ---------- scope.h ----------
  *
  * Declares flow scope logic.
  *
@@ -7,14 +7,14 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
 #include "vecs/byte_vec.h"
 #include "lang/id_chain.h"
 
-// ---- TYPE DEFINITIONS ----
+// ---------- TYPE DEFINITIONS ----------
 
 struct _fl_scope
 {
@@ -23,7 +23,7 @@ struct _fl_scope
 };
 typedef struct _fl_scope fl_scope;
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer);
 FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope);
@@ -43,7 +43,7 @@ fl_id_entry *fl_scope_traverse(
 
 fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
-// ---- HEADER-ONLY IMPLEMENTATIONS ----
+// ---------- HEADER-ONLY IMPLEMENTATIONS ----------
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer)
 {

@@ -3,7 +3,7 @@
 #include "tokenizer/delims.h"
 #include "shared/str.h"
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
 static inline fl_bool _fl_tok_handle_number(const fl_char **str);
@@ -19,7 +19,7 @@ static inline fl_bool _fl_tok_handle_escapement(
     const fl_char **str,
     const fl_const_cstr_vec *escapes);
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 // returns FL_FALSE if source has no tokens
 fl_bool fl_tok_tokenize(

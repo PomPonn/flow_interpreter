@@ -1,13 +1,14 @@
 /**
- * ---- ast_node.c ----
+ * ---------- ast_node.c ---------------------
  *
  * Implements Abstract Syntax Tree node logic.
  *
+ * -------------------------------------------
  */
 
 #include "ast_node.h"
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 {

@@ -1,13 +1,14 @@
 /**
- * ---- compiler.c ----
+ * ---------- compiler.c --------------
  *
  * Implements compiler logic.
  *
+ * ------------------------------------
  */
 
 #include "compiler.h"
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "shared/error.h"
 #include "shared/str.h"
@@ -26,7 +27,7 @@
 #include "tools/printer.h"
 #endif
 
-// ---- MACROS ----
+// ---------- MACROS ----------------
 
 /**
  * @brief Size of id chain string buffer.
@@ -49,7 +50,7 @@
         fl_err_throw(FL_ERR_COMPILATION, message, buffer, ast_node_ptr->location); \
     }
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 // TODO: comment these declarations when finished
 
@@ -124,7 +125,7 @@ static inline fl_fn_variant *_fl_cmp_infer_fn_overload(
 static inline fl_void _fl_cmp_compile_opr_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 static inline fl_void _fl_cmp_compile_fn_args(fl_ast_node *arg_node, fl_id_chain *id_chain, fl_context *cnt, fl_byte_vec *dest);
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 {

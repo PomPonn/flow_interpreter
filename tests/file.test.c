@@ -1,5 +1,5 @@
 /**
- * ---- file.test.c ----
+ * ---------- file.test.c ----------
  *
  * Defines tests for 'src/tools/file.h'.
  *
@@ -10,12 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 const fl_char buffer[] = "This is some content to be added to the file.\nThat's awesome!";
 const fl_char filename[] = "file.test.txt";
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -32,7 +32,7 @@ void tearDown()
     assert(code == 0);
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_file_read_ContentMatch(void)
 {
@@ -62,7 +62,7 @@ void test_file_append_ContentMatch(void)
     fl_file_free(&content);
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

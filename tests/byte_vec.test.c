@@ -1,5 +1,5 @@
 /**
- * ---- byte_vec.test.c ----
+ * ---------- byte_vec.test.c ----------
  *
  * Defines tests for 'src/revise_me/byte_vec.h'.
  *
@@ -8,12 +8,12 @@
 #include "vecs/byte_vec.h"
 #include <unity/unity.h>
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 #define INIT_SIZE 24
 fl_byte_vec vec;
 
-// ---- SETUP FUNCTIONS ----
+// ---------- SETUP FUNCTIONS ----------
 
 void setUp()
 {
@@ -27,7 +27,7 @@ void tearDown()
     fl_byte_vec_free(&vec);
 }
 
-// ---- TESTS ----
+// ---------- TESTS ----------
 
 void test_byte_vec_push_mem_Correctness(void)
 {
@@ -40,7 +40,7 @@ void test_byte_vec_push_mem_Correctness(void)
     TEST_ASSERT_EQUAL_UINT32(INIT_SIZE + sizeof(some_val), vec.size);
 }
 
-// ---- ENTRY ----
+// ---------- ENTRY ----------
 
 int main()
 {

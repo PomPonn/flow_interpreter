@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-// ---- IMPLEMENTATIONS ----
+// ---------- IMPLEMENTATIONS ----------
 
 fl_bool fl_chr_is_digit(fl_char chr)
 {

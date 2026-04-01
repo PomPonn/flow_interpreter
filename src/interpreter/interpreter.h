@@ -1,5 +1,5 @@
 /**
- * ---- interpreter.c ----
+ * ---------- interpreter.c ----------
  *
  * Declares interpreter logic.
  *
@@ -7,13 +7,13 @@
 
 #pragma once
 
-// ---- DEPENDENCIES ----
+// ---------- DEPENDENCIES ----------
 
 #include "lang/context.h"
 #include "lang/fn_variant.h"
 #include "vecs/byte_vec.h"
 
-// ---- DECLARATIONS ----
+// ---------- DECLARATIONS ----------
 
 fl_byte_vec fl_intpr_fn_call_const(
     fl_context *cnt,

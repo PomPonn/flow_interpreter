@@ -6,16 +6,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// ---- MACROS ----
+// ---------- MACROS ----------
 
 #define _MAX_ERROR_NUM 32
 
-// ---- GLOBALS ----
+// ---------- GLOBALS ----------
 
 fl_err_record _g_errors[_MAX_ERROR_NUM];
 fl_size _g_errors_num = 0;
 
-// ---- DEFINITIONS ----
+// ---------- DEFINITIONS ----------
 
 // reports error but doesn't end interpretation (so we can catch more errors)
 // exception occurs when there is no room for more errors. Than it throws;
