@@ -26,7 +26,9 @@ fl_char *source =
 
 void setUp()
 {
-    fl_tok_tokenize(source, &tok_array, "optimalizer test");
+    fl_cstr_vec escapes;
+    fl_cstr_vec_init(&escapes);
+    fl_tok_tokenize(source, &tok_array, &escapes, "optimalizer test");
 }
 
 void tearDown()

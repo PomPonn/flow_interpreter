@@ -15,6 +15,8 @@ fl_void fl_value_free(fl_value *value)
     case FL_DATA_TYPE_SCOPE:
         fl_scope_free(value->data);
         break;
+    case FL_DATA_TYPE_REF:
+        break;
     default:
         fl_mem_free(value->data);
         break;
@@ -82,7 +84,7 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
             return *(fl_lang_type_float *)v1.data == *(fl_lang_type_float *)v2.data;
         default:
             assert(FL_FALSE);
-            break;
+            return FL_FALSE;
         }
     }
 }

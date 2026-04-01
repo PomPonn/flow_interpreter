@@ -1,5 +1,6 @@
 # TODO
 
+- cleanup compiler.c (reduce local fns parameter count)
 - revise c modules registration
 - comment code
 - AST optimalization

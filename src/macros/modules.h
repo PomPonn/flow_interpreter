@@ -24,11 +24,11 @@
     for (fl_size _i = 0; _i < params._capacity; _i++)                     \
     fl_value_desc_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
 
-#define _FL_OVERLOAD_FN(name, overload, constant, return_type, ...)                           \
+#define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                     \
     {                                                                                         \
         _FL_PARAMS(__VA_ARGS__);                                                              \
         fl_fn_variant variant;                                                                \
-        fl_fn_variant_init(&variant, FL_TRUE, constant, return_type, params);                 \
+        fl_fn_variant_init(&variant, FL_TRUE, return_type, params);                           \
         variant.pointer = _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload); \
         fl_bool success = fl_fn_variant_vec_overload(name->value.data, variant);              \
         assert(success);                                                                      \
@@ -47,7 +47,7 @@
         fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);            \
     }
 
-#define FL_REGISTER_FN(parent_id, name)                                                   \
+#define FL_REGISTER_FN(parent_id, name, constant)                                         \
     fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc(sizeof(fl_fn_variant_vec)); \
     fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                      \
                                                                                           \
@@ -56,21 +56,16 @@
         &name,                                                                            \
         fl_str_dup(_FL_STRINGIFY(name)),                                                  \
         FL_DATA_TYPE_FN,                                                                  \
-        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)));                       \
+        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)),                        \
+        constant);                                                                        \
                                                                                           \
     fl_context_register_id(FL_PARAM_CNT, parent_id->value.data, name)
 
-#define FL_OVERLOAD_FN_CONST(name, overload, return_type, ...) \
-    _FL_OVERLOAD_FN(name, overload, FL_TRUE, return_type, __VA_ARGS__)
-
-#define FL_OVERLOAD_FN_ONCE_CONST(name, return_type, ...) \
-    FL_OVERLOAD_FN_CONST(name, , return_type, __VA_ARGS__)
-
 #define FL_OVERLOAD_FN(name, overload, return_type, ...) \
-    _FL_OVERLOAD_FN(name, overload, FL_FALSE, return_type, __VA_ARGS__)
+    _FL_OVERLOAD_FN(name, overload, return_type, __VA_ARGS__)
 
 #define FL_OVERLOAD_FN_ONCE(name, return_type, ...) \
-    _FL_OVERLOAD_FN(name, , FL_FALSE, return_type, __VA_ARGS__)
+    _FL_OVERLOAD_FN(name, , return_type, __VA_ARGS__)
 
 #define FL_MODULE_FN_HEAD(name, overload) \
     fl_value _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload)(fl_value_vec args)

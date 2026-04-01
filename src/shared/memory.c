@@ -13,6 +13,11 @@ fl_unknown *fl_mem_alloc(fl_size size)
     return malloc(size);
 }
 
+fl_unknown *fl_mem_realloc(fl_unknown *mem, fl_size new_size)
+{
+    return realloc(mem, new_size);
+}
+
 fl_unknown *fl_mem_alloc_arr(fl_size elem_size, fl_size count)
 {
     return malloc(elem_size * count);

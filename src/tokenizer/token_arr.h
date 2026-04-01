@@ -15,14 +15,14 @@ typedef struct _fl_token_arr fl_token_arr;
 FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_size count)
 {
     arr->_data = fl_mem_alloc_arr(sizeof(fl_token), count);
-    arr->current = FL_NULL;
+    arr->current = &arr->_data[0];
     arr->_count = count;
     arr->_iterator = 0;
 }
 
 FL_HEADER_FN fl_void fl_token_arr_free(fl_token_arr *arr)
 {
-    if (!arr || !arr->_data)
+    if (!arr->_data)
         return;
 
     for (fl_size i = 0; i < arr->_count; i++)

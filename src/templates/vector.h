@@ -50,7 +50,6 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _initc)(FL_VEC_NAME *vec, fl_size c
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 {
-
 #ifdef FL_VEC_DESTROY
     for (fl_size i = 0; i < vec->size; i++)
         FL_VEC_DESTROY(vec->data[i]);
@@ -65,9 +64,7 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
 {
     vec->_capacity = new_cap;
-    FL_VEC_TYPE *recaped = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), vec->_capacity);
-    fl_mem_copy(vec->data, recaped, sizeof(FL_VEC_TYPE) * vec->size);
-    vec->data = recaped;
+    FL_VEC_TYPE *recaped = (FL_VEC_TYPE *)fl_mem_realloc(vec->data, vec->_capacity);
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)

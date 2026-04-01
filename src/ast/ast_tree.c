@@ -109,7 +109,6 @@ static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr 
 
     fl_ast_node *node;
     init_node_filled(FL_AST_NODE_TYPE_ID_CHAIN, chain, parent);
-
     return node;
 }
 

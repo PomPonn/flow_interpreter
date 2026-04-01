@@ -2,6 +2,8 @@
 
 #include "shared/common.h"
 
+#define FL_TOKEN_LOCATION_EMPTY fl_token_location_create("empty", 0, 0)
+
 struct _fl_token_location
 {
     const fl_char *description;

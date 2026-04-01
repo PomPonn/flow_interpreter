@@ -4,8 +4,8 @@ include(CTest)
 
 # ---- GLOBAL VARIABLES -----
 
-# base directory for language modules
-set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+# base directory for dynamic language modules
+set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules/dynamic)
 # base directory for unit tests
 set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # base directory to core functionality
@@ -24,7 +24,7 @@ set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests)
 # ---- FUNCTIONS ----
 
 # add every top level module in MODULES_DIR as separate shared library
-function(add_module_libs)
+function(add_lang_modules)
     file(GLOB module_paths CONFIGURE_DEPENDS ${MODULES_DIR}/*/)
     # exclude elements with an extension
     list(FILTER module_paths EXCLUDE REGEX "\\..*$")
@@ -41,7 +41,7 @@ function(add_module_libs)
 endfunction()
 
 # make an executable from every test file in TESTS_DIR directory
-function(build_tests)
+function(add_tests)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TESTS_BIN_DIR})
     file(GLOB_RECURSE test_files CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
     foreach(test_file ${test_files})
@@ -57,10 +57,10 @@ endfunction()
 add_library(flow STATIC)
 link_libraries(flow)
 add_executable(main)
-add_module_libs()
+add_lang_modules()
 
 if (BUILD_TESTING)
-    build_tests()
+    add_tests()
 endif()
 
 # ---- CONFIG ----

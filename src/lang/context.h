@@ -14,15 +14,18 @@
 #include "vecs/byte_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/lib_handle_vec.h"
+#include "vecs/predef_vec.h"
 
 // ---- TYPE DEFINITIONS ----
 
 struct _fl_context
 {
     fl_lib_handle_vec lib_handles;
-    fl_scope main_scope;
+    fl_cstr_vec lib_names;
     fl_const_scope_vec usings;
+    fl_predef_vec predefines;
     fl_value_vec literals;
+    fl_scope main_scope;
     // fl_byte_vec byte_vec;
 };
 /**
@@ -50,7 +53,7 @@ fl_int fl_context_resolve_id(
     fl_id_chain *id_chain,
     fl_id_node **id_node);
 
-FL_HEADER_FN fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
+fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
 
 // TODO: comment when finished
 
@@ -62,8 +65,6 @@ FL_HEADER_FN fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_cha
  * @return
  */
 fl_void fl_context_register_id(fl_context *cnt, fl_scope *scope, fl_id_entry *entry);
-
-fl_void fl_context_load_module_by_id(fl_context *cnt, fl_id_chain *id_chain);
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 
@@ -78,13 +79,3 @@ FL_HEADER_FN fl_uint fl_context_make_literal(fl_context *cnt, fl_value lit_value
 }
 
 fl_void fl_context_free(fl_context *cnt);
-
-FL_HEADER_FN fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str)
-{
-    fl_id_chain _chain;
-    fl_id_chain_init_parse(&_chain, id_str);
-
-    fl_context_load_module_by_id(cnt, &_chain);
-
-    fl_id_chain_free(&_chain);
-}

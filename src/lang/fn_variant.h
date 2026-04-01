@@ -13,7 +13,6 @@ typedef fl_value (*fl_c_fn_ptr)(fl_value_vec args);
 struct _fl_fn_variant
 {
     fl_bool c_defined;
-    fl_bool constant;
     fl_data_type return_type;
     fl_value_desc_vec params;
     union
@@ -31,7 +30,6 @@ typedef struct _fl_fn_variant fl_fn_variant;
 FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *variant,
     fl_bool c_defined,
-    fl_bool constant,
     fl_data_type return_type,
     fl_value_desc_vec params);
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant);
@@ -41,12 +39,10 @@ FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec ar
 FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *variant,
     fl_bool c_defined,
-    fl_bool constant,
     fl_data_type return_type,
     fl_value_desc_vec params)
 {
     variant->c_defined = c_defined;
-    variant->constant = constant;
     variant->return_type = return_type;
     variant->params = params;
     fl_mem_zero(&variant->body, sizeof(fl_byte_vec));
