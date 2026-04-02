@@ -25,6 +25,7 @@
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
+#include <stdio.h>
 #endif
 
 // ---------- MACROS ----------------
@@ -135,6 +136,8 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     if (!source_code)
         throw_file_error("Couldn't read the file (does it exist?)");
 
+    printf("Kod zrodlowy:\n%s\n\n", source_code);
+
     fl_token_arr token_arr;
     fl_const_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
     // fl_const_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
@@ -142,6 +145,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_const_cstr_vec_free(&predef_escapes);
 
 #ifndef NDEBUG
+    printf("Tokeny:\n");
     fl_prt_print_token_entries(&token_arr);
 #endif
 
@@ -156,8 +160,11 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
 #ifndef NDEBUG
+    printf("Wezly drzewa skladniowego:\n");
     fl_prt_print_ast_tree(tree);
 #endif
+
+    return;
 
     fl_byte_vec code;
     fl_byte_vec_init(&code);

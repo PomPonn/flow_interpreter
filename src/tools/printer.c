@@ -4,24 +4,49 @@
 #include "lang/id_chain.h"
 #include "lang/value.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 // ---------- MACROS ----------
 
 #define _LOCATION_STR_BUFFER_SIZE 16
 #define _ID_CHAIN_STR_BUFFER_SIZE 256
+#define _LITERAL_STR_BUFFER_SIZE 1024
 
 // ---------- DECLARATIONS ----------
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
-static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
+static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
 
 // ---------- DEFINITIONS ----------
 
-static inline fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
+static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
+    static fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
+
     assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
-    return ((fl_value *)lit_node->data)->data;
+    fl_value *v = lit_node->data;
+
+    switch (v->data_type)
+    {
+    case FL_DATA_TYPE_STRING:
+        return v->data;
+    case FL_DATA_TYPE_NULL:
+        return "NULL";
+    case FL_DATA_TYPE_FLOAT:
+        assert(sizeof(fl_lang_type_float) == sizeof(double));
+        sprintf(buffer, "%f", *(fl_lang_type_float *)v->data);
+        return buffer;
+    case FL_DATA_TYPE_INT:
+        assert(sizeof(fl_lang_type_int) == sizeof(long long));
+        sprintf(buffer, "%lld", *(fl_lang_type_int *)v->data);
+        return buffer;
+    case FL_DATA_TYPE_BOOL:
+    case FL_DATA_TYPE_ARRAY:
+    default:
+        assert(FL_FALSE);
+        return "";
+    }
 }
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)

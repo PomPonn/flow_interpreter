@@ -49,11 +49,11 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
     {
         // substract quotes count data len
         const fl_size len = fl_str_len(lit_data) - 2;
-        res_data = fl_mem_alloc_arr(sizeof(fl_char), len);
+        res_data = fl_mem_alloc_arr(sizeof(fl_char), len + 1);
         // copy string wiouth quotes
         fl_mem_copy((fl_char *)lit_data + 1, res_data, len);
         // add end-of-string char at the end
-        ((fl_char *)res_data)[len - 1] = '\0';
+        ((fl_char *)res_data)[len] = '\0';
         break;
     }
     case FL_DATA_TYPE_ARRAY:
