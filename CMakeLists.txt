@@ -5,7 +5,7 @@ include(CTest)
 # ---------- GLOBAL VARIABLES -----------
 
 # base directory for dynamic language modules
-set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules/dynamic)
+set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 # base directory for unit tests
 set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 # base directory to core functionality

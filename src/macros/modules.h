@@ -81,5 +81,6 @@
         &name,                                                          \
         fl_str_dup(_FL_STRINGIFY(name)),                                \
         FL_DATA_TYPE_SCOPE,                                             \
-        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _data)));  \
+        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _data)),   \
+        FL_FALSE);                                                      \
     fl_context_register_id(FL_PARAM_CNT, parent_scope, (fl_id_entry *)name)

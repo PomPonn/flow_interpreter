@@ -19,7 +19,7 @@ fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *sco
 {
     FL_REGISTER_SCOPE(scope, FL_MODULE_NAME);
 
-    FL_REGISTER_FN(FL_MODULE_NAME, put);
+    FL_REGISTER_FN(FL_MODULE_NAME, put, FL_FALSE);
     FL_OVERLOAD_FN_ONCE(
         put, FL_DATA_TYPE_NULL,
         fl_value_desc_create(FL_DATA_TYPE_ARRAY, FL_FALSE));
