@@ -89,7 +89,8 @@ static inline fl_void _fl_cmp_compile_predef_call(
     const fl_predef *predef,
     fl_context *cnt,
     fl_scope *scope,
-    fl_byte_vec *code);
+    fl_byte_vec *code,
+    fl_bool require_const);
 
 static inline fl_value_desc _fl_cmp_deduce_value_desc(
     const fl_ast_node *node,
@@ -99,14 +100,14 @@ static inline fl_value_desc _fl_cmp_deduce_value_desc(
 static inline fl_bool _fl_cmp_resolve_node_const(
     const fl_ast_node *node,
     fl_context *cnt,
-    const fl_scope *scope,
+    fl_scope *scope,
     fl_value *reduced_value,
     fl_id_entry **assoc_id);
 
 static inline fl_value_vec *_fl_cmp_resolve_args_const(
     const fl_ast_node *arg_node,
     fl_context *cnt,
-    const fl_scope *scope,
+    fl_scope *scope,
     fl_value_desc_vec expected);
 
 static inline fl_void _fl_cmp_compile_args(
@@ -135,10 +136,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
         throw_file_error("Couldn't read the file (does it exist?)");
 
     fl_token_arr token_arr;
-    fl_const_cstr_vec predef_escapes;
-    fl_const_cstr_vec_init(&predef_escapes);
-    fl_const_cstr_vec_reserve(&predef_escapes, 2);
-    fl_const_cstr_vec_push(&predef_escapes, "Cześć!");
+    fl_const_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
     // fl_const_cstr_vec predef_escapes = fl_predef_vec_escapes_view(&cnt->predefines);
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, &predef_escapes, source_path);
     fl_const_cstr_vec_free(&predef_escapes);
@@ -151,9 +149,9 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_file_free(&source_code);
 
-    // if (!any_token)
-    //     // there are no meaningful tokens in the file
-    //     return;
+    if (!any_token)
+        // there are no meaningful tokens in the file
+        return;
 
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
@@ -231,7 +229,7 @@ static inline fl_void _fl_cmp_compile_fn(
         {
             _fl_cmp_compile_predef_call(
                 id_node->next, &cnt->predefines.data[predef_ind],
-                cnt, scope, code);
+                cnt, scope, code, FL_FALSE);
             return;
         }
     }
@@ -380,7 +378,7 @@ static inline fl_value_desc _fl_cmp_deduce_value_desc(
 static inline fl_bool _fl_cmp_resolve_node_const(
     const fl_ast_node *node,
     fl_context *cnt,
-    const fl_scope *scope,
+    fl_scope *scope,
     fl_value *reduced_value,
     fl_id_entry **assoc_id)
 {
@@ -416,7 +414,23 @@ static inline fl_bool _fl_cmp_resolve_node_const(
     {
         fl_ast_node *id_node = node->child;
         fl_ast_node *arg_node = id_node->data;
-        id = fl_scope_resolve_id(scope, id_node->data);
+        fl_id_chain *id_chain = id_node->data;
+
+        // check if it's predef first
+        if (id_chain->size == 1)
+        {
+            // check if it is callable predefine
+            fl_uint predef_ind = fl_predef_vec_find(&cnt->predefines, id_chain->data[0]);
+            if (predef_ind != FL_FIND_FAIL)
+            {
+                _fl_cmp_compile_predef_call(
+                    id_node->next, &cnt->predefines.data[predef_ind],
+                    cnt, scope, FL_NULL, FL_TRUE);
+                assert(FL_FALSE);
+            }
+        }
+
+        id = fl_scope_resolve_id(scope, id_chain);
 
         // error?
         if (id->value.data_type != FL_DATA_TYPE_FN || !id->constant)
@@ -441,12 +455,30 @@ static inline fl_bool _fl_cmp_resolve_node_const(
     case FL_AST_NODE_TYPE_ID_CHAIN:
         id = fl_scope_resolve_id(scope, node->data);
 
-        // error?
-        if (!id || id->constant)
-            return FL_FALSE;
+        if (!id)
+        {
+            // if value is unimportant, it's ok that id does not exist
+            if (reduced_value)
+                return FL_FALSE;
 
-        if (reduced_value)
-            *reduced_value = id->value;
+            // create an id to fulfill the requirement
+            fl_id_chain *id_chain = node->data;
+            // new id must consist of only one-part name
+            if (id_chain->size != 1)
+                return FL_FALSE;
+
+            fl_id_entry_init(&id, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_VALUE_EMPTY, FL_FALSE);
+            fl_id_entry_vec_push(&scope->ids, id);
+        }
+        else
+        {
+            // error?
+            if (!id->constant)
+                return FL_FALSE;
+
+            if (reduced_value)
+                *reduced_value = id->value;
+        }
         break;
     case FL_AST_NODE_TYPE_LITERAL:
         if (reduced_value)
@@ -507,7 +539,7 @@ static inline fl_void _fl_cmp_compile_args(
 static inline fl_value_vec *_fl_cmp_resolve_args_const(
     const fl_ast_node *arg_node,
     fl_context *cnt,
-    const fl_scope *scope,
+    fl_scope *scope,
     fl_value_desc_vec expected)
 {
     fl_value_vec *args = fl_mem_alloc(sizeof(fl_value_vec));
@@ -527,17 +559,17 @@ static inline fl_value_vec *_fl_cmp_resolve_args_const(
             return FL_NULL;
         }
 
-        if (!fl_data_type_has(expected.data[i].type, arg_value.data_type))
-        {
-            assert(FL_FALSE);
-        }
-
         if (expected.data[i].refable)
         {
             if (!assoc_id)
                 assert(FL_FALSE);
 
             arg_value = fl_value_create(FL_DATA_TYPE_REF, assoc_id);
+        }
+
+        if (!fl_data_type_has(expected.data[i].type, arg_value.data_type))
+        {
+            assert(FL_FALSE);
         }
 
         fl_value_vec_push(args, arg_value);
@@ -558,7 +590,8 @@ static inline fl_void _fl_cmp_compile_predef_call(
     const fl_predef *predef,
     fl_context *cnt,
     fl_scope *scope,
-    fl_byte_vec *code)
+    fl_byte_vec *code,
+    fl_bool require_const)
 {
     fl_value_desc_vec params = fl_predef_get_client_params(predef);
     // try to get const args to expand them at compile time

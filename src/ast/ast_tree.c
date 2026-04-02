@@ -175,7 +175,6 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
     // check if it is the end of expression
     if (fl_token_is_delim(arr->current))
         fl_ast_node_add_child(parent, node);
-
     else if (!parent || parent->type != FL_AST_NODE_TYPE_OPERATOR)
         node = _fl_ast_process_operator(parent, arr, node, grouped);
     else

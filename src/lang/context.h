@@ -24,11 +24,9 @@ struct _fl_context
 {
     fl_lib_handle_vec lib_handles;
     fl_cstr_vec lib_names;
-    fl_const_scope_vec usings;
     fl_predef_vec predefines;
     fl_value_vec literals;
     fl_scope main_scope;
-    // fl_byte_vec byte_vec;
 };
 /**
  * @brief Describes language context, storing global information (?).
@@ -39,23 +37,23 @@ typedef struct _fl_context fl_context;
  * @brief Initializes context structure.
  * @param cnt Context ot initialize.
  */
-fl_void fl_context_init(fl_context *cnt);
+FL_HEADER_FN fl_void fl_context_init(fl_context *cnt)
+{
+    fl_lib_handle_vec_init(&cnt->lib_handles);
+    fl_cstr_vec_init(&cnt->lib_names);
+    fl_scope_init(&cnt->main_scope, FL_NULL);
+    fl_value_vec_init(&cnt->literals);
+    fl_predef_vec_init(&cnt->predefines);
+}
 
-/**
- * @brief Resolves id chain with given context.
- * @param cnt Context to use.
- * @param scope ???
- * @param id_chain Id chain to resolve.
- * @param [out] id_node Resolved node or `FL_NULL` if failed to resolve.
- * @return Index of id node in context id list.
- */
-fl_int fl_context_resolve_id(
-    fl_context *cnt,
-    fl_id_node *scope,
-    fl_id_chain *id_chain,
-    fl_id_node **id_node);
-
-fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
+FL_HEADER_FN fl_void fl_context_free(fl_context *cnt)
+{
+    fl_lib_handle_vec_free(&cnt->lib_handles);
+    fl_cstr_vec_free(&cnt->lib_names);
+    fl_scope_free(&cnt->main_scope);
+    fl_value_vec_free(&cnt->literals);
+    fl_predef_vec_free(&cnt->predefines);
+}
 
 // TODO: comment when finished
 
@@ -79,7 +77,3 @@ FL_HEADER_FN fl_uint fl_context_make_literal(fl_context *cnt, fl_value lit_value
 
     return ind;
 }
-
-fl_void fl_context_free(fl_context *cnt);
-
-fl_void fl_context_load_module_by_str(fl_context *cnt, const fl_char *id_str);
