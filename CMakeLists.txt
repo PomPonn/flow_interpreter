@@ -24,7 +24,7 @@ set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests)
 # ---------- FUNCTIONS ----------
 
 # add every top level module in MODULES_DIR as separate shared library
-function(add_lang_modules)
+function(add_flow_modules)
     file(GLOB module_paths CONFIGURE_DEPENDS ${MODULES_DIR}/*/)
     # exclude elements with an extension
     list(FILTER module_paths EXCLUDE REGEX "\\..*$")
@@ -57,7 +57,7 @@ endfunction()
 add_library(flow STATIC)
 link_libraries(flow)
 add_executable(main)
-add_lang_modules()
+add_flow_modules()
 
 if (BUILD_TESTING)
     add_tests()

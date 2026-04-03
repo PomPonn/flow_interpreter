@@ -1,6 +1,6 @@
 #pragma once
 
 #include "shared/common.h"
-#include "lang/context.h"
+#include "lang/scope.h"
 
-FL_DYNAMIC_MODULE fl_id_entry *fl_module_register(fl_context *context, fl_id_chain *id_chain);
+FL_FLOW_MODULE fl_value fl_module_resolve_id_value(const fl_id_chain *id_chain);

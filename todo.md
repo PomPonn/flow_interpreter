@@ -1,5 +1,9 @@
 # TODO
 
+- should predef_vec be made constant?
+- revise predef compilation (const vs non-const)
+- revise mod_importer implementation namings
+- create forward type decls where possible
 - cleanup compiler.c (reduce local fns parameter count)
 - revise c modules registration
 - comment code

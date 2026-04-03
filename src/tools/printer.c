@@ -35,12 +35,12 @@ static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
     case FL_DATA_TYPE_NULL:
         return "NULL";
     case FL_DATA_TYPE_FLOAT:
-        assert(sizeof(fl_lang_type_float) == sizeof(double));
-        sprintf(buffer, "%f", *(fl_lang_type_float *)v->data);
+        assert(sizeof(fl_flow_type_float) == sizeof(double));
+        sprintf(buffer, "%f", *(fl_flow_type_float *)v->data);
         return buffer;
     case FL_DATA_TYPE_INT:
-        assert(sizeof(fl_lang_type_int) == sizeof(long long));
-        sprintf(buffer, "%lld", *(fl_lang_type_int *)v->data);
+        assert(sizeof(fl_flow_type_int) == sizeof(long long));
+        sprintf(buffer, "%lld", *(fl_flow_type_int *)v->data);
         return buffer;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_ARRAY:

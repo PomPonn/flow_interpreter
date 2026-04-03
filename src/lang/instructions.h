@@ -3,9 +3,10 @@
 #include "lang/value.h"
 #include "lang/id_entry.h"
 #include "lang/context.h"
+#include "tools/mod_importer.h"
 
-#define _FL_V_INT(v) *(fl_lang_type_int *)v.data
-#define _FL_V_FLOAT(v) *(fl_lang_type_int *)v.data
+#define _FL_V_INT(v) *(fl_flow_type_int *)v.data
+#define _FL_V_FLOAT(v) *(fl_flow_type_int *)v.data
 
 /**
  * @brief Represents byte code instructions.
@@ -23,16 +24,14 @@ enum _fl_instruction
     FL_INSTR_MUL,
     FL_INSTR_MOD,
     FL_INSTR_POW,
-    // ...
+    // flow instructions
     FL_INSTR_CALL,
     FL_INSTR_GET_ID,
+    FL_INSTR_NEW_ID,
     FL_INSTR_GET_LITERAL,
-    FL_INSTR_NEW,
     // use questioned...
     FL_INSTR_STARTBLOCK,
     FL_INSTR_ENDBLOCK,
-    FL_INSTR_STARTOP,
-    FL_INSTR_ENDOP,
 };
 
 FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
@@ -42,13 +41,13 @@ FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
 
     if (left.data_type == FL_DATA_TYPE_INT)
     {
-        fl_lang_type_int *res = fl_mem_alloc(sizeof(fl_lang_type_int));
+        fl_flow_type_int *res = fl_mem_alloc(sizeof(fl_flow_type_int));
         *res = _FL_V_INT(left) + _FL_V_INT(right);
         return fl_value_create(FL_DATA_TYPE_INT, res);
     }
     else if (left.data_type == FL_DATA_TYPE_FLOAT)
     {
-        fl_lang_type_float *res = fl_mem_alloc(sizeof(fl_lang_type_float));
+        fl_flow_type_float *res = fl_mem_alloc(sizeof(fl_flow_type_float));
         *res = _FL_V_FLOAT(left) + _FL_V_FLOAT(right);
         return fl_value_create(FL_DATA_TYPE_FLOAT, res);
     }
@@ -76,11 +75,8 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value what)
     return what;
 }
 
-FL_HEADER_FN fl_scope *fl_instr_import(fl_context *cnt, fl_value import_str)
+FL_HEADER_FN fl_value fl_instr_import(fl_context *cnt, fl_char *import_str)
 {
-    fl_scope *imported = fl_mem_alloc(sizeof(imported));
-
-    assert(FL_FALSE);
-
+    fl_value imported = fl_mimp_import_id_value(cnt, import_str);
     return imported;
 }

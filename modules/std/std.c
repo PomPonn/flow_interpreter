@@ -6,28 +6,30 @@
 #include "shared/str.h"
 #include "io/io.h"
 
-// ---------- DECLARATIONS ----------
-
-#define FL_MODULE_NAME std
-
 // ---------- DEFINITIONS -----------
 
-fl_id_entry *fl_module_register(fl_context *FL_PARAM_CNT, fl_id_chain *FL_PARAM_ID_CHAIN)
+FL_FLOW_MODULE fl_value fl_module_resolve_id_value(const fl_id_chain *id_chain)
 {
-    if (FL_PARAM_ID_CHAIN->size == 0)
-        return FL_NULL;
+    if (id_chain->size == 0)
+        return FL_VALUE_EMPTY;
 
-    FL_REGISTER_SCOPE(FL_NULL, FL_MODULE_NAME);
-
-    if (FL_PARAM_ID_CHAIN->size > 1)
+    if (id_chain->size == 1)
     {
-        if (fl_str_equal(FL_PARAM_ID_CHAIN->data[1], "io"))
-            fl_std_io_register(FL_PARAM_CNT, FL_PARAM_ID_CHAIN, std_data);
+        // return this module as a scope
+        fl_scope *std_scope = fl_mem_alloc(sizeof(fl_scope));
+        fl_scope_init(std_scope, FL_NULL);
+
+        // import everything from this module
+
+        // import 'io' module
+        fl_std_io_register(std_scope, id_chain);
+
+        return fl_value_create(FL_DATA_TYPE_SCOPE, std_scope);
     }
 
-    fl_uint offset;
-    fl_int_vec inds = fl_scope_find_id_path(&FL_PARAM_CNT->main_scope, FL_PARAM_ID_CHAIN, &offset);
-    fl_id_entry *id = fl_scope_traverse(&FL_PARAM_CNT->main_scope, inds, offset);
-    fl_int_vec_free(&inds);
-    return id;
+    // pass id resolving to inner submodules
+    if (fl_str_equal(id_chain->data[1], "io"))
+        return fl_std_io_register(FL_NULL, id_chain);
+    else
+        return FL_VALUE_EMPTY;
 }

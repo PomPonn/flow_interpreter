@@ -10,6 +10,7 @@
 // ---------- DEPENDENCIES ----------
 
 #include "lang/data_type.h"
+#include "vecs/byte_vec.h"
 
 // ---------- MACROS ----------
 
@@ -52,3 +53,5 @@ FL_HEADER_FN fl_bool fl_value_is_empty(fl_value v)
 {
     return v.data == FL_NULL;
 }
+
+fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes);

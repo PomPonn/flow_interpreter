@@ -36,21 +36,17 @@
 
 // ---------- PUBLIC ----------
 
-#define FL_PARAM_CNT cnt
-#define FL_PARAM_ID_CHAIN id_chain
-
-#define fl_throw_import_error(message)                                              \
-    {                                                                               \
-        fl_char buffer[_FL_ID_CHAIN_BUFFER_SIZE];                                   \
-        fl_id_chain_to_string(FL_PARAM_ID_CHAIN, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
-        value_desc_vec params;                                                      \
-        fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);            \
+#define fl_throw_import_error(message)                                     \
+    {                                                                      \
+        fl_char buffer[_FL_ID_CHAIN_BUFFER_SIZE];                          \
+        fl_id_chain_to_string(id_chain, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
+        value_desc_vec params;                                             \
+        fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);   \
     }
 
-#define FL_REGISTER_FN(parent_id, name, constant)                                         \
+#define FL_REGISTER_FN(name, scope, constant)                                             \
     fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc(sizeof(fl_fn_variant_vec)); \
     fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                      \
-                                                                                          \
     fl_id_entry *name;                                                                    \
     fl_id_entry_init(                                                                     \
         &name,                                                                            \
@@ -58,8 +54,7 @@
         FL_DATA_TYPE_FN,                                                                  \
         fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)),                        \
         constant);                                                                        \
-                                                                                          \
-    fl_context_register_id(FL_PARAM_CNT, parent_id->value.data, name)
+    fl_id_entry_vec_push(&scope->ids, name);
 
 #define FL_OVERLOAD_FN(name, overload, return_type, ...) \
     _FL_OVERLOAD_FN(name, overload, return_type, __VA_ARGS__)
@@ -73,14 +68,13 @@
 #define FL_MODULE_FN_HEAD_ONCE(name) \
     FL_MODULE_FN_HEAD(name, )
 
-#define FL_REGISTER_SCOPE(parent_scope, name)                           \
-    fl_scope *_FL_MERGE2(name, _data) = fl_mem_alloc(sizeof(fl_scope)); \
-    fl_scope_init(_FL_MERGE2(name, _data), parent_scope);               \
-    fl_id_entry *name;                                                  \
-    fl_id_entry_init(                                                   \
-        &name,                                                          \
-        fl_str_dup(_FL_STRINGIFY(name)),                                \
-        FL_DATA_TYPE_SCOPE,                                             \
-        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _data)),   \
-        FL_FALSE);                                                      \
-    fl_context_register_id(FL_PARAM_CNT, parent_scope, (fl_id_entry *)name)
+#define FL_REGISTER_SCOPE(parent_scope, name)                            \
+    fl_scope *_FL_MERGE2(name, _scope) = fl_mem_alloc(sizeof(fl_scope)); \
+    fl_scope_init(_FL_MERGE2(name, _scope), parent_scope);               \
+    fl_id_entry *name;                                                   \
+    fl_id_entry_init(                                                    \
+        &name,                                                           \
+        fl_str_dup(_FL_STRINGIFY(name)),                                 \
+        FL_DATA_TYPE_SCOPE,                                              \
+        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _scope)),   \
+        FL_FALSE);

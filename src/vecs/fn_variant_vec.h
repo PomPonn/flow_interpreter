@@ -18,18 +18,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_match(
     {
         const fl_value_desc_vec current = vec->data[i].params;
 
-        if (current.size != params.size)
-            continue;
-
-        fl_bool skip = FL_FALSE;
-        for (fl_size j = 0; j < current.size; j++)
-            if (!fl_value_desc_equal(current.data[j], params.data[j]))
-            {
-                skip = FL_TRUE;
-                break;
-            }
-
-        if (!skip)
+        if (fl_value_desc_vec_equal(&current, &params))
             return &vec->data[i];
     }
 

@@ -18,6 +18,10 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
+// forward typedef
+struct _fl_context;
+typedef struct _fl_context fl_context;
+
 // must match start of _fl_cmp_instruction enum from lang/instructions.h
 // when add new predefs before FL_PREDEF_TYPE_POW to avoid dependency problems
 enum _fl_predef_type
@@ -56,10 +60,21 @@ FL_HEADER_FN fl_void fl_predef_free(fl_predef *predef)
     fl_mem_free(predef->alias);
 }
 
+FL_HEADER_FN fl_bool fl_predef_is_constant(const fl_predef *predef)
+{
+    switch (predef->type)
+    {
+    default:
+        return FL_FALSE;
+    }
+}
+
 fl_void fl_predef_free_internal();
 
 fl_void fl_predef_init_internal();
 
-fl_value_desc_vec fl_predef_get_client_params(const fl_predef *predef);
+const fl_value_desc_vec fl_predef_get_client_params(const fl_predef *predef);
 
-fl_value fl_predef_call(const fl_predef *predef, fl_value_vec *args);
+fl_data_type fl_predef_get_return_type(const fl_predef *predef);
+
+fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args);

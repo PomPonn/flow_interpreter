@@ -45,5 +45,6 @@ fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str)
 
         if (*ptr)
             ptr++;
+        str = ptr;
     }
 }

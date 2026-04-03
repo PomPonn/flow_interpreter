@@ -15,14 +15,27 @@ FL_MODULE_FN_HEAD_ONCE(put);
 
 // ---------- DEFINITIONS ----------
 
-fl_void fl_std_io_register(fl_context *cnt, fl_id_chain *id_chain, fl_scope *scope)
+fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
 {
-    FL_REGISTER_SCOPE(scope, FL_MODULE_NAME);
+    if (id_chain->size == 2)
+    {
+        // return this module as a scope
+        fl_scope *io_scope = fl_mem_alloc(sizeof(fl_scope));
+        fl_scope_init(io_scope, scope);
 
-    FL_REGISTER_FN(FL_MODULE_NAME, put, FL_FALSE);
-    FL_OVERLOAD_FN_ONCE(
-        put, FL_DATA_TYPE_NULL,
-        fl_value_desc_create(FL_DATA_TYPE_ARRAY, FL_FALSE));
+        FL_REGISTER_FN(put, io_scope, FL_FALSE);
+        FL_OVERLOAD_FN_ONCE(
+            put, FL_DATA_TYPE_NULL,
+            fl_value_desc_create(FL_DATA_TYPE_ARRAY, FL_FALSE));
+
+        return fl_value_create(FL_DATA_TYPE_SCOPE, io_scope);
+    }
+
+    // TODO ...
+
+    assert(FL_FALSE);
+
+    return FL_VALUE_EMPTY;
 }
 
 FL_MODULE_FN_HEAD_ONCE(put)

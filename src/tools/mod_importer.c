@@ -3,12 +3,12 @@
 #include "tools/lib.h"
 #include "shared/error.h"
 
-#define _FL_MODULE_REGISTER_FN_NAME "fl_module_register"
+#define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512
 
-typedef fl_id_entry *(*fl_module_register_fn)(fl_context *cnt, fl_id_chain *chain);
+typedef fl_value (*fl_module_register_fn)(const fl_id_chain *id_chain);
 
-fl_id_entry *fl_mimp_import_id(fl_context *cnt, const fl_char *id_str)
+fl_value fl_mimp_import_id_value(fl_context *cnt, const fl_char *id_str)
 {
     // parse id string
     fl_id_chain chain;
@@ -37,14 +37,14 @@ fl_id_entry *fl_mimp_import_id(fl_context *cnt, const fl_char *id_str)
     if (!reg_fn)
         fl_err_throw(FL_ERR_IMPORT, "Couldn't find module registration function", chain.data[0], FL_TOKEN_LOCATION_EMPTY);
 
-    fl_id_entry *leaf = reg_fn(cnt, &chain);
-    if (!leaf)
+    fl_value res = reg_fn(&chain);
+    if (fl_value_is_empty(res))
     {
         fl_char buffer[_FL_ID_CHAIN_STRING_MAX_SIZE];
         fl_id_chain_to_string(&chain, buffer, _FL_ID_CHAIN_STRING_MAX_SIZE);
-        fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain", buffer, FL_TOKEN_LOCATION_EMPTY);
+        fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain value", buffer, FL_TOKEN_LOCATION_EMPTY);
     }
 
     fl_id_chain_free(&chain);
-    return leaf;
+    return res;
 }

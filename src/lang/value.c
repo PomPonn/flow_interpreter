@@ -3,6 +3,7 @@
 #include "vecs/fn_variant_vec.h"
 #include "lang/scope.h"
 #include "shared/str.h"
+#include "lang/instructions.h"
 #include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)
@@ -34,16 +35,16 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
     switch (lit_type)
     {
     case FL_DATA_TYPE_FLOAT:
-        assert(sizeof(fl_lang_type_float) == sizeof(double));
+        assert(sizeof(fl_flow_type_float) == sizeof(double));
 
-        res_data = fl_mem_alloc(sizeof(fl_lang_type_float));
-        *((fl_lang_type_float *)res_data) = atof(lit_data);
+        res_data = fl_mem_alloc(sizeof(fl_flow_type_float));
+        *((fl_flow_type_float *)res_data) = atof(lit_data);
         break;
     case FL_DATA_TYPE_INT:
-        assert(sizeof(fl_lang_type_int) == sizeof(long long));
+        assert(sizeof(fl_flow_type_int) == sizeof(long long));
 
-        res_data = fl_mem_alloc(sizeof(fl_lang_type_int));
-        *((fl_lang_type_int *)res_data) = atoll(lit_data);
+        res_data = fl_mem_alloc(sizeof(fl_flow_type_int));
+        *((fl_flow_type_int *)res_data) = atoll(lit_data);
         break;
     case FL_DATA_TYPE_STRING:
     {
@@ -79,12 +80,48 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
         case FL_DATA_TYPE_STRING:
             return fl_str_equal(v1.data, v2.data);
         case FL_DATA_TYPE_INT:
-            return *(fl_lang_type_int *)v1.data == *(fl_lang_type_int *)v2.data;
+            return *(fl_flow_type_int *)v1.data == *(fl_flow_type_int *)v2.data;
         case FL_DATA_TYPE_FLOAT:
-            return *(fl_lang_type_float *)v1.data == *(fl_lang_type_float *)v2.data;
+            return *(fl_flow_type_float *)v1.data == *(fl_flow_type_float *)v2.data;
         default:
             assert(FL_FALSE);
             return FL_FALSE;
         }
+    }
+}
+
+fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
+{
+    fl_byte_vec_push(bytes, v.data_type);
+
+    switch (v.data_type)
+    {
+    case FL_DATA_TYPE_STRING:
+    {
+        const fl_char *str = v.data;
+        // add 1 to len to include end of string ('\0')
+        fl_byte_vec_push_mem(bytes, str, fl_str_len(str) + 1);
+        break;
+    }
+    case FL_DATA_TYPE_INT:
+        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_type_int));
+        break;
+    case FL_DATA_TYPE_FLOAT:
+        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_type_float));
+        break;
+    case FL_DATA_TYPE_SCOPE:
+        const fl_scope *scope = v.data;
+        const fl_id_entry_vec ids = scope->ids;
+
+        for (fl_size i = 0; i < ids.size; i++)
+        {
+            fl_byte_vec_push(bytes, FL_INSTR_NEW_ID);
+            fl_value_to_bytes(ids.data[i]->value, bytes);
+        }
+
+        break;
+    default:
+        assert(FL_FALSE);
+        break;
     }
 }

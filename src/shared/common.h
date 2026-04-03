@@ -18,5 +18,5 @@
         b = temp;            \
     }
 
-#define FL_DYNAMIC_MODULE __declspec(dllexport)
+#define FL_FLOW_MODULE __declspec(dllexport)
 #define FL_HEADER_FN static inline
