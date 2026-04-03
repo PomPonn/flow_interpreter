@@ -120,6 +120,11 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         }
 
         break;
+    case FL_DATA_TYPE_FN:
+
+        // ENDED HERE
+
+        break;
     default:
         assert(FL_FALSE);
         break;

@@ -17,6 +17,9 @@ FL_MODULE_FN_HEAD_ONCE(put);
 
 fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
 {
+    if (id_chain->size < 2)
+        return FL_VALUE_EMPTY;
+
     if (id_chain->size == 2)
     {
         // return this module as a scope

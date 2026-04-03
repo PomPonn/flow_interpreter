@@ -363,7 +363,10 @@ static fl_value _fl_cmp_try_resolve_predef_const(
     if (!fl_value_vec_is_empty(&const_args))
     {
         fl_value res = fl_predef_call(predef, cnt, const_args);
-        fl_value_vec_free(&const_args);
+
+        // what to do with this freeing? Is it alwas safe not to free?
+        // fl_value_vec_free(&const_args);
+
         return res;
     }
 
@@ -443,7 +446,7 @@ static fl_void _fl_cmp_compile_plain_id_chain(
 
         // create dummy id in this scope
         fl_id_entry *entry;
-        fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_VALUE_EMPTY, FL_FALSE);
+        fl_id_entry_init(&entry, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
         fl_id_entry_vec_push(&scope->ids, entry);
     }
     else
@@ -595,7 +598,8 @@ static inline fl_bool _fl_cmp_resolve_node_const(
             if (id_chain->size != 1)
                 return FL_FALSE;
 
-            fl_id_entry_init(&id, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_NULL, FL_VALUE_EMPTY, FL_FALSE);
+            // create new empty id
+            fl_id_entry_init(&id, fl_str_dup(id_chain->data[0]), FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
             fl_id_entry_vec_push(&scope->ids, id);
         }
         else
