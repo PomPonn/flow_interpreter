@@ -1,8 +1,6 @@
 # TODO
 
-- simulate module import on compilation
 - should predef_vec be made constant?
-- revise predef compilation (const vs non-const)
 - revise mod_importer implementation namings
 - create forward type decls where possible
 - cleanup compiler.c (reduce local fns parameter count)
@@ -24,6 +22,8 @@
 
 # done
 
+- revise predef compilation (const vs non-const)
+- simulate module import on compilation
 - templates optimalization (move some functions to specializations)
 - revise in-context literal creation
 - can I optimalize project building?
