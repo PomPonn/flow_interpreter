@@ -5,8 +5,8 @@
 #include "lang/context.h"
 #include "tools/mod_importer.h"
 
-#define _FL_V_INT(v) *(fl_flow_type_int *)v.data
-#define _FL_V_FLOAT(v) *(fl_flow_type_int *)v.data
+#define _FL_V_INT(v) *(fl_flow_int *)v.data
+#define _FL_V_FLOAT(v) *(fl_flow_int *)v.data
 
 /**
  * @brief Represents byte code instructions.
@@ -29,9 +29,11 @@ enum _fl_instruction
     FL_INSTR_GET_ID,
     FL_INSTR_NEW_ID,
     FL_INSTR_GET_LITERAL,
-    // use questioned...
-    FL_INSTR_STARTBLOCK,
-    FL_INSTR_ENDBLOCK,
+    FL_INSTR_IMMEDIATE_VALUE,
+    FL_INSTR_START_BLOCK,
+    FL_INSTR_END_BLOCK,
+    FL_INSTR_START_ARGS,
+    FL_INSTR_END_ARGS,
 };
 
 FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
@@ -41,13 +43,13 @@ FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
 
     if (left.data_type == FL_DATA_TYPE_INT)
     {
-        fl_flow_type_int *res = fl_mem_alloc(sizeof(fl_flow_type_int));
+        fl_flow_int *res = fl_mem_alloc(sizeof(fl_flow_int));
         *res = _FL_V_INT(left) + _FL_V_INT(right);
         return fl_value_create(FL_DATA_TYPE_INT, res);
     }
     else if (left.data_type == FL_DATA_TYPE_FLOAT)
     {
-        fl_flow_type_float *res = fl_mem_alloc(sizeof(fl_flow_type_float));
+        fl_flow_float *res = fl_mem_alloc(sizeof(fl_flow_float));
         *res = _FL_V_FLOAT(left) + _FL_V_FLOAT(right);
         return fl_value_create(FL_DATA_TYPE_FLOAT, res);
     }

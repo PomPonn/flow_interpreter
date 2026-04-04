@@ -68,12 +68,15 @@ fl_void fl_context_register_id(fl_context *cnt, fl_scope *scope, fl_id_entry *en
 
 fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 
-FL_HEADER_FN fl_uint fl_context_make_literal(fl_context *cnt, fl_value lit_value)
+FL_HEADER_FN fl_size fl_context_make_literal(fl_context *cnt, fl_value lit_value)
 {
-    fl_uint ind = fl_value_vec_find_identical(&cnt->literals, lit_value);
+    fl_int ind = fl_value_vec_find_identical(&cnt->literals, lit_value);
 
     if (ind == FL_FIND_FAIL)
+    {
         fl_value_vec_push(&cnt->literals, lit_value);
+        return cnt->literals.size - 1;
+    }
 
-    return ind;
+    return (fl_size)ind;
 }

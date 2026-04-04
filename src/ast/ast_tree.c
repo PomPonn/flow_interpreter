@@ -274,7 +274,7 @@ static inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_toke
 
     if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_operator(parent, arr, node, FL_FALSE);
-    else
+    else if (parent)
         fl_ast_node_add_child(parent, node);
 
     return node;

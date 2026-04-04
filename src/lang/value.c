@@ -35,16 +35,16 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
     switch (lit_type)
     {
     case FL_DATA_TYPE_FLOAT:
-        assert(sizeof(fl_flow_type_float) == sizeof(double));
+        assert(sizeof(fl_flow_float) == sizeof(double));
 
-        res_data = fl_mem_alloc(sizeof(fl_flow_type_float));
-        *((fl_flow_type_float *)res_data) = atof(lit_data);
+        res_data = fl_mem_alloc(sizeof(fl_flow_float));
+        *((fl_flow_float *)res_data) = atof(lit_data);
         break;
     case FL_DATA_TYPE_INT:
-        assert(sizeof(fl_flow_type_int) == sizeof(long long));
+        assert(sizeof(fl_flow_int) == sizeof(long long));
 
-        res_data = fl_mem_alloc(sizeof(fl_flow_type_int));
-        *((fl_flow_type_int *)res_data) = atoll(lit_data);
+        res_data = fl_mem_alloc(sizeof(fl_flow_int));
+        *((fl_flow_int *)res_data) = atoll(lit_data);
         break;
     case FL_DATA_TYPE_STRING:
     {
@@ -80,9 +80,9 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
         case FL_DATA_TYPE_STRING:
             return fl_str_equal(v1.data, v2.data);
         case FL_DATA_TYPE_INT:
-            return *(fl_flow_type_int *)v1.data == *(fl_flow_type_int *)v2.data;
+            return *(fl_flow_int *)v1.data == *(fl_flow_int *)v2.data;
         case FL_DATA_TYPE_FLOAT:
-            return *(fl_flow_type_float *)v1.data == *(fl_flow_type_float *)v2.data;
+            return *(fl_flow_float *)v1.data == *(fl_flow_float *)v2.data;
         default:
             assert(FL_FALSE);
             return FL_FALSE;
@@ -104,12 +104,13 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         break;
     }
     case FL_DATA_TYPE_INT:
-        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_type_int));
+        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_int));
         break;
     case FL_DATA_TYPE_FLOAT:
-        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_type_float));
+        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_float));
         break;
     case FL_DATA_TYPE_SCOPE:
+    {
         const fl_scope *scope = v.data;
         const fl_id_entry_vec ids = scope->ids;
 
@@ -120,6 +121,7 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         }
 
         break;
+    }
     case FL_DATA_TYPE_FN:
 
         // ENDED HERE
