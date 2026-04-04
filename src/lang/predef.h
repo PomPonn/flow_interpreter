@@ -11,7 +11,7 @@
 
 #include "shared/common.h"
 #include "vecs/value_vec.h"
-#include "vecs/value_desc_vec.h"
+#include "vecs/param_vec.h"
 
 // REMEMBER TO KEEP IT UP-TO-DATE
 #define FL_PREDEF_TYPES_COUNT FL_PREDEF_TYPE_POW
@@ -60,12 +60,15 @@ FL_HEADER_FN fl_void fl_predef_free(fl_predef *predef)
     fl_mem_free(predef->alias);
 }
 
-FL_HEADER_FN fl_bool fl_predef_is_constant(const fl_predef *predef)
+FL_HEADER_FN fl_bool fl_predef_is_inlineable(const fl_predef *predef)
 {
     switch (predef->type)
     {
-    default:
+    case FL_PREDEF_TYPE_IMPORT:
+    case FL_PREDEF_TYPE_ASSIGN:
         return FL_FALSE;
+    default:
+        return FL_TRUE;
     }
 }
 
@@ -73,7 +76,7 @@ fl_void fl_predef_free_internal();
 
 fl_void fl_predef_init_internal();
 
-const fl_value_desc_vec fl_predef_get_client_params(const fl_predef *predef);
+const fl_param_vec fl_predef_get_client_params(const fl_predef *predef);
 
 fl_data_type fl_predef_get_return_type(const fl_predef *predef);
 

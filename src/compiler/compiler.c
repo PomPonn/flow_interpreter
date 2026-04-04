@@ -19,7 +19,7 @@
 #include "vecs/fn_variant_vec.h"
 #include "vecs/const_cstr_vec.h"
 #include "lang/scope.h"
-#include "lang/value_desc.h"
+#include "lang/param.h"
 #include "lang/value.h"
 #include "lang/instructions.h"
 #include "tools/file.h"
@@ -108,12 +108,6 @@ static inline fl_predef *_fl_cmp_get_predef(
     const fl_id_chain *id_chain,
     fl_context *cnt);
 
-static inline fl_value_desc
-_fl_cmp_deduce_node_value_desc(
-    const fl_ast_node *node,
-    const fl_context *cnt,
-    const fl_scope *scope);
-
 // try to reduce given ast node to some constant value
 static inline fl_bool _fl_cmp_resolve_node_const(
     const fl_ast_node *node,
@@ -126,7 +120,7 @@ static fl_value_vec _fl_cmp_resolve_args_const(
     const fl_ast_node *arg_node,
     fl_context *cnt,
     fl_scope *scope,
-    const fl_value_desc_vec expected);
+    const fl_param_vec expected);
 
 static inline fl_fn_variant *_fl_cmp_infer_fn_overload(
     const fl_ast_node *arg_node,
@@ -134,7 +128,12 @@ static inline fl_fn_variant *_fl_cmp_infer_fn_overload(
     const fl_scope *scope,
     const fl_fn_variant_vec *variants);
 
-static fl_value_desc_vec _fl_cmp_get_args_preview(
+static inline fl_param _fl_cmp_infer_node_as_param(
+    const fl_ast_node *node,
+    const fl_context *cnt,
+    const fl_scope *scope);
+
+static fl_param_vec _fl_cmp_infer_arg_nodes_as_params(
     const fl_ast_node *arg_node,
     const fl_context *cnt,
     const fl_scope *scope);
@@ -163,7 +162,7 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 
     fl_opt_remove_comments(&token_arr);
 
-    fl_file_free(&source_code);
+    fl_file_content_free(&source_code);
 
     if (!any_token)
         // there are no meaningful tokens in the file
@@ -181,6 +180,11 @@ fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
 
     _fl_cmp_compile_node(tree, cnt, &cnt->main_scope, &code);
 
+#ifndef NDEBUG
+    fl_file_write("bytecode.cfl", code);
+#endif
+
+    fl_byte_vec_free(&code);
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 }
@@ -242,7 +246,6 @@ static fl_void _fl_cmp_compile_fn_call(
     {
         if (!_fl_cmp_try_compile_predef(id_node, predef, cnt, scope, code))
             assert(FL_FALSE);
-
         return;
     }
 
@@ -267,22 +270,22 @@ static fl_void _fl_cmp_compile_fn_call(
     if (!fn_var)
         throw_compilation_error(id_node, "couldn't find function overload for given arguments");
 
-    // try to get const args to expand them at compile time
-    fl_value_vec const_args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn_var->params);
-
-    if (fl_value_vec_is_empty(&const_args))
-    {
-        fl_value res = fl_fn_variant_call(fn_var, const_args);
-
-        // insert resulting value to the code
-
-        fl_value_vec_free(&const_args);
-        return;
-    }
-
-    // non-constant arguments in constant function call
     if (id->constant)
-        assert(FL_FALSE);
+    {
+        // try to get const args to expand them at compile time
+        fl_value_vec const_args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn_var->params);
+
+        if (!fl_value_vec_is_empty(&const_args))
+        {
+            fl_value res = fl_fn_variant_call(fn_var, const_args);
+
+            // insert resulting value to the code
+            fl_value_to_bytes(res, code);
+
+            fl_value_vec_free(&const_args);
+            return;
+        }
+    }
 
     // compile this function call to byte code
 
@@ -315,20 +318,17 @@ static fl_bool _fl_cmp_try_compile_predef(
     fl_value res_value = _fl_cmp_try_resolve_predef_const(id_node, predef, cnt, scope);
     if (!fl_value_is_empty(res_value))
     {
-        // append resolved value to the code
-        fl_value_to_bytes(res_value, code);
-        return FL_TRUE;
+        // expand resolved value if this predef is inlineable
+        if (fl_predef_is_inlineable(predef))
+        {
+            fl_value_to_bytes(res_value, code);
+            return FL_TRUE;
+        }
     }
 
-    // else compile it normally
+    // compile predef normally
 
     fl_ast_node *arg_node = id_node->next;
-
-    // if it's constant, args were wrong, throw an error
-    if (fl_predef_is_constant(predef))
-    {
-        assert(FL_FALSE);
-    }
 
     // compile this predefine call to byte code
 
@@ -354,7 +354,7 @@ static fl_value _fl_cmp_try_resolve_predef_const(
     if (!_fl_cmp_verify_predef(id_node->next, predef, cnt, scope))
         assert(FL_FALSE);
 
-    const fl_value_desc_vec expected_params = fl_predef_get_client_params(predef);
+    const fl_param_vec expected_params = fl_predef_get_client_params(predef);
 
     fl_ast_node *arg_node = id_node->next;
     // try to get const args to expand them at compile time
@@ -379,11 +379,11 @@ static inline fl_bool _fl_cmp_verify_predef(
     fl_context *cnt,
     fl_scope *scope)
 {
-    const fl_value_desc_vec expected_params = fl_predef_get_client_params(predef);
-    fl_value_desc_vec args_view = _fl_cmp_get_args_preview(arg_node, cnt, scope);
+    const fl_param_vec expected_params = fl_predef_get_client_params(predef);
+    fl_param_vec args_view = _fl_cmp_infer_arg_nodes_as_params(arg_node, cnt, scope);
 
     // parameters are not matching
-    if (!fl_value_desc_vec_equal(&expected_params, &args_view))
+    if (!fl_param_vec_equal(&expected_params, &args_view))
         return FL_FALSE;
 
     return FL_TRUE;
@@ -458,7 +458,7 @@ static fl_void _fl_cmp_compile_plain_id_chain(
     fl_int_vec_free(&inds);
 }
 
-static inline fl_value_desc _fl_cmp_deduce_node_value_desc(
+static inline fl_param _fl_cmp_infer_node_as_param(
     const fl_ast_node *node,
     const fl_context *cnt,
     const fl_scope *scope)
@@ -468,7 +468,7 @@ static inline fl_value_desc _fl_cmp_deduce_node_value_desc(
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_BLOCK:
-        return fl_value_desc_create(FL_DATA_TYPE_SCOPE, FL_FALSE);
+        return fl_param_create(FL_DATA_TYPE_SCOPE);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
     {
@@ -481,7 +481,7 @@ static inline fl_value_desc _fl_cmp_deduce_node_value_desc(
             if (predef_ind != FL_FIND_FAIL)
             {
                 fl_data_type type = fl_predef_get_return_type(&cnt->predefines.data[predef_ind]);
-                return fl_value_desc_create(type, FL_FALSE);
+                return fl_param_create(type);
             }
         }
 
@@ -491,19 +491,19 @@ static inline fl_value_desc _fl_cmp_deduce_node_value_desc(
 
         fl_ast_node *arg_node = node->child->next;
         fl_fn_variant *var = _fl_cmp_infer_fn_overload(arg_node, cnt, scope, id->value.data);
-        return fl_value_desc_create(var->return_type, FL_FALSE);
+        return fl_param_create(var->return_type);
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
         id = fl_scope_resolve_id(scope, node->data);
         if (id)
-            return fl_value_desc_create(id->value.data_type, FL_TRUE);
+            return fl_param_create_ref(id->value.data_type);
         else
-            return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_TRUE);
+            return fl_param_create_ref(FL_DATA_TYPE_NULL);
     case FL_AST_NODE_TYPE_LITERAL:
-        return fl_value_desc_create(((fl_value *)node->data)->data_type, FL_FALSE);
+        return fl_param_create(((fl_value *)node->data)->data_type);
     default:
         assert(FL_FALSE);
-        return fl_value_desc_create(FL_DATA_TYPE_NULL, FL_FALSE);
+        return fl_param_create(FL_DATA_TYPE_NULL);
     }
 }
 
@@ -631,9 +631,9 @@ static inline fl_fn_variant *_fl_cmp_infer_fn_overload(
     const fl_scope *scope,
     const fl_fn_variant_vec *variants)
 {
-    fl_value_desc_vec args_preview = _fl_cmp_get_args_preview(arg_node, cnt, scope);
+    fl_param_vec args_preview = _fl_cmp_infer_arg_nodes_as_params(arg_node, cnt, scope);
     fl_fn_variant *match = fl_fn_variant_vec_match(variants, args_preview);
-    fl_value_desc_vec_free(&args_preview);
+    fl_param_vec_free(&args_preview);
     return match;
 }
 
@@ -641,25 +641,25 @@ static fl_value_vec _fl_cmp_resolve_args_const(
     const fl_ast_node *arg_node,
     fl_context *cnt,
     fl_scope *scope,
-    const fl_value_desc_vec expected)
+    const fl_param_vec expected)
 {
     fl_value_vec args;
     fl_value_vec_init(&args);
 
     for (fl_size i = 0; i < expected.size; i++)
     {
-        fl_value_desc curr_exp = expected.data[i];
+        fl_param curr_exp = expected.data[i];
         fl_value arg_value;
         fl_id_entry *assoc_id;
         if (!_fl_cmp_resolve_node_const(
                 arg_node, cnt, scope,
-                curr_exp.refable ? FL_NULL : &arg_value, &assoc_id))
+                curr_exp.refering ? FL_NULL : &arg_value, &assoc_id))
         {
             fl_value_vec_free(&args);
             return args;
         }
 
-        if (expected.data[i].refable)
+        if (expected.data[i].refering)
         {
             if (!assoc_id)
                 assert(FL_FALSE);
@@ -683,18 +683,18 @@ static fl_value_vec _fl_cmp_resolve_args_const(
     return args;
 }
 
-static fl_value_desc_vec _fl_cmp_get_args_preview(
+static fl_param_vec _fl_cmp_infer_arg_nodes_as_params(
     const fl_ast_node *arg_node,
     const fl_context *cnt,
     const fl_scope *scope)
 {
-    fl_value_desc_vec v_descs;
-    fl_value_desc_vec_init(&v_descs);
+    fl_param_vec v_descs;
+    fl_param_vec_init(&v_descs);
 
     while (arg_node)
     {
-        fl_value_desc vd = _fl_cmp_deduce_node_value_desc(arg_node, cnt, scope);
-        fl_value_desc_vec_push(&v_descs, vd);
+        fl_param vd = _fl_cmp_infer_node_as_param(arg_node, cnt, scope);
+        fl_param_vec_push(&v_descs, vd);
         arg_node = arg_node->next;
     }
 

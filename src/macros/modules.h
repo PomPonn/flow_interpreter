@@ -5,7 +5,7 @@
 #include "shared/error.h"
 #include "lang/scope.h"
 #include "lang/data_type.h"
-#include "vecs/value_desc_vec.h"
+#include "vecs/param_vec.h"
 #include "vecs/fn_variant_vec.h"
 
 // ---------- PRIVATE ----------
@@ -16,13 +16,13 @@
 #define _FL_TEMP_LOCATION (fl_token_location){.description = ""}
 
 #define _FL_TDESCS(...) \
-    (fl_value_desc[]) { __VA_ARGS__ }
+    (fl_param[]) { __VA_ARGS__ }
 
-#define _FL_PARAMS(...)                                                   \
-    fl_value_desc_vec params;                                             \
-    fl_value_desc_vec_initc(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
-    for (fl_size _i = 0; _i < params._capacity; _i++)                     \
-    fl_value_desc_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
+#define _FL_PARAMS(...)                                              \
+    fl_param_vec params;                                             \
+    fl_param_vec_initc(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
+    for (fl_size _i = 0; _i < params._capacity; _i++)                \
+    fl_param_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
 
 #define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                     \
     {                                                                                         \
@@ -40,7 +40,7 @@
     {                                                                      \
         fl_char buffer[_FL_ID_CHAIN_BUFFER_SIZE];                          \
         fl_id_chain_to_string(id_chain, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
-        value_desc_vec params;                                             \
+        param_vec params;                                                  \
         fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);   \
     }
 

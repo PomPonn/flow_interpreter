@@ -23,15 +23,32 @@ fl_char *fl_file_read(const fl_char *filename)
     return buffer;
 }
 
-fl_void fl_file_append(const fl_char *filename, const fl_char *content)
+fl_bool fl_file_write(const fl_char *filename, const fl_byte_vec bytes)
+{
+    FILE *file = fopen(filename, "wb");
+
+    if (!file)
+        return FL_FALSE;
+
+    size_t written = fwrite(bytes.data, sizeof(bytes.data[0]), bytes.size, file);
+    if (written != bytes.size)
+        return FL_FALSE;
+
+    fclose(file);
+    return FL_TRUE;
+}
+
+fl_bool fl_file_append_str(const fl_char *filename, const fl_char *content)
 {
     FILE *file = fopen(filename, "ab");
 
-    assert(file);
     if (!file)
-        return;
+        return FL_FALSE;
 
-    fputs(content, file);
+    if (fputs(content, file) < 0)
+        // error occured while appending
+        return FL_FALSE;
 
     fclose(file);
+    return FL_TRUE;
 }

@@ -1,5 +1,6 @@
 # TODO
 
+- simulate module import on compilation
 - should predef_vec be made constant?
 - revise predef compilation (const vs non-const)
 - revise mod_importer implementation namings

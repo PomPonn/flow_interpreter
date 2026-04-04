@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lang/fn_variant.h"
-#include "lang/value_desc.h"
+#include "lang/param.h"
 
 #define FL_VEC_NAME fl_fn_variant_vec
 #define FL_VEC_TYPE fl_fn_variant
@@ -12,13 +12,13 @@
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_match(
     const fl_fn_variant_vec *vec,
-    const fl_value_desc_vec params)
+    const fl_param_vec params)
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_value_desc_vec current = vec->data[i].params;
+        const fl_param_vec current = vec->data[i].params;
 
-        if (fl_value_desc_vec_equal(&current, &params))
+        if (fl_param_vec_equal(&current, &params))
             return &vec->data[i];
     }
 

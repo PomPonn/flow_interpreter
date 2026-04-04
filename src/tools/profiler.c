@@ -55,7 +55,7 @@ fl_void _fl_prof_log(
         measures_count, input_size, input_unit,
         sum / measures_count, med, min, max, sum * 1e-3, sum);
 
-    fl_file_append(filename, buffer);
+    fl_file_append_str(filename, buffer);
 }
 
 #endif

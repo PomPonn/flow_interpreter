@@ -2,7 +2,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "vecs/value_desc_vec.h"
+#include "vecs/param_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 
@@ -14,7 +14,7 @@ struct _fl_fn_variant
 {
     fl_bool c_defined;
     fl_data_type return_type;
-    fl_value_desc_vec params;
+    fl_param_vec params;
     union
     {
         fl_c_fn_ptr pointer;
@@ -31,7 +31,7 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *variant,
     fl_bool c_defined,
     fl_data_type return_type,
-    fl_value_desc_vec params);
+    fl_param_vec params);
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant);
 FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant var1, fl_fn_variant var2);
 FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec args);
@@ -40,7 +40,7 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *variant,
     fl_bool c_defined,
     fl_data_type return_type,
-    fl_value_desc_vec params)
+    fl_param_vec params)
 {
     variant->c_defined = c_defined;
     variant->return_type = return_type;
@@ -50,7 +50,7 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
 
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant)
 {
-    fl_value_desc_vec_free(&variant->params);
+    fl_param_vec_free(&variant->params);
 
     if (variant->c_defined)
         fl_byte_vec_free(&variant->body);

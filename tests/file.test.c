@@ -42,14 +42,16 @@ void test_file_read_ContentMatch(void)
     TEST_ASSERT_EQUAL_size_t(strlen(buffer), strlen(content));
     TEST_ASSERT_EQUAL_INT(0, strcmp(buffer, content));
 
-    fl_file_free(&content);
+    fl_file_content_free(&content);
 }
 
 void test_file_append_ContentMatch(void)
 {
     const fl_char append_me[] = "\nHi There!\n";
 
-    fl_file_append(filename, append_me);
+    fl_bool success = fl_file_append_str(filename, append_me);
+
+    TEST_ASSERT_EQUAL_UINT8(FL_TRUE, success);
 
     fl_char *content = fl_file_read(filename);
     TEST_ASSERT_NOT_EQUAL(FL_NULL, content);
@@ -59,7 +61,7 @@ void test_file_append_ContentMatch(void)
     TEST_ASSERT_EQUAL_size_t(strlen(append_me), strlen(appended_content));
     TEST_ASSERT_EQUAL_INT(0, strcmp(append_me, appended_content));
 
-    fl_file_free(&content);
+    fl_file_content_free(&content);
 }
 
 // ---------- ENTRY ----------
