@@ -1,5 +1,7 @@
 # TODO
 
+- fix scopes relation (parent can't free it's children scope if it's hanging without any inner id)
+- search for memory leaks
 - should predef_vec be made constant?
 - revise mod_importer implementation namings
 - create forward type decls where possible
