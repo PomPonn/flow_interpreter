@@ -162,7 +162,7 @@ static inline fl_void _fl_cmp_compile_args_with_as_new_id_first_arg(
 
 // ---------- DEFINITIONS ----------
 
-fl_void fl_cmp_compile(fl_char *source_path, fl_context *cnt)
+fl_void fl_cmp_compile(const fl_char *source_path, fl_context *cnt)
 {
     fl_char *source_code = fl_file_read(source_path);
 
@@ -336,7 +336,7 @@ static fl_bool _fl_cmp_try_compile_predef(
     const fl_char *new_id_name = FL_NULL;
     fl_ast_node *arg_node = id_node->next;
 
-    if (predef->type == FL_PREDEF_TYPE_ASSIGN)
+    if (predef->instr == FL_INSTR_ASSIGN)
     {
         // create id if it does not exist before further processing
         fl_param param = _fl_cmp_infer_node_as_param(arg_node, cnt, scope);

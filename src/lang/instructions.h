@@ -8,6 +8,9 @@
 #define _FL_V_INT(v) *(fl_flow_int *)v.data
 #define _FL_V_FLOAT(v) *(fl_flow_int *)v.data
 
+// REMEMBER TO KEEP IT UP-TO-DATE
+#define FL_PREDEF_INSTRS_COUNT (FL_INSTR_POW + 1)
+
 /**
  * @brief Represents byte code instructions.
  */
@@ -15,7 +18,8 @@ enum _fl_instruction
 {
     // TODO: comment this when finished
 
-    // predefined instructions (predefinitions)
+    // callable instructions
+    // add new ones before FL_INSTR_POW to avoid dependancy problems
     FL_INSTR_IMPORT,
     FL_INSTR_ASSIGN,
     FL_INSTR_ADD,
@@ -35,6 +39,7 @@ enum _fl_instruction
     FL_INSTR_START_ARGS,
     FL_INSTR_END_ARGS,
 };
+typedef fl_byte fl_instruction;
 
 FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
 {

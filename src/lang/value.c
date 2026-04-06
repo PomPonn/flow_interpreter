@@ -13,9 +13,8 @@ fl_void fl_value_free(fl_value *value)
     case FL_DATA_TYPE_FN:
         fl_fn_variant_vec_free(value->data);
         break;
+        // don't free scope, because it
     case FL_DATA_TYPE_SCOPE:
-        fl_scope_free(value->data);
-        break;
     case FL_DATA_TYPE_REF:
         break;
     default:

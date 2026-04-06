@@ -1,4 +1,4 @@
 # Hello World! #
-io = import("std.io");
+io = import(":std.io");
 
 io.put(5+4);

@@ -15,8 +15,4 @@
 
 // ---------- DECLARATIONS ----------
 
-fl_byte_vec fl_intpr_fn_call_const(
-    fl_context *cnt,
-    fl_scope *scope,
-    fl_fn_variant fn,
-    fl_byte_vec args_code);
+fl_byte_vec fl_intpr_interpret(fl_byte_vec bytes);
