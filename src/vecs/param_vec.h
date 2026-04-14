@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lang/param.h"
+#include "flow/fn/param.h"
 
 #define FL_VEC_NAME fl_param_vec
 #define FL_VEC_TYPE fl_param

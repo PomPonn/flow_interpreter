@@ -2,7 +2,7 @@
 
 #include "shared/str.h"
 #include "tokenizer/delims.h"
-#include "lang/data_type.h"
+#include "flow/data_type.h"
 
 // ---------- MACROS ----------
 

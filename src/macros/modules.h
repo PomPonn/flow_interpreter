@@ -3,10 +3,11 @@
 #include "shared/str.h"
 #include "macros/basic.h"
 #include "shared/error.h"
-#include "lang/scope.h"
-#include "lang/data_type.h"
+#include "flow/scope.h"
+#include "flow/data_type.h"
 #include "vecs/param_vec.h"
 #include "vecs/fn_variant_vec.h"
+#include "flow/fn/fn_interface.h"
 
 // ---------- PRIVATE ----------
 
@@ -27,8 +28,10 @@
 #define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                     \
     {                                                                                         \
         _FL_PARAMS(__VA_ARGS__);                                                              \
+        fl_fn_interface interface;                                                            \
+        fl_fn_interface_init(&interface, return_type, params);                                \
         fl_fn_variant variant;                                                                \
-        fl_fn_variant_init(&variant, FL_TRUE, return_type, params);                           \
+        fl_fn_variant_init(&variant, FL_TRUE, interface);                                     \
         variant.pointer = _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload); \
         fl_bool success = fl_fn_variant_vec_overload(name->value.data, variant);              \
         assert(success);                                                                      \

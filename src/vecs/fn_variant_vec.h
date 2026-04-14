@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lang/fn_variant.h"
-#include "lang/param.h"
+#include "flow/fn/fn_variant.h"
+#include "flow/fn/param.h"
 
 #define FL_VEC_NAME fl_fn_variant_vec
 #define FL_VEC_TYPE fl_fn_variant
@@ -16,7 +16,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_match(
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_param_vec current = vec->data[i].params;
+        const fl_param_vec current = vec->data[i].interface.params;
 
         if (fl_param_vec_equal(&current, &params))
             return &vec->data[i];

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "shared/common.h"
-#include "lang/id_chain.h"
-#include "lang/id_entry.h"
+#include "flow/id/id_chain.h"
+#include "flow/id/id_entry.h"
 
 struct _fl_id_node
 {

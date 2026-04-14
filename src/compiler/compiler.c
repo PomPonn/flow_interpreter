@@ -18,10 +18,10 @@
 #include "revise_me/id/id_node.h"
 #include "vecs/fn_variant_vec.h"
 #include "vecs/const_cstr_vec.h"
-#include "lang/scope.h"
-#include "lang/param.h"
-#include "lang/value.h"
-#include "lang/instructions.h"
+#include "flow/scope.h"
+#include "flow/fn/param.h"
+#include "flow/value.h"
+#include "flow/instr/instruction.h"
 #include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -301,7 +301,7 @@ static fl_void _fl_cmp_compile_fn_like_call(
     if (id->constant)
     {
         // try to get const args to expand them at compile time
-        fl_value_vec const_args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn_var->params);
+        fl_value_vec const_args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn_var->interface.params);
 
         if (!fl_value_vec_is_empty(&const_args))
         {
@@ -371,7 +371,7 @@ static fl_bool _fl_cmp_try_compile_predef(
     // compile this predef normally
 
     // push instruction
-    fl_byte_vec_push(code, predef->type);
+    fl_byte_vec_push(code, predef->instr);
 
     // compile args
     if (new_id_name)
@@ -391,7 +391,7 @@ static fl_value _fl_cmp_try_resolve_predef_const(
     if (!_fl_cmp_verify_predef(id_node->next, predef, cnt, scope))
         assert(FL_FALSE);
 
-    const fl_param_vec expected_params = fl_predef_get_client_params(predef);
+    const fl_param_vec expected_params = fl_predef_get_interface(predef)->params;
 
     fl_ast_node *arg_node = id_node->next;
     // try to get const args to expand them at compile time
@@ -416,7 +416,7 @@ static inline fl_bool _fl_cmp_verify_predef(
     fl_context *cnt,
     fl_scope *scope)
 {
-    const fl_param_vec expected_params = fl_predef_get_client_params(predef);
+    const fl_param_vec expected_params = fl_predef_get_interface(predef)->params;
     fl_param_vec args_view = _fl_cmp_infer_arg_nodes_as_params(arg_node, cnt, scope);
 
     // parameters are not matching
@@ -504,7 +504,7 @@ static inline fl_param _fl_cmp_infer_node_as_param(
             fl_uint predef_ind = fl_predef_vec_find(&cnt->predefines, id_chain->data[0]);
             if (predef_ind != FL_FIND_FAIL)
             {
-                fl_data_type type = fl_predef_get_return_type(&cnt->predefines.data[predef_ind]);
+                fl_data_type type = fl_predef_get_interface(&cnt->predefines.data[predef_ind])->return_type;
                 return fl_param_create(type);
             }
         }
@@ -515,7 +515,7 @@ static inline fl_param _fl_cmp_infer_node_as_param(
 
         fl_ast_node *arg_node = node->child->next;
         fl_fn_variant *var = _fl_cmp_infer_fn_overload(arg_node, cnt, scope, id->value.data);
-        return fl_param_create(var->return_type);
+        return fl_param_create(var->interface.return_type);
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
         id = fl_scope_resolve_id(scope, node->data);
@@ -597,7 +597,7 @@ static inline fl_bool _fl_cmp_resolve_node_const(
         if (!fn)
             return FL_FALSE;
 
-        fl_value_vec args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn->params);
+        fl_value_vec args = _fl_cmp_resolve_args_const(arg_node, cnt, scope, fn->interface.params);
 
         if (fl_value_vec_is_empty(&args))
             return FL_FALSE;

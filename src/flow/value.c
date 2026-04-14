@@ -1,9 +1,9 @@
 #include "value.h"
 
 #include "vecs/fn_variant_vec.h"
-#include "lang/scope.h"
+#include "flow/scope.h"
 #include "shared/str.h"
-#include "lang/instructions.h"
+#include "flow/instr/instruction.h"
 #include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)

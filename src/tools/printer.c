@@ -1,9 +1,9 @@
 #include "printer.h"
 
 #include "shared/str.h"
-#include "lang/id_chain.h"
-#include "lang/value.h"
-#include "lang/instructions.h"
+#include "flow/id/id_chain.h"
+#include "flow/value.h"
+#include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
 #include "macros/basic.h"
 #include <stdio.h>

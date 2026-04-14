@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lang/scope.h"
+#include "flow/scope.h"
 
 #define FL_VEC_NAME fl_const_scope_vec
 #define FL_VEC_TYPE const fl_scope *

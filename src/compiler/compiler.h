@@ -10,7 +10,7 @@
 
 // ---------- DEPENDENCIES -----------
 
-#include "lang/context.h"
+#include "flow/context.h"
 #include "ast/ast_node.h"
 
 // ---------- DECLARATIONS -----------

@@ -9,7 +9,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "lang/data_type.h"
+#include "flow/data_type.h"
 #include "vecs/byte_vec.h"
 
 // ---------- MACROS ----------

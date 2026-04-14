@@ -12,7 +12,7 @@
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
 #include "vecs/byte_vec.h"
-#include "lang/id_chain.h"
+#include "flow/id/id_chain.h"
 
 // ---------- TYPE DEFINITIONS ----------
 

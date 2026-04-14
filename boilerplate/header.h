@@ -1,7 +1,7 @@
 /**
  * ---------- name.h --------------------
  *
- * Declares name node logic.
+ * Declares name logic.
  *
  * --------------------------------------
  */

@@ -12,7 +12,8 @@
 #include "shared/common.h"
 #include "vecs/value_vec.h"
 #include "vecs/param_vec.h"
-#include "lang/instructions.h"
+#include "flow/instr/instruction.h"
+#include "flow/fn/fn_interface.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -55,12 +56,10 @@ FL_HEADER_FN fl_bool fl_predef_is_inlineable(const fl_predef *predef)
     }
 }
 
-fl_void fl_static_predefs_free();
+fl_void fl_predef_interfaces_free();
 
-fl_void fl_static_predefs_init();
+fl_void fl_predef_interfaces_init();
 
-const fl_param_vec fl_predef_get_client_params(const fl_predef *predef);
-
-fl_data_type fl_predef_get_return_type(const fl_predef *predef);
+const fl_fn_interface *fl_predef_get_interface(const fl_predef *predef);
 
 fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args);

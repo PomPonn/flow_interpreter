@@ -1,7 +1,7 @@
 /**
  * ---------- param.h ----------
  *
- * Declares data type description logic.
+ * Declares parameter description logic.
  *
  */
 
@@ -9,7 +9,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "lang/data_type.h"
+#include "flow/data_type.h"
 
 // ---------- TYPE DEFINITIONS ----------
 

@@ -12,8 +12,8 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "lang/id_chain.h"
-#include "lang/value.h"
+#include "flow/id/id_chain.h"
+#include "flow/value.h"
 #include "tokenizer/token_location.h"
 // may be to remove
 #include "revise_me/info/operator_info.h"

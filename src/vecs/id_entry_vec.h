@@ -9,7 +9,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "lang/id_entry.h"
+#include "flow/id/id_entry.h"
 #include "shared/str.h"
 
 #define FL_VEC_NAME fl_id_entry_vec
