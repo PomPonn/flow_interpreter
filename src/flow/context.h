@@ -15,8 +15,6 @@
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 #include "vecs/cstr_vec.h"
-// removable
-#include "vecs/id_node_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -65,8 +63,6 @@ FL_HEADER_FN fl_void fl_context_free(fl_context *cnt)
  * @return
  */
 fl_void fl_context_register_id(fl_context *cnt, fl_scope *scope, fl_id_entry *entry);
-
-fl_bool fl_context_add_global_scope(fl_context *cnt, fl_id_node *id_node);
 
 FL_HEADER_FN fl_size fl_context_make_literal(fl_context *cnt, fl_value lit_value)
 {
