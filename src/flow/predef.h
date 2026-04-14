@@ -17,9 +17,7 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
-// forward typedef
-struct _fl_context;
-typedef struct _fl_context fl_context;
+FL_FORWARD_STRUCT(fl_context);
 
 struct _fl_predef
 {

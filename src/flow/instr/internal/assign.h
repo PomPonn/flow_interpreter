@@ -13,11 +13,11 @@
 #include "flow/id/id_entry.h"
 #include "flow/value.h"
 
-// ---------- TYPE DEFINITIONS ----------
+// ---------- DECLARATIONS --------------
 
 FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value what);
 
-// ---------- DECLARATIONS --------------
+// ---------- DEFINITIONS ---------------
 
 FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value what)
 {

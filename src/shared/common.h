@@ -20,3 +20,6 @@
 
 #define FL_FLOW_MODULE __declspec(dllexport)
 #define FL_HEADER_FN static inline
+#define FL_FORWARD_STRUCT(struct_name) \
+    struct _##struct_name;             \
+    typedef struct _##struct_name struct_name;

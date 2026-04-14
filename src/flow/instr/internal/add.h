@@ -17,11 +17,11 @@
 #define _FL_INT_VAL(v) *(fl_flow_int *)v.data
 #define _FL_FLOAT_VAL(v) *(fl_flow_int *)v.data
 
-// ---------- TYPE DEFINITIONS ----------
+// ---------- DECLARATIONS -------------
 
 FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right);
 
-// ---------- DECLARATIONS --------------
+// ---------- DEFINITIONS --------------
 
 FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
 {

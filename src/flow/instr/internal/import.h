@@ -13,15 +13,13 @@
 #include "flow/id/id_entry.h"
 #include "tools/mod_importer.h"
 
-// ---------- TYPE DEFINITIONS ----------
+// ---------- DECLARATIONS --------------
 
-// forward typedef
-struct _fl_context;
-typedef struct _fl_context fl_context;
+FL_FORWARD_STRUCT(fl_context);
 
 FL_HEADER_FN fl_value fl_instr_import(fl_context *cnt, fl_char *import_str);
 
-// ---------- DECLARATIONS --------------
+// ---------- DEFINITIONS ---------------
 
 FL_HEADER_FN fl_value fl_instr_import(fl_context *cnt, fl_char *import_str)
 {

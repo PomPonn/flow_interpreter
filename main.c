@@ -1,4 +1,4 @@
-#include "compiler/compiler.h"
+#include "flow/flow.h"
 #include "tools/profiler.h"
 #include <stdio.h>
 
@@ -9,7 +9,7 @@ fl_int main()
     fl_context cnt;
     fl_context_init(&cnt);
 
-    fl_cmp_compile(_TEST_INPUT_PATH, &cnt);
+    fl_flow_compile(_TEST_INPUT_PATH, &cnt);
 
     fl_context_free(&cnt);
     fl_predef_interfaces_free();
