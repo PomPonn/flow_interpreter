@@ -30,6 +30,10 @@ typedef struct _fl_predef fl_predef;
 
 // ---------- DECLARATIONS ----------
 
+FL_HEADER_FN fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args);
+
+// ---------- DEFINITIONS -----------
+
 FL_HEADER_FN fl_predef fl_predef_create(
     fl_instruction instr,
     fl_char *alias,
@@ -60,4 +64,7 @@ FL_HEADER_FN const fl_fn_interface *fl_predef_get_interface(const fl_predef *pre
     return fl_globals_get_static_predef_interface(predef);
 }
 
-fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args);
+FL_HEADER_FN fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args)
+{
+    return fl_instruction_call(predef->instr, cnt, args);
+}

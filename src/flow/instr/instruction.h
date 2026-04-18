@@ -1,7 +1,11 @@
 #pragma once
 
+#include "vecs/value_vec.h"
+
 // REMEMBER TO KEEP IT UP-TO-DATE
 #define FL_INSTR_PREDEF_COUNT (FL_INSTR_POW + 1)
+
+FL_FORWARD_STRUCT(fl_context);
 
 /**
  * @brief Represents byte code instructions.
@@ -32,3 +36,5 @@ enum _fl_instruction
     FL_INSTR_END_ARGS,
 };
 typedef fl_byte fl_instruction;
+
+fl_value fl_instruction_call(fl_instruction instr, fl_context *cnt, fl_value_vec args);

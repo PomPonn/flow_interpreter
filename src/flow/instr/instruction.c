@@ -1,12 +1,11 @@
-#include "predef.h"
+#include "instruction.h"
 
-#include "vecs/value_vec.h"
-#include "flow/instr/internal/_all.h"
 #include "flow/context.h"
+#include "flow/instr/internal/_all.h"
 
-fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args)
+fl_value fl_instruction_call(fl_instruction instr, fl_context *cnt, fl_value_vec args)
 {
-    switch (predef->instr)
+    switch (instr)
     {
     case FL_INSTR_ADD:
         return fl_instr_add(args.data[0], args.data[1]);

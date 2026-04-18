@@ -38,7 +38,7 @@
 
 // ---------- DEFINITIONS -----------
 
-fl_void fl_flow_compile(const fl_char *source_path, fl_context *cnt)
+fl_void fl_flow_run(const fl_char *source_path, fl_context *cnt)
 {
     fl_char *source_code = fl_file_read(source_path);
 
@@ -80,7 +80,7 @@ fl_void fl_flow_compile(const fl_char *source_path, fl_context *cnt)
     fl_prt_print_byte_code(code);
 #endif
 
-    fl_byte_vec_free(&code);
+        fl_byte_vec_free(&code);
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 }
