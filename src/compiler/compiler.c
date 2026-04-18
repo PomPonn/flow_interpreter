@@ -193,15 +193,20 @@ static inline fl_void _fl_cmp_compile_block(
     fl_scope *scope,
     fl_byte_vec *code)
 {
-    fl_scope inner_scope;
-    fl_scope_init(&inner_scope, scope);
+    fl_scope this_scope;
+    fl_scope_init(&this_scope, scope);
 
     node = node->child;
     while (node)
     {
-        _fl_cmp_compile_node(node, cnt, &inner_scope, code);
+        _fl_cmp_compile_node(node, cnt, &this_scope, code);
         node = node->next;
     }
+
+    // TODO:
+    // free this scope if it isn't assigned to anything
+
+    fl_scope_free(&this_scope);
 }
 
 static fl_void _fl_cmp_compile_fn_like_call(
