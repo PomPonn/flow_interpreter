@@ -22,11 +22,11 @@ FL_HEADER_FN fl_const_cstr_vec fl_predef_vec_escapes_view(const fl_predef_vec *v
     return aliases;
 }
 
-FL_HEADER_FN fl_uint fl_predef_vec_find(const fl_predef_vec *vec, const fl_char *alias)
+FL_HEADER_FN fl_predef *fl_predef_vec_resolve(const fl_predef_vec *vec, const fl_char *alias)
 {
     for (fl_size i = 0; i < vec->size; i++)
         if (fl_str_equal(vec->data[i].alias, alias))
-            return (fl_uint)i;
+            return &vec->data[i];
 
-    return FL_FIND_FAIL;
+    return FL_NULL;
 }

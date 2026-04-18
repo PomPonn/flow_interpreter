@@ -1,5 +1,6 @@
 # TODO
 
+- optimalize importing - use imported object if it was imported before, don't import it again.
 - what about operators ordering?
 - unify function and predef (callable instruction)
 - fix scopes relation (parent can't free it's children scope if it's hanging without any inner id)

@@ -12,16 +12,13 @@
 
 #include "shared/error.h"
 #include "shared/str.h"
-#include "tokenizer/tokenizer.h"
-#include "optimalizer/optimalizer.h"
-#include "ast/ast_tree.h"
 #include "vecs/fn_variant_vec.h"
+#include "ast/ast_node.h"
 #include "vecs/const_cstr_vec.h"
 #include "flow/scope.h"
 #include "flow/fn/param.h"
 #include "flow/value.h"
 #include "flow/instr/instruction.h"
-#include "tools/file.h"
 
 // ---------- MACROS ----------------
 
@@ -142,7 +139,7 @@ static inline fl_void _fl_cmp_handle_new_id(
     fl_scope *scope,
     fl_byte_vec *code);
 
-static inline fl_void _fl_cmp_compile_args_with_as_new_id_first_arg(
+static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
     const fl_ast_node *node,
     const fl_char *new_id_name,
     fl_context *cnt,
@@ -324,7 +321,7 @@ static fl_bool _fl_cmp_try_compile_predef(
 
     // compile args
     if (new_id_name)
-        _fl_cmp_compile_args_with_as_new_id_first_arg(arg_node, new_id_name, cnt, scope, code);
+        _fl_cmp_compile_args_with_new_id_as_first_arg(arg_node, new_id_name, cnt, scope, code);
     else
         _fl_cmp_compile_args(arg_node, cnt, scope, code);
 
@@ -379,14 +376,7 @@ static inline fl_predef *_fl_cmp_get_predef(
     const fl_id_chain *id_chain,
     fl_context *cnt)
 {
-    if (id_chain->size != 1)
-        return FL_NULL;
-
-    fl_uint predef_ind = fl_predef_vec_find(&cnt->predefines, id_chain->data[0]);
-    if (predef_ind == FL_FIND_FAIL)
-        return FL_NULL;
-
-    return &cnt->predefines.data[predef_ind];
+    return id_chain->size != 1 ? FL_NULL : fl_predef_vec_resolve(&cnt->predefines, id_chain->data[0]);
 }
 
 static inline fl_void _fl_cmp_compile_literal(
@@ -450,16 +440,18 @@ static inline fl_param _fl_cmp_infer_node_as_param(
         // check if it's predef
         if (id_chain->size == 1)
         {
-            fl_uint predef_ind = fl_predef_vec_find(&cnt->predefines, id_chain->data[0]);
-            if (predef_ind != FL_FIND_FAIL)
+            fl_predef *predef = fl_predef_vec_resolve(&cnt->predefines, id_chain->data[0]);
+            if (predef)
             {
-                fl_data_type type = fl_predef_get_interface(&cnt->predefines.data[predef_ind])->return_type;
+                fl_data_type type = fl_predef_get_interface(predef)->return_type;
                 return fl_param_create(type);
             }
         }
 
         // it's a function otherwise
         id = fl_scope_resolve_id(scope, id_chain);
+
+        assert(id);
         assert(id->value.data_type == FL_DATA_TYPE_FN);
 
         fl_ast_node *arg_node = node->child->next;
@@ -698,7 +690,7 @@ static inline fl_void _fl_cmp_handle_new_id(
     fl_id_entry_vec_push(&scope->ids, id);
 }
 
-static inline fl_void _fl_cmp_compile_args_with_as_new_id_first_arg(
+static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
     const fl_ast_node *sec_arg_node,
     const fl_char *new_id_name,
     fl_context *cnt,

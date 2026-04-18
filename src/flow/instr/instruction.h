@@ -1,7 +1,7 @@
 #pragma once
 
 // REMEMBER TO KEEP IT UP-TO-DATE
-#define FL_PREDEF_INSTRS_COUNT (FL_INSTR_POW + 1)
+#define FL_INSTR_PREDEF_COUNT (FL_INSTR_POW + 1)
 
 /**
  * @brief Represents byte code instructions.

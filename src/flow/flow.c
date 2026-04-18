@@ -15,6 +15,10 @@
 #include "ast/ast_tree.h"
 #include "tools/file.h"
 #include "shared/error.h"
+#include "optimalizer/optimalizer.h"
+#include "tokenizer/tokenizer.h"
+#include "ast/ast_tree.h"
+#include "tools/file.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -72,6 +76,7 @@ fl_void fl_flow_compile(const fl_char *source_path, fl_context *cnt)
 
 #ifndef NDEBUG
     fl_file_write("bytecode.cfl", code);
+    printf("\nByte code:\n");
     fl_prt_print_byte_code(code);
 #endif
 

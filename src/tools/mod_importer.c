@@ -2,6 +2,7 @@
 
 #include "tools/lib.h"
 #include "shared/error.h"
+#include "flow/context.h"
 
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512
@@ -17,6 +18,14 @@ fl_value fl_mimp_import_id_value(fl_context *cnt, const fl_char *id_str)
     // check if library dll is already imported
     fl_lib_handle handle = FL_NULL;
     const fl_char *lib_name = chain.data[0];
+
+    // if first char is ':', the library is global
+    if (lib_name[0] == FL_GLOBAL_MODULE_SPEC_CHAR)
+    {
+        // DO STH WITH THIS INFO
+        lib_name += sizeof(fl_char);
+    }
+
     fl_uint ind = fl_cstr_vec_find(&cnt->lib_names, lib_name);
     if (ind == FL_FIND_FAIL)
     {

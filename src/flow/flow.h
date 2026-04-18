@@ -10,6 +10,7 @@
 
 // ---------- DEPENDENCIES --------------
 
+#include "flow/globals.h"
 #include "flow/context.h"
 
 // ---------- DECLARATIONS --------------
