@@ -10,7 +10,7 @@ fl_value fl_instruction_call(fl_instruction instr, fl_context *cnt, fl_value_vec
     case FL_INSTR_ADD:
         return fl_instr_add(args.data[0], args.data[1]);
     case FL_INSTR_ASSIGN:
-        return fl_instr_assign(args.data[0], args.data[1]);
+        return fl_instr_assign(args.data[0], &args.data[1]);
     case FL_INSTR_IMPORT:
         return fl_instr_import(cnt, args.data[0].data);
     default:

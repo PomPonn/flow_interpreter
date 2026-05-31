@@ -9,7 +9,7 @@
 
 typedef fl_value (*fl_module_register_fn)(const fl_id_chain *id_chain);
 
-fl_value fl_mimp_import_id_value(fl_context *cnt, const fl_char *id_str)
+fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_context *cnt)
 {
     // parse id string
     fl_id_chain chain;
@@ -19,14 +19,14 @@ fl_value fl_mimp_import_id_value(fl_context *cnt, const fl_char *id_str)
     fl_lib_handle handle = FL_NULL;
     const fl_char *lib_name = chain.data[0];
 
-    // if first char is ':', the library is global
+    // if first char is FL_GLOBAL_MODULE_SPEC_CHAR, the library is global
     if (lib_name[0] == FL_GLOBAL_MODULE_SPEC_CHAR)
     {
         // DO STH WITH THIS INFO
         lib_name += sizeof(fl_char);
     }
 
-    fl_uint ind = fl_cstr_vec_find(&cnt->lib_names, lib_name);
+    fl_int ind = fl_cstr_vec_find(&cnt->lib_names, lib_name);
     if (ind == FL_FIND_FAIL)
     {
         // load library

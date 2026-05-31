@@ -68,7 +68,7 @@ fl_void fl_flow_run(const fl_char *source_path, fl_context *cnt)
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
 #ifndef NDEBUG
-    printf("Wezly drzewa skladniowego:\n");
+    printf("\nWezly drzewa skladniowego:\n");
     fl_prt_print_ast_tree(tree);
 #endif
 
@@ -80,7 +80,9 @@ fl_void fl_flow_run(const fl_char *source_path, fl_context *cnt)
     fl_prt_print_byte_code(code);
 #endif
 
-        fl_byte_vec_free(&code);
+    // interpret
+
+    fl_byte_vec_free(&code);
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 }

@@ -38,7 +38,7 @@ FL_HEADER_FN fl_void fl_id_entry_init(
     fl_value value,
     fl_bool constant)
 {
-    fl_id_entry *val = fl_mem_alloc(sizeof(fl_id_entry));
+    fl_id_entry *val = fl_mem_alloc_t(fl_id_entry);
     val->name = name;
     val->decl_type = declared_type;
     val->value = value;

@@ -25,5 +25,6 @@ enum _fl_bool
 };
 typedef fl_byte fl_bool;
 
+typedef fl_bool fl_flow_bool;
 typedef fl_long fl_flow_int;
 typedef fl_double fl_flow_float;

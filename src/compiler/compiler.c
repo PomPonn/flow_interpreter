@@ -193,20 +193,16 @@ static inline fl_void _fl_cmp_compile_block(
     fl_scope *scope,
     fl_byte_vec *code)
 {
-    fl_scope this_scope;
-    fl_scope_init(&this_scope, scope);
+    fl_scope *this_scope = fl_mem_alloc_t(fl_scope);
+    fl_scope_init(this_scope, scope);
+    fl_scope_add_inner(scope, this_scope);
 
     node = node->child;
     while (node)
     {
-        _fl_cmp_compile_node(node, cnt, &this_scope, code);
+        _fl_cmp_compile_node(node, cnt, this_scope, code);
         node = node->next;
     }
-
-    // TODO:
-    // free this scope if it isn't assigned to anything
-
-    fl_scope_free(&this_scope);
 }
 
 static fl_void _fl_cmp_compile_fn_like_call(
@@ -221,8 +217,10 @@ static fl_void _fl_cmp_compile_fn_like_call(
     fl_predef *predef = _fl_cmp_get_predef(id_node->data, cnt);
     if (predef)
     {
+        // compile it
         if (!_fl_cmp_try_compile_predef(id_node, predef, cnt, scope, code))
             assert(FL_FALSE);
+
         return;
     }
 
@@ -319,8 +317,6 @@ static fl_bool _fl_cmp_try_compile_predef(
         return FL_TRUE;
     }
 
-    // compile this predef normally
-
     // push instruction
     fl_byte_vec_push(code, predef->instr);
 
@@ -352,8 +348,16 @@ static fl_value _fl_cmp_try_resolve_predef_const(
     {
         fl_value res = fl_predef_call(predef, cnt, const_args);
 
-        // what to do with this freeing? Is it alwas safe not to free?
-        // fl_value_vec_free(&const_args);
+        // add this scope to parents inner scopes if it has no parent yet
+        if (res.data_type == FL_DATA_TYPE_SCOPE)
+        {
+            fl_scope *res_scope = (fl_scope *)res.data;
+            if (!res_scope->outer)
+                fl_scope_add_inner(scope, res_scope);
+        }
+
+        // is it safe???
+        fl_value_vec_free(&const_args);
 
         return res;
     }
@@ -490,10 +494,12 @@ static inline fl_bool _fl_cmp_resolve_node_const(
     {
     case FL_AST_NODE_TYPE_BLOCK:
     {
-        fl_scope *inner = fl_mem_alloc(sizeof(fl_scope));
+        // TODO ...
+        assert(FL_FALSE);
+
+        fl_scope *inner = fl_mem_alloc_t(fl_scope);
         fl_scope_init(inner, scope);
 
-        assert(FL_FALSE);
         // ???
 
         // fl_ast_node *scope_node = node->child;
@@ -507,8 +513,8 @@ static inline fl_bool _fl_cmp_resolve_node_const(
         //     }
         // }
 
-        if (reduced_value)
-            *reduced_value = fl_value_create(FL_DATA_TYPE_SCOPE, inner);
+        // if (reduced_value)
+        //     *reduced_value = fl_value_create(FL_DATA_TYPE_SCOPE, inner);
         break;
     }
     case FL_AST_NODE_TYPE_FN_CALL:
@@ -566,7 +572,7 @@ static inline fl_bool _fl_cmp_resolve_node_const(
         break;
     case FL_AST_NODE_TYPE_LITERAL:
         if (reduced_value)
-            *reduced_value = *(fl_value *)node->data;
+            *reduced_value = fl_value_copy(*(fl_value *)node->data);
         break;
     default:
         assert(FL_FALSE);
@@ -628,9 +634,7 @@ static fl_value_vec _fl_cmp_resolve_args_const(
 
     // excess args
     if (arg_node)
-    {
         assert(FL_FALSE);
-    }
 
     return args;
 }

@@ -15,23 +15,26 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value what);
+FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value what)
+FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what)
 {
     // WARNING: 'what' value is moved, not copied
     // it is probably unwanted behaviour
 
     fl_id_entry *id = (fl_id_entry *)id_ref.data;
 
-    // invalid data type
-    if (!fl_data_type_has(id->decl_type, what.data_type))
+    if (!fl_data_type_has(id->decl_type, what->data_type))
+        // invalid data type
         assert(FL_FALSE);
 
     fl_value_free(&id->value);
-    id->value = what;
+    id->value = *what;
 
-    return what;
+    // clear 'what' value because it was moved
+    *what = FL_VALUE_EMPTY;
+
+    return id->value;
 }

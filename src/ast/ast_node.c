@@ -69,7 +69,7 @@ fl_void fl_ast_node_init(
     fl_ast_node *parent,
     fl_token_location location)
 {
-    fl_ast_node *n = fl_mem_alloc(sizeof(fl_ast_node));
+    fl_ast_node *n = fl_mem_alloc_t(fl_ast_node);
 
     n->type = type;
     n->data = data;

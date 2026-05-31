@@ -58,7 +58,7 @@ fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec)
 
     for (fl_size i = 0; i < ids.size; i++)
     {
-        }
+    }
 }
 
 fl_id_entry *fl_scope_traverse(

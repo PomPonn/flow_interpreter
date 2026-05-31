@@ -13,8 +13,10 @@ fl_void fl_value_free(fl_value *value)
     case FL_DATA_TYPE_FN:
         fl_fn_variant_vec_free(value->data);
         break;
-        // don't free scope, because it
     case FL_DATA_TYPE_SCOPE:
+        // free scope???
+        fl_scope_free(value->data);
+        break;
     case FL_DATA_TYPE_REF:
         break;
     default:
@@ -36,13 +38,13 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
     case FL_DATA_TYPE_FLOAT:
         assert(sizeof(fl_flow_float) == sizeof(double));
 
-        res_data = fl_mem_alloc(sizeof(fl_flow_float));
+        res_data = fl_mem_alloc_t(fl_flow_float);
         *((fl_flow_float *)res_data) = atof(lit_data);
         break;
     case FL_DATA_TYPE_INT:
         assert(sizeof(fl_flow_int) == sizeof(long long));
 
-        res_data = fl_mem_alloc(sizeof(fl_flow_int));
+        res_data = fl_mem_alloc_t(fl_flow_int);
         *((fl_flow_int *)res_data) = atoll(lit_data);
         break;
     case FL_DATA_TYPE_STRING:
@@ -78,6 +80,8 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
         {
         case FL_DATA_TYPE_STRING:
             return fl_str_equal(v1.data, v2.data);
+        case FL_DATA_TYPE_BOOL:
+            return *(fl_flow_bool *)v1.data == *(fl_flow_bool *)v2.data;
         case FL_DATA_TYPE_INT:
             return *(fl_flow_int *)v1.data == *(fl_flow_int *)v2.data;
         case FL_DATA_TYPE_FLOAT:
@@ -96,18 +100,14 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
     switch (v.data_type)
     {
     case FL_DATA_TYPE_STRING:
+    case FL_DATA_TYPE_BOOL:
+    case FL_DATA_TYPE_INT:
+    case FL_DATA_TYPE_FLOAT:
     {
-        const fl_char *str = v.data;
-        // add 1 to len to include end of string ('\0')
-        fl_byte_vec_push_mem(bytes, str, fl_str_len(str) + 1);
+        const fl_size size = fl_value_mem_size(v);
+        fl_byte_vec_push_mem(bytes, v.data, size);
         break;
     }
-    case FL_DATA_TYPE_INT:
-        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_int));
-        break;
-    case FL_DATA_TYPE_FLOAT:
-        fl_byte_vec_push_mem(bytes, v.data, sizeof(fl_flow_float));
-        break;
     case FL_DATA_TYPE_SCOPE:
     {
         const fl_scope *scope = v.data;
@@ -122,12 +122,71 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         break;
     }
     case FL_DATA_TYPE_FN:
-
-        // ENDED HERE
-
-        break;
+        // TODO
     default:
         assert(FL_FALSE);
         break;
     }
+}
+
+fl_size fl_value_mem_size(fl_value value)
+{
+    switch (value.data_type)
+    {
+    case FL_DATA_TYPE_ARRAY:
+        // TODO
+        assert(FL_FALSE);
+        return 0;
+    case FL_DATA_TYPE_SCOPE:
+        // TODO
+        assert(FL_FALSE);
+        return 0;
+    case FL_DATA_TYPE_FN:
+        assert(FL_FALSE);
+        return 0;
+    case FL_DATA_TYPE_BOOL:
+        return sizeof(fl_flow_bool);
+    case FL_DATA_TYPE_FLOAT:
+        return sizeof(fl_flow_float);
+    case FL_DATA_TYPE_INT:
+        return sizeof(fl_flow_int);
+    case FL_DATA_TYPE_STRING:
+        // +1 for '\0'
+        return fl_str_len(value.data) + 1;
+    case FL_DATA_TYPE_REF:
+        // is it correct?
+        return sizeof(fl_id_entry);
+    default:
+        return 0;
+    }
+}
+
+fl_value fl_value_copy(fl_value value)
+{
+    fl_value copied = fl_value_create(value.data_type, FL_NULL);
+
+    switch (value.data_type)
+    {
+    case FL_DATA_TYPE_SCOPE:
+        // TODO
+        assert(FL_FALSE);
+        break;
+    case FL_DATA_TYPE_FN:
+        assert(FL_FALSE);
+        break;
+    case FL_DATA_TYPE_BOOL:
+    case FL_DATA_TYPE_INT:
+    case FL_DATA_TYPE_FLOAT:
+    case FL_DATA_TYPE_STRING:
+    {
+        const fl_size size = fl_value_mem_size(value);
+        copied.data = fl_mem_alloc(size);
+        fl_mem_copy(value.data, copied.data, size);
+        break;
+    }
+    default:
+        break;
+    }
+
+    return copied;
 }

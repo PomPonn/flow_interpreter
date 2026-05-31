@@ -14,12 +14,19 @@
 #include "vecs/byte_vec.h"
 #include "flow/id/id_chain.h"
 
+// ---------- DEFINES ----------
+
+#define fl_scope_get_inners(scope_ptr) ((fl_scope_vec *)scope_ptr->inners)
+
 // ---------- TYPE DEFINITIONS ----------
+
+typedef fl_void *fl_inner_scopes_impl;
 
 struct _fl_scope
 {
     const struct _fl_scope *outer;
     fl_id_entry_vec ids;
+    fl_inner_scopes_impl inners;
 };
 typedef struct _fl_scope fl_scope;
 
@@ -30,6 +37,7 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope);
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
     const fl_id_chain *id_chain);
+FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
 
 fl_int_vec fl_scope_find_id_path(
     const fl_scope *scope,
@@ -43,18 +51,28 @@ fl_id_entry *fl_scope_traverse(
 
 fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
+// depends on fl_scope_free
+#include "vecs/scope_vec.h"
+
 // ---------- HEADER-ONLY IMPLEMENTATIONS ----------
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer)
 {
     fl_id_entry_vec_init(&scope->ids);
     scope->outer = outer;
+
+    scope->inners = fl_mem_alloc_t(fl_scope_vec);
+    fl_scope_vec_init((fl_scope_vec *)scope->inners);
 }
 
 FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
 {
     fl_id_entry_vec_free(&scope->ids);
     scope->outer = FL_NULL;
+
+    fl_scope_vec_free((fl_scope_vec *)scope->inners);
+    fl_mem_free(scope->inners);
+    scope->inners = FL_NULL;
 }
 
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
@@ -68,4 +86,10 @@ FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
 
     fl_int_vec_free(&inds);
     return id;
+}
+
+FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner)
+{
+    fl_scope_vec_push(fl_scope_get_inners(scope), inner);
+    inner->outer = (const fl_scope *)scope;
 }

@@ -90,7 +90,7 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
 static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
 {
     // init id chain
-    fl_id_chain *chain = fl_mem_alloc(sizeof(fl_id_chain));
+    fl_id_chain *chain = fl_mem_alloc_t(fl_id_chain);
     fl_id_chain_init(chain);
 
     while (arr->current->type == FL_TOKEN_TYPE_ID)
@@ -364,7 +364,7 @@ static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_t
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
     fl_ast_node *node;
-    fl_value *literal_value = fl_mem_alloc(sizeof(fl_value));
+    fl_value *literal_value = fl_mem_alloc_t(fl_value);
     *literal_value = fl_value_from_literal(arr->current->alias, arr->current->value);
 
     init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_value, parent);

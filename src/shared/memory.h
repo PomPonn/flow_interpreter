@@ -2,6 +2,11 @@
 
 #include "shared/types.h"
 
+#define fl_mem_alloc_t(type) fl_mem_alloc(sizeof(type))
+#define fl_mem_alloc_arr_t(type, count) fl_mem_alloc_arr(sizeof(type), count)
+#define fl_mem_realloc_arr_t(mem, elem_type, new_size) \
+    fl_mem_realloc_arr(mem, sizeof(elem_type), new_size)
+
 fl_void fl_mem_free(fl_unknown *memory);
 
 fl_unknown *fl_mem_alloc(fl_size size);

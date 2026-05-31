@@ -47,16 +47,16 @@
         fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);   \
     }
 
-#define FL_REGISTER_FN(name, scope, constant)                                             \
-    fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc(sizeof(fl_fn_variant_vec)); \
-    fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                      \
-    fl_id_entry *name;                                                                    \
-    fl_id_entry_init(                                                                     \
-        &name,                                                                            \
-        fl_str_dup(_FL_STRINGIFY(name)),                                                  \
-        FL_DATA_TYPE_FN,                                                                  \
-        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)),                        \
-        constant);                                                                        \
+#define FL_REGISTER_FN(name, scope, constant)                                       \
+    fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc_t(fl_fn_variant_vec); \
+    fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                \
+    fl_id_entry *name;                                                              \
+    fl_id_entry_init(                                                               \
+        &name,                                                                      \
+        fl_str_dup(_FL_STRINGIFY(name)),                                            \
+        FL_DATA_TYPE_FN,                                                            \
+        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)),                  \
+        constant);                                                                  \
     fl_id_entry_vec_push(&scope->ids, name);
 
 #define FL_OVERLOAD_FN(name, overload, return_type, ...) \
@@ -71,13 +71,13 @@
 #define FL_MODULE_FN_HEAD_ONCE(name) \
     FL_MODULE_FN_HEAD(name, )
 
-#define FL_REGISTER_SCOPE(parent_scope, name)                            \
-    fl_scope *_FL_MERGE2(name, _scope) = fl_mem_alloc(sizeof(fl_scope)); \
-    fl_scope_init(_FL_MERGE2(name, _scope), parent_scope);               \
-    fl_id_entry *name;                                                   \
-    fl_id_entry_init(                                                    \
-        &name,                                                           \
-        fl_str_dup(_FL_STRINGIFY(name)),                                 \
-        FL_DATA_TYPE_SCOPE,                                              \
-        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _scope)),   \
+#define FL_REGISTER_SCOPE(parent_scope, name)                          \
+    fl_scope *_FL_MERGE2(name, _scope) = fl_mem_alloc_t(fl_scope);     \
+    fl_scope_init(_FL_MERGE2(name, _scope), parent_scope);             \
+    fl_id_entry *name;                                                 \
+    fl_id_entry_init(                                                  \
+        &name,                                                         \
+        fl_str_dup(_FL_STRINGIFY(name)),                               \
+        FL_DATA_TYPE_SCOPE,                                            \
+        fl_value_create(FL_DATA_TYPE_SCOPE, _FL_MERGE2(name, _scope)), \
         FL_FALSE);

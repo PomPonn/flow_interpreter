@@ -21,7 +21,7 @@ typedef struct _fl_operator_info fl_operator_info;
 
 FL_HEADER_FN fl_void fl_operator_info_init(fl_operator_info **info, fl_operator_order order)
 {
-    fl_operator_info *i = fl_mem_alloc(sizeof(fl_operator_info));
+    fl_operator_info *i = fl_mem_alloc_t(fl_operator_info);
     i->order = order;
     *info = i;
 }
