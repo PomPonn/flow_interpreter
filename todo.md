@@ -1,5 +1,6 @@
 # TODO
 
+- move predef interface to directly to predef struct?
 - optimalize importing - use already imported object if it was imported before, don't import it again.
 - what about operators ordering?
 - unify function and predef (callable instruction)

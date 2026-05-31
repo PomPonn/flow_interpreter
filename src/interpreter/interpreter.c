@@ -4,9 +4,14 @@
 #include "flow/instr/instruction.h"
 #include "flow/context.h"
 
-fl_void fl_intpr_interpret(fl_byte_vec bytes, fl_context *cnt)
+fl_void fl_intpr_interpret(fl_byte_vec bytes)
 {
-    fl_scope current_scope = cnt->main_scope;
+    // init blank context
+    fl_context cnt;
+    fl_context_init(&cnt);
+    fl_globals_put_static_predefs(&cnt);
+
+    fl_scope *current_scope = fl_scope_get_inners(&cnt.main_scope)->data[0];
     fl_byte_reader reader = fl_byte_reader_create(bytes);
 
     while (FL_TRUE)
@@ -24,4 +29,6 @@ fl_void fl_intpr_interpret(fl_byte_vec bytes, fl_context *cnt)
             break;
         }
     }
+
+    fl_context_free(&cnt);
 }

@@ -10,9 +10,13 @@
 
 // ---------- DEPENDENCIES -----------
 
-#include "flow/context.h"
-#include "ast/ast_node.h"
+#include "shared/common.h"
+
+// ---------- TYPE DEFINITIONS -----------
+
+FL_FORWARD_STRUCT(fl_byte_vec);
+FL_FORWARD_STRUCT(fl_ast_node);
 
 // ---------- DECLARATIONS -----------
 
-fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *node, fl_context *cnt);
+fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *node);

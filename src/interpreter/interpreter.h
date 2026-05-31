@@ -13,6 +13,4 @@
 
 // ---------- DECLARATIONS ----------
 
-FL_FORWARD_STRUCT(fl_context);
-
-fl_void fl_intpr_interpret(fl_byte_vec bytes, fl_context *cnt);
+fl_void fl_intpr_interpret(fl_byte_vec bytes);

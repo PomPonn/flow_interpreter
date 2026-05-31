@@ -16,7 +16,7 @@
 
 // ---------- DEFINES ----------
 
-#define fl_scope_get_inners(scope_ptr) ((fl_scope_vec *)scope_ptr->inners)
+#define fl_scope_get_inners(scope_ptr) ((fl_scope_vec *)(scope_ptr)->inners)
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -70,9 +70,12 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
     fl_id_entry_vec_free(&scope->ids);
     scope->outer = FL_NULL;
 
-    fl_scope_vec_free((fl_scope_vec *)scope->inners);
-    fl_mem_free(scope->inners);
-    scope->inners = FL_NULL;
+    if (scope->inners)
+    {
+        fl_scope_vec_free((fl_scope_vec *)scope->inners);
+        fl_mem_free(scope->inners);
+        scope->inners = FL_NULL;
+    }
 }
 
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(

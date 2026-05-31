@@ -10,6 +10,8 @@
 
 // ---------- DEPENDENCIES ----------
 
+#include "flow/context.h"
+#include "ast/ast_node.h"
 #include "shared/error.h"
 #include "shared/str.h"
 #include "vecs/fn_variant_vec.h"
@@ -148,13 +150,19 @@ static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
 
 // ---------- DEFINITIONS ----------
 
-fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_context *cnt)
+fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
 {
+    // init blank context
+    fl_context cnt;
+    fl_context_init(&cnt);
+    fl_globals_put_static_predefs(&cnt);
+
     fl_byte_vec code;
     fl_byte_vec_init(&code);
 
-    _fl_cmp_compile_node(tree, cnt, &cnt->main_scope, &code);
+    _fl_cmp_compile_node(tree, &cnt, &cnt.main_scope, &code);
 
+    fl_context_free(&cnt);
     return code;
 }
 

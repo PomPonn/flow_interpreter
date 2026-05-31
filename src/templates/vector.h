@@ -72,6 +72,15 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYP
     vec->size++;
 }
 
+FL_HEADER_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_NAME *vec)
+{
+    FL_VEC_NAME copied;
+    _FL_MERGE2(FL_VEC_NAME, _initc)(&copied, vec->size);
+    copied.size = vec->size;
+    fl_mem_copy(vec->data, copied.data, vec->size * sizeof(FL_VEC_TYPE));
+    return copied;
+}
+
 FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
 {
     return vec->size == 0;
