@@ -18,6 +18,8 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
+FL_FORWARD_STRUCT(fl_byte_reader);
+
 struct _fl_value
 {
     fl_data_type data_type;
@@ -42,6 +44,8 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2);
 fl_value fl_value_copy(fl_value value);
 
 fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes);
+
+fl_value fl_value_from_bytes(fl_byte_reader *reader);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
 

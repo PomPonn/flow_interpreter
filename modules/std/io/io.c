@@ -51,6 +51,9 @@ FL_MODULE_FN_HEAD_ONCE(put)
         case FL_DATA_TYPE_NULL:
             printf("<NULL>");
             break;
+        case FL_DATA_TYPE_STRING:
+            puts(arg.data);
+            break;
         case FL_DATA_TYPE_INT:
             printf("%lli", *(fl_long *)arg.data);
             break;

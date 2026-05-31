@@ -1,5 +1,6 @@
 # TODO
 
+- opt. opportunity: implement container with unshifting without moving whole container data
 - rework flow context concept
 - reorganize predef.h and global.h related code
 - move predef interface to directly to predef struct?

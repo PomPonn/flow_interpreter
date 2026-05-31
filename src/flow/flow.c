@@ -90,7 +90,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_ast_node_free(&tree);
 
     printf("\n-- Interpretation: --\n");
-    return;
+
     fl_intpr_interpret(code);
 
     fl_byte_vec_free(&code);

@@ -38,4 +38,11 @@ enum _fl_instruction
 };
 typedef fl_byte fl_instruction;
 
+FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
+
 fl_value fl_instruction_call(fl_instruction instr, fl_context *cnt, fl_value_vec args);
+
+FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
+{
+    return instr < FL_INSTR_CALL;
+}

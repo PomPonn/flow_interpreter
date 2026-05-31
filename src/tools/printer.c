@@ -266,10 +266,7 @@ static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *re
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 
     for (fl_size i = 0; !fl_byte_reader_end(reader) && i < count; i++)
-    {
         printf("[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
-        i++;
-    }
 }
 
 static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)

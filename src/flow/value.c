@@ -4,6 +4,7 @@
 #include "flow/scope.h"
 #include "shared/str.h"
 #include "flow/instr/instruction.h"
+#include "tools/byte_reader.h"
 #include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)
@@ -180,4 +181,30 @@ fl_value fl_value_copy(fl_value value)
     }
 
     return copied;
+}
+
+fl_value fl_value_from_bytes(fl_byte_reader *reader)
+{
+    const fl_data_type type = fl_byte_reader_next(reader, fl_data_type);
+    fl_value val = fl_value_create(type, FL_NULL);
+
+    switch (type)
+    {
+    case FL_DATA_TYPE_STRING:
+        val.data = fl_str_dup(fl_byte_reader_next_str(reader));
+        break;
+    case FL_DATA_TYPE_INT:
+    case FL_DATA_TYPE_FLOAT:
+    case FL_DATA_TYPE_BOOL:
+    {
+        const fl_size size = fl_value_mem_size(val);
+        val.data = fl_byte_reader_next_bytes(reader, size);
+        break;
+    }
+    default:
+        assert(FL_FALSE);
+        break;
+    }
+
+    return val;
 }

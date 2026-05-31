@@ -23,6 +23,7 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what)
 {
     // WARNING: 'what' value is moved, not copied
     // it is probably unwanted behaviour
+    // TODO: change this behaviour
 
     fl_id_entry *id = (fl_id_entry *)id_ref.data;
 

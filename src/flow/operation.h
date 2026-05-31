@@ -30,7 +30,7 @@ struct _fl_operation
     {
         fl_instruction instr;
         fl_fn_variant_vec *vars;
-        fl_value *value;
+        fl_value value;
     };
 };
 typedef struct _fl_operation fl_operation;
@@ -39,9 +39,15 @@ typedef struct _fl_operation fl_operation;
 
 FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr);
 FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
-FL_HEADER_FN fl_operation fl_operation_from_value(fl_value *val);
+FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
+FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
+FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
+    fl_operation op,
+    const fl_value_vec *args);
+
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_context *cnt);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
 
@@ -61,7 +67,7 @@ FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_from_value(fl_value *val)
+FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
 {
     return (fl_operation){
         .type = FL_OPERATION_VALUE,
@@ -72,4 +78,23 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value *val)
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)
 {
     return op.type == FL_OPERATION_INSTR && op.instr == instr;
+}
+
+FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
+{
+    return op.type == FL_OPERATION_FN ||
+           (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
+}
+
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_context *cnt)
+{
+    if (op.type == FL_OPERATION_INSTR)
+        return fl_instruction_call(op.instr, cnt, args);
+    else if (op.type == FL_OPERATION_FN)
+    {
+        fl_fn_variant *var = fl_fn_variant_vec_find_match_a(op.vars, args);
+        return fl_fn_variant_call(var, args);
+    }
+    else
+        return FL_VALUE_EMPTY;
 }

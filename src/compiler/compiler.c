@@ -622,7 +622,7 @@ static inline fl_fn_variant *_fl_cmp_infer_fn_overload(
     const fl_fn_variant_vec *variants)
 {
     fl_param_vec args_preview = _fl_cmp_infer_arg_nodes_as_params(arg_node, cnt, scope);
-    fl_fn_variant *match = fl_fn_variant_vec_match(variants, args_preview);
+    fl_fn_variant *match = fl_fn_variant_vec_find_match_p(variants, args_preview);
     fl_param_vec_free(&args_preview);
     return match;
 }
