@@ -20,6 +20,8 @@ set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple.fl)
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output
 set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
+# byte code version. Format: [Y][M][D][00-99 (patch id)]
+set(BYTECODE_VERSION 2026053100)
 
 # ---------- FUNCTIONS ----------
 
@@ -74,6 +76,7 @@ add_compile_definitions(
     _C_COMPILER_PATH="${CMAKE_C_COMPILER}"
     _TEST_INPUT_PATH="${SAMPLE_PATH}"
     _PROFILER_LOGS_PATH="${LOG_DIR}/profiler.txt"
+    _BYTECODE_VERSION="${BYTECODE_VERSION}"
 )
 
 # ---------- SOURCES ----------

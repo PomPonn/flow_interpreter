@@ -109,18 +109,8 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         break;
     }
     case FL_DATA_TYPE_SCOPE:
-    {
-        const fl_scope *scope = v.data;
-        const fl_id_entry_vec ids = scope->ids;
-
-        for (fl_size i = 0; i < ids.size; i++)
-        {
-            fl_byte_vec_push(bytes, FL_INSTR_NEW_ID);
-            fl_value_to_bytes(ids.data[i]->value, bytes);
-        }
-
+        fl_scope_to_bytes(v.data, bytes);
         break;
-    }
     case FL_DATA_TYPE_FN:
         // TODO
     default:
@@ -139,6 +129,7 @@ fl_size fl_value_mem_size(fl_value value)
         return 0;
     case FL_DATA_TYPE_SCOPE:
         // TODO
+        // make sure it matches bytes count returned by fl_scope_to_bytes()
         assert(FL_FALSE);
         return 0;
     case FL_DATA_TYPE_FN:

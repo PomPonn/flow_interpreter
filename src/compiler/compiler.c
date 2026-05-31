@@ -21,6 +21,7 @@
 #include "flow/fn/param.h"
 #include "flow/value.h"
 #include "flow/instr/instruction.h"
+#include "flow/section.h"
 
 // ---------- MACROS ----------------
 
@@ -148,6 +149,8 @@ static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
     fl_scope *scope,
     fl_byte_vec *code);
 
+static inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes);
+
 // ---------- DEFINITIONS ----------
 
 fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
@@ -155,15 +158,37 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
     // init blank context
     fl_context cnt;
     fl_context_init(&cnt);
-    fl_globals_put_static_predefs(&cnt);
+    fl_global_put_static_predefs(&cnt);
 
     fl_byte_vec code;
     fl_byte_vec_init(&code);
 
     _fl_cmp_compile_node(tree, &cnt, &cnt.main_scope, &code);
 
+    fl_byte_vec final;
+    fl_byte_vec_init(&final);
+
+    // add byte code version info
+    fl_byte_vec_push(&final, FL_SECTION_VERSION);
+    _fl_cmp_paste_bytecode_version(&final);
+
+    // add literals table to the start of the byte code
+    if (!fl_value_vec_is_empty(&cnt.literals))
+    {
+        fl_byte_vec_push(&final, FL_SECTION_LITERALS);
+        fl_byte_vec_push_t(&final, cnt.literals.size, fl_size);
+        fl_value_vec_to_bytes(&cnt.literals, &final);
+    }
+
+    // merge both bytes vecs
+    fl_byte_vec_push(&final, FL_SECTION_CODE);
+    fl_byte_vec_merge(&final, &code);
+
+    // free remains
+    fl_byte_vec_free(&code);
     fl_context_free(&cnt);
-    return code;
+
+    return final;
 }
 
 static fl_void _fl_cmp_compile_node(
@@ -203,7 +228,6 @@ static inline fl_void _fl_cmp_compile_block(
 {
     fl_scope *this_scope = fl_mem_alloc_t(fl_scope);
     fl_scope_init(this_scope, scope);
-    fl_scope_add_inner(scope, this_scope);
 
     node = node->child;
     while (node)
@@ -320,7 +344,7 @@ static fl_bool _fl_cmp_try_compile_predef(
     // expand resolved value if this predef is inlineable and there is any value
     if (fl_predef_is_inlineable(predef) && !fl_value_is_empty(res_value))
     {
-        fl_byte_vec_push(code, FL_INSTR_IMMEDIATE_VALUE);
+        fl_byte_vec_push(code, FL_INSTR_IMMED_VALUE);
         fl_value_to_bytes(res_value, code);
         return FL_TRUE;
     }
@@ -684,7 +708,7 @@ static inline fl_void _fl_cmp_compile_args(
     fl_scope *scope,
     fl_byte_vec *code)
 {
-    fl_byte_vec_push(code, FL_INSTR_START_ARGS);
+    // fl_byte_vec_push(code, FL_INSTR_START_ARGS);
     while (node)
     {
         _fl_cmp_compile_node(node, cnt, scope, code);
@@ -716,7 +740,7 @@ static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
 {
     assert(new_id_name);
 
-    fl_byte_vec_push(code, FL_INSTR_START_ARGS);
+    // fl_byte_vec_push(code, FL_INSTR_START_ARGS);
 
     fl_byte_vec_push(code, FL_INSTR_NEW_ID);
     fl_byte_vec_push_mem(code, new_id_name, fl_str_len(new_id_name) + 1);
@@ -727,4 +751,10 @@ static inline fl_void _fl_cmp_compile_args_with_new_id_as_first_arg(
         sec_arg_node = sec_arg_node->next;
     }
     fl_byte_vec_push(code, FL_INSTR_END_ARGS);
+}
+
+static inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes)
+{
+    // size + 1 for '\0' (end of string)
+    fl_byte_vec_push_mem(bytes, _BYTECODE_VERSION, fl_str_len(_BYTECODE_VERSION) + 1);
 }

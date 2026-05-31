@@ -1,5 +1,7 @@
 #include "scope.h"
 
+#include "flow/instr/instruction.h"
+
 static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
 
 fl_int_vec fl_scope_find_id_path(
@@ -52,12 +54,22 @@ fl_int_vec fl_scope_find_id_path(
     return indexes;
 }
 
-fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec)
+fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *bytes)
 {
-    fl_id_entry_vec ids = scope->ids;
+    const fl_id_entry_vec ids = scope->ids;
 
     for (fl_size i = 0; i < ids.size; i++)
     {
+        fl_byte_vec_push(bytes, FL_INSTR_NEW_ID);
+        fl_value_to_bytes(ids.data[i]->value, bytes);
+    }
+
+    const fl_scope_vec *inners = fl_scope_get_inners(scope);
+    for (fl_size i = 0; i < inners->size; i++)
+    {
+        fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
+        fl_scope_to_bytes(inners->data[i], bytes);
+        fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
     }
 }
 

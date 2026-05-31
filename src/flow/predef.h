@@ -14,7 +14,7 @@
 #include "vecs/param_vec.h"
 #include "flow/instr/instruction.h"
 #include "flow/fn/fn_interface.h"
-#include "flow/globals.h"
+#include "flow/global.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -61,7 +61,7 @@ FL_HEADER_FN fl_bool fl_predef_is_inlineable(const fl_predef *predef)
 
 FL_HEADER_FN const fl_fn_interface *fl_predef_get_interface(const fl_predef *predef)
 {
-    return fl_globals_get_static_predef_interface(predef);
+    return fl_global_get_static_predef_interface(predef);
 }
 
 FL_HEADER_FN fl_value fl_predef_call(const fl_predef *predef, fl_context *cnt, fl_value_vec args)

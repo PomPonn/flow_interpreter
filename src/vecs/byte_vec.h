@@ -9,6 +9,9 @@
 #define FL_VEC_CAP _FL_BC_CAP_STEP
 #include "templates/vector.h"
 
+#define fl_byte_vec_push_t(byte_vec_ptr, what, type) \
+    fl_byte_vec_push_mem(byte_vec_ptr, &what, sizeof(type))
+
 FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n)
 {
     if (bc->size + bytes_n > bc->_capacity)
@@ -16,4 +19,9 @@ FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem
 
     fl_mem_copy(mem, bc->data + bc->size, bytes_n);
     bc->size += bytes_n;
+}
+
+FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, fl_byte_vec *other)
+{
+    fl_byte_vec_push_mem(bc, other->data, other->size);
 }

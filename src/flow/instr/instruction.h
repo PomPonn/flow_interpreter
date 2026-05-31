@@ -12,6 +12,7 @@ FL_FORWARD_STRUCT(fl_context);
  */
 enum _fl_instruction
 {
+    FL_INSTR_NULL,
     // TODO: comment this when finished
 
     // callable instructions
@@ -29,10 +30,10 @@ enum _fl_instruction
     FL_INSTR_GET_ID,
     FL_INSTR_NEW_ID,
     FL_INSTR_GET_LITERAL,
-    FL_INSTR_IMMEDIATE_VALUE,
+    FL_INSTR_IMMED_VALUE,
     FL_INSTR_START_BLOCK,
     FL_INSTR_END_BLOCK,
-    FL_INSTR_START_ARGS,
+    // FL_INSTR_START_ARGS,
     FL_INSTR_END_ARGS,
 };
 typedef fl_byte fl_instruction;

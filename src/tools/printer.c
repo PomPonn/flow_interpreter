@@ -6,6 +6,7 @@
 #include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
 #include "macros/basic.h"
+#include "flow/section.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -25,7 +26,8 @@
 
 static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
 static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
-static inline fl_void _fl_prt_print_byte_code_helper(fl_byte_reader *reader);
+static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader);
+static fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader);
 static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader);
 
 // ---------- DEFINITIONS ----------
@@ -166,84 +168,108 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     }
 }
 
-static inline fl_void _fl_prt_print_byte_code_helper(fl_byte_reader *reader)
+static fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
 {
-    if (_fl_byte_reader_end(reader))
-        return;
-
-    const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
-    switch (instr)
+    while (!fl_byte_reader_end(reader))
     {
-    case FL_INSTR_START_BLOCK:
-        printf("[BLOCK START]\n");
-        break;
-    case FL_INSTR_END_BLOCK:
-        printf("[BLOCK END]\n");
-        break;
-    case FL_INSTR_CALL:
-        printf("[CALL]\n");
-        // args after id access
-    case FL_INSTR_GET_ID:
-    {
-        assert(sizeof(fl_size) == sizeof(unsigned));
-
-        fl_uint offset = fl_byte_reader_next(reader, fl_uint);
-        fl_size ind_count = fl_byte_reader_next(reader, fl_size);
-        printf("(Identificator access) Offset: %u, indexes: ", offset);
-
-        for (fl_size i = 0; i < ind_count; i++)
+        const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
+        switch (instr)
         {
-            fl_int ind = fl_byte_reader_next(reader, fl_int);
-            printf("%d%s", ind, i == ind_count - 1 ? "\n" : ", ");
+        case FL_INSTR_START_BLOCK:
+            printf("[BLOCK START]\n");
+            break;
+        case FL_INSTR_END_BLOCK:
+            printf("[BLOCK END]\n");
+            break;
+        case FL_INSTR_CALL:
+            printf("[CALL]\n");
+        case FL_INSTR_GET_ID:
+        {
+            assert(sizeof(fl_size) == sizeof(unsigned));
+
+            fl_uint offset = fl_byte_reader_next(reader, fl_uint);
+            fl_size ind_count = fl_byte_reader_next(reader, fl_size);
+            printf("(Identificator access) Offset: %u, indexes: ", offset);
+
+            for (fl_size i = 0; i < ind_count; i++)
+            {
+                fl_int ind = fl_byte_reader_next(reader, fl_int);
+                printf("%d%s", ind, i == ind_count - 1 ? "\n" : ", ");
+            }
+
+            break;
         }
+        // case FL_INSTR_START_ARGS:
+        //     printf("[ARGS START]\n");
+        //     break;
+        case FL_INSTR_END_ARGS:
+            printf("[ARGS END]\n");
+            break;
+        case FL_INSTR_NEW_ID:
+        {
+            const fl_char *id_name = fl_byte_reader_next_str(reader);
+            printf("(Identificator new) %s\n", id_name);
+            break;
+        }
+        case FL_INSTR_GET_LITERAL:
+        {
+            assert(sizeof(fl_size) == sizeof(unsigned));
 
-        break;
+            fl_size ind = fl_byte_reader_next(reader, fl_size);
+            printf("(Literal access) Index: %u\n", ind);
+            break;
+        }
+        case FL_INSTR_IMMED_VALUE:
+            printf("(Immediate value) %s\n", _fl_prt_value_bytes_to_str(reader));
+            break;
+            // ---- PREDEFINED INSTRUCTIONS ----
+            _PRT_HANDLE_PREDEF_PRINT(IMPORT);
+            _PRT_HANDLE_PREDEF_PRINT(ASSIGN);
+            _PRT_HANDLE_PREDEF_PRINT(ADD);
+            _PRT_HANDLE_PREDEF_PRINT(SUB);
+            _PRT_HANDLE_PREDEF_PRINT(DIV);
+            _PRT_HANDLE_PREDEF_PRINT(MUL);
+            _PRT_HANDLE_PREDEF_PRINT(MOD);
+            _PRT_HANDLE_PREDEF_PRINT(POW);
+        default:
+            // undefined instruction
+            assert(FL_FALSE);
+            break;
+        }
     }
-    case FL_INSTR_START_ARGS:
-        printf("[ARGS START]\n");
-        break;
-    case FL_INSTR_END_ARGS:
-        printf("[ARGS END]\n");
-        break;
-    case FL_INSTR_NEW_ID:
-    {
-        const fl_char *id_name = fl_byte_reader_next_str(reader);
-        printf("(Identificator new) %s\n", id_name);
-        break;
-    }
-    case FL_INSTR_GET_LITERAL:
-    {
-        assert(sizeof(fl_size) == sizeof(unsigned));
-
-        fl_size ind = fl_byte_reader_next(reader, fl_size);
-        printf("(Literal access) Index: %u\n", ind);
-        break;
-    }
-    case FL_INSTR_IMMEDIATE_VALUE:
-        printf("(Immediate value) %s\n", _fl_prt_value_bytes_to_str(reader));
-        break;
-        // ---- PREDEFINED INSTRUCTIONS ----
-        _PRT_HANDLE_PREDEF_PRINT(IMPORT);
-        _PRT_HANDLE_PREDEF_PRINT(ASSIGN);
-        _PRT_HANDLE_PREDEF_PRINT(ADD);
-        _PRT_HANDLE_PREDEF_PRINT(SUB);
-        _PRT_HANDLE_PREDEF_PRINT(DIV);
-        _PRT_HANDLE_PREDEF_PRINT(MUL);
-        _PRT_HANDLE_PREDEF_PRINT(MOD);
-        _PRT_HANDLE_PREDEF_PRINT(POW);
-    default:
-        // undefined instruction
-        assert(FL_FALSE);
-        break;
-    }
-
-    _fl_prt_print_byte_code_helper(reader);
 }
 
 fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
 {
     fl_byte_reader reader = fl_byte_reader_create(bytes);
-    _fl_prt_print_byte_code_helper(&reader);
+
+    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_VERSION)
+        assert(FL_FALSE);
+
+    printf("==== BC VERSION: %s ====\n", fl_byte_reader_next_str(&reader));
+
+    if (fl_byte_reader_next(&reader, fl_section) == FL_SECTION_LITERALS)
+    {
+        printf("==== LITERALS ====\n");
+        _fl_prt_print_byte_code_helper_literals(&reader);
+    }
+
+    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_CODE)
+        assert(FL_FALSE);
+
+    printf("==== CODE ====\n");
+    _fl_prt_print_byte_code_helper_code(&reader);
+}
+
+static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader)
+{
+    const fl_size count = fl_byte_reader_next(reader, fl_size);
+
+    for (fl_size i = 0; !fl_byte_reader_end(reader) && i < count; i++)
+    {
+        printf("[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
+        i++;
+    }
 }
 
 static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flow/value.h"
+#include "vecs/byte_vec.h"
 
 #define FL_VEC_NAME fl_value_vec
 #define FL_VEC_TYPE fl_value
@@ -17,3 +18,5 @@ FL_HEADER_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem
 
     return FL_FIND_FAIL;
 }
+
+fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes);

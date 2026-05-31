@@ -15,7 +15,7 @@
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 #include "vecs/cstr_vec.h"
-#include "flow/globals.h"
+#include "flow/global.h"
 
 // ---------- TYPE DEFINITIONS ----------
 

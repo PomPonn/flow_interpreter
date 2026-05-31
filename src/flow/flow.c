@@ -11,7 +11,7 @@
 // ---------- DEPENDENCIES ----------
 
 #include "flow/context.h"
-#include "flow/globals.h"
+#include "flow/global.h"
 #include "compiler/compiler.h"
 #include "tokenizer/token_arr.h"
 #include "interpreter/interpreter.h"
@@ -43,7 +43,7 @@
 
 fl_void fl_flow_run(const fl_char *source_path)
 {
-    fl_globals_init();
+    fl_global_init();
 
     fl_char *source_code = fl_file_read(source_path);
 
@@ -53,7 +53,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("-- Source code: --\n%s\n\n", source_code);
 
     fl_token_arr token_arr;
-    fl_const_cstr_vec predef_escapes = fl_globals_get_static_predefs_escapes();
+    fl_const_cstr_vec predef_escapes = fl_global_get_static_predefs_escapes();
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, &predef_escapes, source_path);
     fl_const_cstr_vec_free(&predef_escapes);
 
@@ -80,6 +80,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_byte_vec code = fl_cmp_compile_ast(tree);
 
 #ifndef NDEBUG
+    // save byte code to file
     fl_file_write("bytecode.cfl", code);
     printf("\n-- Byte code: --\n");
     fl_prt_print_byte_code(code);
@@ -89,8 +90,9 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_ast_node_free(&tree);
 
     printf("\n-- Interpretation: --\n");
+    return;
     fl_intpr_interpret(code);
 
     fl_byte_vec_free(&code);
-    fl_globals_free();
+    fl_global_free();
 }

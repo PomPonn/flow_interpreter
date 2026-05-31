@@ -24,7 +24,7 @@ typedef fl_void *fl_inner_scopes_impl;
 
 struct _fl_scope
 {
-    const struct _fl_scope *outer;
+    struct _fl_scope *outer;
     fl_id_entry_vec ids;
     fl_inner_scopes_impl inners;
 };
@@ -32,7 +32,7 @@ typedef struct _fl_scope fl_scope;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer);
+FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, fl_scope *outer);
 FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope);
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
@@ -56,10 +56,13 @@ fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
 // ---------- HEADER-ONLY IMPLEMENTATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, const fl_scope *outer)
+FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, fl_scope *outer)
 {
     fl_id_entry_vec_init(&scope->ids);
+
     scope->outer = outer;
+    if (scope->outer)
+        fl_scope_add_inner(outer, scope);
 
     scope->inners = fl_mem_alloc_t(fl_scope_vec);
     fl_scope_vec_init((fl_scope_vec *)scope->inners);
@@ -69,6 +72,7 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
 {
     fl_id_entry_vec_free(&scope->ids);
     scope->outer = FL_NULL;
+    // remove this scope from outer inners?
 
     if (scope->inners)
     {
@@ -94,5 +98,5 @@ FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
 FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner)
 {
     fl_scope_vec_push(fl_scope_get_inners(scope), inner);
-    inner->outer = (const fl_scope *)scope;
+    inner->outer = scope;
 }
