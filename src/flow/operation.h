@@ -12,6 +12,7 @@
 #include "shared/common.h"
 #include "flow/instr/instruction.h"
 #include "vecs/fn_variant_vec.h"
+#include "context/base_context.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -49,7 +50,7 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
     fl_operation op,
     const fl_param_vec params);
 
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_context *cnt);
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_base_context *cnt);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
 
@@ -96,7 +97,7 @@ FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
 }
 
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_context *cnt)
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_base_context *cnt)
 {
     if (op.type == FL_OPERATION_INSTR)
         return fl_instruction_call(op.instr, cnt, args);

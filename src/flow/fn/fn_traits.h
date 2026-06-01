@@ -11,34 +11,14 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
+#include "shared/bitfield.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
-struct _fl_fn_traits
+enum _fl_fn_traits
 {
-    // Pure functions give optimalization opportunities during compilation.
-    fl_bool is_pure;
+    FL_FN_TRAITS_NONE = 0b00000000,
+    FL_FN_TRAITS_PURE = 0b00000001,
+    FL_FN_TRAITS_SIMULATE = 0b00000010,
 };
-typedef struct _fl_fn_traits fl_fn_traits;
-
-// ---------- DECLARATIONS --------------
-
-FL_HEADER_FN fl_fn_traits fl_fn_traits_create(fl_bool is_pure);
-
-FL_HEADER_FN fl_fn_traits fl_fn_traits_create_empty();
-
-// ---------- DEFINITIONS -----------
-
-FL_HEADER_FN fl_fn_traits fl_fn_traits_create(fl_bool is_pure)
-{
-    return (fl_fn_traits){
-        .is_pure = is_pure,
-    };
-}
-
-FL_HEADER_FN fl_fn_traits fl_fn_traits_create_empty()
-{
-    return (fl_fn_traits){
-        .is_pure = FL_FALSE,
-    };
-}
+typedef fl_byte fl_fn_traits;

@@ -2,10 +2,10 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "flow/context.h"
+#include "context/base_context.h"
 #include "flow/instr/internal/_all.h"
 
-fl_value fl_instruction_call(fl_instruction instr, fl_context *cnt, fl_value_vec args)
+fl_value fl_instruction_call(fl_instruction instr, fl_base_context *cnt, fl_value_vec args)
 {
     switch (instr)
     {

@@ -11,6 +11,16 @@
 
 FL_HEADER_FN fl_bool fl_param_vec_equal(
     const fl_param_vec *vec,
+    const fl_param_vec *other);
+
+FL_HEADER_FN fl_bool fl_param_vec_suits_args(
+    const fl_param_vec *vec,
+    const fl_value_vec *args);
+
+FL_HEADER_FN fl_bool fl_param_vec_is_every_const(const fl_param_vec *vec);
+
+FL_HEADER_FN fl_bool fl_param_vec_equal(
+    const fl_param_vec *vec,
     const fl_param_vec *other)
 {
     if (vec->size != other->size)
@@ -18,6 +28,15 @@ FL_HEADER_FN fl_bool fl_param_vec_equal(
 
     for (fl_size i = 0; i < vec->size; i++)
         if (!fl_param_equal(vec->data[i], other->data[i]))
+            return FL_FALSE;
+
+    return FL_TRUE;
+}
+
+FL_HEADER_FN fl_bool fl_param_vec_is_every_const(const fl_param_vec *vec)
+{
+    for (fl_size i = 0; i < vec->size; i++)
+        if (!fl_bitfield8_has(vec->data->traits, FL_PARAM_TRAITS_CONST))
             return FL_FALSE;
 
     return FL_TRUE;

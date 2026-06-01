@@ -10,7 +10,6 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "flow/context.h"
 #include "compiler/compiler.h"
 #include "tokenizer/token_arr.h"
 #include "interpreter/interpreter.h"
@@ -22,6 +21,8 @@
 #include "ast/ast_tree.h"
 #include "tools/file.h"
 #include "flow/globals.h"
+#include "context/base_context.h"
+
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -76,7 +77,9 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_prt_print_ast_tree(tree);
 #endif
 
-    fl_byte_vec code = fl_cmp_compile_ast(tree);
+    fl_base_context cnt;
+    fl_base_context_init(&cnt);
+    fl_byte_vec code = fl_cmp_compile_ast(tree, &cnt);
 
 #ifndef NDEBUG
     // save byte code to file
@@ -90,8 +93,10 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     printf("\n-- Interpretation: --\n");
 
+    // reuse base context ???
+
     fl_intpr_interpret(code);
 
     fl_byte_vec_free(&code);
-    fl_global_free();
+    fl_base_context_free(&cnt);
 }

@@ -15,13 +15,13 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_FORWARD_STRUCT(fl_context);
+FL_FORWARD_STRUCT(fl_base_context);
 
-FL_HEADER_FN fl_value fl_instr_import(fl_context *cnt, fl_char *import_str);
+FL_HEADER_FN fl_value fl_instr_import(fl_base_context *cnt, fl_char *import_str);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_value fl_instr_import(fl_context *cnt, fl_char *import_str)
+FL_HEADER_FN fl_value fl_instr_import(fl_base_context *cnt, fl_char *import_str)
 {
     fl_value imported = fl_mimp_import_id_value(import_str, cnt);
     return imported;

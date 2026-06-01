@@ -17,16 +17,16 @@
 FL_FORWARD_STRUCT(fl_fn_interface);
 FL_FORWARD_STRUCT(fl_const_cstr_vec);
 FL_FORWARD_STRUCT(fl_instr_alias);
-FL_FORWARD_STRUCT(fl_fn_traits);
 typedef fl_byte fl_instruction;
+typedef fl_byte fl_fl_traits;
 
 // ---------- DECLARATIONS --------------
 
 fl_void fl_g_instrs_init();
 
-const fl_fn_interface *fl_g_instrs_get_interface(fl_instruction instr);
+fl_void fl_g_instrs_free();
 
-const fl_fn_traits fl_g_instrs_get_traits(fl_instruction instr);
+const fl_fn_interface *fl_g_instrs_get_interface(fl_instruction instr);
 
 const fl_const_cstr_vec *fl_g_instrs_aliases_to_escapes();
 

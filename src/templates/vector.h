@@ -44,6 +44,8 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size 
     vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), size);
     vec->_capacity = size;
     vec->size = size;
+
+    fl_mem_zero(vec->data, size * sizeof(FL_VEC_TYPE));
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
@@ -51,10 +53,20 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
     _FL_MERGE2(FL_VEC_NAME, _init_c)(vec, FL_VEC_CAP);
 }
 
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec)
+{
+    vec->data = FL_NULL;
+    vec->size = 0;
+    vec->_capacity = 0;
+}
+
 // elem count of data must match size param
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data)
 {
-    _FL_MERGE2(FL_VEC_NAME, _init_c)(vec, FL_VEC_CAP);
+    vec->data = fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), size);
+    fl_mem_copy(data, vec->data, sizeof(FL_VEC_TYPE) * size);
+    vec->_capacity = size;
+    vec->size = size;
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)

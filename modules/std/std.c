@@ -3,7 +3,10 @@
 // ---------- INCLUDES ----------
 
 #include "macros/modules.h"
-#include "shared/str.h"
+#include "flow/value.h"
+#include "flow/id/id_chain.h"
+#include "flow/scope.h"
+
 #include "io/io.h"
 
 // ---------- DEFINITIONS -----------

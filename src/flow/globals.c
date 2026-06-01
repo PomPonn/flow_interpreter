@@ -33,6 +33,14 @@ fl_void fl_globals_init()
     initialized = FL_TRUE;
 }
 
+fl_void fl_globals_free()
+{
+    if (!initialized)
+        return;
+
+    fl_g_instrs_free();
+}
+
 fl_bool fl_globals_initialized()
 {
     return initialized;

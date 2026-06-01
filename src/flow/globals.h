@@ -21,4 +21,6 @@
 
 fl_void fl_globals_init();
 
+fl_void fl_globals_free();
+
 fl_bool fl_globals_initialized();

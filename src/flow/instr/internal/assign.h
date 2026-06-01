@@ -27,7 +27,7 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what)
 
     fl_id_entry *id = (fl_id_entry *)id_ref.data;
 
-    if (!fl_data_type_has(id->decl_type, what->data_type))
+    if (!fl_bitfield8_has(id->decl_type, what->data_type))
         // invalid data type
         assert(FL_FALSE);
 

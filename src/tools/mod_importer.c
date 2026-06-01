@@ -2,14 +2,14 @@
 
 #include "tools/lib.h"
 #include "shared/error.h"
-#include "flow/context.h"
+#include "context/base_context.h"
 
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512
 
 typedef fl_value (*fl_module_register_fn)(const fl_id_chain *id_chain);
 
-fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_context *cnt)
+fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_base_context *cnt)
 {
     // parse id string
     fl_id_chain chain;

@@ -243,7 +243,7 @@ fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
 {
     fl_byte_reader reader = fl_byte_reader_create(bytes);
 
-    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_VERSION)
+    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_HEADER)
         assert(FL_FALSE);
 
     printf("==== BC VERSION: %s ====\n", fl_byte_reader_next_str(&reader));
@@ -292,7 +292,7 @@ static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
         break;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:
-    case FL_DATA_TYPE_REF:
+    case FL_DATA_TYPE_PTR:
     case FL_DATA_TYPE_SCOPE:
     default:
         assert(FL_FALSE);

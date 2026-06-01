@@ -16,7 +16,7 @@
 
 enum _fl_section
 {
-    FL_SECTION_VERSION,
+    FL_SECTION_HEADER,
     FL_SECTION_LITERALS,
     FL_SECTION_CODE,
 };
