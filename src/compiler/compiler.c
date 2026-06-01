@@ -22,6 +22,8 @@
 #include "flow/value.h"
 #include "flow/instr/instruction.h"
 #include "flow/section.h"
+#include "flow/operation.h"
+#include "vecs/instr_alias_vec.h'
 
 // ---------- MACROS ----------------
 
@@ -56,7 +58,7 @@ static inline fl_void _fl_cmp_compile_block(
     fl_scope *scope,
     fl_byte_vec *code);
 
-static fl_void _fl_cmp_compile_fn_like_call(
+static fl_void _fl_cmp_compile_op_call(
     const fl_ast_node *cll_node,
     fl_context *cnt,
     fl_scope *scope,
@@ -206,7 +208,7 @@ static fl_void _fl_cmp_compile_node(
         break;
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
-        _fl_cmp_compile_fn_like_call(node, cnt, scope, code);
+        _fl_cmp_compile_op_call(node, cnt, scope, code);
         break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
         _fl_cmp_compile_plain_id_chain(node, cnt, scope, code);
@@ -237,7 +239,7 @@ static inline fl_void _fl_cmp_compile_block(
     }
 }
 
-static fl_void _fl_cmp_compile_fn_like_call(
+static fl_void _fl_cmp_compile_op_call(
     const fl_ast_node *cll_node,
     fl_context *cnt,
     fl_scope *scope,
@@ -245,6 +247,31 @@ static fl_void _fl_cmp_compile_fn_like_call(
 {
     fl_ast_node *id_node = cll_node->child;
 
+    fl_instr_alias *alias = fl_instr_alias_vec_find(&cnt->instr_aliases, id_node->data);
+    fl_operation op = fl_operation_uninitialized();
+    if (alias)
+        op = fl_operation_from_instr(alias->instr);
+    else
+    {
+        fl_id_chain *id_chain = (fl_id_chain *)id_node->data;
+        fl_uint offset;
+        fl_int_vec inds = fl_scope_find_id_path(scope, id_chain, &offset);
+        fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
+        fl_value id_val = id->value;
+        
+        if (!id)
+            // throw an error if id does not exist
+            throw_compilation_error(id_node, "Use of unknown function id");
+    
+        if (id_val.data_type != FL_DATA_TYPE_FN)
+            // throw an error if id is not fn
+            throw_compilation_error(id_node, "id is not a function");
+
+        op = fl_operation_from_fn_vars(id_val.data);
+    }
+        
+    // REMOVE BELOW
+    
     // check if it's predef
     fl_predef *predef = _fl_cmp_get_predef(id_node->data, cnt);
     if (predef)
