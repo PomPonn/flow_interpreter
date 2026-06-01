@@ -13,10 +13,15 @@
 #include "flow/instr/instruction.h"
 #include "vecs/fn_variant_vec.h"
 
+// ---------- DEFINES ----------
+
+#define FL_OPERATION_NULL (fl_operation){ .type = FL_OPERATION_NULL, .instr = 0 };
+
 // ---------- TYPE DEFINITIONS ----------
 
 enum _fl_operation_type
 {
+    FL_OPERATION_NULL,
     FL_OPERATION_INSTR,
     FL_OPERATION_VALUE,
     FL_OPERATION_FN,
