@@ -1,5 +1,6 @@
 # TODO
 
+- include compilation timestamp in byte code version section
 - opt. opportunity: implement container with unshifting without moving whole container data
 - rework flow context concept
 - reorganize predef.h and global.h related code
