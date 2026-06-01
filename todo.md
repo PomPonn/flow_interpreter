@@ -1,5 +1,6 @@
 # TODO
 
+- don't use id const trait to tell if function assigned to it is 'constant'. add new struct to group function description. Add pure trait instead of const
 - include compilation timestamp in byte code version section
 - opt. opportunity: implement container with unshifting without moving whole container data
 - rework flow context concept
