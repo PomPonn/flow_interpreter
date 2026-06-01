@@ -12,7 +12,7 @@
 FL_HEADER_FN fl_const_cstr_vec fl_instr_alias_vec_to_escapes(const fl_instr_alias_vec *vec)
 {
     fl_const_cstr_vec escapes;
-    fl_const_cstr_vec_initc(&escapes, vec->size);
+    fl_const_cstr_vec_init_c(&escapes, vec->size);
 
     for (fl_size i = 0; i < vec->size; i++)
         if (vec->data[i].escape)

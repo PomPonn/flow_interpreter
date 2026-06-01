@@ -2,6 +2,7 @@
 
 #include "tokenizer/delims.h"
 #include "shared/str.h"
+#include "flow/globals.h"
 
 // ---------- DECLARATIONS ----------
 
@@ -22,12 +23,10 @@ static inline fl_bool _fl_tok_handle_escapement(
 // ---------- DEFINITIONS ----------
 
 // returns FL_FALSE if source has no tokens
-fl_bool fl_tok_tokenize(
-    fl_char *source,
-    fl_token_arr *token_arr,
-    const fl_const_cstr_vec *escapes,
-    const fl_char *src_location)
+fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char *src_location)
 {
+    const fl_const_cstr_vec *escapes = fl_g_instrs_aliases_to_escapes();
+
     fl_uint count = _fl_tok_count_tokens(source, escapes);
     if (!count)
         return FL_FALSE;

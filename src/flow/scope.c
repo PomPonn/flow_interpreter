@@ -10,7 +10,7 @@ fl_int_vec fl_scope_find_id_path(
     fl_uint *outer_offset)
 {
     fl_int_vec indexes;
-    fl_int_vec_initc(&indexes, id_chain->size);
+    fl_int_vec_init_c(&indexes, id_chain->size);
 
     *outer_offset = 0;
 

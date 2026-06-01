@@ -12,12 +12,14 @@
 
 #include "flow/data_type.h"
 #include "vecs/param_vec.h"
+#include "flow/fn/fn_traits.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
 struct _fl_fn_interface
 {
     fl_data_type return_type;
+    fl_fn_traits traits;
     fl_param_vec params;
 };
 typedef struct _fl_fn_interface fl_fn_interface;
@@ -40,11 +42,14 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
 {
     interface->return_type = return_type;
     interface->params = params;
+    interface->traits = fl_fn_traits_create_empty();
 }
 
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *interface)
 {
     fl_param_vec_free(&interface->params);
+    interface->return_type = FL_DATA_TYPE_NULL;
+    interface->traits = fl_fn_traits_create_empty();
 }
 
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right)

@@ -43,10 +43,10 @@ FL_HEADER_FN fl_param fl_param_create_exp(fl_data_type type)
     return (fl_param){.type = type, .refering = FL_FALSE, .expands = FL_TRUE};
 }
 
-FL_HEADER_FN fl_bool fl_param_equal(fl_param vd1, fl_param vd2)
+FL_HEADER_FN fl_bool fl_param_equal(fl_param p1, fl_param p2)
 {
-    return fl_data_type_has(vd1.type, vd2.type) &&
-           vd1.refering == vd2.refering;
+    return fl_data_type_has(p1.type, p2.type) &&
+           p1.refering == p2.refering;
 }
 
 FL_HEADER_FN fl_bool fl_param_suits_arg(fl_param p, fl_value arg)

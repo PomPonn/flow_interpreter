@@ -11,11 +11,9 @@
 
 #include "vecs/const_scope_vec.h"
 #include "vecs/lib_handle_vec.h"
-#include "vecs/predef_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 #include "vecs/cstr_vec.h"
-#include "flow/global.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -23,7 +21,6 @@ struct _fl_context
 {
     fl_lib_handle_vec lib_handles;
     fl_cstr_vec lib_names;
-    fl_predef_vec predefines;
     fl_value_vec literals;
     fl_scope main_scope;
 };
@@ -42,7 +39,6 @@ FL_HEADER_FN fl_void fl_context_init(fl_context *cnt)
     fl_cstr_vec_init(&cnt->lib_names);
     fl_scope_init(&cnt->main_scope, FL_NULL);
     fl_value_vec_init(&cnt->literals);
-    fl_predef_vec_init(&cnt->predefines);
 }
 
 FL_HEADER_FN fl_void fl_context_free(fl_context *cnt)
@@ -51,7 +47,6 @@ FL_HEADER_FN fl_void fl_context_free(fl_context *cnt)
     fl_cstr_vec_free(&cnt->lib_names);
     fl_scope_free(&cnt->main_scope);
     fl_value_vec_free(&cnt->literals);
-    fl_predef_vec_free(&cnt->predefines);
 }
 
 // TODO: comment when finished

@@ -15,7 +15,7 @@ struct _fl_fn_variant
 {
     fl_bool c_defined;
     fl_fn_interface interface;
-    // to change
+    // TODO: revise this
     union
     {
         fl_c_fn_ptr pointer;
@@ -23,41 +23,45 @@ struct _fl_fn_variant
     };
 };
 /**
- * @brief Function variant;
- * contains information about function variant (overload).
+ * @brief Function callable;
+ * Contains information about function callable (overload).
  */
 typedef struct _fl_fn_variant fl_fn_variant;
 
 FL_HEADER_FN fl_void fl_fn_variant_init(
-    fl_fn_variant *variant,
+    fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_interface interface);
-FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant);
-FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec args);
+FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
+FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args);
 FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
 
-FL_HEADER_FN fl_void
-fl_fn_variant_init(
-    fl_fn_variant *variant,
+FL_HEADER_FN fl_void fl_fn_variant_init(
+    fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_interface interface)
 {
-    variant->c_defined = c_defined;
-    variant->interface = interface;
-    fl_mem_zero(&variant->body, sizeof(fl_byte_vec));
+    var->c_defined = c_defined;
+    var->interface = interface;
+    fl_mem_zero(&var->body, sizeof(fl_byte_vec));
 }
 
-FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *variant)
+FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
 {
-    fl_fn_interface_free(&variant->interface);
+    fl_fn_interface_free(&var->interface);
 
-    if (variant->c_defined)
-        fl_byte_vec_free(&variant->body);
+    if (var->c_defined)
+        fl_byte_vec_free(&var->body);
+    else
+        var->pointer = FL_NULL;
+
+    var->c_defined = FL_FALSE;
 }
 
-FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *variant, fl_value_vec args)
+FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args)
 {
-    return variant->c_defined ? variant->pointer(args) : FL_VALUE_EMPTY; // variant->body ??
+    // var->body ???
+    return var->c_defined ? var->pointer(args) : FL_VALUE_EMPTY;
 }
 
 FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)

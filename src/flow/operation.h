@@ -47,7 +47,7 @@ FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
 FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
     fl_operation op,
-    const fl_value_vec *args);
+    const fl_param_vec params);
 
 FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_context *cnt);
 
@@ -77,13 +77,12 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_uninitialized() 
+FL_HEADER_FN fl_operation fl_operation_uninitialized()
 {
     return (fl_operation){
         .type = FL_OPERATION_UNINIT,
         .instr = 0,
     };
-
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)
@@ -108,4 +107,16 @@ FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args,
     }
     else
         return FL_VALUE_EMPTY;
+}
+
+FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
+    fl_operation op,
+    const fl_param_vec params)
+{
+    if (op.type == FL_OPERATION_INSTR)
+        return fl_instruction_get_interface(op.instr);
+    else if (op.type == FL_OPERATION_FN)
+        return &fl_fn_variant_vec_find_match_p(op.vars, params)->interface;
+    else
+        return FL_DATA_TYPE_NULL;
 }

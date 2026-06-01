@@ -11,7 +11,6 @@
 // ---------- DEPENDENCIES ----------
 
 #include "flow/context.h"
-#include "flow/global.h"
 #include "compiler/compiler.h"
 #include "tokenizer/token_arr.h"
 #include "interpreter/interpreter.h"
@@ -22,6 +21,7 @@
 #include "tokenizer/tokenizer.h"
 #include "ast/ast_tree.h"
 #include "tools/file.h"
+#include "flow/globals.h"
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -43,7 +43,8 @@
 
 fl_void fl_flow_run(const fl_char *source_path)
 {
-    fl_global_init();
+    if (!fl_globals_initialized())
+        assert(FL_FALSE);
 
     fl_char *source_code = fl_file_read(source_path);
 
@@ -53,9 +54,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("-- Source code: --\n%s\n\n", source_code);
 
     fl_token_arr token_arr;
-    fl_const_cstr_vec predef_escapes = fl_global_get_static_predefs_escapes();
-    fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, &predef_escapes, source_path);
-    fl_const_cstr_vec_free(&predef_escapes);
+    fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
 
 #ifndef NDEBUG
     printf("-- Tokens: --\n");

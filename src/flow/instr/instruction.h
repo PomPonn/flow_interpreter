@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vecs/value_vec.h"
-#include "flow/global.h"
+#include "flow/instr/g_instrs.h"
 
 // REMEMBER TO KEEP IT UP-TO-DATE
 #define FL_CLL_INSTR_COUNT FL_INSTR_POW
@@ -13,7 +13,6 @@ FL_FORWARD_STRUCT(fl_context);
  */
 enum _fl_instruction
 {
-    FL_INSTR_NULL,
     // TODO: comment this when finished
 
     // callable instructions
@@ -27,6 +26,7 @@ enum _fl_instruction
     FL_INSTR_MOD,
     FL_INSTR_POW,
     // flow instructions
+    // FL_INSTR_NULL,
     FL_INSTR_CALL,
     FL_INSTR_GET_ID,
     FL_INSTR_NEW_ID,
@@ -69,5 +69,5 @@ FL_HEADER_FN fl_bool fl_instruction_is_inlineable(fl_instruction instr)
 
 FL_HEADER_FN const fl_fn_interface *fl_instruction_get_interface(fl_instruction instr)
 {
-    return fl_global_get_instr_interface(instr);
+    return fl_g_instrs_get_interface(instr);
 }
