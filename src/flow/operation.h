@@ -13,10 +13,6 @@
 #include "flow/instr/instruction.h"
 #include "vecs/fn_variant_vec.h"
 
-// ---------- DEFINES ----------
-
-#define FL_OPERATION_NULL (fl_operation){ .type = FL_OPERATION_NULL, .instr = 0 };
-
 // ---------- TYPE DEFINITIONS ----------
 
 enum _fl_operation_type
@@ -45,6 +41,7 @@ typedef struct _fl_operation fl_operation;
 FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr);
 FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
 FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
+FL_HEADER_FN fl_operation fl_operation_create_empty();
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
@@ -78,6 +75,15 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
         .type = FL_OPERATION_VALUE,
         .value = val,
     };
+}
+
+FL_HEADER_FN fl_operation fl_operation_create_empty() 
+{
+    return (fl_operation){
+        .type = FL_OPERATION_NULL,
+        .instr = 0,
+    };
+
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)
