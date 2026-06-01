@@ -37,8 +37,8 @@ fl_void fl_global_init()
 
     // ==== PREDEFS INTERFACES ====
 
-    fl_fn_interface_vec_initc(&_instrs_interfaces, FL_INSTR_PREDEF_COUNT);
-    fl_predef_vec_initc(&_static_predefs, FL_INSTR_PREDEF_COUNT);
+    fl_fn_interface_vec_initc(&_instrs_interfaces, FL_CLL_INSTR_COUNT);
+    fl_predef_vec_initc(&_static_predefs, FL_CLL_INSTR_COUNT);
     fl_param_vec params;
 
     // IMPORT

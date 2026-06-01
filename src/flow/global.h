@@ -20,6 +20,8 @@
 FL_FORWARD_STRUCT(fl_predef);
 FL_FORWARD_STRUCT(fl_context);
 
+typedef fl_byte fl_instruction;
+
 // ---------- DECLARATIONS --------------
 
 fl_void fl_global_init();
