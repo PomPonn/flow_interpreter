@@ -73,7 +73,7 @@ inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes);
 
 inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
-fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt);
+fl_value_vec _fl_cmp_parse_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -189,56 +189,31 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     if (!fn_i)
         throw_compilation_error(id_node, "couldn't find function overload for given arguments");
 
+    // ENDED HERE
+    
     if (fl_bitfield8_has(fn_i->traits, FL_FN_TRAITS_SIMULATE) || fl_fn_interface_is_const(fn_i))
     {
         // call this operation
-
-        // compile args first
-        fl_byte_vec main_code = cnt->byte_code;
-        // substitute context main byte code with the new one to sustain the context without copying it
-        fl_byte_vec_init(&cnt->byte_code);
-
-        _fl_cmp_compile_args(id_node->next, cnt);
-
-        // init interpretation context and initially add operation we want to call
-        fl_intpr_context intpr_cnt;
-        fl_intpr_context_init(&intpr_cnt, cnt->base);
-        fl_op_vec_push(&intpr_cnt.op_stack, op);
-
-        fl_value res = fl_intpr_eval(cnt->byte_code, &intpr_cnt);
+        fl_values_vec args = _fl_cmp_parse_args_to_values(arg_node, cnt);
+        fl_value res = fl_operation_run(op, args);
 
         // ENDED HERE - what to do with res
 
-        // if (fl_bitfield8_has(fn_i->traits, FL_FN_TRAITS_PURE))
-        // {
-        // inline result
-
-        if (fl_value_equal(res, FL_VALUE_EMPTY))
-            assert(FL_FALSE);
-
-        // (not sure)
-        if (intpr_cnt.op_stack.size != 1)
-            assert(FL_FALSE);
-
-        fl_value_to_bytes(res, &main_code);
-        // }
-        // else
-        // {
-        //     // operation simulated, merge local compilation with main
-
-        //     fl_byte_vec_merge(&main_code, &cnt->byte_code);
-        //     fl_byte_vec_free(&cnt->byte_code);
-        // }
-
-        // bring back main byte code
-        cnt->byte_code = main_code;
-
-        // cleanup
-        fl_intpr_context_free(&intpr_cnt);
-        return;
+        if (fl_bitfield8_has(fn_i->traits, FL_FN_TRAITS_PURE))
+        {
+            //inline result
+    
+            if (fl_value_equal(res, FL_VALUE_EMPTY))
+                assert(FL_FALSE);
+    
+            // (not sure)
+            if (intpr_cnt.op_stack.size != 1)
+                assert(FL_FALSE);
+    
+            fl_value_to_bytes(res, &main_code);
+            return;
+        }
     }
-
-    // simulate if has
 
     // compile this operator call to byte code
     if (op.type == FL_OPERATION_FN)
@@ -401,7 +376,7 @@ inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes)
     fl_byte_vec_push_mem(bytes, _BYTECODE_VERSION, fl_str_len(_BYTECODE_VERSION) + 1);
 }
 
-fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt)
+fl_value_vec _fl_cmp_parse_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt)
 {
     fl_value_vec main_args;
     fl_value_vec_init(&main_args);
@@ -440,7 +415,7 @@ fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_
             fl_ast_node *id_node = arg_node->child;
             fl_ast_node *inner_arg_node = id_node->data;
             fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
-            fl_value_vec args = _fl_cmp_parse_const_args_to_values(id_node->child, cnt);
+            fl_value_vec args = _fl_cmp_parse_args_to_values(id_node->child, cnt);
 
             fl_value res = fl_operation_run(op, args, cnt->base);
             fl_value_vec_push(&main_args, res);
@@ -449,18 +424,7 @@ fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_
         case FL_AST_NODE_TYPE_ID_CHAIN:
         {
             fl_id_entry *id = fl_scope_resolve_id(cnt->base->scope, arg_node->data);
-
-            if (id)
-            {
-                // error?
-                // if (!id->constant)
-                //     return FL_FALSE;
-
-                fl_value_vec_push(&main_args, id->value);
-            }
-            else
-                fl_value_vec_push(&main_args, FL_VALUE_EMPTY);
-
+            fl_value_vec_push(&main_args, id ? id->value : FL_VALUE_EMPTY);
             break;
         }
         case FL_AST_NODE_TYPE_LITERAL:
