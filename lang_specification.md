@@ -2,64 +2,108 @@
 
 ### root:
 
-- first node of the compilation
-- _no data_
+- _data_: none
 - _children_:
-  first child is a root block,
-  may contain meta data too
+  first child is a main program block,
+  may contain meta data too (?)
 
 ### block:
 
-- _no data_
-- _children_:
-  block's nested nodes
+- _data_: none
+- _children_: nested nodes
 
 ### literal:
 
-- _data_: literal type
-- _no children_
+- _data_: literal value (fl_value)
+- _children_: none
 
-### id chain:
+### id:
 
-- _data_: vector of chained id's
-- _no children_
+- _data_: id path (fl_id_chain)
+- _children_: none
 
 ### operator:
 
-- _data_: operator order
+- _data_: operator order (?)
 - _children_:
-  first one is an operator id chain,
-  second and third are the arguments
+  - #1: operation id,
+  - #2&3: operation arguments
 
 ### call:
 
-- _no data_
+- _data_: none
 - _children_:
   first one is a function id chain,
   next are arguments of varying node type
 
 ## byte code
 
-### Example byte code:
-
-_INSTR_START
-\_INSTR_STARTBLOCK_
-
-_INSTR_ENDBLOCK_
-
 #### Legend:
 
-- \_INSTR\_<...>\_ - instruction markers, always size of 1B
+- _[INSTR]_ - instruction marker, always size of 1B
 
-### block:
+### Header section:
 
-_INSTR_STARTBLOCK_  
-...CONTENT  
-_INSTR_ENDBLOCK_
+[HEADER SECTION]
+(version): 10B
+--wip:
+(compilation timestamp): xB
 
-### function call:
+### Literals section:
 
-_INSTR_CALL_  
-{4B} table id index of function id
+[LITERALS SECTION]
+(count): 4B
+... <count> times: {
+(value type): 1B
+(value data): xB
+}
 
-### operation:
+### Code section:
+
+[CODE SECTION]
+... x instructions { ... }
+
+### Code section instructions:
+
+#### id access:
+
+(offset): 4B
+(indices count): 4B
+... <indices count> times: {
+(index): 4B
+}
+
+#### values manipulation:
+
+##### get id:
+
+[GET ID]
+<id access>
+
+##### get literal:
+
+[GET LITERAL]
+(index): 4B
+
+#### scope:
+
+[BLOCK START] 
+... content
+[BLOCK END]
+
+#### call:
+
+[CALL]
+<id access>
+... arguments
+[ARGS END]
+
+#### callable instructions:
+
+(
+|ADD|
+|IMPORT|
+|ASSIGN|
+)
+... arguments
+[ARGS END]
