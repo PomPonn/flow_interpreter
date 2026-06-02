@@ -1,7 +1,19 @@
+/**
+ * ---------- profiler.h --------------------
+ *
+ * Declares profiler logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
+
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 #include "tools/time.h"
+
+// ------------- MACROS -----------------
 
 #define fl_prof_profile(samples, input_size, input_unit, segment)     \
     {                                                                 \
@@ -19,6 +31,8 @@
             input_unit, input_size, ms, samples);                     \
         fl_mem_free(ms);                                              \
     }
+
+// ---------- DECLARATIONS --------------
 
 fl_void _fl_prof_log(
     const fl_char *what,
