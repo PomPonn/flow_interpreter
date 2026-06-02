@@ -8,7 +8,7 @@
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES --------------
 
 #include "shared/str.h"
 #include "flow/id/id_entry.h"
