@@ -2,7 +2,7 @@
 
 ### root:
 
-- *_data_*: none
+- _data_: none
 - _children_:
   first child is a main program block,
   may contain meta data too (?)
@@ -40,7 +40,7 @@
 
 #### Legend:
 
-- _[INSTR]_ - instruction marker, always size of 1B
+- `[INSTR]` - instruction marker, always size of 1B
 
 ### Header section:
 
@@ -53,64 +53,80 @@
 
 ### Literals section:
 
+```
 [LITERALS SECTION]
 (count): 4B
 ... <count> times: {
 (value type): 1B
 (value data): xB
 }
+```
 
 ### Code section:
 
+```
 [CODE SECTION]
 ... x instructions { ... }
+```
 
 ### Code section instructions:
 
 #### id access:
 
+```
 (offset): 4B
 (indices count): 4B
 ... <indices count> times: {
 (index): 4B
 }
+```
 
 #### getters/setters:
 
 ##### get id:
 
+```
 [GET ID]
 <id access>
+```
 
 #### new id:
 
+```
 [NEW ID]
-???
+(???)
+```
 
 ##### get literal:
 
+```
 [GET LITERAL]
 (index): 4B
+```
 
 #### scope:
 
+```
 [BLOCK START] 
 ... content
 [BLOCK END]
+```
 
 #### call:
 
+```
 [CALL]
 <id access>
 ... arguments
 [ARGS END]
+```
 
 #### callable instructions:
 
-(
-|ADD|
-|IMPORT|
+```
+|ADD| |
+|IMPORT| |
 |ASSIGN|
-)
 ... arguments
 [ARGS END]
+```
