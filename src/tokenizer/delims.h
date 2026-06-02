@@ -8,7 +8,7 @@
 
 #pragma once
 
-// ---------- DEFINES -----------
+// ---------- MACROS -----------
 
 // the order of delims reflects fl_token_alias enum in 'tokenizer/token.h'
 #define FL_ORDERED_DELIMS ";.,(){}[]"
