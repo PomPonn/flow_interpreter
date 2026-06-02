@@ -1,9 +1,9 @@
 /**
- * ---------- ast_tree.c ------------------------
+ * ---------- ast_tree.c ---------------------------
  *
  * Implements general Abstract Syntax Tree logic.
  *
- * ----------------------------------------------
+ * -------------------------------------------------
  */
 
 #include "ast_tree.h"
@@ -17,6 +17,7 @@
 #include "tokenizer/token_location.h"
 // may be to remove
 #include "revise_me/info/operator_info.h"
+
 #ifndef NDEBUG
 #include "tools/printer.h"
 #include <stdio.h>
@@ -55,20 +56,20 @@
 #define init_node_filled(type, value, parent) \
     fl_ast_node_init(&node, type, value, parent, arr->current->location)
 
-// ---------- DECLARATIONS ----------
+// ---------- DECLARATIONS --------------
 
 // TODO: Comment these declarations
 
-static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
-static inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
-static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
-static inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
-static inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
-static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
-static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
-static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
+inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
+inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
+inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
+inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
+inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
+fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
+fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
+fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
 
-// ---------- DEFINITIONS ----------
+// ---------- DEFINITIONS ---------------
 
 fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
 {
@@ -87,7 +88,7 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
 
 // handles id chain (eg. 'body.hand')
 // guarantees that next token is not null
-static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
+inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
 {
     // init id chain
     fl_id_chain *chain = fl_mem_alloc_t(fl_id_chain);
@@ -113,7 +114,7 @@ static inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr 
     return node;
 }
 
-static inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id)
+inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id)
 {
     fl_ast_node *node;
     init_node_empty(FL_AST_NODE_TYPE_FN_CALL, parent);
@@ -146,7 +147,7 @@ static inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl
 // almost everything is an expression (apart from blocks)
 // function may contain a single expression, which is 'instantiated' on call
 // it can be a ast_literal, function call, group of operators or a combination of these things
-static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped)
+fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped)
 {
     // temp node
     fl_ast_node *node;
@@ -192,7 +193,7 @@ static fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr
 }
 
 // handles single block ({...}) of code and its child
-static inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root)
+inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root)
 {
     // temp variable
     fl_ast_node *node;
@@ -250,7 +251,7 @@ static inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_a
     return parent;
 }
 
-static inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped)
+inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped)
 {
     fl_ast_node *node;
 
@@ -280,7 +281,7 @@ static inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_toke
     return node;
 }
 
-static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr)
+fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr)
 {
     assert(parent->type == FL_AST_NODE_TYPE_FUNCTION);
 
@@ -336,7 +337,7 @@ static fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr
     }
 }
 
-static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr)
+fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr)
 {
     fl_ast_node *func_node;
 
@@ -359,7 +360,7 @@ static fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token
     }
 }
 
-static inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr)
+inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr)
 {
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
