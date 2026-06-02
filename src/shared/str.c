@@ -1,8 +1,18 @@
+/**
+ * ---------- str.c -----------------------
+ *
+ * Declares c-string manipulation logic.
+ *
+ * ----------------------------------------
+ */
+
 #include "str.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include <string.h>
 
-// ---------- IMPLEMENTATIONS ----------
+// ---------- DEFINITIONS ---------------
 
 fl_bool fl_chr_is_digit(fl_char chr)
 {
