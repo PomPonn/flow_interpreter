@@ -1,13 +1,29 @@
+/**
+ * ---------- mod_importer.c -------------
+ *
+ * Implements modules importer logic.
+ *
+ * ---------------------------------------
+ */
+
 #include "mod_importer.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include "tools/lib.h"
 #include "shared/error.h"
 #include "context/base_context.h"
 
+// ------------- MACROS -----------------
+
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512
 
+// ---------- TYPE DEFINITIONS ----------
+
 typedef fl_value (*fl_module_register_fn)(const fl_id_chain *id_chain);
+
+// ---------- DEFINITIONS ---------------
 
 fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_base_context *cnt)
 {
