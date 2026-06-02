@@ -1,7 +1,20 @@
+/**
+ * ---------- token.h --------------------
+ *
+ * Declares tokenizer token logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
 
+// ---------- DEPENDENCIES --------------
+
 #include "shared/common.h"
-#include "tokenizer/token_location.h"
+
+// ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_token_location);
 
 enum _fl_token_type
 {
@@ -41,11 +54,14 @@ struct _fl_token
 };
 typedef struct _fl_token fl_token;
 
+// ---------- DECLARATIONS --------------
+
 fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location location);
-
 fl_char *fl_token_as_printable(fl_char *token_str);
-
 fl_bool fl_token_is_delim(fl_token *token);
+FL_HEADER_FN fl_void fl_token_free(fl_token *token);
+
+// ---------- DEFINITIONS -----------
 
 FL_HEADER_FN fl_void fl_token_free(fl_token *token)
 {
