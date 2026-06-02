@@ -1,10 +1,26 @@
+/**
+ * ---------- lib.win.c --------------------
+ *
+ * Implements shared library loader logic
+ * for Windows platform
+ *
+ * -----------------------------------------
+ */
+
 #ifdef _WIN32
+
 #include "lib.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include <windows.h>
 #include <stdio.h>
 
+// ------------- MACROS -----------------
+
 #define _FL_MAX_LIB_NAME_LEN 128
+
+// ---------- DEFINITIONS ---------------
 
 fl_lib_handle fl_lib_load(const fl_char *lib_name)
 {
