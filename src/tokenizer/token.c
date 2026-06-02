@@ -1,19 +1,29 @@
+/**
+ * ---------- token.c -----------------
+ *
+ * Implements tokenizer token logic.
+ *
+ * ------------------------------------
+ */
+
 #include "token.h"
+
+// ---------- DEPENDENCIES ----------
 
 #include "shared/str.h"
 #include "tokenizer/delims.h"
 #include "flow/data_type.h"
 
-// ---------- MACROS ----------
+// ---------- DEFINES ----------
 
 #define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + 1)
 
-// ---------- STATIC FUNCTION DEFINITIONS ----------
+// ---------- DECLARATIONS  ----------
 
-static inline fl_bool _fl_token_deduce(fl_token *tok);
-static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
+inline fl_bool _fl_token_deduce(fl_token *tok);
+inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
-// ---------- IMPLEMENTATIONS ----------
+// ---------- DEFINITIONS ----------
 
 fl_char *fl_token_as_printable(fl_char *tok)
 {
@@ -40,7 +50,7 @@ fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location locatio
     return _fl_token_deduce(token);
 }
 
-static inline fl_bool _fl_token_deduce(fl_token *tok)
+inline fl_bool _fl_token_deduce(fl_token *tok)
 {
     assert(tok != FL_NULL);
 
@@ -87,7 +97,7 @@ static inline fl_bool _fl_token_deduce(fl_token *tok)
     return FL_TRUE;
 }
 
-static inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
+inline fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 {
     return tok->value[0] == wrapper && tok->value[fl_str_len(tok->value) - 1] == wrapper;
 }
