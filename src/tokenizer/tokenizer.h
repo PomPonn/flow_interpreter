@@ -12,6 +12,8 @@
 
 #include "shared/common.h"
 
+// ---------- TYPE DEFINITIONS ----------
+
 FL_FORWARD_STRUCT(fl_token_arr);
 
 // ---------- DECLARATIONS --------------
