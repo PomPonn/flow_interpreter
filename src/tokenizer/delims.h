@@ -1,6 +1,16 @@
+/**
+ * ---------- delims.h --------------------
+ *
+ * Declares code delimeters.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
 
-// the order reflects fl_token_alias enum in 'tokenizer/token.h'
+// ---------- DEFINES -----------
+
+// the order of delims reflects fl_token_alias enum in 'tokenizer/token.h'
 #define FL_ORDERED_DELIMS ";.,(){}[]"
 
 #define FL_WHITESPACE " \r\n\t"
