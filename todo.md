@@ -1,5 +1,6 @@
 # TODO
 
+- inline imports?
 - include compilation timestamp in byte code version section
 - opt. opportunity: implement container with unshifting without moving whole container data
 - optimalize importing - use already imported object if it exists
