@@ -1,7 +1,21 @@
+/**
+ * ---------- time.win.c ----------------
+ *
+ * Implements Windows platform
+ * time manipulation logic.
+ *
+ * --------------------------------------
+ */
+
 #ifdef _WIN32
+
+// ---------- DEPENDENCIES --------------
+
 #include "time.h"
 
 #include <windows.h>
+
+// ---------- DEFINITIONS ---------------
 
 fl_timestamp fl_time_get()
 {
