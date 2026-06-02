@@ -1,6 +1,15 @@
+/**
+ * ---------- error.c --------------------
+ *
+ * Implements error handling logic.
+ *
+ * --------------------------------------
+ */
+
 #include "error.h"
 
-#include "shared/memory.h"
+// ---------- DEPENDENCIES --------------
+
 #include "shared/str.h"
 
 #include <stdio.h>
