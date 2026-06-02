@@ -73,6 +73,8 @@ inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes);
 
 inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
+fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt);
+
 // ---------- DEFINITIONS ----------
 
 fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
@@ -397,4 +399,81 @@ inline fl_void _fl_cmp_paste_bytecode_version(fl_byte_vec *bytes)
 {
     // size + 1 for '\0' (end of string)
     fl_byte_vec_push_mem(bytes, _BYTECODE_VERSION, fl_str_len(_BYTECODE_VERSION) + 1);
+}
+
+fl_value_vec _fl_cmp_parse_const_args_to_values(fl_ast_node *arg_node, const fl_cmp_context *cnt)
+{
+    fl_value_vec main_args;
+    fl_value_vec_init(&main_args);
+
+    while (arg_node)
+    {
+        switch (arg_node->type)
+        {
+        case FL_AST_NODE_TYPE_BLOCK:
+        {
+            // TODO ...
+            assert(FL_FALSE);
+
+            fl_scope *inner = fl_mem_alloc_t(fl_scope);
+            fl_scope_init(inner, cnt->base->scope);
+            // ???
+
+            // fl_ast_node *scope_node = node->child;
+            // while (scope_node)
+            // {
+            //     fl_value reduced;
+            //     if (!_fl_cmp_resolve_node_const(scope_node, cnt, &inner, &reduced))
+            //     {
+            //         fl_scope_free(scope_node);
+            //         return FL_FALSE;
+            //     }
+            // }
+
+            // if (reduced_value)
+            //     *reduced_value = fl_value_create(FL_DATA_TYPE_SCOPE, inner);
+            break;
+        }
+        case FL_AST_NODE_TYPE_FN_CALL:
+        case FL_AST_NODE_TYPE_OPERATOR:
+        {
+            fl_ast_node *id_node = arg_node->child;
+            fl_ast_node *inner_arg_node = id_node->data;
+            fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
+            fl_value_vec args = _fl_cmp_parse_const_args_to_values(id_node->child, cnt);
+
+            fl_value res = fl_operation_run(op, args, cnt->base);
+            fl_value_vec_push(&main_args, res);
+            break;
+        }
+        case FL_AST_NODE_TYPE_ID_CHAIN:
+        {
+            fl_id_entry *id = fl_scope_resolve_id(cnt->base->scope, arg_node->data);
+
+            if (id)
+            {
+                // error?
+                // if (!id->constant)
+                //     return FL_FALSE;
+
+                fl_value_vec_push(&main_args, id->value);
+            }
+            else
+                fl_value_vec_push(&main_args, FL_VALUE_EMPTY);
+
+            break;
+        }
+        case FL_AST_NODE_TYPE_LITERAL:
+        {
+            fl_value *lit_val = (fl_value *)arg_node->data;
+            fl_value_vec_push(&main_args, fl_value_copy(*lit_val));
+            break;
+        }
+        default:
+            assert(FL_FALSE);
+            break;
+        }
+
+        arg_node = arg_node->next;
+    }
 }
