@@ -1,7 +1,19 @@
+/**
+ * ---------- memory.c --------------------
+ *
+ * Declares memory management logic.
+ *
+ * ----------------------------------------
+ */
+
 #include "shared/memory.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include <stdlib.h>
 #include <string.h>
+
+// ---------- DEFINITIONS ---------------
 
 fl_void fl_mem_free(fl_unknown *memory)
 {
