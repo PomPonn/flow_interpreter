@@ -1,24 +1,30 @@
+/**
+ * ---------- tokenizer.c ---------------
+ *
+ * Implements tokenizer logic.
+ *
+ * --------------------------------------
+ */
+
 #include "tokenizer.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include "tokenizer/delims.h"
 #include "shared/str.h"
 #include "flow/globals.h"
+#include "tokenizer/token_arr.h"
+#include "vecs/const_cstr_vec.h"
 
 // ---------- DECLARATIONS ----------
 
-static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
-static inline fl_bool _fl_tok_handle_number(const fl_char **str);
-static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
-static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
-static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
-static fl_char *_fl_tok_next_token(
-    fl_char *str,
-    const fl_const_cstr_vec *escapes,
-    fl_size *line,
-    fl_size *column);
-static inline fl_bool _fl_tok_handle_escapement(
-    const fl_char **str,
-    const fl_const_cstr_vec *escapes);
+inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
+inline fl_bool _fl_tok_handle_number(const fl_char **str);
+inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
+inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
+inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
+inline fl_bool _fl_tok_handle_escapement(const fl_char **str,  const fl_const_cstr_vec *escapes);
+fl_char *_fl_tok_next_token(fl_char *str, const fl_const_cstr_vec *escapes, fl_size *line, fl_size *column);
 
 // ---------- DEFINITIONS ----------
 
@@ -51,7 +57,7 @@ fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char 
     return FL_TRUE;
 }
 
-static inline fl_bool _fl_tok_handle_escapement(
+inline fl_bool _fl_tok_handle_escapement(
     const fl_char **str,
     const fl_const_cstr_vec *escapes)
 {
@@ -71,7 +77,7 @@ static inline fl_bool _fl_tok_handle_escapement(
     return FL_FALSE;
 }
 
-static inline fl_bool _fl_tok_handle_number(const fl_char **str)
+inline fl_bool _fl_tok_handle_number(const fl_char **str)
 {
     fl_bool dot_found = FL_FALSE;
     fl_bool digit_found = FL_FALSE;
@@ -101,7 +107,7 @@ static inline fl_bool _fl_tok_handle_number(const fl_char **str)
     return FL_FALSE;
 }
 
-static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
+inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
 {
     if (chr_index == 0)
         return FL_FALSE;
@@ -114,7 +120,7 @@ static inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_in
     return res;
 }
 
-static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
+inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
 {
     const fl_char *ptr = *str;
 
@@ -149,7 +155,7 @@ static inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_
 }
 
 // reduces any following whitespace
-static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter)
+inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter)
 {
     fl_char *ptr = token_start;
 
@@ -170,21 +176,21 @@ static inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *
 }
 
 // finds next token in a string
-static fl_char *_fl_tok_next_token(
+fl_char *_fl_tok_next_token(
     fl_char *str,
     const fl_const_cstr_vec *escapes,
     fl_size *line,
     fl_size *column)
 {
     // start of the next token (used on next function call)
-    static fl_char *next_pos = FL_NULL;
-    static fl_size next_line = 0;
-    static fl_size next_column = 0;
-    static fl_char escape_char = '\0';
+    fl_char *next_pos = FL_NULL;
+    fl_size next_line = 0;
+    fl_size next_column = 0;
+    fl_char escape_char = '\0';
 
     if (str)
     {
-        // reset static variables to operate on new string
+        // reset variables to operate on new string
         next_pos = str;
         escape_char = '\0';
         next_line = 0;
@@ -266,7 +272,7 @@ __std_return:
     return token_start;
 }
 
-static inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes)
+inline fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes)
 {
     fl_size count = 0;
 
