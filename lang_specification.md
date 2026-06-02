@@ -43,12 +43,14 @@
 - _[INSTR]_ - instruction marker, always size of 1B
 
 ### Header section:
+
 `
-[HEADER SECTION]
-(version): 10B
---wip:
+[HEADER SECTION] \
+(version): 10B \
+--wip: \
 (compilation timestamp): xB
 `
+
 ### Literals section:
 
 [LITERALS SECTION]
