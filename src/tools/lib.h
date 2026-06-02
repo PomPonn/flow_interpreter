@@ -1,8 +1,22 @@
+/**
+ * ---------- lib.h --------------------
+ *
+ * Declares shared library loader logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
+
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 
+// ---------- TYPE DEFINITIONS ----------
+
 typedef fl_unknown *fl_lib_handle;
+
+// ---------- DECLARATIONS --------------
 
 // loads shared library dynamically
 // lib_name is without extension
