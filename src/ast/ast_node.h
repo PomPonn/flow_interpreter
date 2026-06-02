@@ -1,15 +1,16 @@
 /**
- * ---------- ast_node.h -------------------
+ * ---------- ast_node.h ----------------------
  *
  * Declares Abstract Syntax Tree node logic.
  *
- * -----------------------------------------
+ * --------------------------------------------
  */
 
 #pragma once
 
 // ---------- DEPENDENCIES --------------
 
+#include "shared/common.h"
 #include "tokenizer/token_location.h"
 
 // ---------- TYPE DEFINITIONS ----------
@@ -100,7 +101,7 @@ struct _fl_ast_node
  */
 typedef struct _fl_ast_node fl_ast_node;
 
-// ---------- DECLARATIONS ----------
+// ---------- DECLARATIONS --------------
 
 /**
  * @brief Initalizes `fl_ast_node` structure.
