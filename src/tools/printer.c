@@ -1,4 +1,14 @@
+/**
+ * ---------- printer.c -----------------------
+ *
+ * Declares console printing module logic.
+ *
+ * --------------------------------------------
+ */
+
 #include "printer.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include "shared/str.h"
 #include "flow/id/id_chain.h"
@@ -7,6 +17,10 @@
 #include "tools/byte_reader.h"
 #include "macros/basic.h"
 #include "flow/section.h"
+#include "tokenizer/token_arr.h"
+#include "vecs/byte_vec.h"
+#include "ast/ast_node.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,17 +38,17 @@
 
 // ---------- DECLARATIONS ----------
 
-static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
-static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
-static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader);
-static fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader);
-static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader);
+inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
+inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
+inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader);
+const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader);
+fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader);
 
 // ---------- DEFINITIONS ----------
 
-static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
+inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
-    static fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
+    fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
 
     assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
@@ -63,7 +77,7 @@ static inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
     }
 }
 
-static inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
+inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
 {
     switch (node->type)
     {
@@ -125,9 +139,9 @@ fl_void fl_prt_print_tokens_joined(fl_token_arr *arr)
 
 fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
 {
-    static const fl_char *last_desc = FL_NULL;
-    static fl_char position_str_buffer[_POSITION_STR_BUFFER_SIZE];
-    static fl_size nodes_count = 0;
+    const fl_char *last_desc = FL_NULL;
+    fl_char position_str_buffer[_POSITION_STR_BUFFER_SIZE];
+    fl_size nodes_count = 0;
 
     // printing decorators
 
@@ -168,7 +182,7 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     }
 }
 
-static fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
+fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
 {
     while (!fl_byte_reader_end(reader))
     {
@@ -261,7 +275,7 @@ fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
     _fl_prt_print_byte_code_helper_code(&reader);
 }
 
-static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader)
+inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader)
 {
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 
@@ -269,9 +283,9 @@ static inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *re
         printf("[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
 }
 
-static const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
+const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
 {
-    static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
+    fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_data_type data_type = fl_byte_reader_next(reader, fl_data_type);
 
     switch (data_type)
