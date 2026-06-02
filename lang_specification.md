@@ -45,9 +45,9 @@
 ### Header section:
 
 `
-[HEADER SECTION] \
-(version): 10B \
---wip: \
+[HEADER SECTION] 
+(version): 10B 
+--wip: 
 (compilation timestamp): xB
 `
 
