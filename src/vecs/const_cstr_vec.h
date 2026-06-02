@@ -1,6 +1,18 @@
+/**
+ * ---------- const_cstr_vec.h --------------------
+ *
+ * Declares constant c-string vector logic.
+ *
+ * ------------------------------------------------
+ */
+
 #pragma once
 
+// ---------- DEPENDENCIES --------------
+
 #include "shared/str.h"
+
+// ------------- MACROS -----------------
 
 #define FL_VEC_NAME fl_const_cstr_vec
 #define FL_VEC_TYPE const fl_char *
