@@ -1,17 +1,21 @@
 /**
- * ---------- ast_tree.h ----------------------
+ * ---------- ast_tree.h -------------------------
  *
  * Declares general Abstract Syntax Tree logic.
  *
- * --------------------------------------------
+ * -----------------------------------------------
  */
 
 #pragma once
 
 // ---------- DEPENDENCIES --------------
 
-#include "ast/ast_node.h"
-#include "tokenizer/token_arr.h"
+#include "shared/common.h"
+
+// ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_token_arr);
+FL_FORWARD_STRUCT(fl_token_arr);
 
 // ---------- DECLARATIONS --------------
 
