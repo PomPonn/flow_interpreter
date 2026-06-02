@@ -1,7 +1,18 @@
+/**
+ * ---------- fn_interface_vec.h --------------------
+ *
+ * Declares function interface vector logic.
+ *
+ * -------------------------------------------------
+ */
+
 #pragma once
 
-#include "flow/fn/fn_variant.h"
-#include "flow/fn/param.h"
+// ---------- DEPENDENCIES --------------
+
+#include "flow/fn/fn_interface.h"
+
+// ------------- MACROS -----------------
 
 #define FL_VEC_NAME fl_fn_interface_vec
 #define FL_VEC_TYPE fl_fn_interface
