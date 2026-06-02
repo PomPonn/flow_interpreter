@@ -1,7 +1,19 @@
+/**
+ * ---------- error.h --------------------
+ *
+ * Declares error handling logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
+
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 #include "tokenizer/token_location.h"
+
+// ---------- TYPE DEFINITIONS ----------
 
 enum _fl_err_type
 {
@@ -22,10 +34,9 @@ struct _fl_err_record
 };
 typedef struct _fl_err_record fl_err_record;
 
+// ---------- DECLARATIONS --------------
+
 fl_void fl_err_report(fl_err_type type, const fl_char *message, const fl_char *near, fl_token_location location);
-
-fl_void fl_err_clear();
-
 fl_void fl_err_throw(fl_err_type type, const fl_char *message, const fl_char *near, fl_token_location location);
-
+fl_void fl_err_clear();
 fl_void fl_err_execute();
