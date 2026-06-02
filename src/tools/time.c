@@ -1,6 +1,19 @@
+/**
+ * ---------- time.h --------------------
+ *
+ * Implements cross-platform
+ * time manipulation logic.
+ *
+ * --------------------------------------
+ */
+
 #include "time.h"
 
+// ---------- DEPENDENCIES --------------
+
 #include <time.h>
+
+// ---------- DEFINITIONS ---------------
 
 fl_char *fl_time_date_str()
 {
