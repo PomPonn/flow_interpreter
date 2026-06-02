@@ -1,8 +1,9 @@
 /**
- * ---------- byte_reader.h ----------
+ * ---------- byte_reader.h -------------
  *
  * Declares byte reader logic.
  *
+ * --------------------------------------
  */
 
 #pragma once
