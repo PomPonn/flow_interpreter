@@ -1,5 +1,6 @@
 # TODO
 
+- revise fl_token_alias
 - inline imports?
 - include compilation timestamp in byte code version section
 - opt. opportunity: implement container with unshifting without moving whole container data
