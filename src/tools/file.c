@@ -1,6 +1,18 @@
+/**
+ * ---------- file.c --------------------
+ *
+ * Implements file management logic.
+ *
+ * --------------------------------------
+ */
+
 #include "file.h"
 
+// ---------- DEPENDENCIES --------------
+
 #include <stdio.h>
+
+// ---------- DEFINITIONS -----------
 
 fl_char *fl_file_read(const fl_char *filename)
 {
