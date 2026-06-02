@@ -1,7 +1,19 @@
+/**
+ * ---------- fn_variant_vec.h --------------------
+ *
+ * Declares function variant vector logic.
+ *
+ * ------------------------------------------------
+ */
+
 #pragma once
 
+// ---------- DEPENDENCIES --------------
+
 #include "flow/fn/fn_variant.h"
-#include "flow/fn/param.h"
+#include "vecs/param_vec.h"
+
+// ------------- MACROS -----------------
 
 #define FL_VEC_NAME fl_fn_variant_vec
 #define FL_VEC_TYPE fl_fn_variant
@@ -9,6 +21,23 @@
 #define FL_VEC_COMPARE(a, b) fl_fn_variant_overlaps(a, b)
 #define FL_VEC_DESTROY(elem) fl_fn_variant_free(&elem)
 #include "templates/vector.h"
+
+
+// ---------- DECLARATIONS --------------
+
+FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_p(
+    const fl_fn_variant_vec *vec,
+    const fl_param_vec params);
+
+FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_a(
+    const fl_fn_variant_vec *vec,
+    const fl_value_vec args);
+
+FL_HEADER_FN fl_bool fl_fn_variant_vec_overload(
+    fl_fn_variant_vec *fn_vars, 
+    fl_fn_variant new_variant);
+
+// ---------- DEFINITIONS ---------------
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_p(
     const fl_fn_variant_vec *vec,
