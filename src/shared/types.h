@@ -1,9 +1,23 @@
+/**
+ * ---------- types.h --------------------
+ *
+ * Declares project types.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
+
+// ---------- DEPENDENCIES --------------
 
 #include <stdint.h>
 #include <limits.h>
 
+// ------------- MACROS -----------------
+
 #define FL_INT_MAX INT_MAX
+
+// ---------- TYPE DEFINITIONS ----------
 
 typedef void fl_unknown;
 typedef void fl_void;
@@ -24,6 +38,8 @@ enum _fl_bool
     FL_TRUE,
 };
 typedef fl_byte fl_bool;
+
+// language types
 
 typedef fl_bool fl_flow_bool;
 typedef fl_long fl_flow_int;
