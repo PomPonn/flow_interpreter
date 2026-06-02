@@ -31,7 +31,6 @@
 
 #define FL_HEADER_FN static inline
 
-
 #define _fl_swap(type, a, b) \
     {                        \
         type temp = a;       \
