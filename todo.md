@@ -1,24 +1,14 @@
 # TODO
 
-- don't use id const trait to tell if function assigned to it is 'constant'. add new struct to group function description. Add pure trait instead of const
 - include compilation timestamp in byte code version section
 - opt. opportunity: implement container with unshifting without moving whole container data
-- rework flow context concept
-- reorganize predef.h and global.h related code
-- move predef interface to directly to predef struct?
-- optimalize importing - use already imported object if it was imported before, don't import it again.
+- optimalize importing - use already imported object if it exists
 - what about operators ordering?
-- unify function and predef (callable instruction)
-- fix scopes relation (parent can't free it's children scope if it's hanging without any inner id)
-- search for memory leaks
 - handle ':' at the start of import string
-
-- should predef_vec be made constant?
 - revise mod_importer implementation namings
 - create forward type decls where possible
-- cleanup compiler.c (reduce local fns parameter count)
 - revise c modules registration
-- comment code
+
 - AST optimalization
 - AST operators sorting
 - AST function definitions handling
@@ -27,33 +17,7 @@
 - think how to split source code into libraries optimally
 - implement time measurement on unix systems
 - think if warnings should be a thing
-- create unit tests
 - handle other number bases (hex for instance)
 - optimalize fl_std_io_put
 - revise error handling
-- types handling
-
-# done
-
-- revise predef compilation (const vs non-const)
-- simulate module import on compilation
-- templates optimalization (move some functions to specializations)
-- revise in-context literal creation
-- can I optimalize project building?
-- change \*\_free functions to receive ptr to ptr (\*\*) so the pointer can be nulled by the function.
-- make errors more universal
-- fix AST operators order
-- cleanup optimalizer
-- cleanup tokenizer
-- fix optimalizer space handling
-- revise delimeters (it seems like some of them will be operators)
-- write profiler
-- new lines are not counted when creating comment and string tokens (tokenizer)
-- whitespace tokenizer context member makes no sense
-- make wrappers single character, not string, to apply some optimalization (since we leave universality)
-- remove operators and keyword parsing from tokenizer (we have no predefined stuff)
-- revise delimeters (reduce them to minimum)
-- work on tokenizer - optimalization, string escape, etc.
-- write text optimalizer (include whitespace, but reduce it to minimum)
-- cleanup tokenizer
-- (optimalization) consider use of inline functions
+- AST types handling
