@@ -4,8 +4,8 @@
 
 - _data_: none
 - _children_:
-  first child is a main program block,
-  may contain meta data too (?)
+  - #1: main program block,
+  - meta data (?)
 
 ### block:
 
@@ -124,9 +124,7 @@
 #### callable instructions:
 
 ```
-|ADD| |
-|IMPORT| |
-|ASSIGN|
+|(ADD | IMPORT |ASSIGN)|
 ... arguments
 [ARGS END]
 ```
