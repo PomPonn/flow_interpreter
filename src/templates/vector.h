@@ -1,5 +1,17 @@
+/**
+ * ---------- vector.h --------------------
+ *
+ * Implements vector template logic.
+ *
+ * --------------------------------------
+ */
+
+// ---------- DEPENDENCIES --------------
+
 #include "shared/common.h"
 #include "macros/basic.h"
+
+// ------------- MACROS -----------------
 
 #ifndef FL_VEC_NAME
 #define FL_VEC_NAME fl_vector
@@ -21,8 +33,11 @@
 #define FL_VEC_COMPARE(a, b) a == b
 #endif
 
+// Other properties set by the user:
 // #define FL_VEC_DESTROY(elem)
 // #define FL_VEC_EXCLUDE_FIND
+
+// ---------- TYPE DEFINITIONS ----------
 
 struct _FL_MERGE2(_, FL_VEC_NAME)
 {
@@ -31,6 +46,31 @@ struct _FL_MERGE2(_, FL_VEC_NAME)
     FL_VEC_TYPE *data;
 };
 typedef struct _FL_MERGE2(_, FL_VEC_NAME) FL_VEC_NAME;
+
+// ---------- DECLARATIONS --------------
+
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size size);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data);
+
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec);
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
+FL_HEADER_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
+FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
+FL_HEADER_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec)
+FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec)
+FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _peek)(FL_VEC_CONST FL_VEC_NAME *vec)
+
+#ifndef FL_VEC_EXCLUDE_FIND
+
+FL_HEADER_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem)
+
+#endif
+
+// ---------- DEFINITIONS ---------------
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity)
 {
