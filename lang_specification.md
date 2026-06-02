@@ -40,7 +40,7 @@
 
 #### Legend:
 
-- `[INSTR]` - instruction marker, always size of 1B
+- `[<INSTR>]` - instruction marker, always size of 1B
 
 ### Header section:
 
