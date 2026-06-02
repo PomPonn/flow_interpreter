@@ -1,7 +1,22 @@
+/**
+ * ---------- file.h --------------------
+ *
+ * Declares file managament logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
 
+// ---------- DEPENDENCIES --------------
+
 #include "shared/common.h"
-#include "vecs/byte_vec.h"
+
+// ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_byte_vec);
+
+// ---------- DECLARATIONS --------------
 
 fl_char *fl_file_read(const fl_char *filename);
 
