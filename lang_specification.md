@@ -43,12 +43,12 @@
 - _[INSTR]_ - instruction marker, always size of 1B
 
 ### Header section:
-
+`
 [HEADER SECTION]
 (version): 10B
 --wip:
 (compilation timestamp): xB
-
+`
 ### Literals section:
 
 [LITERALS SECTION]
@@ -73,12 +73,17 @@
 (index): 4B
 }
 
-#### values manipulation:
+#### getters/setters:
 
 ##### get id:
 
 [GET ID]
 <id access>
+
+#### new id:
+
+[NEW ID]
+???
 
 ##### get literal:
 
