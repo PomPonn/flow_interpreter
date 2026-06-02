@@ -10,6 +10,8 @@
 
 // ---------- DEPENDENCIES --------------
 
+#include "vecs/byte_vec.h"
+
 #include <stdio.h>
 
 // ---------- DEFINITIONS -----------
