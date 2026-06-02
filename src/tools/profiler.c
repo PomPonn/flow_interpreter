@@ -1,16 +1,32 @@
+/**
+ * ---------- profiler.c ----------------
+ *
+ * Implements profiler logic.
+ *
+ * --------------------------------------
+ */
+
 #if _INCLUDE_PROFILER
+
 #include "profiler.h"
 
+// ---------- DEPENDENCIES --------------
+
 #include "tools/file.h"
-#include "tools/time.h"
+
 #include <stdio.h>
 
-#define FLOAT_PRECISION "3"
+// ------------- MACROS -----------------
 
+#define FLOAT_PRECISION "3"
 // 10 KB
 #define BUFFER_SIZE 1024 * 10
 
+// ------------- GLOBALS ----------------
+
 fl_char buffer[BUFFER_SIZE];
+
+// ---------- DEFINITIONS ---------------
 
 fl_void _fl_prof_log(
     const fl_char *what,
