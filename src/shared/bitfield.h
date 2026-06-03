@@ -12,13 +12,6 @@
 
 #include "shared/common.h"
 
-// ---------- DECLARATIONS --------------
+// ---------- MACROS --------------------
 
-FL_HEADER_FN fl_bitfield8_has(fl_byte bitfield, fl_byte what);
-
-// ---------- DEFINITIONS -----------
-
-FL_HEADER_FN fl_bitfield8_has(fl_byte bitfield, fl_byte what)
-{
-    return (bitfield & what) == what;
-}
+#define fl_bitfield_has(bitfield, what) ((bitfield & what) == what)

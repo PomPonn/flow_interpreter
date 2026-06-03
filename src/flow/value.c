@@ -18,7 +18,7 @@ fl_void fl_value_free(fl_value *value)
         // free scope???
         fl_scope_free(value->data);
         break;
-    case FL_DATA_TYPE_PTR:
+    case FL_DATA_TYPE_REF:
         break;
     default:
         fl_mem_free(value->data);
@@ -145,7 +145,7 @@ fl_size fl_value_mem_size(fl_value value)
     case FL_DATA_TYPE_STRING:
         // +1 for '\0'
         return fl_str_len(value.data) + 1;
-    case FL_DATA_TYPE_PTR:
+    case FL_DATA_TYPE_REF:
         // is it correct?
         return sizeof(fl_id_entry);
     default:

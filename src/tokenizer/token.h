@@ -11,10 +11,9 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
+#include "tokenizer/token_location.h"
 
 // ---------- TYPE DEFINITIONS ----------
-
-FL_FORWARD_STRUCT(fl_token_location);
 
 enum _fl_token_type
 {

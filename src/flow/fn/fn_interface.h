@@ -76,5 +76,5 @@ FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interf
 
 FL_HEADER_FN fl_bool fl_fn_interface_is_const(const fl_fn_interface *fn_i)
 {
-    return fl_bitfield8_has(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&fn_i->params);
+    return fl_bitfield_has(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&fn_i->params);
 }

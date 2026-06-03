@@ -56,12 +56,12 @@ FL_HEADER_FN fl_param fl_param_create_traited(fl_data_type type, fl_param_traits
 
 FL_HEADER_FN fl_bool fl_param_equal(fl_param p1, fl_param p2)
 {
-    return fl_bitfield8_has(p1.type, p2.type) &&
+    return fl_bitfield_has(p1.type, p2.type) &&
            p1.traits == p2.traits;
 }
 
 FL_HEADER_FN fl_bool fl_param_suits_arg(fl_param p, fl_value arg)
 {
     // Is it enough?
-    return fl_bitfield8_has(p.type, arg.data_type);
+    return fl_bitfield_has(p.type, arg.data_type);
 }

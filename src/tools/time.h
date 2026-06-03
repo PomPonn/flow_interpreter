@@ -12,12 +12,8 @@
 
 #include "shared/common.h"
 
-// ---------- TYPE DEFINITIONS ----------
-
-typedef fl_long fl_timestamp;
-
 // ---------- DECLARATIONS --------------
 
-fl_timestamp fl_time_get();
-fl_char *fl_time_date_str();
-fl_double fl_time_diff(fl_timestamp start, fl_timestamp end);
+fl_long fl_time_get_unix();
+fl_long fl_time_get_ticks();
+fl_double fl_time_ticks_diff(fl_long start, fl_long end);

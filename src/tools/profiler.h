@@ -21,10 +21,10 @@
                                                                       \
         for (fl_uint i = 0; i < samples; i++)                         \
         {                                                             \
-            fl_timestamp __start = fl_time_get();                     \
+            fl_timestamp __start = fl_time_get_ticks();               \
             segment;                                                  \
-            fl_timestamp __end = fl_time_get();                       \
-            ms[i] = fl_time_diff(__start, __end);                     \
+            fl_timestamp __end = fl_time_get_ticks();                 \
+            ms[i] = fl_time_ticks_diff(__start, __end);               \
         }                                                             \
         _fl_prof_log(                                                 \
             #segment, _PROFILER_LOGS_PATH,                            \

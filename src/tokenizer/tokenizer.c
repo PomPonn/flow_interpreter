@@ -23,7 +23,7 @@ inline fl_bool _fl_tok_handle_number(const fl_char **str);
 inline fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
 inline fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
 inline fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
-inline fl_bool _fl_tok_handle_escapement(const fl_char **str,  const fl_const_cstr_vec *escapes);
+inline fl_bool _fl_tok_handle_escapement(const fl_char **str, const fl_const_cstr_vec *escapes);
 fl_char *_fl_tok_next_token(fl_char *str, const fl_const_cstr_vec *escapes, fl_size *line, fl_size *column);
 
 // ---------- DEFINITIONS ----------
@@ -183,10 +183,10 @@ fl_char *_fl_tok_next_token(
     fl_size *column)
 {
     // start of the next token (used on next function call)
-    fl_char *next_pos = FL_NULL;
-    fl_size next_line = 0;
-    fl_size next_column = 0;
-    fl_char escape_char = '\0';
+    static fl_char *next_pos = FL_NULL;
+    static fl_size next_line = 0;
+    static fl_size next_column = 0;
+    static fl_char escape_char = '\0';
 
     if (str)
     {

@@ -18,6 +18,7 @@ enum _fl_instruction
     // callable instructions
     // add new ones before FL_INSTR_POW to avoid dependancy problems
     FL_INSTR_IMPORT,
+    FL_INSTR_DECLARE,
     FL_INSTR_ASSIGN,
     FL_INSTR_ADD,
     FL_INSTR_SUB,
@@ -26,7 +27,6 @@ enum _fl_instruction
     FL_INSTR_MOD,
     FL_INSTR_POW,
     // flow instructions
-    // FL_INSTR_NULL,
     FL_INSTR_CALL,
     FL_INSTR_GET_ID,
     FL_INSTR_NEW_ID,

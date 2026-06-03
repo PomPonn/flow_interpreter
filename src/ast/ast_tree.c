@@ -15,6 +15,8 @@
 #include "flow/id/id_chain.h"
 #include "flow/value.h"
 #include "tokenizer/token_location.h"
+#include "tokenizer/token_arr.h"
+#include "ast/ast_node.h"
 // may be to remove
 #include "revise_me/info/operator_info.h"
 

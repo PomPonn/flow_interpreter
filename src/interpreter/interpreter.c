@@ -103,7 +103,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_char *id_name = fl_str_dup(fl_byte_reader_next_str(reader));
             fl_id_entry_init(&new_id, id_name, FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
             fl_id_entry_vec_push(&cnt->base->scope->ids, new_id);
-            fl_value ref = fl_value_create(FL_DATA_TYPE_PTR, new_id);
+            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, new_id);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }
@@ -182,6 +182,10 @@ fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader)
     if (!fl_str_equal(ver, INTPR_REQUIRED_BC_VERSION))
         // invalid bc version
         assert(FL_FALSE);
+
+    fl_long creation_timestamp = fl_byte_reader_next(reader, fl_long);
+
+    // do sth with this info...
 }
 
 // Returned indices are READONLY

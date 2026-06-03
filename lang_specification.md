@@ -4,8 +4,8 @@
 
 - _data_: none
 - _children_:
-  - #1: main program block,
-  - meta data (?)
+    - #1: main program block,
+    - meta data (?)
 
 ### block:
 
@@ -26,8 +26,8 @@
 
 - _data_: operator order (?)
 - _children_:
-  - #1: operation id,
-  - #2&3: operation arguments
+    - #1: operation id,
+    - #2&3: operation arguments
 
 ### call:
 
@@ -46,9 +46,9 @@
 
 ```
 [HEADER SECTION]
-(version): 10B
+(version): 10B + 1B for '\0' (is a string)
 --wip:
-(compilation timestamp): xB
+(compilation timestamp): 8B
 ```
 
 ### Literals section:
@@ -107,7 +107,7 @@
 #### scope:
 
 ```
-[BLOCK START] 
+[BLOCK START]
 ... content
 [BLOCK END]
 ```

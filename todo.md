@@ -1,5 +1,7 @@
 # TODO
 
+- 'declare' instruction unused for now
+- rework tokenizer main function interface (value return method)
 - revise fl_token_alias
 - inline imports?
 - include compilation timestamp in byte code version section

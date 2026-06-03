@@ -34,8 +34,11 @@ FL_HEADER_FN fl_const_cstr_vec fl_instr_alias_vec_to_escapes(const fl_instr_alia
     fl_const_cstr_vec_init_c(&escapes, vec->size);
 
     for (fl_size i = 0; i < vec->size; i++)
-        if (vec->data[i].escape)
-            fl_const_cstr_vec_push(&escapes, vec->data[i].alias);
+    {
+        fl_instr_alias curr = vec->data[i];
+        if (curr.escape && (fl_const_cstr_vec_find(&escapes, curr.alias) == FL_FIND_FAIL))
+            fl_const_cstr_vec_push(&escapes, curr.alias);
+    }
 
     return escapes;
 }

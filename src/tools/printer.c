@@ -48,7 +48,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader);
 
 inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
-    fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
+    static fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
 
     assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
@@ -285,7 +285,7 @@ inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader)
 
 const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
 {
-    fl_char buffer[_VALUE_STR_BUFFER_SIZE];
+    static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_data_type data_type = fl_byte_reader_next(reader, fl_data_type);
 
     switch (data_type)
@@ -306,7 +306,7 @@ const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
         break;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:
-    case FL_DATA_TYPE_PTR:
+    case FL_DATA_TYPE_REF:
     case FL_DATA_TYPE_SCOPE:
     default:
         assert(FL_FALSE);

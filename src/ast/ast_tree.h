@@ -15,7 +15,7 @@
 // ---------- TYPE DEFINITIONS ----------
 
 FL_FORWARD_STRUCT(fl_token_arr);
-FL_FORWARD_STRUCT(fl_token_arr);
+FL_FORWARD_STRUCT(fl_ast_node);
 
 // ---------- DECLARATIONS --------------
 

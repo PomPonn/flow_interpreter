@@ -15,8 +15,7 @@
 
 // ---------- DEFINITIONS ---------------
 
-fl_char *fl_time_date_str()
+fl_long fl_time_get_unix()
 {
-    time_t raw_time = time(FL_NULL);
-    return asctime(localtime(&raw_time));
+    return time(FL_NULL);
 }
