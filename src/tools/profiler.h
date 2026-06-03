@@ -44,4 +44,8 @@ fl_void _fl_prof_log(
     fl_double *measures,
     fl_size measures_count);
 
+#else
+
+#define fl_prof_profile(samples, input_size, input_unit, segment) segment;
+
 #endif
