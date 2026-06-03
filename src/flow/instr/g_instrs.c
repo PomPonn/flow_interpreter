@@ -14,7 +14,6 @@
 #include "flow/instr/instruction.h"
 #include "vecs/const_cstr_vec.h"
 #include "vecs/instr_alias_vec.h"
-#include "vecs/fn_traits.h"
 
 // ---------- GLOBALS ---------------
 
