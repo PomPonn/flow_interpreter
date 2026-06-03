@@ -1,7 +1,7 @@
 /**
- * ---------- section.h --------------------
+ * ---------- section_mark.h --------------------
  *
- * Declares byte code section logic.
+ * Declares byte code section mark logic.
  *
  * --------------------------------------
  */
@@ -14,12 +14,12 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
-enum _fl_section
+enum _fl_section_mark
 {
-    FL_SECTION_HEADER,
-    FL_SECTION_LITERALS,
-    FL_SECTION_CODE,
+    FL_SECTION_MARK_HEADER,
+    FL_SECTION_MARK_LITERALS,
+    FL_SECTION_MARK_CODE,
 };
-typedef fl_byte fl_section;
+typedef fl_byte fl_section_mark;
 
 // ---------- DECLARATIONS --------------

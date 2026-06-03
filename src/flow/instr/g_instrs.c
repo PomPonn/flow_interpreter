@@ -53,19 +53,19 @@ fl_void fl_g_instrs_init()
             fl_param_create(FL_DATA_TYPE_STRING),
         });
     fl_fn_interface_init(&g_interfaces.data[FL_INSTR_IMPORT], FL_DATA_TYPE_ANY, params);
-    fl_fn_interface_add_trait(&g_interfaces.data[FL_INSTR_IMPORT], FL_FN_TRAITS_SIMULATE);
+    fl_bitfield_set(g_interfaces.data[FL_INSTR_IMPORT].traits, FL_FN_TRAITS_SIMULATE);
     g_aliases.data[FL_INSTR_IMPORT] = fl_instr_alias_create(FL_INSTR_IMPORT, "import");
 
     // DECLARE
-    fl_param_vec_init_with(
-        &params, 2,
-        (fl_param[]){
-            fl_param_create_traited(FL_DATA_TYPE_NULL, FL_PARAM_TRAITS_REF),
-            fl_param_create(FL_DATA_TYPE_TYPE),
-        });
-    fl_fn_interface_init(&g_interfaces.data[FL_INSTR_DECLARE], FL_DATA_TYPE_ANY, params);
-    fl_fn_interface_add_trait(&g_interfaces.data[FL_INSTR_DECLARE], FL_FN_TRAITS_SIMULATE);
-    g_aliases.data[FL_INSTR_DECLARE] = fl_instr_alias_create_esc(FL_INSTR_DECLARE, ":");
+    // fl_param_vec_init_with(
+    //     &params, 2,
+    //     (fl_param[]){
+    //         fl_param_create_traited(FL_DATA_TYPE_NULL, FL_PARAM_TRAITS_REF),
+    //         fl_param_create(FL_DATA_TYPE_TYPE),
+    //     });
+    // fl_fn_interface_init(&g_interfaces.data[FL_INSTR_DECLARE], FL_DATA_TYPE_ANY, params);
+    // fl_bitfield_set(&g_interfaces.data[FL_INSTR_DECLARE].traits, FL_FN_TRAITS_SIMULATE);
+    // g_aliases.data[FL_INSTR_DECLARE] = fl_instr_alias_create_esc(FL_INSTR_DECLARE, ":");
 
     // ASSIGN
     fl_param_vec_init_with(
@@ -75,7 +75,7 @@ fl_void fl_g_instrs_init()
             fl_param_create(FL_DATA_TYPE_ANY),
         });
     fl_fn_interface_init(&g_interfaces.data[FL_INSTR_ASSIGN], FL_DATA_TYPE_ANY, params);
-    fl_fn_interface_add_trait(&g_interfaces.data[FL_INSTR_ASSIGN], FL_FN_TRAITS_SIMULATE);
+    fl_bitfield_set(g_interfaces.data[FL_INSTR_ASSIGN].traits, FL_FN_TRAITS_SIMULATE_CASCADE);
     g_aliases.data[FL_INSTR_ASSIGN] = fl_instr_alias_create_esc(FL_INSTR_ASSIGN, "=");
 
     // ADD
@@ -86,7 +86,7 @@ fl_void fl_g_instrs_init()
             fl_param_create(FL_DATA_TYPE_ANY),
         });
     fl_fn_interface_init(&g_interfaces.data[FL_INSTR_ADD], FL_DATA_TYPE_ANY, params);
-    fl_fn_interface_add_trait(&g_interfaces.data[FL_INSTR_ADD], FL_FN_TRAITS_PURE);
+    fl_bitfield_set(g_interfaces.data[FL_INSTR_ADD].traits, FL_FN_TRAITS_PURE);
     g_aliases.data[FL_INSTR_ADD] = fl_instr_alias_create_esc(FL_INSTR_ADD, "+");
 
     g_aliases_escapes = fl_instr_alias_vec_to_escapes(&g_aliases);

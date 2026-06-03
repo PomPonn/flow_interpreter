@@ -20,7 +20,7 @@
 #include "flow/fn/param.h"
 #include "flow/value.h"
 #include "flow/instr/instruction.h"
-#include "flow/section.h"
+#include "flow/section_mark.h"
 #include "flow/operation.h"
 #include "vecs/instr_alias_vec.h"
 #include "flow/instr/g_instrs.h"
@@ -57,9 +57,9 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
 
 inline fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt);
 
-inline fl_param _fl_cmp_node_infer_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
+inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
 
-fl_param_vec _fl_cmp_nodes_infer_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
+fl_param_vec _fl_cmp_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 inline fl_void _fl_cmp_byte_code_push_id_access(fl_byte_vec *code, fl_uint offset, fl_int_vec inds);
 
@@ -73,7 +73,7 @@ inline fl_void _fl_cmp_paste_bytecode_header(fl_byte_vec *bytes);
 
 inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
-fl_value_vec _fl_cmp_parse_args_to_values(fl_ast_node *arg_node, fl_cmp_context *cnt);
+fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -83,25 +83,25 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
     fl_cmp_context cnt;
     fl_cmp_context_init(&cnt, base);
 
+    // compile child nodes
     _fl_cmp_compile_node(tree, &cnt);
 
     fl_byte_vec final;
     fl_byte_vec_init(&final);
 
     // add byte code version info
-    fl_byte_vec_push(&final, FL_SECTION_HEADER);
     _fl_cmp_paste_bytecode_header(&final);
 
-    // add literals table to the start of the byte code
     if (!fl_value_vec_is_empty(&cnt.base->literals))
     {
-        fl_byte_vec_push(&final, FL_SECTION_LITERALS);
+        // add literals table
+        fl_byte_vec_push(&final, FL_SECTION_MARK_LITERALS);
         fl_byte_vec_push_t(&final, cnt.base->literals.size, fl_size);
         fl_value_vec_to_bytes(&cnt.base->literals, &final);
     }
 
     // merge both byte vecs
-    fl_byte_vec_push(&final, FL_SECTION_CODE);
+    fl_byte_vec_push(&final, FL_SECTION_MARK_CODE);
     fl_byte_vec_merge(&final, &cnt.byte_code);
 
     // free remains
@@ -160,11 +160,12 @@ fl_operation _fl_cmp_id_node_to_operation(
         return fl_operation_from_instr(alias->instr);
 
     fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
-    fl_value id_val = id->value;
 
     if (!id)
         // throw an error if id does not exist
-        throw_compilation_error(id_node, "Use of unknown function id");
+        throw_compilation_error(id_node, "Use of unknown operation id");
+
+    fl_value id_val = id->value;
 
     if (id_val.data_type != FL_DATA_TYPE_FN)
         // throw an error if id is not fn
@@ -176,37 +177,46 @@ fl_operation _fl_cmp_id_node_to_operation(
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 {
     fl_ast_node *id_node = op_node->child;
+    fl_ast_node *arg_node = id_node->next;
     // id_chain declaration for error throwing
     fl_id_chain *id_chain = id_node->data;
     fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
 
-    fl_ast_node *arg_node = id_node->next;
-    fl_param_vec params = _fl_cmp_nodes_infer_to_params(arg_node, cnt);
+    fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
     const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
-
-    fl_param_vec_free(&params);
 
     if (!fn_i)
         throw_compilation_error(id_node, "couldn't find function overload for given arguments");
 
-    // ENDED HERE
+    fl_bool const_pure = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&params);
+    fl_bool simulate = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE);
 
-    if (fl_bitfield_has(fn_i->traits, FL_FN_TRAITS_SIMULATE) || fl_fn_interface_is_const(fn_i))
+    if (!simulate)
+        simulate = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE_CASCADE) &&
+                   fl_param_vec_cascade_simulate(&params);
+
+    fl_param_vec_free(&params);
+
+    if (simulate || const_pure)
     {
         // call this operation
-        fl_value_vec args = _fl_cmp_parse_args_to_values(arg_node, cnt);
+        fl_value_vec args = _fl_cmp_parse_nodes_to_values(arg_node, cnt);
         fl_value res = fl_operation_run(op, args, cnt->base);
 
         // does res needs to be freed?
 
-        if (fl_bitfield_has(fn_i->traits, FL_FN_TRAITS_PURE))
+        if (const_pure)
         {
             // inline result
 
             if (fl_value_equal(res, FL_VALUE_EMPTY))
                 assert(FL_FALSE);
 
+            // push immediate value
+            fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
             fl_value_to_bytes(res, &cnt->byte_code);
+            // not sure if its always good to free
+            fl_value_free(&res);
             return;
         }
     }
@@ -217,7 +227,6 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
         fl_uint offset;
         fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
         fl_id_entry *id = fl_scope_traverse(cnt->base->scope, inds, offset);
-        fl_ast_node *arg_node = id_node->next;
 
         // start CALL instruction
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
@@ -285,7 +294,7 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
     fl_int_vec_free(&inds);
 }
 
-inline fl_param _fl_cmp_node_infer_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
+inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     switch (node->type)
     {
@@ -296,12 +305,21 @@ inline fl_param _fl_cmp_node_infer_to_param(const fl_ast_node *node, const fl_cm
     {
         fl_ast_node *id_node = node->child;
         fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
-        fl_param_vec params = _fl_cmp_nodes_infer_to_params(id_node->next, cnt);
+        fl_param_vec params = _fl_cmp_parse_nodes_to_params(id_node->next, cnt);
         const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
-        fl_bool is_const = fl_fn_interface_is_const(fn_i);
+
+        fl_param_traits traits = FL_PARAM_TRAITS_NONE;
+
+        if (fl_param_vec_is_every_const(&params))
+            fl_bitfield_set(traits, FL_PARAM_TRAITS_CONST);
+
+        if (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE) ||
+            (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE_CASCADE) &&
+             fl_param_vec_cascade_simulate(&params)))
+            fl_bitfield_set(traits, FL_PARAM_TRAITS_SIMULATE);
 
         fl_param_vec_free(&params);
-        return is_const ? fl_param_create_traited(fn_i->return_type, FL_PARAM_TRAITS_CONST) : fl_param_create(fn_i->return_type);
+        return fl_param_create_traited(fn_i->return_type, traits);
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
@@ -325,14 +343,14 @@ inline fl_param _fl_cmp_node_infer_to_param(const fl_ast_node *node, const fl_cm
     }
 }
 
-fl_param_vec _fl_cmp_nodes_infer_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
+fl_param_vec _fl_cmp_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
 {
     fl_param_vec params;
     fl_param_vec_init(&params);
 
     while (arg_node)
     {
-        fl_param par = _fl_cmp_node_infer_to_param(arg_node, cnt);
+        fl_param par = _fl_cmp_parse_node_to_param(arg_node, cnt);
         fl_param_vec_push(&params, par);
         arg_node = arg_node->next;
     }
@@ -373,6 +391,8 @@ inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *c
 
 inline fl_void _fl_cmp_paste_bytecode_header(fl_byte_vec *bytes)
 {
+    fl_byte_vec_push(bytes, FL_SECTION_MARK_HEADER);
+
     // push byte code version
     // size + 1 for '\0' (end of string)
     fl_byte_vec_push_mem(bytes, _BYTECODE_VERSION, fl_str_len(_BYTECODE_VERSION) + 1);
@@ -382,7 +402,7 @@ inline fl_void _fl_cmp_paste_bytecode_header(fl_byte_vec *bytes)
     fl_byte_vec_push_t(bytes, timestamp, fl_long);
 }
 
-fl_value_vec _fl_cmp_parse_args_to_values(fl_ast_node *arg_node, fl_cmp_context *cnt)
+fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     fl_value_vec main_args;
     fl_value_vec_init(&main_args);
@@ -421,7 +441,7 @@ fl_value_vec _fl_cmp_parse_args_to_values(fl_ast_node *arg_node, fl_cmp_context 
             fl_ast_node *id_node = arg_node->child;
             fl_ast_node *inner_arg_node = id_node->data;
             fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
-            fl_value_vec args = _fl_cmp_parse_args_to_values(id_node->next, cnt);
+            fl_value_vec args = _fl_cmp_parse_nodes_to_values(id_node->next, cnt);
 
             fl_value res = fl_operation_run(op, args, cnt->base);
             fl_value_vec_push(&main_args, res);

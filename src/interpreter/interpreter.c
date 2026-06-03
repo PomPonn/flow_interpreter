@@ -4,9 +4,10 @@
 #include "flow/instr/instruction.h"
 #include "context/intpr_context.h"
 #include "vecs/int_vec.h"
-#include "flow/section.h"
+#include "flow/section_mark.h"
+#include "macros/basic.h"
 
-#define INTPR_REQUIRED_BC_VERSION "2026053100"
+#define INTPR_REQUIRED_BC_VERSION _BYTECODE_VERSION
 
 // ---------- DECLARATIONS ----------
 
@@ -152,7 +153,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
 inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
-    if (fl_byte_reader_next(reader, fl_section) != FL_SECTION_CODE)
+    if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
 
     _fl_intpr_interpret_bytes(reader, cnt);
@@ -160,7 +161,7 @@ inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr
 
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
-    if (fl_byte_reader_next(reader, fl_section) != FL_SECTION_LITERALS)
+    if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_LITERALS)
         assert(FL_FALSE);
 
     const fl_size lits_count = fl_byte_reader_next(reader, fl_size);
@@ -174,7 +175,7 @@ fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_contex
 
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader)
 {
-    if (fl_byte_reader_next(reader, fl_section) != FL_SECTION_HEADER)
+    if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_HEADER)
         assert(FL_FALSE);
 
     const fl_char *ver = fl_byte_reader_next_str(reader);

@@ -115,9 +115,12 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
     const fl_param_vec params)
 {
     if (op.type == FL_OPERATION_INSTR)
-        return fl_instruction_get_interface(op.instr);
+    {
+        const fl_fn_interface *fn_i = fl_instruction_get_interface(op.instr);
+        return fl_param_vec_match_params(&fn_i->params, &params) ? fn_i : FL_NULL;
+    }
     else if (op.type == FL_OPERATION_FN)
         return &fl_fn_variant_vec_find_match_p(op.vars, params)->interface;
     else
-        return FL_DATA_TYPE_NULL;
+        return FL_NULL;
 }

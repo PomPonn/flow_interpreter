@@ -22,7 +22,6 @@
 #define FL_VEC_DESTROY(elem) fl_fn_variant_free(&elem)
 #include "templates/vector.h"
 
-
 // ---------- DECLARATIONS --------------
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_p(
@@ -34,7 +33,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_a(
     const fl_value_vec args);
 
 FL_HEADER_FN fl_bool fl_fn_variant_vec_overload(
-    fl_fn_variant_vec *fn_vars, 
+    fl_fn_variant_vec *fn_vars,
     fl_fn_variant new_variant);
 
 // ---------- DEFINITIONS ---------------
@@ -47,7 +46,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_p(
     {
         const fl_param_vec current = vec->data[i].interface.params;
 
-        if (fl_param_vec_equal(&current, &params))
+        if (fl_param_vec_match_params(&current, &params))
             return &vec->data[i];
     }
 
@@ -62,7 +61,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match_a(
     {
         const fl_param_vec current = vec->data[i].interface.params;
 
-        if (fl_param_vec_suits_args(&current, &args))
+        if (fl_param_vec_match_args(&current, &args))
             return &vec->data[i];
     }
 

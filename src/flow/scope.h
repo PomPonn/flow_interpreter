@@ -72,11 +72,16 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
 {
     fl_id_entry_vec_free(&scope->ids);
     scope->outer = FL_NULL;
+
     // remove this scope from outer inners?
+
+    //  MEMORY LEAKING scope->inners pointers
+    // fix: initialize scopes using double ptrss
 
     if (scope->inners)
     {
-        fl_scope_vec_free((fl_scope_vec *)scope->inners);
+        fl_scope_vec *scopes = (fl_scope_vec *)scope->inners;
+        fl_scope_vec_free(scopes);
         fl_mem_free(scope->inners);
         scope->inners = FL_NULL;
     }

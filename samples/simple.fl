@@ -2,6 +2,9 @@
 io = import(":std.io");
 
 io.put("Hello world!");
-# doesn't work #
+#
+doesn't work 
 io.put(7 + 4 * 9);
+#
+
 io.put(5+4);

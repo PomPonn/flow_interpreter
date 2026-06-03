@@ -32,8 +32,6 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
     fl_param_vec params);
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *interface);
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right);
-FL_HEADER_FN fl_void fl_fn_interface_add_trait(fl_fn_interface *interface, fl_fn_traits trait);
-FL_HEADER_FN fl_bool fl_fn_interface_is_const(const fl_fn_interface *interface);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
 
@@ -54,11 +52,6 @@ FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *interface)
     interface->traits = FL_FN_TRAITS_NONE;
 }
 
-FL_HEADER_FN fl_void fl_fn_interface_add_trait(fl_fn_interface *interface, fl_fn_traits trait)
-{
-    interface->traits |= trait;
-}
-
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right)
 {
     if (left.params.size == 0 && right.params.size == 0)
@@ -72,9 +65,4 @@ FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interf
             return FL_FALSE;
 
     return FL_TRUE;
-}
-
-FL_HEADER_FN fl_bool fl_fn_interface_is_const(const fl_fn_interface *fn_i)
-{
-    return fl_bitfield_has(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&fn_i->params);
 }

@@ -16,7 +16,7 @@
 #include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
 #include "macros/basic.h"
-#include "flow/section.h"
+#include "flow/section_mark.h"
 #include "tokenizer/token_arr.h"
 #include "vecs/byte_vec.h"
 #include "ast/ast_node.h"
@@ -139,9 +139,9 @@ fl_void fl_prt_print_tokens_joined(fl_token_arr *arr)
 
 fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
 {
-    const fl_char *last_desc = FL_NULL;
-    fl_char position_str_buffer[_POSITION_STR_BUFFER_SIZE];
-    fl_size nodes_count = 0;
+    static const fl_char *last_desc = FL_NULL;
+    static fl_char position_str_buffer[_POSITION_STR_BUFFER_SIZE];
+    static fl_size nodes_count = 0;
 
     // printing decorators
 
@@ -257,18 +257,21 @@ fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
 {
     fl_byte_reader reader = fl_byte_reader_create(bytes);
 
-    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_HEADER)
+    if (fl_byte_reader_next(&reader, fl_section_mark) != FL_SECTION_MARK_HEADER)
         assert(FL_FALSE);
 
-    printf("==== BC VERSION: %s ====\n", fl_byte_reader_next_str(&reader));
+    printf("==== HEADER ====\n");
 
-    if (fl_byte_reader_next(&reader, fl_section) == FL_SECTION_LITERALS)
+    printf("[BYTE CODE VERSION] %s\n", fl_byte_reader_next_str(&reader));
+    printf("[COMPILATION TIMESTAMP] %lld \n", fl_byte_reader_next(&reader, fl_long));
+
+    if (fl_byte_reader_next(&reader, fl_section_mark) == FL_SECTION_MARK_LITERALS)
     {
         printf("==== LITERALS ====\n");
         _fl_prt_print_byte_code_helper_literals(&reader);
     }
 
-    if (fl_byte_reader_next(&reader, fl_section) != FL_SECTION_CODE)
+    if (fl_byte_reader_next(&reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
 
     printf("==== CODE ====\n");

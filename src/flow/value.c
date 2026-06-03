@@ -96,7 +96,11 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
 
 fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 {
-    fl_byte_vec_push(bytes, v.data_type);
+    fl_byte_vec_push_t(bytes, v.data_type, fl_data_type);
+    const fl_size size = fl_value_mem_size(v);
+
+    if (fl_value_is_size_complex(v))
+        fl_byte_vec_push_t(bytes, size, fl_size);
 
     switch (v.data_type)
     {
@@ -104,11 +108,8 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_INT:
     case FL_DATA_TYPE_FLOAT:
-    {
-        const fl_size size = fl_value_mem_size(v);
         fl_byte_vec_push_mem(bytes, v.data, size);
         break;
-    }
     case FL_DATA_TYPE_SCOPE:
         fl_scope_to_bytes(v.data, bytes);
         break;
