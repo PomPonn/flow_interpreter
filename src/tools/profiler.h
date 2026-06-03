@@ -6,6 +6,8 @@
  * --------------------------------------
  */
 
+#if _INCLUDE_PROFILER
+
 #pragma once
 
 // ---------- DEPENDENCIES --------------
@@ -21,9 +23,9 @@
                                                                       \
         for (fl_uint i = 0; i < samples; i++)                         \
         {                                                             \
-            fl_timestamp __start = fl_time_get_ticks();               \
+            fl_long __start = fl_time_get_ticks();                    \
             segment;                                                  \
-            fl_timestamp __end = fl_time_get_ticks();                 \
+            fl_long __end = fl_time_get_ticks();                      \
             ms[i] = fl_time_ticks_diff(__start, __end);               \
         }                                                             \
         _fl_prof_log(                                                 \
@@ -41,3 +43,5 @@ fl_void _fl_prof_log(
     fl_size input_size,
     fl_double *measures,
     fl_size measures_count);
+
+#endif

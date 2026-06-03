@@ -5,9 +5,11 @@
 
 fl_int main()
 {
-    fl_globals_init();
+    fl_prof_profile(1, 1, "run", {
+        fl_globals_init();
 
-    fl_flow_run(_TEST_INPUT_PATH);
+        fl_flow_run(_TEST_INPUT_PATH);
 
-    fl_globals_free();
+        fl_globals_free();
+    })
 }

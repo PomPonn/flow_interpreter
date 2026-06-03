@@ -52,7 +52,7 @@ fl_void _fl_prof_log(
     sprintf(
         buffer,
         "[PROFILER LOG ENTRY]\n"
-        "Timestamp: %s"
+        "Timestamp: %s\n"
         "Expression: '%s'\n"
         "Compiler: '%s'\n"
 #ifdef NDEBUG
@@ -72,6 +72,8 @@ fl_void _fl_prof_log(
         sum / measures_count, med, min, max, sum * 1e-3, sum);
 
     fl_file_append_str(filename, buffer);
+
+    printf("{PROFILER} Saved profiler log to " _PROFILER_LOGS_PATH);
 }
 
 #endif
