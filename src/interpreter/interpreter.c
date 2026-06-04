@@ -66,8 +66,8 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         {
         case FL_INSTR_START_BLOCK:
         {
-            fl_scope *inner = fl_mem_alloc_t(fl_scope);
-            fl_scope_init(inner, cnt->base->scope);
+            fl_scope *inner;
+            fl_scope_init(&inner, cnt->base->scope);
             cnt->base->scope = inner;
             break;
         }

@@ -11,6 +11,7 @@
 // ---------- DEPENDENCIES ----------
 
 #include "shared/common.h"
+#include "shared/str.h"
 #include "vecs/byte_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------

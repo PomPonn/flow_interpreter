@@ -138,8 +138,8 @@ fl_void _fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
 
 inline fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
 {
-    fl_scope *this_scope = fl_mem_alloc_t(fl_scope);
-    fl_scope_init(this_scope, cnt->base->scope);
+    fl_scope *this_scope;
+    fl_scope_init(&this_scope, cnt->base->scope);
 
     node = node->child;
     while (node)
@@ -416,8 +416,8 @@ fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context
             // TODO ...
             assert(FL_FALSE);
 
-            fl_scope *inner = fl_mem_alloc_t(fl_scope);
-            fl_scope_init(inner, cnt->base->scope);
+            fl_scope *inner;
+            fl_scope_init(&inner, cnt->base->scope);
             // ???
 
             // fl_ast_node *scope_node = node->child;
@@ -426,7 +426,7 @@ fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context
             //     fl_value reduced;
             //     if (!_fl_cmp_resolve_node_const(scope_node, cnt, &inner, &reduced))
             //     {
-            //         fl_scope_free(scope_node);
+            //         fl_scope_free(&scope_node);
             //         return FL_FALSE;
             //     }
             // }

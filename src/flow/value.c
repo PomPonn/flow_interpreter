@@ -5,6 +5,7 @@
 #include "shared/str.h"
 #include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
+
 #include <stdlib.h>
 
 fl_void fl_value_free(fl_value *value)
@@ -16,7 +17,7 @@ fl_void fl_value_free(fl_value *value)
         break;
     case FL_DATA_TYPE_SCOPE:
         // free scope???
-        fl_scope_free(value->data);
+        fl_scope_free(&(fl_scope *)value->data);
         break;
     case FL_DATA_TYPE_REF:
         break;

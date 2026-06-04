@@ -32,8 +32,8 @@ typedef struct _fl_scope fl_scope;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, fl_scope *outer);
-FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope);
+FL_HEADER_FN fl_void fl_scope_init(fl_scope **scope, fl_scope *outer);
+FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope);
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
     const fl_id_chain *id_chain);
@@ -56,35 +56,36 @@ fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
 // ---------- HEADER-ONLY IMPLEMENTATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_init(fl_scope *scope, fl_scope *outer)
+FL_HEADER_FN fl_void fl_scope_init(fl_scope **scope, fl_scope *outer)
 {
-    fl_id_entry_vec_init(&scope->ids);
+    fl_scope *scp = fl_mem_alloc_t(fl_scope);
 
-    scope->outer = outer;
-    if (scope->outer)
-        fl_scope_add_inner(outer, scope);
+    fl_id_entry_vec_init(&scp->ids);
 
-    scope->inners = fl_mem_alloc_t(fl_scope_vec);
-    fl_scope_vec_init((fl_scope_vec *)scope->inners);
+    scp->outer = outer;
+    if (scp->outer)
+        fl_scope_add_inner(outer, scp);
+
+    scp->inners = fl_mem_alloc_t(fl_scope_vec);
+    fl_scope_vec_init((fl_scope_vec *)scp->inners);
+
+    *scope = scp;
 }
 
-FL_HEADER_FN fl_void fl_scope_free(fl_scope *scope)
+FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope)
 {
-    fl_id_entry_vec_free(&scope->ids);
-    scope->outer = FL_NULL;
+    fl_scope *scp = *scope;
 
-    // remove this scope from outer inners?
+    fl_id_entry_vec_free(&scp->ids);
 
-    //  MEMORY LEAKING scope->inners pointers
-    // fix: initialize scopes using double ptrss
-
-    if (scope->inners)
+    if (scp->inners)
     {
-        fl_scope_vec *scopes = (fl_scope_vec *)scope->inners;
-        fl_scope_vec_free(scopes);
-        fl_mem_free(scope->inners);
-        scope->inners = FL_NULL;
+        fl_scope_vec_free((fl_scope_vec *)scp->inners);
+        fl_mem_free(scp->inners);
     }
+
+    fl_mem_free(scope);
+    *scope = FL_NULL;
 }
 
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(

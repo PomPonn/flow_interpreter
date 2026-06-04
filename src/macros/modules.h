@@ -73,7 +73,7 @@
 
 #define FL_REGISTER_SCOPE(parent_scope, name)                          \
     fl_scope *_FL_MERGE2(name, _scope) = fl_mem_alloc_t(fl_scope);     \
-    fl_scope_init(_FL_MERGE2(name, _scope), parent_scope);             \
+    fl_scope_init(&_FL_MERGE2(name, _scope), parent_scope);            \
     fl_id_entry *name;                                                 \
     fl_id_entry_init(                                                  \
         &name,                                                         \

@@ -1,5 +1,7 @@
 # TODO
 
+## active
+
 - 'declare' instruction unused for now - use to it to declare variables (it doesn't work right now)
 - fix memory leak in scope.h
 - to opt.: simulated operations are called multiple times during compilation
@@ -13,8 +15,10 @@
 - handle ':' at the start of import string
 - revise mod_importer implementation namings
 - create forward type decls where possible
-- revise c modules registration
 
+## freezed
+
+- revise c modules registration
 - AST optimalization
 - AST operators sorting
 - AST function definitions handling

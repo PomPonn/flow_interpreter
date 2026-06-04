@@ -26,8 +26,8 @@ fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
     if (id_chain->size == 2)
     {
         // return this module as a scope
-        fl_scope *io_scope = fl_mem_alloc_t(fl_scope);
-        fl_scope_init(io_scope, scope);
+        fl_scope *io_scope;
+        fl_scope_init(&io_scope, scope);
 
         FL_REGISTER_FN(put, io_scope, FL_FALSE);
         FL_OVERLOAD_FN_ONCE(

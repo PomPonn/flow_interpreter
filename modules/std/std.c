@@ -19,8 +19,8 @@ FL_FLOW_MODULE fl_value fl_module_resolve_id_value(const fl_id_chain *id_chain)
     if (id_chain->size == 1)
     {
         // return this module as a scope
-        fl_scope *std_scope = fl_mem_alloc_t(fl_scope);
-        fl_scope_init(std_scope, FL_NULL);
+        fl_scope *std_scope;
+        fl_scope_init(&std_scope, FL_NULL);
 
         // import everything from this module
 
