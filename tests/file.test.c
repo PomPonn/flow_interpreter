@@ -1,11 +1,15 @@
 /**
- * ---------- file.test.c ----------
+ * ---------- file.test.c -----------------
  *
  * Defines tests for 'src/tools/file.h'.
  *
+ * ----------------------------------------
  */
 
+// ---------- DEPENDENCIES --------------
+
 #include "tools/file.h"
+
 #include <unity/unity.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,7 +19,7 @@
 const fl_char buffer[] = "This is some content to be added to the file.\nThat's awesome!";
 const fl_char filename[] = "file.test.txt";
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP ------------
 
 void setUp()
 {

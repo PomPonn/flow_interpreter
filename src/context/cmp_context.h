@@ -2,7 +2,7 @@
  * ---------- cmp_context.h ----------
  *
  * Declares compilation context logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

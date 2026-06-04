@@ -2,7 +2,7 @@
  * ---------- param_traits.h ----------
  *
  * Declares parameter traits logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

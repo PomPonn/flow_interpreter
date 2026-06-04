@@ -3,7 +3,6 @@
 ## active
 
 - 'declare' instruction unused for now - use to it to declare variables (it doesn't work right now)
-- fix memory leak in scope.h
 - to opt.: simulated operations are called multiple times during compilation
 - rework tokenizer main function interface (value return method)
 - revise fl_token_alias

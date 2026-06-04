@@ -2,7 +2,7 @@
  * ---------- base_context.h ----------
  *
  * Declares base context interface logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

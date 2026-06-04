@@ -2,7 +2,7 @@
  * ---------- instr_alias.h ----------
  *
  * Declares instruction alias logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

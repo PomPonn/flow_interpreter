@@ -2,7 +2,7 @@
  * ---------- scope.h ----------
  *
  * Declares flow scope logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

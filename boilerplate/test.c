@@ -1,19 +1,26 @@
 /**
- * ---------- <module filename>.test.c ----------
+ * ---------- <module>.test.c ----------
  *
  * Defines tests for '<path to the module>'.
  *
- * ----------------------------------------
+ * ----------------------------------------------
  */
 
+// ---------- DEPENDENCIES --------------
+
 #include "shared/common.h"
+
 #include <unity/unity.h>
+
+// ------------- MACROS -----------------
+
+// ...
 
 // ---------- GLOBALS ----------
 
 // ...
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP ----------
 
 void setUp()
 {

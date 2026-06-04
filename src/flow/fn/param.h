@@ -2,7 +2,7 @@
  * ---------- param.h ----------
  *
  * Declares parameter description logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

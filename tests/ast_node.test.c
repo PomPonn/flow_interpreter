@@ -1,14 +1,18 @@
 /**
- * ---------- ast_node.test.c ----------
+ * ---------- ast_node.test.c --------------
  *
  * Defines tests for 'src/ast/ast_node.h'.
  *
+ * -----------------------------------------
  */
 
+// ---------- DEPENDENCIES --------------
+
 #include "ast/ast_node.h"
+
 #include <unity/unity.h>
 
-// ---------- GLOBALS ----------
+// ---------- GLOBALS -------------
 
 fl_ast_node *parent;
 fl_ast_node *node;
@@ -18,7 +22,7 @@ fl_token_location loc_info = {
     .description = "",
 };
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP --------------
 
 void setUp()
 {

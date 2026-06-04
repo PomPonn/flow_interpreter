@@ -2,7 +2,7 @@
  * ---------- interpreter.c ----------
  *
  * Declares interpreter logic.
- *
+ * -------------------------------------
  */
 
 #pragma once

@@ -1,19 +1,26 @@
 /**
- * ---------- byte_vec.test.c ----------
+ * ---------- byte_vec.test.c --------------------
  *
  * Defines tests for 'src/revise_me/byte_vec.h'.
  *
+ * -----------------------------------------------
  */
 
+// ---------- DEPENDENCIES --------------
+
 #include "vecs/byte_vec.h"
+
 #include <unity/unity.h>
 
-// ---------- GLOBALS ----------
+// ------------- MACROS -----------------
 
 #define INIT_SIZE 24
+
+// ---------- GLOBALS -------------------
+
 fl_byte_vec vec;
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP -------------------
 
 void setUp()
 {

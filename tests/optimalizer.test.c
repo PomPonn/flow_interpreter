@@ -1,16 +1,21 @@
 /**
- * ---------- optimalizer.test.c ----------
+ * ---------- optimalizer.test.c ------------------------
  *
  * Defines tests for 'src/optimalizer/optimalizer.h'.
  *
+ * ------------------------------------------------------
  */
+
+// ---------- DEPENDENCIES --------------
 
 #include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
+#include "vecs/const_cstr_vec.h"
+
 #include <unity/unity.h>
 #include <stdlib.h>
 
-// ---------- GLOBALS ----------
+// ---------- GLOBALS ------------
 
 fl_token_arr tok_array;
 fl_char *source =
@@ -22,7 +27,7 @@ fl_char *source =
     "#I guess it's the last one...#"
     "#Maybe some \\# escape at last#";
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP ------------
 
 void setUp()
 {

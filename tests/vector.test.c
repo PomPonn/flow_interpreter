@@ -1,19 +1,26 @@
 /**
- * ---------- vector.test.c ----------
+ * ---------- vector.test.c --------------------
  *
  * Defines tests for 'src/templates/vector'.
  *
+ * ---------------------------------------------
  */
 
+// ---------- DEPENDENCIES --------------
+
 #include "templates/vector.h"
+
 #include <unity/unity.h>
 
-// ---------- GLOBALS ----------
+// ------------- MACROS -----------------
 
 #define INIT_SIZE 14
+
+// ---------- GLOBALS ------------
+
 fl_vector vec;
 
-// ---------- SETUP FUNCTIONS ----------
+// ----------  SETUP -------------
 
 void setUp()
 {
