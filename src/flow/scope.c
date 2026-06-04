@@ -1,8 +1,24 @@
+/**
+ * ---------- scope.c ----------------
+ *
+ * Implements scope logic.
+ *
+ * -----------------------------------
+ */
+
 #include "scope.h"
 
-#include "flow/instr/instruction.h"
+// ---------- DEPENDENCIES ----------
 
-static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
+#include "flow/instr/instruction.h"
+#include "flow/id/id_chain.h"
+#include "vecs/byte_vec.h"
+
+// ---------- DECLARATIONS ----------
+
+inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset);
+
+// ---------- DEFINITIONS -----------
 
 fl_int_vec fl_scope_find_id_path(
     const fl_scope *scope,
@@ -105,7 +121,7 @@ fl_id_entry *fl_scope_traverse(
     return FL_NULL;
 }
 
-static inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset)
+inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_offset)
 {
     for (fl_uint i = 0; i < back_offset; i++)
         if (scope->outer)

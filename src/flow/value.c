@@ -1,12 +1,25 @@
+/**
+ * ---------- value.c ----------------
+ *
+ * Implements value logic.
+ *
+ * -----------------------------------
+ */
+
 #include "value.h"
 
+// ---------- DEPENDENCIES ----------
+
 #include "vecs/fn_variant_vec.h"
+#include "vecs/byte_vec.h"
 #include "flow/scope.h"
 #include "shared/str.h"
 #include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
 
 #include <stdlib.h>
+
+// ---------- DEFINITIONS -----------
 
 fl_void fl_value_free(fl_value *value)
 {

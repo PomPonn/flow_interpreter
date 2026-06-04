@@ -3,7 +3,7 @@
  *
  * Declares flow global context logic.
  *
- * ----------------------------------------
+ * -----------------------------------------
  */
 
 #pragma once
@@ -11,11 +11,6 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
-#include "flow/instr/g_instrs.h"
-
-// ---------- TYPE DEFINITIONS ----------
-
-// ...
 
 // ---------- DECLARATIONS --------------
 

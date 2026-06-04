@@ -1,5 +1,14 @@
+/**
+ * ---------- base_context.c ----------------
+ *
+ * Implements base context logic.
+ *
+ * ------------------------------------------
+ */
 
 #include "base_context.h"
+
+// ---------- DEFINITIONS -----------
 
 fl_void fl_base_context_init(fl_base_context *cnt)
 {

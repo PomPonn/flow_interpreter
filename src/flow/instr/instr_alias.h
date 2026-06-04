@@ -1,21 +1,19 @@
 /**
- * ---------- instr_alias.h ----------
+ * ---------- instr_alias.h -------------
  *
  * Declares instruction alias logic.
- * -------------------------------------
+ *
+ * --------------------------------------
  */
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 #include "flow/instr/instruction.h"
-#include "flow/fn/fn_interface.h"
 
 // ---------- TYPE DEFINITIONS ----------
-
-FL_FORWARD_STRUCT(fl_context);
 
 struct _fl_instr_alias
 {

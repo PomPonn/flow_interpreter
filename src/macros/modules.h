@@ -1,7 +1,17 @@
+/**
+ * ---------- macros/modules.h ------------------
+ *
+ * Declares module macros.
+ *
+ * ----------------------------------------------
+ */
+
 #pragma once
 
-#include "shared/str.h"
+// ---------- DEPENDENCIES --------------
+
 #include "macros/basic.h"
+#include "shared/str.h"
 #include "shared/error.h"
 #include "flow/scope.h"
 #include "flow/data_type.h"
@@ -9,7 +19,9 @@
 #include "vecs/fn_variant_vec.h"
 #include "flow/fn/fn_interface.h"
 
-// ---------- PRIVATE ----------
+// ------------- MACROS -----------------
+
+// ====== PRIVATE ======
 
 #define _FL_ID_CHAIN_BUFFER_SIZE 256
 
@@ -37,7 +49,7 @@
         assert(success);                                                                  \
     }
 
-// ---------- PUBLIC ----------
+// ====== PUBLIC ======
 
 #define fl_throw_import_error(message)                                     \
     {                                                                      \

@@ -1,9 +1,20 @@
+/**
+ * ---------- instruction.c ----------------------------
+ *
+ * Implements language (Built-in) instruction logic.
+ *
+ * -----------------------------------------------------
+ */
+
 #include "instruction.h"
 
 // ---------- DEPENDENCIES ----------
 
-#include "context/base_context.h"
 #include "flow/instr/internal/_all.h"
+#include "context/base_context.h"
+#include "vecs/value_vec.h"
+
+// ---------- DEFINITIONS -----------
 
 fl_value fl_instruction_call(fl_instruction instr, fl_base_context *cnt, fl_value_vec args)
 {

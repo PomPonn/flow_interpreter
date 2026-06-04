@@ -1,12 +1,27 @@
+/**
+ * ---------- instruction.h -------------------------
+ *
+ * Declares language (Built-in) instruction logic.
+ *
+ * --------------------------------------------------
+ */
+
 #pragma once
 
-#include "vecs/value_vec.h"
+// ---------- DEPENDENCIES --------------
+
 #include "flow/instr/g_instrs.h"
+
+// ------------- MACROS -----------------
 
 // REMEMBER TO KEEP IT UP-TO-DATE
 #define FL_CLL_INSTR_COUNT FL_INSTR_POW
 
+// ---------- TYPE DEFINITIONS ----------
+
 FL_FORWARD_STRUCT(fl_base_context);
+FL_FORWARD_STRUCT(fl_value_vec);
+FL_FORWARD_STRUCT(fl_value);
 
 /**
  * @brief Represents byte code instructions.

@@ -1,7 +1,8 @@
 /**
- * ---------- base_context.h ----------
+ * ---------- base_context.h -----------
  *
- * Declares base context interface logic.
+ * Declares base context logic.
+ *
  * -------------------------------------
  */
 
@@ -14,7 +15,7 @@
 #include "vecs/cstr_vec.h"
 #include "flow/scope.h"
 
-// ---------- TYPE DEFINITIONS ----------
+// ---------- TYPE DEFINITIONS ------------
 
 struct _fl_base_context
 {

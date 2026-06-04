@@ -1,9 +1,9 @@
 /**
- * ---------- ast_tree.c ---------------------------
+ * ---------- ast_tree.c -----------------------------
  *
  * Implements general Abstract Syntax Tree logic.
  *
- * -------------------------------------------------
+ * ---------------------------------------------------
  */
 
 #include "ast_tree.h"
@@ -59,8 +59,6 @@
     fl_ast_node_init(&node, type, value, parent, arr->current->location)
 
 // ---------- DECLARATIONS --------------
-
-// TODO: Comment these declarations
 
 inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);

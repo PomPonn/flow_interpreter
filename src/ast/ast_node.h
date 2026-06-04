@@ -1,9 +1,9 @@
 /**
- * ---------- ast_node.h ----------------------
+ * ---------- ast_node.h -----------------------
  *
  * Declares Abstract Syntax Tree node logic.
  *
- * --------------------------------------------
+ * ---------------------------------------------
  */
 
 #pragma once
@@ -14,6 +14,8 @@
 #include "tokenizer/token_location.h"
 
 // ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_token_location);
 
 enum _fl_ast_node_type
 {

@@ -1,9 +1,9 @@
 /**
- * ---------- assign.h --------------------
+ * ---------- declare.h --------------------
  *
- * Defines assign instruction logic.
+ * Defines declare instruction logic.
  *
- * --------------------------------------
+ * -----------------------------------------
  */
 
 #pragma once

@@ -1,15 +1,15 @@
 /**
- * ---------- cmp_context.h ----------
+ * ---------- cmp_context.h ---------------
  *
  * Declares compilation context logic.
- * -------------------------------------
+ *
+ * ----------------------------------------
  */
 
 #pragma once
 
 // ---------- DEPENDENCIES ----------
 
-#include "context/base_context.h"
 #include "vecs/byte_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------

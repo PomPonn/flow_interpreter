@@ -1,14 +1,27 @@
+/**
+ * ---------- id_chain.h ----------------
+ *
+ * Declares id chain logic.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
 
-#include "shared/common.h"
-#include "vecs/byte_vec.h"
+// ---------- DEPENDENCIES --------------
 
-// fl_id_chain vector
+#include "shared/common.h"
+
+// ------------- MACROS -----------------
+
+// defines fl_id_chain vector
 #define FL_VEC_NAME fl_id_chain
 #define FL_VEC_TYPE fl_char *
 #define FL_VEC_CAP 3
 #define FL_VEC_FREE_INNER FL_TRUE
 #include "templates/vector.h"
+
+// ---------- DECLARATIONS --------------
 
 fl_void fl_id_chain_init_parse(fl_id_chain *chain, const fl_char *str);
 

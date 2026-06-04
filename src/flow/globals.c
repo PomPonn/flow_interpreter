@@ -1,28 +1,20 @@
 /**
- * ---------- globals.c -----------------
+ * ---------- globals.c --------------------
  *
  * Implements flow global context logic.
  *
- * -------------------------------------
+ * -----------------------------------------
  */
 
 #include "globals.h"
 
 // ---------- DEPENDENCIES ----------
 
-// ...
-
-// ---------- MACROS ----------------
-
-// ...
+#include "flow/instr/g_instrs.h"
 
 // ---------- GLOBALS ---------------
 
 fl_bool initialized = FL_FALSE;
-
-// ---------- DECLARATIONS ----------
-
-// ...
 
 // ---------- DEFINITIONS -----------
 

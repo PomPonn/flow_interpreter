@@ -1,5 +1,5 @@
 /**
- * ---------- fn_traits.h --------------------
+ * ---------- fn_traits.h ---------------
  *
  * Declares function traits logic.
  *

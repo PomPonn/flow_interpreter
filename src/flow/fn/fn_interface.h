@@ -1,14 +1,14 @@
 /**
- * ---------- fn_interface.h ----------
+ * ---------- fn_interface.h ---------------
  *
  * Declares function interface logic.
  *
- * ----------------------------
+ * -----------------------------------------
  */
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES -------------
 
 #include "flow/data_type.h"
 #include "vecs/param_vec.h"
@@ -33,7 +33,7 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *interface);
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right);
 
-// ---------- HEADER-ONLY DEFINITIONS ----------
+// ---------- DEFINITIONS ----------
 
 FL_HEADER_FN fl_void fl_fn_interface_init(
     fl_fn_interface *interface,

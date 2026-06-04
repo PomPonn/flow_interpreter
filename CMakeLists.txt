@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 4.0.0)
 project(FlowInterpreter VERSION 0.1.2 LANGUAGES C)
+
 include(CTest)
 
 # ---------- GLOBAL VARIABLES -----------

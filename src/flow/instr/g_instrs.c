@@ -1,9 +1,9 @@
 /**
- * ---------- g_instrs.c ----------------
+ * ---------- g_instrs.c ------------------
  *
  * Implements global instructions logic.
  *
- * ----------------------------------
+ * ----------------------------------------
  */
 
 #include "g_instrs.h"
@@ -21,10 +21,6 @@ fl_bool g_initialized = FL_FALSE;
 fl_fn_interface_vec g_interfaces;
 fl_instr_alias_vec g_aliases;
 fl_const_cstr_vec g_aliases_escapes;
-
-// ---------- DECLARATIONS ----------
-
-// ...
 
 // ---------- DEFINITIONS -----------
 

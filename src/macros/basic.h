@@ -1,4 +1,14 @@
+/**
+ * ---------- macros/basic.h --------------
+ *
+ * Declares basic macros.
+ *
+ * ----------------------------------------
+ */
+
 #pragma once
+
+// ------------- MACROS -----------------
 
 #define _FL_MERGE_HELPER(a, b) a##b
 #define _FL_MERGE2(a, b) _FL_MERGE_HELPER(a, b)

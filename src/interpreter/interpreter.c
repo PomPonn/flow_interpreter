@@ -1,4 +1,14 @@
+/**
+ * ---------- interpreter.c ---------------
+ *
+ * Implements interpreter logic.
+ *
+ * ----------------------------------------
+ */
+
 #include "interpreter.h"
+
+// ---------- DEPENDENCIES --------------
 
 #include "tools/byte_reader.h"
 #include "flow/instr/instruction.h"
@@ -6,6 +16,8 @@
 #include "vecs/int_vec.h"
 #include "flow/section_mark.h"
 #include "macros/basic.h"
+
+// ------------- MACROS -----------------
 
 #define INTPR_REQUIRED_BC_VERSION _BYTECODE_VERSION
 

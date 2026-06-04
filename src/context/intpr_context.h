@@ -1,16 +1,15 @@
 /**
- * ---------- intpr_context.h --------------------
+ * ---------- intpr_context.h --------------
  *
  * Declares interpreter context logic.
  *
- * -----------------------------------------------
+ * -----------------------------------------
  */
 
 #pragma once
 
 // ---------- DEPENDENCIES --------------
 
-#include "context/base_context.h"
 #include "vecs/op_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------

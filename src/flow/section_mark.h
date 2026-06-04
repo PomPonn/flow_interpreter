@@ -1,9 +1,9 @@
 /**
- * ---------- section_mark.h --------------------
+ * ---------- section_mark.h -----------------
  *
  * Declares byte code section mark logic.
  *
- * --------------------------------------
+ * -------------------------------------------
  */
 
 #pragma once
@@ -21,5 +21,3 @@ enum _fl_section_mark
     FL_SECTION_MARK_CODE,
 };
 typedef fl_byte fl_section_mark;
-
-// ---------- DECLARATIONS --------------

@@ -1,8 +1,9 @@
 /**
- * ---------- scope.h ----------
+ * ---------- scope.h ---------------
  *
  * Declares flow scope logic.
- * -------------------------------------
+ *
+ * ----------------------------------
  */
 
 #pragma once
@@ -11,14 +12,15 @@
 
 #include "vecs/id_entry_vec.h"
 #include "vecs/int_vec.h"
-#include "vecs/byte_vec.h"
-#include "flow/id/id_chain.h"
 
-// ---------- DEFINES ----------
+// ---------- DEFINES ---------------
 
 #define fl_scope_get_inners(scope_ptr) ((fl_scope_vec *)(scope_ptr)->inners)
 
 // ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_byte_vec);
+FL_FORWARD_STRUCT(fl_id_chain);
 
 typedef fl_void *fl_inner_scopes_impl;
 
@@ -34,10 +36,10 @@ typedef struct _fl_scope fl_scope;
 
 FL_HEADER_FN fl_void fl_scope_init(fl_scope **scope, fl_scope *outer);
 FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope);
+FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
     const fl_id_chain *id_chain);
-FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
 
 fl_int_vec fl_scope_find_id_path(
     const fl_scope *scope,

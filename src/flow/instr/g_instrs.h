@@ -1,9 +1,9 @@
 /**
- * ---------- g_instrs.h --------------------
+ * ---------- g_instrs.h ------------------
  *
  * Declares global instructions logic.
  *
- * --------------------------------------
+ * ----------------------------------------
  */
 
 #pragma once
@@ -17,6 +17,7 @@
 FL_FORWARD_STRUCT(fl_fn_interface);
 FL_FORWARD_STRUCT(fl_const_cstr_vec);
 FL_FORWARD_STRUCT(fl_instr_alias);
+
 typedef fl_byte fl_instruction;
 typedef fl_byte fl_fl_traits;
 

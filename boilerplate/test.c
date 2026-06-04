@@ -1,5 +1,5 @@
 /**
- * ---------- <module>.test.c ----------
+ * ---------- <module>.test.c -------------------
  *
  * Defines tests for '<path to the module>'.
  *

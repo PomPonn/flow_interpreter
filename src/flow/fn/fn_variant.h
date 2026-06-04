@@ -1,3 +1,11 @@
+/**
+ * ---------- fn_variant.h -----------------------
+ *
+ * Declares function variant (overload) logic.
+ *
+ * -----------------------------------------------
+ */
+
 #pragma once
 
 // ---------- DEPENDENCIES ----------
@@ -28,13 +36,17 @@ struct _fl_fn_variant
  */
 typedef struct _fl_fn_variant fl_fn_variant;
 
+// ---------- DECLARATIONS --------------
+
+FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
+FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args);
+FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
 FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_interface interface);
-FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
-FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args);
-FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
+
+// ---------- DEFINITIONS ---------------
 
 FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,

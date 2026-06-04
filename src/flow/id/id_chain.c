@@ -1,6 +1,18 @@
+/**
+ * ---------- id_chain.c ---------------
+ *
+ * Implements id chain logic.
+ *
+ * -------------------------------------
+ */
+
 #include "id_chain.h"
 
+// ---------- DEPENDENCIES ----------
+
 #include "shared/str.h"
+
+// ---------- DEFINITIONS -----------
 
 fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
 {

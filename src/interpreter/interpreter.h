@@ -1,13 +1,14 @@
 /**
- * ---------- interpreter.c ----------
+ * ---------- interpreter.h -------------
  *
  * Declares interpreter logic.
- * -------------------------------------
+ *
+ * --------------------------------------
  */
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES ------------
 
 #include "shared/common.h"
 

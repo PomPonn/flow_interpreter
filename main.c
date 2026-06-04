@@ -1,9 +1,18 @@
+/**
+ * -----------------------------------
+ *
+ *      MAIN TESTING ENTRY POINT
+ *
+ * -----------------------------------
+ */
+
 #include "flow/globals.h"
 #include "flow/flow.h"
 #include "tools/profiler.h"
+
 #include <stdio.h>
 
-fl_int main()
+int main()
 {
     fl_prof_profile(1, 1, "run", {
         fl_globals_init();

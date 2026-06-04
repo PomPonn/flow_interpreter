@@ -1,20 +1,31 @@
 /**
- * ---------- param.h ----------
+ * ---------- param.h ---------------
  *
- * Declares parameter description logic.
- * -------------------------------------
+ * Declares parameter logic.
+ *
+ * ----------------------------------
  */
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES -------------
 
-#include "flow/fn/param_traits.h"
-#include "shared/bitfield.h"
 #include "flow/data_type.h"
 #include "flow/value.h"
 
 // ---------- TYPE DEFINITIONS ----------
+
+enum _fl_param_traits
+{
+    FL_PARAM_TRAITS_NONE = 0b00000000,
+    FL_PARAM_TRAITS_REF = 0b00000010,
+    FL_PARAM_TRAITS_CONST = 0b00000100,
+    // param indicates a call that is marked with SIMULATE trait
+    FL_PARAM_TRAITS_SIMULATE = 0b00001000,
+    // ???
+    // FL_PARAM_TRAIT_EXPAND = 0b00000010,
+};
+typedef fl_byte fl_param_traits;
 
 struct _fl_param
 {
@@ -23,12 +34,16 @@ struct _fl_param
 };
 typedef struct _fl_param fl_param;
 
+// ---------- DECLARATIONS ----------
+
 FL_HEADER_FN fl_param fl_param_create(fl_data_type type);
 FL_HEADER_FN fl_param fl_param_create_traited(fl_data_type type, fl_param_traits traits);
 
 FL_HEADER_FN fl_bool fl_param_equal(fl_param vd1, fl_param vd2);
 FL_HEADER_FN fl_bool fl_param_match_arg(fl_param p, fl_value arg);
 FL_HEADER_FN fl_bool fl_param_match_param(fl_param p, fl_param p2);
+
+// ---------- DEFINITIONS -----------
 
 FL_HEADER_FN fl_param fl_param_create(fl_data_type type)
 {

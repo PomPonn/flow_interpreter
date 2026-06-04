@@ -1,8 +1,10 @@
 /**
- * ---------- operation.h ---------------------
+ * ---------- operation.h ------------------------
  *
  * Declares operation logic
  * (join of instructions and normal functions).
+ *
+ * -----------------------------------------------
  */
 
 #pragma once
@@ -52,7 +54,7 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
 
 FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_base_context *cnt);
 
-// ---------- HEADER-ONLY DEFINITIONS ----------
+// ---------- DEFINITIONS ----------
 
 FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr)
 {

@@ -1,9 +1,9 @@
 /**
- * ---------- all.h ---------------------------
+ * ---------- all.h ------------------------------
  *
- * Includes all internal callable instructions
+ * Includes all internal callable instructions.
  *
- * --------------------------------------------
+ * -----------------------------------------------
  */
 
 #pragma once

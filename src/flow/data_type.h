@@ -1,7 +1,19 @@
+/**
+ * ---------- data_type.h ---------------
+ *
+ * Declares data types.
+ *
+ * --------------------------------------
+ */
+
 #pragma once
+
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 #include "shared/bitfield.h"
+
+// ---------- TYPE DEFINITIONS ----------
 
 enum _fl_data_type
 {

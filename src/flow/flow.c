@@ -8,7 +8,7 @@
 
 #include "flow.h"
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES -----------
 
 #include "compiler/compiler.h"
 #include "tokenizer/token_arr.h"
@@ -21,6 +21,7 @@
 #include "tools/file.h"
 #include "flow/globals.h"
 #include "context/base_context.h"
+#include "vecs/byte_vec.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -35,10 +36,6 @@
 #define throw_file_error(message) \
     fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
 
-// ---------- DECLARATIONS ----------
-
-// ...
-
 // ---------- DEFINITIONS -----------
 
 fl_void fl_flow_run(const fl_char *source_path)
@@ -51,7 +48,9 @@ fl_void fl_flow_run(const fl_char *source_path)
     if (!source_code)
         throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
 
+#ifndef NDEBUG
     printf("------ Source code: ------\n%s\n\n", source_code);
+#endif
 
     fl_token_arr token_arr;
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
@@ -90,7 +89,9 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 
+#ifndef NDEBUG
     printf("\n------ Interpretation: ------\n");
+#endif
 
     // reuse base context ???
 

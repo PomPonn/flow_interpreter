@@ -15,6 +15,7 @@
 #include "flow/globals.h"
 #include "tokenizer/token_arr.h"
 #include "vecs/const_cstr_vec.h"
+#include "flow/instr/g_instrs.h"
 
 // ---------- DECLARATIONS ----------
 
