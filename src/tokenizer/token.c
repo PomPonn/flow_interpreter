@@ -1,9 +1,9 @@
 /**
- * ---------- token.c -----------------
+ * ---------- token.c ------------------
  *
  * Implements tokenizer token logic.
  *
- * ------------------------------------
+ * -------------------------------------
  */
 
 #include "token.h"
@@ -14,7 +14,7 @@
 #include "tokenizer/delims.h"
 #include "flow/data_type.h"
 
-// ---------- MACROS ----------
+// ---------- MACROS -------------
 
 #define _fl_token_delim_enum(delim_chr) (fl_token_alias)(fl_str_index(FL_ORDERED_DELIMS, delim_chr) + 1)
 

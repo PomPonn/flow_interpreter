@@ -1,7 +1,7 @@
 /**
  * ---------- common.h ----------------------
  *
- * Declares commonly used modules across
+ * Declares commonly used things across
  * the project.
  *
  * ------------------------------------------
@@ -24,11 +24,7 @@
 
 #define FL_NULL (void *)0
 #define FL_FIND_FAIL -1
-#define FL_GLOBAL_MODULE_SPEC_CHAR ':'
-
-
 #define FL_FLOW_MODULE __declspec(dllexport)
-
 #define FL_HEADER_FN static inline
 
 #define _fl_swap(type, a, b) \

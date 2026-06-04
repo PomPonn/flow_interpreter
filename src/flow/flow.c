@@ -1,9 +1,9 @@
 /**
- * ---------- flow.c ----------------
+ * ---------- flow.c ----------------------
  *
  * Implements main flow language logic.
  *
- * ----------------------------------
+ * ----------------------------------------
  */
 
 #include "flow.h"
@@ -52,13 +52,13 @@ fl_void fl_flow_run(const fl_char *source_path)
     if (!source_code)
         throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
 
-    printf("-- Source code: --\n%s\n\n", source_code);
+    printf("------ Source code: ------\n%s\n\n", source_code);
 
     fl_token_arr token_arr;
     fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
 
 #ifndef NDEBUG
-    printf("-- Tokens: --\n");
+    printf("------ Tokens: ------\n");
     fl_prt_print_token_entries(&token_arr);
 #endif
 
@@ -73,9 +73,11 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
 #ifndef NDEBUG
-    printf("\n-- AST nodes: --\n");
+    printf("\n------ AST nodes: ------\n");
     fl_prt_print_ast_tree(tree);
 #endif
+
+    return;
 
     fl_base_context cnt;
     fl_base_context_init(&cnt);
@@ -84,14 +86,14 @@ fl_void fl_flow_run(const fl_char *source_path)
 #ifndef NDEBUG
     // save byte code to file
     fl_file_write("bytecode.cfl", code);
-    printf("\n-- Byte code: --\n");
+    printf("\n------ Byte code: ------\n");
     fl_prt_print_byte_code(code);
 #endif
 
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
 
-    printf("\n-- Interpretation: --\n");
+    printf("\n------ Interpretation: ------\n");
 
     // reuse base context ???
 

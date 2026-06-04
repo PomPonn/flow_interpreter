@@ -1,5 +1,5 @@
 /**
- * ---------- bitfield.h --------------------
+ * ---------- bitfield.h ----------------
  *
  * Declares bitfield logic.
  *

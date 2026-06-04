@@ -3,7 +3,7 @@
  *
  * Implements vector template logic.
  *
- * --------------------------------------
+ * ----------------------------------------
  */
 
 // ---------- DEPENDENCIES --------------
@@ -34,6 +34,7 @@
 #endif
 
 // Other properties set by the user:
+
 // #define FL_VEC_DESTROY(elem)
 // #define FL_VEC_EXCLUDE_FIND
 

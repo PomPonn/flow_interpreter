@@ -8,7 +8,7 @@
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES -------------
 
 #include "shared/common.h"
 #include "tokenizer/token.h"

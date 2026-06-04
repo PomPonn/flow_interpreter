@@ -3,7 +3,7 @@
  *
  * Declares token location logic.
  *
- * ------------------------------------------
+ * -------------------------------------------
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 
 #include "shared/common.h"
 
-// ---------- MACROS --------------
+// ---------- MACROS -------------------
 
 #define FL_TOKEN_LOCATION_EMPTY fl_token_location_create("empty", 0, 0)
 

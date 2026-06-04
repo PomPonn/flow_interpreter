@@ -18,6 +18,7 @@
 
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
 #define _FL_ID_CHAIN_STRING_MAX_SIZE 512
+#define FL_MODULE_PATH_GLOB ':'
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -35,8 +36,8 @@ fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_base_context *cnt)
     fl_lib_handle handle = FL_NULL;
     const fl_char *lib_name = chain.data[0];
 
-    // if first char is FL_GLOBAL_MODULE_SPEC_CHAR, the library is global
-    if (lib_name[0] == FL_GLOBAL_MODULE_SPEC_CHAR)
+    // if first char is FL_MODULE_PATH_GLOB, the library is global
+    if (lib_name[0] == FL_MODULE_PATH_GLOB)
     {
         // DO STH WITH THIS INFO
         lib_name += sizeof(fl_char);

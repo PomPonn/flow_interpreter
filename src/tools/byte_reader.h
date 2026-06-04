@@ -8,7 +8,7 @@
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
 #include "shared/str.h"
