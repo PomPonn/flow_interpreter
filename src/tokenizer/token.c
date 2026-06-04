@@ -73,7 +73,7 @@ inline fl_bool _fl_token_deduce(fl_token *tok)
     else if (_fl_token_is_wrapper(tok, FL_COMMENT_WRAPPER))
     {
         tok->type = FL_TOKEN_TYPE_COMMENT;
-        tok->alias = FL_TOKEN_ALIAS_NONE;
+        tok->alias = FL_TOKEN_ALIAS_COMMENT;
     }
     // is string
     else if (_fl_token_is_wrapper(tok, FL_STRING_WRAPPER))

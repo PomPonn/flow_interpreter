@@ -218,6 +218,7 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
     {
         switch (arr->current->alias)
         {
+        case FL_TOKEN_ALIAS_COMMENT:
         case FL_TOKEN_ALIAS_SEMICOLON:
             continue;
         case FL_TOKEN_ALIAS_LBRACE:
@@ -226,7 +227,7 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed block:\n");
-            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
+            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent));
             printf("\n");
 #endif
             break;
@@ -243,7 +244,7 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
-            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent), 0);
+            fl_prt_print_ast_tree(fl_ast_node_peek_child(parent));
             printf("\n");
 #endif
             break;

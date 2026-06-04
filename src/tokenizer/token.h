@@ -40,7 +40,8 @@ enum _fl_token_alias
     FL_TOKEN_ALIAS_RBRACE,    // }
     FL_TOKEN_ALIAS_LBRACKET,  // [
     FL_TOKEN_ALIAS_RBRACKET,  // ]
-    FL_TOKEN_ALIAS_ALIAS,     // end of delims
+                              // other aliases:
+    FL_TOKEN_ALIAS_COMMENT,
 };
 typedef fl_byte fl_token_alias;
 

@@ -16,7 +16,6 @@
 #include "ast/ast_tree.h"
 #include "tools/file.h"
 #include "shared/error.h"
-#include "optimalizer/optimalizer.h"
 #include "tokenizer/tokenizer.h"
 #include "ast/ast_tree.h"
 #include "tools/file.h"
@@ -61,8 +60,6 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("------ Tokens: ------\n");
     fl_prt_print_token_entries(&token_arr);
 #endif
-
-    fl_opt_remove_comments(&token_arr);
 
     fl_file_content_free(&source_code);
 
