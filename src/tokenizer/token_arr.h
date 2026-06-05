@@ -26,13 +26,25 @@ typedef struct _fl_token_arr fl_token_arr;
 
 // ---------- DECLARATIONS --------------
 
+FL_HEADER_FN fl_token_arr fl_token_arr_create_empty();
 FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_size count);
 FL_HEADER_FN fl_void fl_token_arr_free(fl_token_arr *arr);
 FL_HEADER_FN fl_token *fl_token_arr_next(fl_token_arr *arr);
-FL_HEADER_FN fl_token *fl_token_arr_peek(fl_token_arr *arr);
 FL_HEADER_FN fl_void fl_token_arr_reset_ptr(fl_token_arr *arr);
+FL_HEADER_FN fl_token *fl_token_arr_peek(const fl_token_arr *arr);
+FL_HEADER_FN fl_bool fl_token_arr_is_empty(const fl_token_arr *arr);
 
 // ---------- DEFINITIONS -----------
+
+FL_HEADER_FN fl_token_arr fl_token_arr_create_empty()
+{
+    return (fl_token_arr){
+        .current = FL_NULL,
+        ._data = FL_NULL,
+        ._iterator = 0,
+        ._count = 0,
+    };
+}
 
 FL_HEADER_FN fl_void fl_token_arr_init(fl_token_arr *arr, fl_size count)
 {
@@ -67,7 +79,7 @@ FL_HEADER_FN fl_token *fl_token_arr_next(fl_token_arr *arr)
     }
 }
 
-FL_HEADER_FN fl_token *fl_token_arr_peek(fl_token_arr *arr)
+FL_HEADER_FN fl_token *fl_token_arr_peek(const fl_token_arr *arr)
 {
     return arr->_iterator + 1 >= arr->_count ? FL_NULL : arr->current + 1;
 }
@@ -76,4 +88,9 @@ FL_HEADER_FN fl_void fl_token_arr_reset_ptr(fl_token_arr *arr)
 {
     arr->current = arr->_data;
     arr->_iterator = 0;
+}
+
+FL_HEADER_FN fl_bool fl_token_arr_is_empty(const fl_token_arr *arr)
+{
+    return arr->_count == 0;
 }

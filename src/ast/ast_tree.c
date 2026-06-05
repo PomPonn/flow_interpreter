@@ -62,9 +62,9 @@
 
 inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
-inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
 inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
+inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
 fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
 fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);

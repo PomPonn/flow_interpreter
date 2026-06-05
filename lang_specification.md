@@ -1,12 +1,5 @@
 ## ast nodes
 
-### root:
-
-- _data_: none
-- _children_:
-    - #1: main program block,
-    - meta data (?)
-
 ### block:
 
 - _data_: none

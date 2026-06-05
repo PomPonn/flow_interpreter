@@ -52,8 +52,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("------ Source code: ------\n%s\n\n", source_code);
 #endif
 
-    fl_token_arr token_arr;
-    fl_bool any_token = fl_tok_tokenize(source_code, &token_arr, source_path);
+    fl_token_arr token_arr = fl_tok_tokenize(source_code, source_path);
 
 #ifndef NDEBUG
     printf("------ Tokens: ------\n");
@@ -62,7 +61,7 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     fl_file_content_free(&source_code);
 
-    if (!any_token)
+    if (fl_token_arr_is_empty(&token_arr))
         // there are no meaningful tokens in the file
         return;
 

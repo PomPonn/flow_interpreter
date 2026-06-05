@@ -30,16 +30,17 @@ fl_char *_fl_tok_next_token(fl_char *str, const fl_const_cstr_vec *escapes, fl_s
 // ---------- DEFINITIONS ----------
 
 // returns FL_FALSE if source has no tokens
-fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char *src_location)
+fl_token_arr fl_tok_tokenize(fl_char *source, const fl_char *src_location)
 {
     const fl_const_cstr_vec *escapes = fl_g_instrs_aliases_to_escapes();
 
     fl_uint count = _fl_tok_count_tokens(source, escapes);
     if (!count)
-        return FL_FALSE;
+        return fl_token_arr_create_empty();
 
     // Initialize token array
-    fl_token_arr_init(token_arr, count);
+    fl_token_arr token_arr;
+    fl_token_arr_init(&token_arr, count);
 
     // Tokenize the string
     fl_size line, column;
@@ -48,14 +49,14 @@ fl_bool fl_tok_tokenize(fl_char *source, fl_token_arr *token_arr, const fl_char 
     for (fl_size index = 0; token_str; index++)
     {
         fl_token_init(
-            token_arr->_data + index,
+            token_arr._data + index,
             fl_str_dup(token_str),
             fl_token_location_create(src_location, line, column));
 
         token_str = _fl_tok_next_token(FL_NULL, escapes, &line, &column);
     }
 
-    return FL_TRUE;
+    return token_arr;
 }
 
 inline fl_bool _fl_tok_handle_escapement(

@@ -26,8 +26,8 @@
 #include "flow/instr/g_instrs.h"
 #include "interpreter/interpreter.h"
 #include "context/cmp_context.h"
-#include "tools/time.h"
 #include "flow/id/id_chain.h"
+#include "tools/time.h"
 
 // ---------- MACROS ----------------
 

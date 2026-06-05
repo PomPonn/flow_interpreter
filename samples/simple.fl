@@ -2,4 +2,4 @@
 io = import(":std.io");
 
 io.put("Hello world!");
-io.put(5 + 4 * 9);
+io.put(5 + (4 * 9));
