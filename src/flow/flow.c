@@ -73,8 +73,6 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_prt_print_ast_tree(tree);
 #endif
 
-    return;
-
     fl_base_context cnt;
     fl_base_context_init(&cnt);
     fl_byte_vec code = fl_cmp_compile_ast(tree, &cnt);

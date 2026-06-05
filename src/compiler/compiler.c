@@ -70,7 +70,7 @@ inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *c
 
 fl_operation _fl_cmp_id_node_to_operation(const fl_ast_node *node, const fl_scope *scope);
 
-inline fl_void _fl_cmp_paste_bytecode_header(fl_byte_vec *bytes);
+inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
 
 inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
@@ -91,7 +91,7 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
     fl_byte_vec_init(&final);
 
     // add byte code version info
-    _fl_cmp_paste_bytecode_header(&final);
+    _fl_cmp_paste_byte_code_header(&final);
 
     if (!fl_value_vec_is_empty(&cnt.base->literals))
     {
@@ -184,7 +184,7 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
 
     fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
-    const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
+    const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
 
     if (!fn_i)
         throw_compilation_error(id_node, "couldn't find function overload for given arguments");
@@ -283,8 +283,6 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
     {
         const fl_char *name = id_chain->data[0];
         // handle new id creation
-        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_NEW_ID);
-        fl_byte_vec_push_mem(&cnt->byte_code, name, fl_str_len(name) + 1);
         _fl_cmp_handle_new_id(name, cnt);
     }
 
@@ -307,7 +305,7 @@ inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cm
         fl_ast_node *id_node = node->child;
         fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
         fl_param_vec params = _fl_cmp_parse_nodes_to_params(id_node->next, cnt);
-        const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
+        const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
 
         fl_param_traits traits = FL_PARAM_TRAITS_NONE;
 
@@ -382,6 +380,9 @@ inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context 
 
 inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
 {
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_NEW_ID);
+    fl_byte_vec_push_mem(&cnt->byte_code, name, fl_str_len(name) + 1);
+
     // create dummy id in current scope
     fl_id_entry *id;
     fl_id_entry_init(&id, fl_str_dup(name), FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
@@ -390,7 +391,7 @@ inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *c
     return id;
 }
 
-inline fl_void _fl_cmp_paste_bytecode_header(fl_byte_vec *bytes)
+inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
 {
     fl_byte_vec_push(bytes, FL_SECTION_MARK_HEADER);
 

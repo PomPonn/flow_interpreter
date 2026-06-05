@@ -26,8 +26,6 @@ fl_value fl_instruction_call(fl_instruction instr, fl_base_context *cnt, fl_valu
         return fl_instr_assign(args.data[0], &args.data[1]);
     case FL_INSTR_IMPORT:
         return fl_instr_import(cnt, args.data[0].data);
-    case FL_INSTR_DECLARE:
-        return fl_instr_declare(args.data[0], args.data[1]);
     default:
         assert(FL_FALSE);
         return FL_VALUE_EMPTY;

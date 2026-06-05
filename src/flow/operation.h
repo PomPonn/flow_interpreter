@@ -14,6 +14,7 @@
 #include "shared/common.h"
 #include "flow/instr/instruction.h"
 #include "vecs/fn_variant_vec.h"
+#include "vecs/value_vec.h"
 #include "context/base_context.h"
 
 // ---------- TYPE DEFINITIONS ----------
@@ -48,11 +49,11 @@ FL_HEADER_FN fl_operation fl_operation_uninitialized();
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
-FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
+FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params);
 
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_base_context *cnt);
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -99,20 +100,31 @@ FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
 }
 
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, const fl_value_vec args, fl_base_context *cnt)
+FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt)
 {
     if (op.type == FL_OPERATION_INSTR)
+    {
+        const fl_fn_interface *fn_i = fl_instruction_get_interface(op.instr);
+
+        if (!fl_param_vec_suit_args(&fn_i->params, &args))
+            assert(FL_FALSE);
+
         return fl_instruction_call(op.instr, cnt, args);
+    }
     else if (op.type == FL_OPERATION_FN)
     {
-        fl_fn_variant *var = fl_fn_variant_vec_find_match_a(op.vars, args);
+        fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, &args);
+
+        if (!var)
+            assert(FL_FALSE);
+
         return fl_fn_variant_call(var, args);
     }
     else
         return FL_VALUE_EMPTY;
 }
 
-FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
+FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params)
 {
@@ -122,7 +134,7 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface(
         return fl_param_vec_match_params(&fn_i->params, &params) ? fn_i : FL_NULL;
     }
     else if (op.type == FL_OPERATION_FN)
-        return &fl_fn_variant_vec_find_match_p(op.vars, params)->interface;
+        return &fl_fn_variant_vec_find_match(op.vars, params)->interface;
     else
         return FL_NULL;
 }

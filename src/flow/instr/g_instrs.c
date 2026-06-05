@@ -52,22 +52,11 @@ fl_void fl_g_instrs_init()
     fl_bitfield_set(g_interfaces.data[FL_INSTR_IMPORT].traits, FL_FN_TRAITS_SIMULATE);
     g_aliases.data[FL_INSTR_IMPORT] = fl_instr_alias_create(FL_INSTR_IMPORT, "import");
 
-    // DECLARE
-    // fl_param_vec_init_with(
-    //     &params, 2,
-    //     (fl_param[]){
-    //         fl_param_create_traited(FL_DATA_TYPE_NULL, FL_PARAM_TRAITS_REF),
-    //         fl_param_create(FL_DATA_TYPE_TYPE),
-    //     });
-    // fl_fn_interface_init(&g_interfaces.data[FL_INSTR_DECLARE], FL_DATA_TYPE_ANY, params);
-    // fl_bitfield_set(&g_interfaces.data[FL_INSTR_DECLARE].traits, FL_FN_TRAITS_SIMULATE);
-    // g_aliases.data[FL_INSTR_DECLARE] = fl_instr_alias_create_esc(FL_INSTR_DECLARE, ":");
-
     // ASSIGN
     fl_param_vec_init_with(
         &params, 2,
         (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_ANY),
+            fl_param_create_traited(FL_DATA_TYPE_ANY, FL_PARAM_TRAITS_REF),
             fl_param_create(FL_DATA_TYPE_ANY),
         });
     fl_fn_interface_init(&g_interfaces.data[FL_INSTR_ASSIGN], FL_DATA_TYPE_ANY, params);

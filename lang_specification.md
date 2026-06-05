@@ -94,7 +94,7 @@
 
 ```
 [NEW ID]
-(???)
+(id name): xB (string)
 ```
 
 ##### get literal:

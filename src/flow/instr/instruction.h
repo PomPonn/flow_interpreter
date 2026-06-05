@@ -33,7 +33,6 @@ enum _fl_instruction
     // callable instructions
     // add new ones before FL_INSTR_POW to avoid dependancy problems
     FL_INSTR_IMPORT,
-    FL_INSTR_DECLARE,
     FL_INSTR_ASSIGN,
     FL_INSTR_ADD,
     FL_INSTR_SUB,

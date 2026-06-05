@@ -116,14 +116,13 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_char *id_name = fl_str_dup(fl_byte_reader_next_str(reader));
             fl_id_entry_init(&new_id, id_name, FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
             fl_id_entry_vec_push(&cnt->base->scope->ids, new_id);
-            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, new_id);
-            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }
         case FL_INSTR_GET_ID:
         {
             fl_id_entry *id = _fl_intpr_resolve_id_get(reader, cnt->base->scope);
-            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(id->value));
+            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
+            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }
         case FL_INSTR_GET_LITERAL:
