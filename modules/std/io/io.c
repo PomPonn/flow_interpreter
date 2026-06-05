@@ -58,21 +58,21 @@ FL_MODULE_FN_HEAD_ONCE(put)
             puts(arg.data);
             break;
         case FL_DATA_TYPE_INT:
-            printf("%lli", *(fl_long *)arg.data);
+            printf("%lli\n", *(fl_long *)arg.data);
             break;
         case FL_DATA_TYPE_BOOL:
-            printf("%u", *(fl_uint *)arg.data);
+            printf("%u\n", *(fl_uint *)arg.data);
             break;
         case FL_DATA_TYPE_FLOAT:
-            printf("%f", *(fl_double *)arg.data);
+            printf("%f\n", *(fl_double *)arg.data);
             break;
         case FL_DATA_TYPE_ARRAY:
             // TODO
-            printf("<ARRAY>");
+            puts("<ARRAY>");
             break;
         case FL_DATA_TYPE_SCOPE:
             // TODO
-            printf("<OBJECT>");
+            puts("<OBJECT>");
             break;
         }
     }

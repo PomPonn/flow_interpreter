@@ -1,0 +1,15 @@
+# Program to test arithmetics #
+
+io = import(":std.io");
+
+x = 4;
+y = 2; 
+
+io.put("Addition:");
+io.put(x + y);
+
+io.put("Substraction:");
+io.put(x - y);
+
+io.put("Multiplication:");
+io.put(x * y);

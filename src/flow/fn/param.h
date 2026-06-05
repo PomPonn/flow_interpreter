@@ -74,6 +74,9 @@ FL_HEADER_FN fl_bool fl_param_match_arg(fl_param p, fl_value arg)
     if (fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) && arg.data_type != FL_DATA_TYPE_REF)
         return FL_FALSE;
 
+    if (!fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) && arg.data_type == FL_DATA_TYPE_REF)
+        return FL_FALSE;
+
     return fl_bitfield_is_set(p.type, arg.data_type);
 }
 

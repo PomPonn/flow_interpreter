@@ -2,6 +2,8 @@
 
 ## active
 
+- how to handle simulating and inlining in compilation process?
+- FL_DATA_TYPE_REF handling is quite messy
 - think again of single arg calls without parantheses
 - revise inline functions if they should be inline (not to big after expanding) - especially these header only
 - opt.: can id entry names be made const ptrs?
