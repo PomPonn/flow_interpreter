@@ -10,6 +10,8 @@
 
 // ---------- DEPENDENCIES --------------
 
-#include "add.h"
-#include "assign.h"
 #include "import.h"
+#include "assign.h"
+#include "add.h"
+#include "mul.h"
+#include "sub.h"

@@ -74,6 +74,28 @@ fl_void fl_g_instrs_init()
     fl_bitfield_set(g_interfaces.data[FL_INSTR_ADD].traits, FL_FN_TRAITS_PURE);
     g_aliases.data[FL_INSTR_ADD] = fl_instr_alias_create_esc(FL_INSTR_ADD, "+");
 
+    // SUB
+    fl_param_vec_init_with(
+        &params, 2,
+        (fl_param[]){
+            fl_param_create(FL_DATA_TYPE_ANY),
+            fl_param_create(FL_DATA_TYPE_ANY),
+        });
+    fl_fn_interface_init(&g_interfaces.data[FL_INSTR_SUB], FL_DATA_TYPE_ANY, params);
+    fl_bitfield_set(g_interfaces.data[FL_INSTR_SUB].traits, FL_FN_TRAITS_PURE);
+    g_aliases.data[FL_INSTR_SUB] = fl_instr_alias_create_esc(FL_INSTR_SUB, "-");
+
+    // MUL
+    fl_param_vec_init_with(
+        &params, 2,
+        (fl_param[]){
+            fl_param_create(FL_DATA_TYPE_ANY),
+            fl_param_create(FL_DATA_TYPE_ANY),
+        });
+    fl_fn_interface_init(&g_interfaces.data[FL_INSTR_MUL], FL_DATA_TYPE_ANY, params);
+    fl_bitfield_set(g_interfaces.data[FL_INSTR_MUL].traits, FL_FN_TRAITS_PURE);
+    g_aliases.data[FL_INSTR_MUL] = fl_instr_alias_create_esc(FL_INSTR_MUL, "*");
+
     g_aliases_escapes = fl_instr_alias_vec_to_escapes(&g_aliases);
 
     g_initialized = FL_TRUE;
