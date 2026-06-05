@@ -1,7 +1,7 @@
 /**
  * ---------- byte_vec.test.c --------------------
  *
- * Defines tests for 'src/revise_me/byte_vec.h'.
+ * Defines tests for 'src/revise_me/byte_vec'.
  *
  * -----------------------------------------------
  */

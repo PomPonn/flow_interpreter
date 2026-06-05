@@ -61,7 +61,7 @@ FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interf
         return FL_FALSE;
 
     for (fl_size i = 0; i < left.params.size; i++)
-        if (left.params.data[i].type != right.params.data[i].type)
+        if (!fl_param_match_param(left.params.data[i], right.params.data[i]))
             return FL_FALSE;
 
     return FL_TRUE;

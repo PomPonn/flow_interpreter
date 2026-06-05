@@ -1,7 +1,7 @@
 /**
  * ---------- ast_node.test.c --------------
  *
- * Defines tests for 'src/ast/ast_node.h'.
+ * Defines tests for 'src/ast/ast_node'.
  *
  * -----------------------------------------
  */

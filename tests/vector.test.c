@@ -57,13 +57,33 @@ void test_vector_push(void)
 
 void test_vector_find(void)
 {
-    TEST_ASSERT(1 == 1);
-    //     fl_int val = 10;
+    fl_int val = 10;
 
-    //     fl_int ind = fl_vector_find(&vec, val);
+    fl_int ind = fl_vector_find(&vec, val);
 
-    //     TEST_ASSERT_NOT_EQUAL_INT(-1, ind);
-    //     TEST_ASSERT_EQUAL_INT(val, vec.data[ind]);
+    TEST_ASSERT_NOT_EQUAL_INT(-1, ind);
+    TEST_ASSERT_EQUAL_INT(val, vec.data[ind]);
+}
+
+void test_vector_put_back(void)
+{
+    fl_int val = 123;
+    fl_int last = vec.data[vec.size - 1];
+
+    fl_vector_put_back(&vec, val);
+
+    TEST_ASSERT_EQUAL_INT(val, vec.data[0]);
+    TEST_ASSERT_EQUAL_size_t(INIT_SIZE + 1, vec.size);
+    TEST_ASSERT_EQUAL_INT(last, vec.data[vec.size - 1]);
+}
+
+void test_vector_pop(void)
+{
+    fl_int last = fl_vector_peek(&vec);
+    fl_int popped = fl_vector_pop(&vec);
+
+    TEST_ASSERT_EQUAL_INT(last, popped);
+    TEST_ASSERT_EQUAL_size_t(INIT_SIZE - 1, vec.size);
 }
 
 // ---------- ENTRY ----------
@@ -75,6 +95,8 @@ int main()
     RUN_TEST(test_vector_reserve_Copying);
     RUN_TEST(test_vector_push);
     RUN_TEST(test_vector_find);
+    RUN_TEST(test_vector_put_back);
+    RUN_TEST(test_vector_pop);
 
     return UNITY_END();
 }

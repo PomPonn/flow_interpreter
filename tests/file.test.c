@@ -1,7 +1,7 @@
 /**
  * ---------- file.test.c -----------------
  *
- * Defines tests for 'src/tools/file.h'.
+ * Defines tests for 'src/tools/file'.
  *
  * ----------------------------------------
  */

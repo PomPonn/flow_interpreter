@@ -89,7 +89,13 @@ FL_HEADER_FN fl_bool fl_param_match_param(fl_param p, fl_param p2)
         !fl_bitfield_is_set(p2.traits, FL_PARAM_TRAITS_CONST))
         return FL_FALSE;
 
-    // ref ???
+    if (fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) &&
+        !fl_bitfield_is_set(p2.traits, FL_PARAM_TRAITS_REF))
+        return FL_FALSE;
+
+    if (!fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) &&
+        fl_bitfield_is_set(p2.traits, FL_PARAM_TRAITS_REF))
+        return FL_FALSE;
 
     return FL_TRUE;
 }
