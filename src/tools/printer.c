@@ -27,7 +27,6 @@
 // ---------- MACROS ----------
 
 #define _POSITION_STR_BUFFER_SIZE 16
-#define _ID_CHAIN_STR_BUFFER_SIZE 256
 #define _LITERAL_STR_BUFFER_SIZE 2048
 #define _VALUE_STR_BUFFER_SIZE 1024
 
@@ -95,13 +94,13 @@ inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
         break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
-        fl_char buffer[_ID_CHAIN_STR_BUFFER_SIZE];
+        fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
         printf(
             "<id chain> '%s'",
             fl_id_chain_to_string(
                 (fl_id_chain *)node->data,
                 buffer,
-                _ID_CHAIN_STR_BUFFER_SIZE));
+                FL_ID_CHAIN_MAX_SIZE));
         break;
     }
     case FL_AST_NODE_TYPE_OPERATOR:
@@ -197,7 +196,8 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
             break;
         case FL_INSTR_CALL:
             printf("[CALL]\n");
-        case FL_INSTR_GET_ID:
+            break;
+        case FL_INSTR_GET_ID_BY_INDS:
         {
             assert(sizeof(fl_size) == sizeof(unsigned));
 
@@ -213,16 +213,16 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
 
             break;
         }
-        // case FL_INSTR_START_ARGS:
-        //     printf("[ARGS START]\n");
-        //     break;
+        case FL_INSTR_GET_ID_BY_NAMES:
+            printf("(Identificator access) %s\n", fl_byte_reader_next_str(reader));
+            break;
         case FL_INSTR_END_ARGS:
             printf("[ARGS END]\n");
             break;
         case FL_INSTR_NEW_ID:
         {
             const fl_char *id_name = fl_byte_reader_next_str(reader);
-            printf("(Identificator new) %s\n", id_name);
+            printf(">>Identificator new<< %s\n", id_name);
             break;
         }
         case FL_INSTR_GET_LITERAL:

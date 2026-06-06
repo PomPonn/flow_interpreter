@@ -14,7 +14,7 @@
 
 // ---------- DEFINITIONS -----------
 
-fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
+fl_char *fl_id_chain_to_string(const fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
 {
     fl_size total_n = 0;
     fl_char *ptr = buffer;
@@ -23,7 +23,7 @@ fl_char *fl_id_chain_to_string(fl_id_chain *chain, fl_char *buffer, fl_size buff
     {
         fl_size n = fl_str_len(chain->data[i]);
         total_n += n;
-        if (total_n > buffer_size)
+        if (total_n >= buffer_size)
             return FL_NULL;
 
         fl_mem_copy(chain->data[i], ptr, n);

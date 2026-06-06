@@ -18,7 +18,6 @@
 // ------------- MACROS -----------------
 
 #define _FL_MODULE_REGISTER_FN_NAME "fl_module_resolve_id_value"
-#define _FL_ID_CHAIN_STRING_MAX_SIZE 512
 #define FL_MODULE_PATH_GLOB ':'
 
 // ---------- TYPE DEFINITIONS ----------
@@ -67,8 +66,8 @@ fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_base_context *cnt)
     fl_value res = reg_fn(&chain);
     if (fl_value_is_empty(res))
     {
-        fl_char buffer[_FL_ID_CHAIN_STRING_MAX_SIZE];
-        fl_id_chain_to_string(&chain, buffer, _FL_ID_CHAIN_STRING_MAX_SIZE);
+        fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
+        fl_id_chain_to_string(&chain, buffer, FL_ID_CHAIN_MAX_SIZE);
         fl_err_throw(FL_ERR_IMPORT, "Couldn't import id chain value", buffer, FL_TOKEN_LOCATION_EMPTY);
     }
 

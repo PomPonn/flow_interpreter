@@ -11,6 +11,7 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
+#include "shared/str.h"
 
 // ------------- MACROS -----------------
 
@@ -27,6 +28,7 @@
 // ---------- DECLARATIONS --------------
 
 FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n);
+FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str);
 FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, fl_byte_vec *other);
 
 // ---------- DEFINITIONS ---------------
@@ -38,6 +40,16 @@ FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem
 
     fl_mem_copy(mem, bc->data + bc->size, bytes_n);
     bc->size += bytes_n;
+}
+
+FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str)
+{
+    const fl_size len = fl_str_len(str) + 1;
+    if (bc->size + len > bc->_capacity)
+        fl_byte_vec_reserve(bc, bc->_capacity + len + _FL_BC_CAP_STEP);
+
+    fl_mem_copy(str, bc->data + bc->size, len);
+    bc->size += len;
 }
 
 FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, fl_byte_vec *other)

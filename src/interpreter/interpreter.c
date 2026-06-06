@@ -16,6 +16,7 @@
 #include "vecs/int_vec.h"
 #include "flow/section_mark.h"
 #include "macros/basic.h"
+#include "flow/id/id_chain.h"
 
 // ------------- MACROS -----------------
 
@@ -26,7 +27,9 @@
 // converts bytes in format: <i count><indices...> to fl_int_vec
 const fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader);
 
-fl_id_entry *_fl_intpr_resolve_id_get(fl_byte_reader *reader, fl_scope *scope);
+fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope);
+
+fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope *scope);
 
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
 
@@ -103,7 +106,21 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         }
         case FL_INSTR_CALL:
         {
-            fl_id_entry *fn_id = _fl_intpr_resolve_id_get(reader, cnt->base->scope);
+            fl_id_entry *fn_id = FL_NULL;
+
+            switch (fl_byte_reader_next(reader, fl_instruction))
+            {
+            case FL_INSTR_GET_ID_BY_INDS:
+                fn_id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->base->scope);
+                break;
+            case FL_INSTR_GET_ID_BY_NAMES:
+                fn_id = _fl_intpr_resolve_id_get_by_names(reader, cnt->base->scope);
+                break;
+            default:
+                assert(FL_FALSE);
+                break;
+            }
+
             fl_value val = fn_id->value;
             assert(val.data_type == FL_DATA_TYPE_FN);
 
@@ -118,9 +135,16 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_id_entry_vec_push(&cnt->base->scope->ids, new_id);
             break;
         }
-        case FL_INSTR_GET_ID:
+        case FL_INSTR_GET_ID_BY_INDS:
         {
-            fl_id_entry *id = _fl_intpr_resolve_id_get(reader, cnt->base->scope);
+            fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->base->scope);
+            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
+            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
+            break;
+        }
+        case FL_INSTR_GET_ID_BY_NAMES:
+        {
+            fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->base->scope);
             fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
@@ -213,7 +237,7 @@ const fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader)
     };
 }
 
-fl_id_entry *_fl_intpr_resolve_id_get(fl_byte_reader *reader, fl_scope *scope)
+fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope)
 {
     fl_uint offset = fl_byte_reader_next(reader, fl_uint);
     // indices to use to traverse scopes. They are not freed,
@@ -221,4 +245,14 @@ fl_id_entry *_fl_intpr_resolve_id_get(fl_byte_reader *reader, fl_scope *scope)
     const fl_int_vec inds = _fl_intpr_indices_from_bytes(reader);
 
     return fl_scope_traverse(scope, inds, offset);
+}
+
+fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope *scope)
+{
+    const fl_char *id_str = fl_byte_reader_next_str(reader);
+
+    fl_id_chain chain;
+    fl_id_chain_init_parse(&chain, id_str);
+
+    return fl_scope_resolve_id(scope, &chain);
 }

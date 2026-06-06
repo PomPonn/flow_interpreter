@@ -42,7 +42,8 @@ enum _fl_instruction
     FL_INSTR_POW,
     // flow instructions
     FL_INSTR_CALL,
-    FL_INSTR_GET_ID,
+    FL_INSTR_GET_ID_BY_INDS,
+    FL_INSTR_GET_ID_BY_NAMES,
     FL_INSTR_NEW_ID,
     FL_INSTR_GET_LITERAL,
     FL_INSTR_IMMED_VALUE,

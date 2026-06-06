@@ -27,6 +27,8 @@
 #define FL_FLOW_MODULE __declspec(dllexport)
 #define FL_HEADER_FN static inline
 
+#define FL_ID_CHAIN_MAX_SIZE 256
+
 #define _fl_swap(type, a, b) \
     {                        \
         type temp = a;       \

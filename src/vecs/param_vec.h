@@ -26,7 +26,6 @@
 
 FL_HEADER_FN fl_bool fl_param_vec_equal(const fl_param_vec *vec, const fl_param_vec *other);
 FL_HEADER_FN fl_bool fl_param_vec_is_every_const(const fl_param_vec *vec);
-FL_HEADER_FN fl_bool fl_param_vec_cascade_simulate(const fl_param_vec *vec);
 
 FL_HEADER_FN fl_bool fl_param_vec_suit_args(
     const fl_param_vec *vec,
@@ -57,15 +56,6 @@ FL_HEADER_FN fl_bool fl_param_vec_is_every_const(const fl_param_vec *vec)
             return FL_FALSE;
 
     return FL_TRUE;
-}
-
-FL_HEADER_FN fl_bool fl_param_vec_cascade_simulate(const fl_param_vec *vec)
-{
-    for (fl_size i = 0; i < vec->size; i++)
-        if (fl_bitfield_is_set(vec->data[i].traits, FL_PARAM_TRAITS_SIMULATE))
-            return FL_TRUE;
-
-    return FL_FALSE;
 }
 
 FL_HEADER_FN fl_bool fl_param_vec_match_params(

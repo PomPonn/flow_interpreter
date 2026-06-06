@@ -46,7 +46,10 @@ fl_int_vec fl_scope_find_id_path(
             else
             {
                 fl_value id_value = scope->ids.data[ind]->value;
-                assert(id_value.data_type == FL_DATA_TYPE_SCOPE);
+
+                if (id_value.data_type != FL_DATA_TYPE_SCOPE)
+                    goto __not_found_return;
+
                 scope = (fl_scope *)id_value.data;
             }
         }
@@ -63,6 +66,7 @@ fl_int_vec fl_scope_find_id_path(
 
     } while (indexes.size == 0);
 
+__not_found_return:
     // didn't found, return empty vector
     fl_int_vec_free(&indexes);
     *outer_offset = 0;
@@ -113,7 +117,10 @@ fl_id_entry *fl_scope_traverse(
         else
         {
             fl_value id_value = scope->ids.data[index]->value;
-            assert(id_value.data_type == FL_DATA_TYPE_SCOPE);
+
+            if (id_value.data_type != FL_DATA_TYPE_SCOPE)
+                return FL_NULL;
+
             ids = ((fl_scope *)id_value.data)->ids;
         }
     }

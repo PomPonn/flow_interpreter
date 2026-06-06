@@ -23,8 +23,6 @@
 
 // ====== PRIVATE ======
 
-#define _FL_ID_CHAIN_BUFFER_SIZE 256
-
 // CHANGE ME
 #define _FL_TEMP_LOCATION (fl_token_location){.description = ""}
 
@@ -51,12 +49,12 @@
 
 // ====== PUBLIC ======
 
-#define fl_throw_import_error(message)                                     \
-    {                                                                      \
-        fl_char buffer[_FL_ID_CHAIN_BUFFER_SIZE];                          \
-        fl_id_chain_to_string(id_chain, buffer, _FL_ID_CHAIN_BUFFER_SIZE); \
-        param_vec params;                                                  \
-        fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION);   \
+#define fl_throw_import_error(message)                                   \
+    {                                                                    \
+        fl_char buffer[FL_ID_CHAIN_MAX_SIZE];                            \
+        fl_id_chain_to_string(id_chain, buffer, FL_ID_CHAIN_MAX_SIZE);   \
+        param_vec params;                                                \
+        fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION); \
     }
 
 #define FL_REGISTER_FN(name, scope, constant)                                       \

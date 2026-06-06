@@ -97,6 +97,9 @@ FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     fl_uint offset;
     fl_int_vec inds = fl_scope_find_id_path(scope, id_chain, &offset);
 
+    if (fl_int_vec_is_empty(&inds))
+        return FL_NULL;
+
     fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
 
     fl_int_vec_free(&inds);

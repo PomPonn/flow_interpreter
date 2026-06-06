@@ -32,17 +32,12 @@
 // ---------- MACROS ----------------
 
 /**
- * @brief Size of id chain string buffer.
- */
-#define _ID_STRING_BUFFER_SIZE 512
-
-/**
  * @brief Shorthand for throwing a compilation error.
  */
 #define throw_compilation_error(ast_node_ptr, message)                             \
     {                                                                              \
-        fl_char buffer[_ID_STRING_BUFFER_SIZE];                                    \
-        fl_id_chain_to_string(id_chain, buffer, _ID_STRING_BUFFER_SIZE);           \
+        fl_char buffer[FL_ID_CHAIN_MAX_SIZE];                                      \
+        fl_id_chain_to_string(id_chain, buffer, FL_ID_CHAIN_MAX_SIZE);             \
         fl_err_throw(FL_ERR_COMPILATION, message, buffer, ast_node_ptr->location); \
     }
 
@@ -62,7 +57,9 @@ inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cm
 
 fl_param_vec _fl_cmp_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
-inline fl_void _fl_cmp_byte_code_push_id_access(fl_byte_vec *code, fl_uint offset, fl_int_vec inds);
+inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, fl_int_vec inds);
+
+inline fl_void _fl_cmp_byte_code_push_id_access_by_names(fl_byte_vec *code, const fl_id_chain *chain);
 
 inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
 
@@ -162,17 +159,13 @@ fl_operation _fl_cmp_id_node_to_operation(
 
     fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
 
-    if (!id)
-        // throw an error if id does not exist
-        throw_compilation_error(id_node, "Use of unknown operation id");
+    if (id)
+    {
+        fl_value id_val = id->value;
+        return fl_operation_from_fn_vars(id_val.data);
+    }
 
-    fl_value id_val = id->value;
-
-    if (id_val.data_type != FL_DATA_TYPE_FN)
-        // throw an error if id is not fn
-        throw_compilation_error(id_node, "id is not a function");
-
-    return fl_operation_from_fn_vars(id_val.data);
+    return fl_operation_unknown();
 }
 
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
@@ -183,61 +176,74 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     fl_id_chain *id_chain = id_node->data;
     fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
 
-    fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
-    const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
-
-    if (!fn_i)
-        throw_compilation_error(id_node, "couldn't find function overload for given arguments");
-
-    fl_bool const_pure = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&params);
-    fl_bool simulate = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE);
-
-    if (!simulate)
-        simulate = fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE_CASCADE) &&
-                   fl_param_vec_cascade_simulate(&params);
-
-    fl_param_vec_free(&params);
-
-    if (simulate || const_pure)
+    if (op.type == FL_OPERATION_UNKNOWN)
     {
-        // call this operation
-        fl_value_vec args = _fl_cmp_parse_nodes_to_values(arg_node, cnt);
-        fl_value res = fl_operation_run(op, args, cnt->base);
-
-        // does res needs to be freed?
-
-        if (const_pure)
-        {
-            // inline result
-
-            if (fl_value_equal(res, FL_VALUE_EMPTY))
-                assert(FL_FALSE);
-
-            // push immediate value
-            fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
-            fl_value_to_bytes(res, &cnt->byte_code);
-            // not sure if its always good to free
-            fl_value_free(&res);
-            return;
-        }
-    }
-
-    // compile this operator call to byte code
-    if (op.type == FL_OPERATION_FN)
-    {
-        fl_uint offset;
-        fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
-        fl_id_entry *id = fl_scope_traverse(cnt->base->scope, inds, offset);
+        // assume this operation is correct,
+        // put responsibility on the interpreter
 
         // start CALL instruction
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
         // push information how to access id
-        _fl_cmp_byte_code_push_id_access(&cnt->byte_code, offset, inds);
+        _fl_cmp_byte_code_push_id_access_by_names(&cnt->byte_code, id_chain);
     }
-    else if (op.type == FL_OPERATION_INSTR)
-        fl_byte_vec_push(&cnt->byte_code, op.instr);
+    else if (fl_operation_is_callable(op))
+    {
+        fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
+        const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
+
+        if (!fn_i)
+            throw_compilation_error(id_node, "couldn't find function overload for given arguments");
+
+        fl_bool constant =
+            fl_operation_is_const_assign(op, params.data[1]) ||
+            (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_PURE) && fl_param_vec_is_every_const(&params));
+
+        fl_param_vec_free(&params);
+
+        if (constant)
+        {
+            // call this operation
+            fl_value_vec args = _fl_cmp_parse_nodes_to_values(arg_node, cnt);
+            fl_value res = fl_operation_run(op, args, cnt->base);
+
+            // free res if const assign? (ig not)
+
+            if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
+            {
+                // inline result
+
+                if (fl_value_equal(res, FL_VALUE_EMPTY))
+                    assert(FL_FALSE);
+
+                // push immediate value
+                fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
+                fl_value_to_bytes(res, &cnt->byte_code);
+
+                // not sure if its always good to free
+                fl_value_free(&res);
+                return;
+            }
+        }
+
+        // compile this operator call to byte code
+        if (op.type == FL_OPERATION_FN)
+        {
+            fl_uint offset;
+            fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
+            fl_id_entry *id = fl_scope_traverse(cnt->base->scope, inds, offset);
+
+            // start CALL instruction
+            fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
+            // push information how to access id
+            _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
+        }
+        else if (op.type == FL_OPERATION_INSTR)
+            fl_byte_vec_push(&cnt->byte_code, op.instr);
+    }
     else
+    {
         assert(FL_FALSE);
+    }
 
     _fl_cmp_compile_args(arg_node, cnt);
 }
@@ -276,14 +282,19 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
     if (id)
     {
         // push how to information to access id
-        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_GET_ID);
-        _fl_cmp_byte_code_push_id_access(&cnt->byte_code, offset, inds);
+        _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
     else if (id_chain->size == 1)
     {
         const fl_char *name = id_chain->data[0];
         // handle new id creation
-        _fl_cmp_handle_new_id(name, cnt);
+        id = _fl_cmp_handle_new_id(name, cnt);
+
+        // find new ids path
+        fl_int_vec_free(&inds);
+        inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
+
+        _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
 
     else
@@ -309,13 +320,9 @@ inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cm
 
         fl_param_traits traits = FL_PARAM_TRAITS_NONE;
 
-        if (fl_param_vec_is_every_const(&params))
+        if (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_PURE) &&
+            fl_param_vec_is_every_const(&params))
             fl_bitfield_set(traits, FL_PARAM_TRAITS_CONST);
-
-        if (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE) ||
-            (fl_bitfield_is_set(fn_i->traits, FL_FN_TRAITS_SIMULATE_CASCADE) &&
-             fl_param_vec_cascade_simulate(&params)))
-            fl_bitfield_set(traits, FL_PARAM_TRAITS_SIMULATE);
 
         fl_param_vec_free(&params);
         return fl_param_create_traited(fn_i->return_type, traits);
@@ -357,8 +364,10 @@ fl_param_vec _fl_cmp_parse_nodes_to_params(const fl_ast_node *arg_node, const fl
     return params;
 }
 
-inline fl_void _fl_cmp_byte_code_push_id_access(fl_byte_vec *code, fl_uint offset, fl_int_vec inds)
+inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, fl_int_vec inds)
 {
+    fl_byte_vec_push(code, FL_INSTR_GET_ID_BY_INDS);
+
     // push scope back offset
     fl_byte_vec_push_mem(code, &offset, sizeof(offset));
     // push size of indexes
@@ -381,7 +390,7 @@ inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context 
 inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_NEW_ID);
-    fl_byte_vec_push_mem(&cnt->byte_code, name, fl_str_len(name) + 1);
+    fl_byte_vec_push_str(&cnt->byte_code, name);
 
     // create dummy id in current scope
     fl_id_entry *id;
@@ -397,7 +406,7 @@ inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
 
     // push byte code version
     // size + 1 for '\0' (end of string)
-    fl_byte_vec_push_mem(bytes, _BYTECODE_VERSION, fl_str_len(_BYTECODE_VERSION) + 1);
+    fl_byte_vec_push_str(bytes, _BYTECODE_VERSION);
 
     // add compilation timestamp
     fl_long timestamp = fl_time_get_unix();
@@ -479,4 +488,12 @@ fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context
     }
 
     return main_args;
+}
+
+inline fl_void _fl_cmp_byte_code_push_id_access_by_names(fl_byte_vec *code, const fl_id_chain *chain)
+{
+    fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
+    fl_id_chain_to_string(chain, buffer, FL_ID_CHAIN_MAX_SIZE);
+    fl_byte_vec_push(code, FL_INSTR_GET_ID_BY_NAMES);
+    fl_byte_vec_push_str(code, buffer);
 }

@@ -22,6 +22,7 @@
 enum _fl_operation_type
 {
     FL_OPERATION_UNINIT,
+    FL_OPERATION_UNKNOWN,
     FL_OPERATION_INSTR,
     FL_OPERATION_VALUE,
     FL_OPERATION_FN,
@@ -46,9 +47,11 @@ FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr);
 FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
 FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
 FL_HEADER_FN fl_operation fl_operation_uninitialized();
+FL_HEADER_FN fl_operation fl_operation_unknown();
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
+FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right);
 FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params);
@@ -85,6 +88,14 @@ FL_HEADER_FN fl_operation fl_operation_uninitialized()
 {
     return (fl_operation){
         .type = FL_OPERATION_UNINIT,
+        .instr = 0,
+    };
+}
+
+FL_HEADER_FN fl_operation fl_operation_unknown()
+{
+    return (fl_operation){
+        .type = FL_OPERATION_UNKNOWN,
         .instr = 0,
     };
 }
@@ -137,4 +148,9 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
         return &fl_fn_variant_vec_find_match(op.vars, params)->interface;
     else
         return FL_NULL;
+}
+
+FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right)
+{
+    return fl_operation_is_instr(op, FL_INSTR_ASSIGN) && fl_bitfield_is_set(right.traits, FL_PARAM_TRAITS_CONST);
 }

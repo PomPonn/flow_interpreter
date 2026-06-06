@@ -18,12 +18,10 @@
 enum _fl_param_traits
 {
     FL_PARAM_TRAITS_NONE = 0b00000000,
-    FL_PARAM_TRAITS_REF = 0b00000010,
-    FL_PARAM_TRAITS_CONST = 0b00000100,
-    // param indicates a call that is marked with SIMULATE trait
-    FL_PARAM_TRAITS_SIMULATE = 0b00001000,
+    FL_PARAM_TRAITS_REF = 0b00000001,
+    FL_PARAM_TRAITS_CONST = 0b00000010,
     // ???
-    // FL_PARAM_TRAIT_EXPAND = 0b00000010,
+    // FL_PARAM_TRAIT_EXPAND = 0b0000100,
 };
 typedef fl_byte fl_param_traits;
 
@@ -91,10 +89,6 @@ FL_HEADER_FN fl_bool fl_param_match_param(fl_param p, fl_param p2)
 
     if (fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) &&
         !fl_bitfield_is_set(p2.traits, FL_PARAM_TRAITS_REF))
-        return FL_FALSE;
-
-    if (!fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) &&
-        fl_bitfield_is_set(p2.traits, FL_PARAM_TRAITS_REF))
         return FL_FALSE;
 
     return FL_TRUE;

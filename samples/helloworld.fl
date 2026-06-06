@@ -1,0 +1,4 @@
+# Hello World Program #
+io = import(":std.io");
+
+io.put("Hello world!");
