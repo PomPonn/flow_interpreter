@@ -49,6 +49,7 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
 FL_HEADER_FN fl_operation fl_operation_uninitialized();
 FL_HEADER_FN fl_operation fl_operation_unknown();
 
+FL_HEADER_FN fl_bool fl_operation_is_initialized(fl_operation op);
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right);
@@ -98,6 +99,11 @@ FL_HEADER_FN fl_operation fl_operation_unknown()
         .type = FL_OPERATION_UNKNOWN,
         .instr = 0,
     };
+}
+
+FL_HEADER_FN fl_bool fl_operation_is_initialized(fl_operation op)
+{
+    return op.type != FL_OPERATION_UNINIT;
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)

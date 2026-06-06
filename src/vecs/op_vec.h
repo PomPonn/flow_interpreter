@@ -18,4 +18,5 @@
 #define FL_VEC_TYPE fl_operation
 #define FL_VEC_CAP 16
 #define FL_VEC_EXCLUDE_FIND
+#define FL_VEC_NULL_VALUE fl_operation_uninitialized();
 #include "templates/vector.h"

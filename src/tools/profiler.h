@@ -17,6 +17,8 @@
 
 // ------------- MACROS -----------------
 
+#define fl_prof_profile_once(segment) fl_prof_profile(1, 1, "", segment)
+
 #define fl_prof_profile(samples, input_size, input_unit, segment)     \
     {                                                                 \
         fl_double *ms = fl_mem_alloc_arr(samples, sizeof(fl_double)); \
@@ -46,6 +48,6 @@ fl_void _fl_prof_log(
 
 #else
 
-#define fl_prof_profile(samples, input_size, input_unit, segment) segment;
+#define fl_prof_profile(samples, input_size, input_unit, segment) segment
 
 #endif

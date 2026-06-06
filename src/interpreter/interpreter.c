@@ -89,15 +89,22 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         case FL_INSTR_END_BLOCK:
         {
             fl_operation op;
-            fl_bool complete = FL_FALSE;
-            while (!fl_operation_is_callable(op = fl_op_vec_pop(&cnt->op_stack)))
-            {
-                if (fl_operation_is_instr(op, FL_INSTR_START_BLOCK))
-                {
-                    cnt->base->scope = cnt->base->scope->outer;
-                    complete = FL_TRUE;
-                }
-            }
+            fl_bool complete = FL_TRUE;
+
+            // TO CHANGE
+            break;
+
+            if (fl_operation_is_initialized(fl_op_vec_pop(&cnt->op_stack)))
+                assert(FL_FALSE);
+
+            // while (!fl_operation_is_callable(op = fl_op_vec_pop(&cnt->op_stack)))
+            // {
+            //     if (fl_operation_is_instr(op, FL_INSTR_START_BLOCK))
+            //     {
+            //         cnt->base->scope = cnt->base->scope->outer;
+            //         complete = FL_TRUE;
+            //     }
+            // }
 
             if (!complete)
                 assert(FL_FALSE);

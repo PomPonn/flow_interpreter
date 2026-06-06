@@ -43,14 +43,19 @@ fl_void fl_flow_run(const fl_char *source_path)
     if (!fl_globals_initialized())
         assert(FL_FALSE);
 
-    fl_char *source_code = fl_file_read(source_path);
+    // fl_prof_profile_once(fl_file_read(source_path));
+    // return;
 
+    fl_char *source_code = fl_file_read(source_path);
     if (!source_code)
         throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
 
 #ifndef NDEBUG
     printf("------ Source code: ------\n%s\n\n", source_code);
 #endif
+
+    // fl_prof_profile_once(fl_tok_tokenize(source_code, source_path));
+    // return;
 
     fl_token_arr token_arr = fl_tok_tokenize(source_code, source_path);
 
@@ -65,6 +70,9 @@ fl_void fl_flow_run(const fl_char *source_path)
         // there are no meaningful tokens in the file
         return;
 
+    // fl_prof_profile_once(fl_ast_tree_gen(&token_arr));
+    // return;
+
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
 #ifndef NDEBUG
@@ -74,6 +82,10 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     fl_base_context cnt;
     fl_base_context_init(&cnt);
+
+    // fl_prof_profile_once(fl_cmp_compile_ast(tree, &cnt));
+    // return;
+
     fl_byte_vec code = fl_cmp_compile_ast(tree, &cnt);
 
 #ifndef NDEBUG
@@ -90,7 +102,8 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("\n------ Interpretation: ------\n");
 #endif
 
-    // reuse base context ???
+    // fl_prof_profile_once(fl_intpr_interpret(code));
+    // return;
 
     fl_intpr_interpret(code);
 

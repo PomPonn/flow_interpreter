@@ -67,7 +67,7 @@ fl_void _fl_prof_log(
         "Minimum: %." FLOAT_PRECISION "f microseconds\n"
         "Maximum: %." FLOAT_PRECISION "f microseconds\n"
         "Total: %." FLOAT_PRECISION "f miliseconds (%." FLOAT_PRECISION "f microseconds)\n\n",
-        __TIMESTAMP__, what, _C_COMPILER_PATH,
+        fl_time_to_str(FL_TIME_NULL), what, _C_COMPILER_PATH,
         measures_count, input_size, input_unit,
         sum / measures_count, med, min, max, sum * 1e-3, sum);
 

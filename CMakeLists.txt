@@ -71,7 +71,7 @@ endif()
 include_directories(${CORE_DIR} ${LIBS_DIR})
 
 add_compile_definitions(
-    _INCLUDE_PROFILER=0
+    _INCLUDE_PROFILER=1
     _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
     _C_COMPILER_PATH="${CMAKE_C_COMPILER}"
