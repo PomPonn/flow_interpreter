@@ -28,6 +28,7 @@ FL_FORWARD_STRUCT(fl_value);
  */
 enum _fl_instruction
 {
+    FL_INSTR_NONE,
     // TODO: comment this when finished
 
     // callable instructions
@@ -57,9 +58,8 @@ typedef fl_byte fl_instruction;
 // ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
-FL_HEADER_FN const fl_fn_interface *fl_instruction_get_interface(fl_instruction instr);
-
-fl_value fl_instruction_call(fl_instruction instr, fl_base_context *cnt, fl_value_vec args);
+FL_HEADER_FN fl_instruction fl_instruction_from_alias(const fl_char *alias);
+FL_HEADER_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr);
 
 // ---------- DEFINITIONS -----------
 
@@ -68,7 +68,12 @@ FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
     return instr < FL_INSTR_CALL;
 }
 
-FL_HEADER_FN const fl_fn_interface *fl_instruction_get_interface(fl_instruction instr)
+FL_HEADER_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr)
 {
-    return fl_g_instrs_get_interface(instr);
+    return fl_instruction_is_callable(instr) ? fl_g_instrs_get_variants_of(instr) : FL_NULL;
+}
+
+FL_HEADER_FN fl_instruction fl_instruction_from_alias(const fl_char *alias)
+{
+    return fl_g_instrs_resolve_alias(alias);
 }

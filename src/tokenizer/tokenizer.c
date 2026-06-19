@@ -32,7 +32,7 @@ fl_char *_fl_tok_next_token(fl_char *str, const fl_const_cstr_vec *escapes, fl_s
 // returns FL_FALSE if source has no tokens
 fl_token_arr fl_tok_tokenize(fl_char *source, const fl_char *src_location)
 {
-    const fl_const_cstr_vec *escapes = fl_g_instrs_aliases_to_escapes();
+    const fl_const_cstr_vec *escapes = fl_g_instrs_get_escapes();
 
     fl_uint count = _fl_tok_count_tokens(source, escapes);
     if (!count)

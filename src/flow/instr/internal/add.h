@@ -10,7 +10,7 @@
 
 // ---------- DEPENDENCIES --------------
 
-#include "flow/value.h"
+#include "vecs/value_vec.h"
 
 // ---------- MACROS --------------------
 
@@ -19,12 +19,15 @@
 
 // ---------- DECLARATIONS -------------
 
-FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right);
+FL_HEADER_FN fl_value fl_instr_add(fl_value_vec args);
 
 // ---------- DEFINITIONS --------------
 
-FL_HEADER_FN fl_value fl_instr_add(fl_value left, fl_value right)
+FL_HEADER_FN fl_value fl_instr_add(fl_value_vec args)
 {
+    fl_value left = args.data[0];
+    fl_value right = args.data[1];
+
     // unsave conversion
     // TODO: implement type conversion system
 

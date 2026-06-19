@@ -32,9 +32,9 @@ typedef fl_byte fl_operation_type;
 struct _fl_operation
 {
     fl_operation_type type;
+    fl_instruction instr;
     union
     {
-        fl_instruction instr;
         fl_fn_variant_vec *vars;
         fl_value value;
     };
@@ -66,6 +66,7 @@ FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr)
     return (fl_operation){
         .type = FL_OPERATION_INSTR,
         .instr = instr,
+        .vars = fl_g_instrs_get_variants_of(instr),
     };
 }
 
@@ -73,6 +74,7 @@ FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
 {
     return (fl_operation){
         .type = FL_OPERATION_FN,
+        .instr = FL_INSTR_NONE,
         .vars = vars,
     };
 }
@@ -81,6 +83,7 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
 {
     return (fl_operation){
         .type = FL_OPERATION_VALUE,
+        .instr = FL_INSTR_NONE,
         .value = val,
     };
 }
@@ -119,41 +122,22 @@ FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
 
 FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt)
 {
-    if (op.type == FL_OPERATION_INSTR)
-    {
-        const fl_fn_interface *fn_i = fl_instruction_get_interface(op.instr);
-
-        if (!fl_param_vec_suit_args(&fn_i->params, &args))
-            assert(FL_FALSE);
-
-        return fl_instruction_call(op.instr, cnt, args);
-    }
-    else if (op.type == FL_OPERATION_FN)
-    {
-        fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, &args);
-
-        if (!var)
-            assert(FL_FALSE);
-
-        return fl_fn_variant_call(var, args);
-    }
-    else
+    if (!fl_operation_is_callable(op))
         return FL_VALUE_EMPTY;
+
+    fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, &args);
+
+    if (!var)
+        assert(FL_FALSE);
+
+    return fl_fn_variant_call(var, args);
 }
 
 FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params)
 {
-    if (op.type == FL_OPERATION_INSTR)
-    {
-        const fl_fn_interface *fn_i = fl_instruction_get_interface(op.instr);
-        return fl_param_vec_match_params(&fn_i->params, &params) ? fn_i : FL_NULL;
-    }
-    else if (op.type == FL_OPERATION_FN)
-        return &fl_fn_variant_vec_find_match(op.vars, params)->interface;
-    else
-        return FL_NULL;
+    return fl_operation_is_callable(op) ? &fl_fn_variant_vec_find_match(op.vars, params)->interface : FL_NULL;
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right)

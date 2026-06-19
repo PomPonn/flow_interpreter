@@ -11,16 +11,19 @@
 // ---------- DEPENDENCIES --------------
 
 #include "flow/id/id_entry.h"
-#include "flow/value.h"
+#include "vecs/value_vec.h"
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what);
+FL_HEADER_FN fl_value fl_instr_assign(fl_value_vec args);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_value fl_instr_assign(fl_value id_ref, fl_value *what)
+FL_HEADER_FN fl_value fl_instr_assign(fl_value_vec args)
 {
+    fl_value id_ref = args.data[0];
+    fl_value *what = &args.data[1];
+
     // WARNING: 'what' value is moved, not copied
     // it is probably unwanted behaviour
     // TODO: change this behaviour

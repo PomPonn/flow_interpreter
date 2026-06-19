@@ -152,10 +152,10 @@ fl_operation _fl_cmp_id_node_to_operation(
     const fl_scope *scope)
 {
     fl_id_chain *id_chain = id_node->data;
-    const fl_instr_alias *alias = id_chain->size == 1 ? fl_g_instrs_find_alias(id_chain->data[0]) : FL_NULL;
 
-    if (alias)
-        return fl_operation_from_instr(alias->instr);
+    fl_instruction instr = id_chain->size == 1 ? fl_instruction_from_alias(id_chain->data[0]) : FL_INSTR_NONE;
+    if (instr)
+        return fl_operation_from_instr(instr);
 
     fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
 
