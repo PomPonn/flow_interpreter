@@ -1,14 +1,18 @@
-# function type called like a func #
+io = import(":std.io");
 
-# first arg is a return type #
-fun1 : func(int, int, float) = () -> {
+pow2_fn_1 = a -> a * a;
 
-}
+pow2_fn_2 = [a] -> a * a;
 
-# function without braces #
-fun3 : func(int, int, int) = (a, b) -> a + b;
-# or shortened without typing #
-fun3 = (a, b) -> a + b;
+avg_fn = [a, b, c] -> {
+    (a + b + c) / 3;
+};
 
-# when there is only one param we can omit parens #
-fun2 = b -> b ^ 2;
+hello_fn = [] -> {
+    io.put("Hello!");
+};
+
+x = pow2_fn_1(2);
+y = pow2_fn_2(2);
+z = avg_fn(2, 3, 4);
+w = hello_fn();
