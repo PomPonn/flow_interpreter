@@ -30,7 +30,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_BLOCK,
 
     /**
-     * @brief Constant, hard-coded ast_literal - a number, string, array etc.
+     * @brief ast literal - a number, string etc.
      */
     FL_AST_NODE_TYPE_LITERAL,
 
@@ -49,12 +49,10 @@ enum _fl_ast_node_type
      */
     FL_AST_NODE_TYPE_FN_CALL,
 
-    // ---------- UNUSED ----------
-
-    // TODO: comment here when finished
-
-    FL_AST_NODE_TYPE_FUNCTION,
-    FL_AST_NODE_TYPE_FUNC_HEADER,
+    /**
+     * @brief Array node, contains all listed elements as children
+     */
+    FL_AST_NODE_TYPE_ARRAY,
 };
 
 /**

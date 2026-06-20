@@ -83,12 +83,6 @@ inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
     case FL_AST_NODE_TYPE_BLOCK:
         printf("<block>");
         break;
-    case FL_AST_NODE_TYPE_FUNCTION:
-        printf("<function>");
-        break;
-    case FL_AST_NODE_TYPE_FUNC_HEADER:
-        printf("<header>");
-        break;
     case FL_AST_NODE_TYPE_LITERAL:
         printf("<literal> %s", _fl_prt_convert_ast_literal(node));
         break;
@@ -108,6 +102,9 @@ inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
         break;
     case FL_AST_NODE_TYPE_FN_CALL:
         printf("<call>");
+        break;
+    case FL_AST_NODE_TYPE_ARRAY:
+        printf("<array>");
         break;
     default:
         printf("<node>");

@@ -2,6 +2,7 @@
 
 ## active
 
+- cleanup ast generator
 - base context not freeing (problem with literals vec)
 - how to handle simulating and inlining in compilation process?
 - FL_DATA_TYPE_REF handling is quite messy

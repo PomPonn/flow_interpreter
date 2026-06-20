@@ -12,6 +12,7 @@
 
 #include "import.h"
 #include "assign.h"
+#include "lambda.h"
 #include "add.h"
 #include "mul.h"
 #include "sub.h"

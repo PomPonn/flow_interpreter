@@ -20,7 +20,6 @@
 // ---------- GLOBALS ---------------
 
 fl_bool g_initialized = FL_FALSE;
-// fl_fn_interface_vec g_interfaces;
 fl_fn_variant_vec_vec g_variants;
 fl_instr_alias_vec g_aliases;
 fl_const_cstr_vec g_escapes;
@@ -77,6 +76,7 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    fl_bitfield_set(intf.traits, FL_FN_TRAITS_META);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf);
     var.pointer = fl_instr_import;
@@ -105,6 +105,26 @@ fl_void fl_g_instrs_init()
     // set globals
     g_variants.data[FL_INSTR_ASSIGN] = vars;
     g_aliases.data[FL_INSTR_ASSIGN] = fl_instr_alias_create_esc("=");
+
+    // ---- LAMBDA ----
+
+    // init params
+    fl_param_vec_init_with(
+        &params, 2,
+        (fl_param[]){
+            fl_param_create(FL_DATA_TYPE_ARRAY | FL_DATA_TYPE_REF),
+            fl_param_create(FL_DATA_TYPE_SCOPE),
+        });
+    // init interface(s)
+    fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf);
+    var.pointer = fl_instr_lambda;
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_LAMBDA] = vars;
+    g_aliases.data[FL_INSTR_LAMBDA] = fl_instr_alias_create_esc("->");
 
     // ---- ADD ----
 

@@ -19,5 +19,6 @@ enum _fl_fn_traits
 {
     FL_FN_TRAITS_NONE = 0b00000000,
     FL_FN_TRAITS_PURE = 0b00000001,
+    FL_FN_TRAITS_META = 0b00000010,
 };
 typedef fl_byte fl_fn_traits;

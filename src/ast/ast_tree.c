@@ -17,8 +17,6 @@
 #include "tokenizer/token_location.h"
 #include "tokenizer/token_arr.h"
 #include "ast/ast_node.h"
-// may be to remove
-#include "revise_me/info/operator_info.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -62,11 +60,10 @@
 
 inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *func_id);
+inline fl_ast_node *_fl_ast_process_array_literal(fl_ast_node *parent, fl_token_arr *arr);
 inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl_ast_node *left, fl_bool grouped);
 inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
-fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr);
-fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr);
 fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
 
 // ---------- DEFINITIONS ---------------
@@ -132,6 +129,9 @@ inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_
     do
     {
         next_token_safe;
+        if (arr->current->alias == FL_TOKEN_ALIAS_RPAREN)
+            break;
+
         _fl_ast_process_expression(parent, arr, FL_FALSE);
     } while (arr->current->alias == FL_TOKEN_ALIAS_COMMA);
 
@@ -145,21 +145,23 @@ inline fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_
 
 // handles any kind of expression
 // almost everything is an expression (apart from blocks)
-// function may contain a single expression, which is 'instantiated' on call
-// it can be a ast_literal, function call, group of operators or a combination of these things
+// function body may contain a single expression, which is 'instantiated' on call
 fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped)
 {
     // temp node
     fl_ast_node *node;
 
-    // inner expression in parenths
     if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
     {
+        // inner expression in parenths
         next_token_safe;
         node = _fl_ast_process_expression(FL_NULL, arr, FL_TRUE);
     }
     else if (arr->current->type == FL_TOKEN_TYPE_LITERAL)
         node = _fl_ast_process_ast_literal(FL_NULL, arr);
+    else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACKET)
+        // Array literal
+        node = _fl_ast_process_array_literal(FL_NULL, arr);
     // identifier can be either left side of the operator or a function name
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
@@ -231,14 +233,18 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
             break;
         case FL_TOKEN_ALIAS_RBRACE:
             if (is_root)
+            {
                 throw_syntax_error("Unexpected block closure ('}')");
-            break;
+                break;
+            }
+            else
+                return parent;
         default:
             _fl_ast_process_expression(parent, arr, FL_FALSE);
 
             // throw error if expression isn't ending with a semicolon
-            if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
-                throw_syntax_error("expected semicolon ';' to end expression");
+            // if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
+            //     throw_syntax_error("expected semicolon ';' to end expression");
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
@@ -256,11 +262,8 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
 {
     fl_ast_node *node;
 
-    // create operator info
-    fl_operator_info *op_info;
-    fl_operator_info_init(&op_info, grouped ? FL_OPR_ORDER_MAX : FL_OPR_ORDER_DEFAULT);
     // create operator node
-    init_node_filled(FL_AST_NODE_TYPE_OPERATOR, op_info, FL_NULL);
+    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
 
     // add operator id node
     _fl_ast_process_id(node, arr);
@@ -274,91 +277,12 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
         // ... else handle expression
         _fl_ast_process_expression(node, arr, FL_FALSE);
 
-    if (arr->current->type == FL_TOKEN_TYPE_ID)
+    if (arr->current && arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_operator(parent, arr, node, FL_FALSE);
     else if (parent)
         fl_ast_node_add_child(parent, node);
 
     return node;
-}
-
-fl_void _fl_ast_process_function_header(fl_ast_node *parent, fl_token_arr *arr)
-{
-    assert(parent->type == FL_AST_NODE_TYPE_FUNCTION);
-
-    // TODO
-
-    // fl_ast_node *statement;
-    fl_ast_node *node;
-    fl_bool parenth = FL_FALSE;
-
-    init_node_empty(FL_AST_NODE_TYPE_FUNC_HEADER, parent);
-    parent = node;
-
-    if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
-    {
-        parenth = FL_TRUE;
-        next_token_safe;
-    }
-
-    do
-    {
-        // parameter id definition
-
-        if (arr->current->type != FL_TOKEN_TYPE_ID)
-        {
-            // throw_syntax_error(, arr->current);
-        }
-
-        // fl_ast_node_init(&statement, FL_AST_NODE_TYPE_STATEMENT, FL_NULL, parent);
-        // init_node_filled(FL_AST_NODE_TYPE_IDENTIFIER, fl_str_dup(arr->current->value), statement);
-
-        next_token_safe;
-
-        // TODO: to revise
-        // if (arr->current.alias == FL_TOKEN_ALIAS_COLON)
-        // {
-        //     // parameter type definition
-
-        //     strong_increment;
-        //     _fl_ast_process_type_dimensions(statement, arr);
-        // }
-    } while (arr->current->alias == FL_TOKEN_ALIAS_COMMA);
-
-    if (parenth)
-    {
-        if (arr->current->alias != FL_TOKEN_ALIAS_RPAREN)
-        {
-            // throw_syntax_error(, arr->current);
-        }
-        else
-        {
-            next_token_safe;
-        }
-    }
-}
-
-fl_void _fl_ast_process_function_expression(fl_ast_node *parent, fl_token_arr *arr)
-{
-    fl_ast_node *func_node;
-
-    fl_ast_node_init(&func_node, FL_AST_NODE_TYPE_FUNCTION, FL_NULL, parent, arr->current->location);
-
-    if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN || arr->current->type == FL_TOKEN_TYPE_ID)
-        _fl_ast_process_function_header(func_node, arr);
-
-    if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
-        // function block
-        _fl_ast_process_block(func_node, arr, FL_FALSE);
-    else
-    {
-        // single expression
-        fl_ast_node *block_node;
-
-        fl_ast_node_init(&block_node, FL_AST_NODE_TYPE_BLOCK, FL_NULL, parent, arr->current->location);
-
-        _fl_ast_process_expression(block_node, arr, FL_FALSE);
-    }
 }
 
 inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_arr *arr)
@@ -372,5 +296,30 @@ inline fl_ast_node *_fl_ast_process_ast_literal(fl_ast_node *parent, fl_token_ar
     init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_value, parent);
 
     next_token_safe;
+    return node;
+}
+
+inline fl_ast_node *_fl_ast_process_array_literal(fl_ast_node *parent, fl_token_arr *arr)
+{
+    fl_ast_node *node;
+    init_node_empty(FL_AST_NODE_TYPE_ARRAY, parent);
+
+    if (arr->current->alias != FL_TOKEN_ALIAS_LBRACKET)
+        assert(FL_FALSE);
+
+    do
+    {
+        next_token_safe;
+        if (arr->current->alias == FL_TOKEN_ALIAS_RBRACKET)
+            break;
+
+        _fl_ast_process_expression(node, arr, FL_FALSE);
+    } while (arr->current->alias == FL_TOKEN_ALIAS_COMMA);
+
+    if (arr->current->alias != FL_TOKEN_ALIAS_RBRACKET)
+        assert(FL_FALSE);
+    else
+        next_token_safe;
+
     return node;
 }
