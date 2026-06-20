@@ -137,3 +137,5 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
  * @return Node's last child or `FL_NULL` if there are no chldren.
  */
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);
+
+// ---------- DEFINITIONS --------------

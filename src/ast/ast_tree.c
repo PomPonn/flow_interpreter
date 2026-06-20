@@ -16,7 +16,9 @@
 #include "flow/value.h"
 #include "tokenizer/token_location.h"
 #include "tokenizer/token_arr.h"
+#include "vecs/instr_info_vec.h"
 #include "ast/ast_node.h"
+#include "flow/instr/g_instrs.h"
 
 #ifndef NDEBUG
 #include "tools/printer.h"
@@ -65,6 +67,9 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
 inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
+fl_op_order _fl_ast_get_op_order(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos);
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos);
+fl_void _fl_ast_sort_operators(fl_ast_node *parent);
 
 // ---------- DEFINITIONS ---------------
 
@@ -75,12 +80,114 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
     // we assume that the whole program is a block
     fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
 
+    printf("\nPRZED:\n");
+    fl_prt_print_ast_tree(node);
+
+    printf("\nPO:\n");
+    _fl_ast_sort_operators(node);
+
     // TODO: check this when correct error handling will be implemented
     // execute errors if there are any,
     // because it doesn't make much sense to go on with wrong syntax tree
     fl_err_execute();
 
     return node;
+}
+
+fl_op_order _fl_ast_get_op_order(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
+{
+    assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+
+    fl_bool is_grouped = *(fl_bool *)op_node->data;
+    fl_op_order order = is_grouped ? FL_OP_ORDER_GROUP : FL_OP_ORDER_NEUTRAL;
+
+    assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
+    fl_id_chain *id_chain = op_node->child[0].data;
+
+    if (!is_grouped && id_chain->size == 1)
+    {
+        fl_instr_info *info = fl_instr_info_vec_find(instr_infos, id_chain->data[0]);
+
+        if (info)
+            // It's an instruction, get its order
+            return info->order;
+    }
+
+    return order;
+}
+
+fl_void _fl_ast_sort_operators(fl_ast_node *parent)
+{
+    const fl_instr_info_vec *infos = fl_g_instrs_get_info_vec();
+
+    for (fl_ast_node *child = parent->child; child; child = child->next)
+    {
+        if (!child->child)
+            break;
+
+        if (child->type == FL_AST_NODE_TYPE_OPERATOR)
+            _fl_ast_sort_operators_helper(child, infos);
+        else
+            _fl_ast_sort_operators(child);
+    }
+}
+
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
+{
+    assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+
+    fl_op_order op_order = _fl_ast_get_op_order(op_node, instr_infos);
+
+    // fl_ast_node *arg = op_node->child->next;
+
+    for (fl_ast_node *arg_node = op_node->child->next; arg_node; arg_node = arg_node->next)
+    {
+        // temp
+        if (op_node->type == FL_AST_NODE_TYPE_OPERATOR && !arg_node->next)
+            break;
+
+        if (arg_node->type != FL_AST_NODE_TYPE_OPERATOR)
+            continue;
+
+        fl_op_order inner_order = _fl_ast_sort_operators_helper(arg_node, instr_infos);
+
+        if (op_order > inner_order)
+        {
+            // TO OPT
+            // WIP
+
+            // swap ids
+            _fl_swap(fl_ast_node *, op_node->child->next, arg_node->child->next);
+            _fl_swap(fl_ast_node *, op_node->child, arg_node->child);
+            // swap args
+            fl_ast_node *first_arg = arg_node->child->next;
+            _fl_swap(fl_ast_node *, arg_node->child->next, arg_node->child->next->next);
+            arg_node->child->next->next = first_arg;
+            first_arg->next = FL_NULL;
+
+            first_arg = op_node->child->next;
+            _fl_swap(fl_ast_node *, op_node->child->next, op_node->child->next->next);
+            op_node->child->next->next = first_arg;
+            first_arg->next = FL_NULL;
+
+            first_arg = op_node->child->next;
+            _fl_swap(fl_ast_node *, op_node->child->next, arg_node->child->next->next);
+            op_node->child->next->next = first_arg;
+            first_arg->next = FL_NULL;
+
+            // _fl_swap(fl_ast_node *, op_node->child->next->next, arg_node->child->next->next);
+        }
+        // force correct order
+
+        // iterate over args
+        // for (fl_ast_node *arg = child->child->next; arg; arg = arg->next)
+        // {
+        //     if (child->type != FL_AST_NODE_TYPE_OPERATOR)
+        //         continue;
+        // }
+    }
+
+    return op_order;
 }
 
 // handles id chain (eg. 'body.hand')
@@ -262,8 +369,11 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
 {
     fl_ast_node *node;
 
+    // init operator data (info)
+    fl_bool *data = fl_mem_alloc_t(fl_bool);
+    *data = grouped;
     // create operator node
-    init_node_empty(FL_AST_NODE_TYPE_OPERATOR, FL_NULL);
+    init_node_filled(FL_AST_NODE_TYPE_OPERATOR, data, FL_NULL);
 
     // add operator id node
     _fl_ast_process_id(node, arr);

@@ -8,6 +8,10 @@
 
 #include "ast_node.h"
 
+// ---------- DEPENDENCIES -----------
+
+#include "flow/value.h"
+
 // ---------- DEFINITIONS ---------------
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
@@ -56,6 +60,10 @@ fl_void fl_ast_node_free(fl_ast_node **node)
     }
 
     // Free current node and it's data
+
+    if ((*node)->type == FL_AST_NODE_TYPE_LITERAL)
+        fl_value_free((*node)->data);
+
     fl_mem_free((*node)->data);
     fl_mem_free(*node);
 

@@ -22,7 +22,7 @@
 #include "flow/instr/instruction.h"
 #include "flow/section_mark.h"
 #include "flow/operation.h"
-#include "vecs/instr_alias_vec.h"
+#include "vecs/instr_info_vec.h"
 #include "flow/instr/g_instrs.h"
 #include "interpreter/interpreter.h"
 #include "context/cmp_context.h"

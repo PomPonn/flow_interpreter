@@ -15,7 +15,8 @@
 
 // ------------- MACROS -----------------
 
-#define FL_INT_MAX INT_MAX
+#define FL_INT_MAX INT32_MAX
+#define FL_INT_MIN INT32_MIN
 
 // ---------- TYPE DEFINITIONS ----------
 
