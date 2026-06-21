@@ -67,8 +67,8 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
 inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bool is_root);
 inline fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
 fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, fl_bool grouped);
-fl_op_order _fl_ast_get_op_order(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos);
-fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos);
+fl_op_order _fl_ast_get_op_order(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos);
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos);
 fl_void _fl_ast_sort_operators(fl_ast_node *parent);
 
 // ---------- DEFINITIONS ---------------
@@ -94,15 +94,15 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
     return node;
 }
 
-fl_op_order _fl_ast_get_op_order(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
+fl_op_order _fl_ast_get_op_order(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos)
 {
-    assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+    assert(outer_node->type == FL_AST_NODE_TYPE_OPERATOR);
 
-    fl_bool is_grouped = *(fl_bool *)op_node->data;
+    fl_bool is_grouped = *(fl_bool *)outer_node->data;
     fl_op_order order = is_grouped ? FL_OP_ORDER_GROUP : FL_OP_ORDER_NEUTRAL;
 
-    assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
-    fl_id_chain *id_chain = op_node->child[0].data;
+    assert(outer_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
+    fl_id_chain *id_chain = outer_node->child[0].data;
 
     if (!is_grouped && id_chain->size == 1)
     {
@@ -132,62 +132,37 @@ fl_void _fl_ast_sort_operators(fl_ast_node *parent)
     }
 }
 
-fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos)
 {
-    assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+    assert(outer_node->type == FL_AST_NODE_TYPE_OPERATOR);
 
-    fl_op_order op_order = _fl_ast_get_op_order(op_node, instr_infos);
+    fl_op_order outer_order = _fl_ast_get_op_order(outer_node, instr_infos);
 
-    // fl_ast_node *arg = op_node->child->next;
-
-    for (fl_ast_node *arg_node = op_node->child->next; arg_node; arg_node = arg_node->next)
+    for (fl_ast_node *inner_node = outer_node->child->next; inner_node; inner_node = inner_node->next)
     {
-        // temp
-        if (op_node->type == FL_AST_NODE_TYPE_OPERATOR && !arg_node->next)
-            break;
-
-        if (arg_node->type != FL_AST_NODE_TYPE_OPERATOR)
+        if (inner_node->type != FL_AST_NODE_TYPE_OPERATOR)
             continue;
 
-        fl_op_order inner_order = _fl_ast_sort_operators_helper(arg_node, instr_infos);
+        fl_op_order inner_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
 
-        if (op_order > inner_order)
+        if (outer_order > inner_order)
         {
-            // TO OPT
-            // WIP
+            // swap operator nodes
+            _fl_swap(fl_ast_node *, outer_node->parent, inner_node->parent);
+            _fl_swap(fl_ast_node *, outer_node->child, inner_node->child);
 
-            // swap ids
-            _fl_swap(fl_ast_node *, op_node->child->next, arg_node->child->next);
-            _fl_swap(fl_ast_node *, op_node->child, arg_node->child);
-            // swap args
-            fl_ast_node *first_arg = arg_node->child->next;
-            _fl_swap(fl_ast_node *, arg_node->child->next, arg_node->child->next->next);
-            arg_node->child->next->next = first_arg;
-            first_arg->next = FL_NULL;
+            fl_ast_node *outer_last = outer_node->child->next->next;
+            fl_ast_node *inner_last = inner_node->child->next->next;
+            outer_node->child->next->next = inner_node;
+            inner_node->next = FL_NULL;
+            inner_node->child->next = outer_last;
+            outer_last->next = inner_last;
 
-            first_arg = op_node->child->next;
-            _fl_swap(fl_ast_node *, op_node->child->next, op_node->child->next->next);
-            op_node->child->next->next = first_arg;
-            first_arg->next = FL_NULL;
-
-            first_arg = op_node->child->next;
-            _fl_swap(fl_ast_node *, op_node->child->next, arg_node->child->next->next);
-            op_node->child->next->next = first_arg;
-            first_arg->next = FL_NULL;
-
-            // _fl_swap(fl_ast_node *, op_node->child->next->next, arg_node->child->next->next);
+            return _fl_ast_sort_operators_helper(inner_node, instr_infos);
         }
-        // force correct order
-
-        // iterate over args
-        // for (fl_ast_node *arg = child->child->next; arg; arg = arg->next)
-        // {
-        //     if (child->type != FL_AST_NODE_TYPE_OPERATOR)
-        //         continue;
-        // }
     }
 
-    return op_order;
+    return outer_order;
 }
 
 // handles id chain (eg. 'body.hand')
