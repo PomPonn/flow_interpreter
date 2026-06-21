@@ -30,7 +30,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match(
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     const fl_fn_variant_vec *vec,
-    fl_value_vec *args);
+    fl_value_vec args);
 
 FL_HEADER_FN fl_bool fl_fn_variant_vec_overload(
     fl_fn_variant_vec *fn_vars,
@@ -55,7 +55,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match(
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     const fl_fn_variant_vec *vec,
-    fl_value_vec *args)
+    fl_value_vec args)
 {
     for (fl_size i = 0; i < vec->size; i++)
     {

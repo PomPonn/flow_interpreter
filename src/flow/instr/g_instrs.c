@@ -83,8 +83,7 @@ fl_void fl_g_instrs_init()
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bitfield_set(intf.traits, FL_FN_TRAITS_META);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_import;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_import);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
@@ -103,8 +102,7 @@ fl_void fl_g_instrs_init()
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_assign;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_assign);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
@@ -122,9 +120,9 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);
+    fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_lambda;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lambda);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
@@ -144,8 +142,7 @@ fl_void fl_g_instrs_init()
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_add;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_add);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
@@ -165,8 +162,7 @@ fl_void fl_g_instrs_init()
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_sub;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_sub);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
@@ -186,8 +182,7 @@ fl_void fl_g_instrs_init()
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
-    fl_fn_variant_init(&var, FL_TRUE, intf);
-    var.pointer = fl_instr_mul;
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_mul);
     // set variant vec
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals

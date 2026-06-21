@@ -26,10 +26,7 @@
 
 FL_HEADER_FN fl_bool fl_param_vec_equal(const fl_param_vec *vec, const fl_param_vec *other);
 FL_HEADER_FN fl_bool fl_param_vec_is_every_const(const fl_param_vec *vec);
-
-FL_HEADER_FN fl_bool fl_param_vec_suit_args(
-    const fl_param_vec *vec,
-    fl_value_vec *args);
+FL_HEADER_FN fl_bool fl_param_vec_suit_args(const fl_param_vec *vec, fl_value_vec args);
 
 FL_HEADER_FN fl_bool fl_param_vec_match_params(
     const fl_param_vec *vec,
@@ -72,19 +69,14 @@ FL_HEADER_FN fl_bool fl_param_vec_match_params(
     return FL_TRUE;
 }
 
-FL_HEADER_FN fl_bool fl_param_vec_suit_args(
-    const fl_param_vec *vec,
-    fl_value_vec *args)
+FL_HEADER_FN fl_bool fl_param_vec_suit_args(const fl_param_vec *vec, fl_value_vec args)
 {
-    if (vec->size != args->size)
+    if (vec->size != args.size)
         return FL_FALSE;
-
-    fl_value_vec transformed;
-    fl_value_vec_init_with(&transformed, args->size, args->data);
 
     for (fl_size i = 0; i < vec->size; i++)
     {
-        fl_value arg = args->data[i];
+        fl_value arg = args.data[i];
         if (fl_param_match_arg(vec->data[i], arg))
             continue;
 
@@ -94,11 +86,9 @@ FL_HEADER_FN fl_bool fl_param_vec_suit_args(
             if (!fl_param_match_arg(vec->data[i], arg))
                 return FL_FALSE;
 
-            transformed.data[i] = arg;
+            args.data[i] = arg;
         }
     }
 
-    fl_value_vec_free_shallow(args);
-    *args = transformed;
     return FL_TRUE;
 }

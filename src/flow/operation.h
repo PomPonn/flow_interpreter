@@ -125,10 +125,17 @@ FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_ba
     if (!fl_operation_is_callable(op))
         return FL_VALUE_EMPTY;
 
-    fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, &args);
+    fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, args);
 
     if (!var)
         assert(FL_FALSE);
+
+    // add context as the first arg if META trait is set
+    if (fl_bitfield_is_set(var->interface.traits, FL_FN_TRAITS_META))
+    {
+        fl_value cnt_arg = fl_value_create(FL_DATA_TYPE_REF, cnt);
+        fl_value_vec_put_back(&args, cnt_arg);
+    }
 
     return fl_fn_variant_call(var, args);
 }

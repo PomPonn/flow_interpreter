@@ -2,6 +2,8 @@
 
 ## active
 
+- opt inlining process - reduce redundancy
+- revise fn variants overloading
 - cleanup ast generator
 - base context not freeing (problem with literals vec)
 - how to handle simulating and inlining in compilation process?
