@@ -137,7 +137,13 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params)
 {
-    return fl_operation_is_callable(op) ? &fl_fn_variant_vec_find_match(op.vars, params)->interface : FL_NULL;
+    if (!fl_operation_is_callable(op))
+        return FL_NULL;
+    else
+    {
+        fl_fn_variant *match = fl_fn_variant_vec_find_match(op.vars, params);
+        return match ? &match->interface : FL_NULL;
+    }
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right)

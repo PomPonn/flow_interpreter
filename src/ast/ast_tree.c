@@ -80,10 +80,6 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
     // we assume that the whole program is a block
     fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
 
-    printf("\nPRZED:\n");
-    fl_prt_print_ast_tree(node);
-
-    printf("\nPO:\n");
     _fl_ast_sort_operators(node);
 
     // TODO: check this when correct error handling will be implemented

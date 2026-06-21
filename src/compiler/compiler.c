@@ -206,7 +206,7 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
             fl_value_vec args = _fl_cmp_parse_nodes_to_values(arg_node, cnt);
             fl_value res = fl_operation_run(op, args, cnt->base);
 
-            // free res if const assign? (ig not)
+            // free `res` if const assign? (ig not)
 
             if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
             {
@@ -315,8 +315,13 @@ inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cm
     {
         fl_ast_node *id_node = node->child;
         fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
+
+        assert(fl_operation_is_callable(op));
+
         fl_param_vec params = _fl_cmp_parse_nodes_to_params(id_node->next, cnt);
         const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
+
+        assert(fn_i);
 
         fl_param_traits traits = FL_PARAM_TRAITS_NONE;
 
@@ -462,6 +467,8 @@ fl_value_vec _fl_cmp_parse_nodes_to_values(fl_ast_node *arg_node, fl_cmp_context
         {
             fl_id_chain *id_chain = arg_node->data;
             fl_id_entry *id = fl_scope_resolve_id(cnt->base->scope, id_chain);
+
+            // Allow undefined ids?
 
             if (!id && id_chain->size == 1)
             {

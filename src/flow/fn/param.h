@@ -75,12 +75,12 @@ FL_HEADER_FN fl_bool fl_param_match_arg(fl_param p, fl_value arg)
     if (!fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_REF) && arg.data_type == FL_DATA_TYPE_REF)
         return FL_FALSE;
 
-    return fl_bitfield_is_set(p.type, arg.data_type);
+    return fl_bitfield_is_any(p.type, arg.data_type);
 }
 
 FL_HEADER_FN fl_bool fl_param_match_param(fl_param p, fl_param p2)
 {
-    if (!fl_bitfield_is_set(p.type, p2.type))
+    if (!fl_bitfield_is_any(p.type, p2.type))
         return FL_FALSE;
 
     if (fl_bitfield_is_set(p.traits, FL_PARAM_TRAITS_CONST) &&
