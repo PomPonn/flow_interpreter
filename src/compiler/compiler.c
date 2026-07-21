@@ -37,7 +37,7 @@
 #define throw_compilation_error(ast_node_ptr, message)                             \
     {                                                                              \
         fl_char buffer[FL_ID_CHAIN_MAX_SIZE];                                      \
-        fl_id_chain_to_string(id_chain, buffer, FL_ID_CHAIN_MAX_SIZE);             \
+        fl_id_chain_to_string(ast_node_ptr->data, buffer, FL_ID_CHAIN_MAX_SIZE);   \
         fl_err_throw(FL_ERR_COMPILATION, message, buffer, ast_node_ptr->location); \
     }
 
@@ -78,6 +78,8 @@ inline fl_bool _fl_cmp_is_call_const(fl_operation op, const fl_fn_interface *int
 fl_value _fl_cmp_parse_node_to_value(fl_ast_node *node, fl_cmp_context *cnt);
 
 fl_value_vec _fl_cmp_eval_args(fl_ast_node *arg_node, fl_operation op, fl_cmp_context *cnt);
+
+fl_bool _fl_cmp_try_op_inline(fl_ast_node *arg_node, fl_operation op, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -176,7 +178,6 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 {
     fl_ast_node *id_node = op_node->child;
     fl_ast_node *arg_node = id_node->next;
-    // id_chain declaration for error throwing
     fl_id_chain *id_chain = id_node->data;
     fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
 
@@ -192,42 +193,7 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     }
     else if (fl_operation_is_callable(op))
     {
-        fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
-        const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
-
-        if (!fn_i)
-            throw_compilation_error(id_node, "couldn't find function overload for given arguments");
-
-        fl_bool constant = _fl_cmp_is_call_const(op, fn_i, params);
-
-        fl_param_vec_free(&params);
-
-        if (constant)
-        {
-            // simulate this operation
-
-            fl_value_vec args = _fl_cmp_eval_args(arg_node, op, cnt);
-            fl_value res = fl_operation_run(op, args, cnt->base);
-
-            // free `res` if const assign? (ig not)
-
-            // never inline assign instruction, because id value will be erased after compilation
-            if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
-            {
-                // inline result
-
-                if (fl_value_equal(res, FL_VALUE_EMPTY))
-                    assert(FL_FALSE);
-
-                // push immediate value
-                fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
-                fl_value_to_bytes(res, &cnt->byte_code);
-
-                // not sure if its always good to free
-                fl_value_free(&res);
-                return;
-            }
-        }
+        fl_bool success = _fl_cmp_try_op_inline(id_node, op, cnt);
 
         // compile this operator call to byte code
         if (op.type == FL_OPERATION_FN)
@@ -509,6 +475,8 @@ fl_value_vec _fl_cmp_eval_args(fl_ast_node *arg_node, fl_operation op, fl_cmp_co
 
         fl_value lambda_head = _fl_cmp_parse_node_to_value(arg_node, cnt);
 
+        // TODO: handle lambda paremeters here
+
         if (lambda_head.data_type != FL_DATA_TYPE_ARRAY)
         {
             // convert first arg to array
@@ -550,4 +518,47 @@ inline fl_bool _fl_cmp_is_call_const(fl_operation op, const fl_fn_interface *int
             fl_param_vec_is_every_const(&actual_params)) ||
            fl_operation_is_const_assign(op, actual_params.data[1]) ||
            op.instr == FL_INSTR_LAMBDA;
+}
+
+fl_bool _fl_cmp_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt)
+{
+    fl_ast_node *arg_node = id_node->next;
+    fl_param_vec params = _fl_cmp_parse_nodes_to_params(arg_node, cnt);
+    const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
+
+    if (!fn_i)
+    {
+        throw_compilation_error(id_node, "couldn't find function overload for given arguments");
+        return FL_FALSE;
+    }
+
+    fl_bool constant = _fl_cmp_is_call_const(op, fn_i, params);
+
+    fl_param_vec_free(&params);
+
+    if (!constant)
+        return FL_FALSE;
+
+    // simulate this operation
+
+    fl_value_vec args = _fl_cmp_eval_args(arg_node, op, cnt);
+    fl_value res = fl_operation_run(op, args, cnt->base);
+
+    // never inline assign instruction, because id value will be erased after compilation
+    if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
+    {
+        // inline result
+
+        if (fl_value_is_empty(res))
+            assert(FL_FALSE);
+
+        // push immediate value
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
+        fl_value_to_bytes(res, &cnt->byte_code);
+
+        // not sure if its always good to free
+        fl_value_free(&res);
+    }
+
+    return FL_TRUE;
 }
