@@ -253,13 +253,11 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
             node = _fl_ast_process_function_call(FL_NULL, arr, node);
     }
 
-    // check if it is the end of expression
-    if (fl_token_is_delim(arr->current))
+    // check if it is the end of expression - try to add this node to the parent
+    if (parent && (fl_token_is_delim(arr->current) || parent->type == FL_AST_NODE_TYPE_OPERATOR))
         fl_ast_node_add_child(parent, node);
-    else if (!parent || parent->type != FL_AST_NODE_TYPE_OPERATOR)
-        node = _fl_ast_process_operator(parent, arr, node, grouped);
     else
-        fl_ast_node_add_child(parent, node);
+        node = _fl_ast_process_operator(parent, arr, node, grouped);
 
     if (grouped)
     {
@@ -320,9 +318,11 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
         default:
             _fl_ast_process_expression(parent, arr, FL_FALSE);
 
+            // is it ok?
+
             // throw error if expression isn't ending with a semicolon
-            // if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
-            //     throw_syntax_error("expected semicolon ';' to end expression");
+            if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
+                throw_syntax_error("expected semicolon ';' at the end of expression");
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);

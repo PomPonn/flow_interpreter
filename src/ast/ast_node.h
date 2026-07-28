@@ -50,7 +50,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_FN_CALL,
 
     /**
-     * @brief Array node, contains all listed elements as children
+     * @brief Array node, contains all elements as children
      */
     FL_AST_NODE_TYPE_ARRAY,
 };

@@ -97,6 +97,7 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
+    // ----------------
     return;
 
 #ifndef NDEBUG

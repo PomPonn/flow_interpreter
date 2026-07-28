@@ -200,7 +200,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
 
             fl_uint offset = fl_byte_reader_next(reader, fl_uint);
             fl_size ind_count = fl_byte_reader_next(reader, fl_size);
-            printf("(Identificator access) Offset: %u, indexes: ", offset);
+            printf("(Id access) Offset: %u, indexes: ", offset);
 
             for (fl_size i = 0; i < ind_count; i++)
             {
@@ -211,7 +211,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
-            printf("(Identificator access) %s\n", fl_byte_reader_next_str(reader));
+            printf("(Id access) %s\n", fl_byte_reader_next_str(reader));
             break;
         case FL_INSTR_END_ARGS:
             printf("[ARGS END]\n");
@@ -219,7 +219,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
         case FL_INSTR_NEW_ID:
         {
             const fl_char *id_name = fl_byte_reader_next_str(reader);
-            printf(">>Identificator new<< %s\n", id_name);
+            printf(">>New Id<< %s\n", id_name);
             break;
         }
         case FL_INSTR_GET_LITERAL:

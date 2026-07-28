@@ -61,7 +61,7 @@ inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_ui
 
 inline fl_void _fl_cmp_byte_code_push_id_access_by_names(fl_byte_vec *code, const fl_id_chain *chain);
 
-inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
+fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
 
 inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
 
@@ -190,11 +190,20 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
         // push information how to access id
         _fl_cmp_byte_code_push_id_access_by_names(&cnt->byte_code, id_chain);
-    }
-    else if (fl_operation_is_callable(op))
-    {
-        fl_bool success = _fl_cmp_try_op_inline(id_node, op, cnt);
 
+        _fl_cmp_compile_args(arg_node, cnt);
+        return;
+    }
+
+    if (!fl_operation_is_callable(op))
+    {
+        assert(FL_FALSE);
+    }
+
+    fl_bool success = _fl_cmp_try_op_inline(id_node, op, cnt);
+
+    if (!success)
+    {
         // compile this operator call to byte code
         if (op.type == FL_OPERATION_FN)
         {
@@ -209,10 +218,6 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
         }
         else if (op.type == FL_OPERATION_INSTR)
             fl_byte_vec_push(&cnt->byte_code, op.instr);
-    }
-    else
-    {
-        assert(FL_FALSE);
     }
 
     _fl_cmp_compile_args(arg_node, cnt);
@@ -313,6 +318,10 @@ inline fl_param _fl_cmp_parse_node_to_param(const fl_ast_node *node, const fl_cm
         fl_value *lit_val = node->data;
         return fl_param_create_traited(lit_val->data_type, FL_PARAM_TRAITS_CONST);
     }
+    case FL_AST_NODE_TYPE_ARRAY:
+    {
+        return fl_param_create(FL_DATA_TYPE_ARRAY);
+    }
     default:
         assert(FL_FALSE);
         return fl_param_create(FL_DATA_TYPE_NULL);
@@ -346,7 +355,7 @@ inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_ui
     fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 }
 
-inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
+fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     while (arg_node)
     {
@@ -434,7 +443,7 @@ fl_value _fl_cmp_parse_node_to_value(fl_ast_node *node, fl_cmp_context *cnt)
     {
         fl_value_vec *items = fl_mem_alloc_t(fl_value_vec);
         *items = _fl_cmp_parse_nodes_to_values(node->child, cnt);
-        fl_value_create(FL_DATA_TYPE_ARRAY, items);
+        return fl_value_create(FL_DATA_TYPE_ARRAY, items);
     }
     default:
         assert(FL_FALSE);
