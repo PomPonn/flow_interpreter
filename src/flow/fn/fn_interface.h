@@ -32,6 +32,10 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
     fl_param_vec params);
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *interface);
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right);
+FL_HEADER_FN fl_size fl_fn_interface_mem_size(const fl_fn_interface intf);
+FL_HEADER_FN fl_void fl_fn_interface_to_bytes(
+    const fl_fn_interface intf,
+    fl_byte_vec *byte_vec);
 
 // ---------- DEFINITIONS ----------
 
@@ -65,4 +69,19 @@ FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interf
             return FL_FALSE;
 
     return FL_TRUE;
+}
+
+FL_HEADER_FN fl_size fl_fn_interface_mem_size(const fl_fn_interface intf)
+{
+    return sizeof(fl_data_type) + sizeof(fl_fn_traits) + intf.params.size * sizeof(fl_param);
+}
+
+FL_HEADER_FN fl_void fl_fn_interface_to_bytes(
+    const fl_fn_interface intf,
+    fl_byte_vec *byte_vec)
+{
+    fl_byte_vec_push_mem(byte_vec, &intf, sizeof(fl_data_type) + sizeof(fl_fn_traits));
+
+    for (fl_size i = 0; i < intf.params.size; i++)
+        fl_byte_vec_push_mem(byte_vec, &intf.params.data[i], sizeof(fl_param));
 }

@@ -125,7 +125,19 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         fl_scope_to_bytes(v.data, bytes);
         break;
     case FL_DATA_TYPE_FN:
-        // TODO
+    {
+        fl_fn_variant_vec *vars = v.data;
+        // assert only one variant for now
+        assert(vars->size == 1);
+        fl_fn_variant *var = &vars->data[0];
+
+        fl_fn_interface_to_bytes(var->interface, bytes);
+
+        assert(!var->c_defined);
+        fl_byte_vec_merge(bytes, var->body);
+        break;
+    }
+
     default:
         assert(FL_FALSE);
         break;
@@ -146,8 +158,16 @@ fl_size fl_value_mem_size(fl_value value)
         assert(FL_FALSE);
         return 0;
     case FL_DATA_TYPE_FN:
+    {
+        fl_fn_variant_vec *vars = value.data;
+        // assert only one variant for now
+        assert(vars->size == 1);
+        fl_fn_variant *var = &vars->data[0];
+
+        assert(!var->c_defined);
+        return fl_fn_interface_mem_size(var->interface) + var->body->size;
+    }
         assert(FL_FALSE);
-        return 0;
     case FL_DATA_TYPE_BOOL:
         return sizeof(fl_flow_bool);
     case FL_DATA_TYPE_FLOAT:
@@ -155,8 +175,8 @@ fl_size fl_value_mem_size(fl_value value)
     case FL_DATA_TYPE_INT:
         return sizeof(fl_flow_int);
     case FL_DATA_TYPE_STRING:
-        // +1 for '\0'
-        return fl_str_len(value.data) + 1;
+        // +1 char for '\0'
+        return fl_str_len(value.data) + sizeof(fl_char);
     case FL_DATA_TYPE_REF:
         // is it correct?
         return sizeof(fl_id_entry);

@@ -29,6 +29,7 @@ struct _fl_fn_variant
         fl_c_fn_ptr pointer;
         fl_byte_vec *body;
     };
+
     static_assert(sizeof(fl_c_fn_ptr) == sizeof(fl_byte_vec *), "fl_fn_variant union mismatch");
 };
 /**

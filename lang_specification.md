@@ -64,7 +64,7 @@
 
 ### Code section instructions:
 
-#### id access:
+#### id access by indices:
 
 ```
 (offset): 4B
@@ -72,6 +72,12 @@
 ... <indices count> times: {
 (index): 4B
 }
+```
+
+#### id access by names:
+
+```
+(id chain): xB (string, names separated with dots)
 ```
 
 #### getters/setters:

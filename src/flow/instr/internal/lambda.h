@@ -38,7 +38,7 @@ FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
 
     for (fl_size i = 0; i < head->size; i++)
     {
-        assert(head->data[i].data_type == FL_DATA_TYPE_REF);
+        // assert(head->data[i].data_type == FL_DATA_TYPE_REF);
 
         // fl_id_entry *id = head->data[i].data;
         fl_param_vec_push(&params, fl_param_create(FL_DATA_TYPE_ANY));

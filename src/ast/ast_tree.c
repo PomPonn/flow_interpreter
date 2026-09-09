@@ -290,7 +290,9 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
     }
 
     // iterate over tokens
-    for (; arr->current; next_token)
+    fl_bool quit = FL_FALSE;
+
+    for (; !quit && arr->current; next_token)
     {
         switch (arr->current->alias)
         {
@@ -309,12 +311,10 @@ inline fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr
             break;
         case FL_TOKEN_ALIAS_RBRACE:
             if (is_root)
-            {
                 throw_syntax_error("Unexpected block closure ('}')");
-                break;
-            }
-            else
-                return parent;
+
+            quit = FL_TRUE;
+            break;
         default:
             _fl_ast_process_expression(parent, arr, FL_FALSE);
 
@@ -358,6 +358,7 @@ inline fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *
         // ... else handle expression
         _fl_ast_process_expression(node, arr, FL_FALSE);
 
+    // check for operators chaining (?)
     if (arr->current && arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_operator(parent, arr, node, FL_FALSE);
     else if (parent)

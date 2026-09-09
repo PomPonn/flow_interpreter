@@ -2,6 +2,7 @@
 
 ## active
 
+- LAST: fix creating variables from lambda parameters
 - opt inlining process - reduce redundancy
 - revise fn variants overloading
 - cleanup ast generator

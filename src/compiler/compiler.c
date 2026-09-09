@@ -202,6 +202,10 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 
     fl_bool success = _fl_cmp_try_op_inline(id_node, op, cnt);
 
+    // temp
+    if (success)
+        return;
+
     if (!success)
     {
         // compile this operator call to byte code
@@ -254,11 +258,12 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
     fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
     fl_id_entry *id = fl_scope_traverse(cnt->base->scope, inds, offset);
 
+    // push how to information to access id
     if (id)
     {
-        // push how to information to access id
         _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
+    // create new id
     else if (id_chain->size == 1)
     {
         const fl_char *name = id_chain->data[0];
@@ -271,10 +276,11 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
 
         _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
-
+    // just push id chain string (put responsibility on the interpreter to handle import etc.)
     else
-        // error: undefined id
-        assert(FL_FALSE);
+    {
+        _fl_cmp_byte_code_push_id_access_by_names(&cnt->byte_code, id_chain);
+    }
 
     fl_int_vec_free(&inds);
 }
@@ -486,15 +492,15 @@ fl_value_vec _fl_cmp_eval_args(fl_ast_node *arg_node, fl_operation op, fl_cmp_co
 
         // TODO: handle lambda paremeters here
 
-        if (lambda_head.data_type != FL_DATA_TYPE_ARRAY)
+        if (lambda_head.data_type == FL_DATA_TYPE_ARRAY)
+            fl_value_vec_push(&args, lambda_head);
+        else
         {
             // convert first arg to array
             fl_value_vec *arr = fl_mem_alloc_t(fl_value_vec);
             fl_value_vec_init_with(arr, 1, (fl_value[]){lambda_head});
             fl_value_vec_push(&args, fl_value_create(FL_DATA_TYPE_ARRAY, arr));
         }
-        else
-            fl_value_vec_push(&args, lambda_head);
 
         fl_value body;
         if (arg_node->next->type != FL_AST_NODE_TYPE_BLOCK)

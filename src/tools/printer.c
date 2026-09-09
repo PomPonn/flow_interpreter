@@ -200,7 +200,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
 
             fl_uint offset = fl_byte_reader_next(reader, fl_uint);
             fl_size ind_count = fl_byte_reader_next(reader, fl_size);
-            printf("(Id access) Offset: %u, indexes: ", offset);
+            printf("(Id access :i) Offset: %u, indexes: ", offset);
 
             for (fl_size i = 0; i < ind_count; i++)
             {
@@ -211,7 +211,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
-            printf("(Id access) %s\n", fl_byte_reader_next_str(reader));
+            printf("(Id access :s) %s\n", fl_byte_reader_next_str(reader));
             break;
         case FL_INSTR_END_ARGS:
             printf("[ARGS END]\n");
