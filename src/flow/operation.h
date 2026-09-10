@@ -51,8 +51,9 @@ FL_HEADER_FN fl_operation fl_operation_unknown();
 
 FL_HEADER_FN fl_bool fl_operation_is_initialized(fl_operation op);
 FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
-FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right);
+FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
+FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op);
 FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
     fl_operation op,
     const fl_param_vec params);
@@ -116,7 +117,8 @@ FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr
 
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
 {
-    return op.type == FL_OPERATION_FN ||
+    return op.type == FL_OPERATION_UNKNOWN ||
+           op.type == FL_OPERATION_FN ||
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
 }
 
@@ -156,4 +158,12 @@ FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right)
 {
     return fl_operation_is_instr(op, FL_INSTR_ASSIGN) && fl_bitfield_is_set(right.traits, FL_PARAM_TRAITS_CONST);
+}
+
+FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op)
+{
+    if (!op.type == FL_OPERATION_INSTR)
+        return FL_FALSE;
+
+    return op.instr == FL_INSTR_LAMBDA;
 }

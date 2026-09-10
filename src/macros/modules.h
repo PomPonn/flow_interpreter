@@ -29,7 +29,7 @@
 #define _FL_TDESCS(...) \
     (fl_param[]) { __VA_ARGS__ }
 
-#define _FL_PARAMS(...)                                               \
+#define _fl_paramS(...)                                               \
     fl_param_vec params;                                              \
     fl_param_vec_init_c(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
     for (fl_size _i = 0; _i < params._capacity; _i++)                 \
@@ -37,7 +37,7 @@
 
 #define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                                                 \
     {                                                                                                                     \
-        _FL_PARAMS(__VA_ARGS__);                                                                                          \
+        _fl_paramS(__VA_ARGS__);                                                                                          \
         fl_fn_interface interface;                                                                                        \
         fl_fn_interface_init(&interface, return_type, params);                                                            \
         fl_fn_variant var;                                                                                                \

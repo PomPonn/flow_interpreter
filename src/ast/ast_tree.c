@@ -144,6 +144,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
         if (outer_order > inner_order)
         {
             // swap operator nodes
+
             _fl_swap(fl_ast_node *, outer_node->parent, inner_node->parent);
             _fl_swap(fl_ast_node *, outer_node->child, inner_node->child);
 

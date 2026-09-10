@@ -22,4 +22,5 @@ FL_FORWARD_STRUCT(fl_intpr_context);
 
 fl_void fl_intpr_interpret(fl_byte_vec bytes);
 
+// *unused*
 fl_value fl_intpr_eval(fl_byte_vec bytes, fl_intpr_context *cnt);

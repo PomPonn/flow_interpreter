@@ -21,7 +21,7 @@ enum _fl_param_traits
     FL_PARAM_TRAITS_REF = 0b00000001,
     FL_PARAM_TRAITS_CONST = 0b00000010,
     // ???
-    // FL_PARAM_TRAIT_EXPAND = 0b0000100,
+    // fl_param_TRAIT_EXPAND = 0b0000100,
 };
 typedef fl_byte fl_param_traits;
 
