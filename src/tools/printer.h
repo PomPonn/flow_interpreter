@@ -17,6 +17,7 @@
 FL_FORWARD_STRUCT(fl_token_arr);
 FL_FORWARD_STRUCT(fl_byte_vec);
 FL_FORWARD_STRUCT(fl_ast_node);
+FL_FORWARD_STRUCT(fl_byte_reader);
 
 // ---------- DECLARATIONS --------------
 
@@ -26,7 +27,9 @@ fl_void fl_prt_print_token_entries(fl_token_arr *arr);
 
 fl_void fl_prt_print_tokens_joined(fl_token_arr *arr);
 
-fl_void fl_prt_print_byte_code(const fl_byte_vec bytes);
+fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes);
+
+fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader);
 
 FL_HEADER_FN fl_void fl_prt_print_ast_tree(fl_ast_node *tree);
 

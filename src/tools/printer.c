@@ -39,9 +39,8 @@
 
 inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
 inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
-inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader);
 const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader);
-fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader);
+inline fl_char *_fl_prt_array_to_str(fl_byte_reader *reader);
 
 // ---------- DEFINITIONS ----------
 
@@ -178,9 +177,9 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     }
 }
 
-fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
+fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
 {
-    while (!fl_byte_reader_end(reader))
+    while (!fl_byte_reader_is_end(reader))
     {
         const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
         switch (instr)
@@ -236,6 +235,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
             // ---- PREDEFINED INSTRUCTIONS ----
             _PRT_HANDLE_PREDEF_PRINT(IMPORT);
             _PRT_HANDLE_PREDEF_PRINT(ASSIGN);
+            _PRT_HANDLE_PREDEF_PRINT(LAMBDA);
             _PRT_HANDLE_PREDEF_PRINT(ADD);
             _PRT_HANDLE_PREDEF_PRINT(SUB);
             _PRT_HANDLE_PREDEF_PRINT(DIV);
@@ -250,7 +250,7 @@ fl_void _fl_prt_print_byte_code_helper_code(fl_byte_reader *reader)
     }
 }
 
-fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
+fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes)
 {
     fl_byte_reader reader = fl_byte_reader_create(bytes);
 
@@ -263,24 +263,26 @@ fl_void fl_prt_print_byte_code(const fl_byte_vec bytes)
     printf("[COMPILATION TIMESTAMP] %lld \n", fl_byte_reader_next(&reader, fl_long));
 
     if (fl_byte_reader_next(&reader, fl_section_mark) == FL_SECTION_MARK_LITERALS)
-    {
-        printf("==== LITERALS ====\n");
-        _fl_prt_print_byte_code_helper_literals(&reader);
-    }
+        printf("==== LITERALS ====\n%s", _fl_prt_array_to_str(&reader));
 
     if (fl_byte_reader_next(&reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
 
     printf("==== CODE ====\n");
-    _fl_prt_print_byte_code_helper_code(&reader);
+    fl_prt_print_byte_code_code(&reader);
 }
 
-inline fl_void _fl_prt_print_byte_code_helper_literals(fl_byte_reader *reader)
+inline fl_char *_fl_prt_array_to_str(fl_byte_reader *reader)
 {
+    static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 
-    for (fl_size i = 0; !fl_byte_reader_end(reader) && i < count; i++)
-        printf("[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
+    sprintf(buffer, ">>Array<<\n");
+
+    for (fl_size i = 0; !fl_byte_reader_is_end(reader) && i < count; i++)
+        sprintf(buffer, "[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
+
+    return buffer;
 }
 
 const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
@@ -303,6 +305,9 @@ const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
     case FL_DATA_TYPE_FLOAT:
         assert(sizeof(fl_flow_float) == sizeof(double));
         sprintf(buffer, "%f", fl_byte_reader_next(reader, fl_flow_float));
+        break;
+    case FL_DATA_TYPE_ARRAY:
+        _fl_prt_array_to_str(reader);
         break;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:

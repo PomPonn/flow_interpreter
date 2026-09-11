@@ -186,13 +186,11 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     fl_bool inlined = fl_inl_try_op_inline(id_node, op, cnt);
 
     if (inlined)
-    {
-        // throw an error if compile-time-only function wasn't inlined
-        if (fl_operation_is_compile_time(op))
-            assert(FL_FALSE);
-
         return;
-    }
+
+    // throw an error if compile-time-only function wasn't inlined
+    if (fl_operation_is_compile_time(op))
+        assert(FL_FALSE);
 
     // compile it normally
     fl_cmp_call_to_bytes(cnt, id_node, op);

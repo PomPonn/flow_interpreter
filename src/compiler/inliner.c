@@ -19,6 +19,13 @@
 #include "flow/id/id_chain.h"
 #include "compiler/shared.h"
 
+#ifndef NDEBUG
+
+#include "tools/byte_reader.h"
+#include "tools/printer.h"
+
+#endif
+
 // ---------- MACROS ----------------
 
 // ...
@@ -65,9 +72,7 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     if (op.type == FL_OPERATION_INSTR && op.instr == FL_INSTR_LAMBDA)
     {
         fl_inl_lambda_to_bytes(arg_node, cnt);
-
-        assert(FL_FALSE);
-        // ....
+        return FL_TRUE;
     }
 
     // compile call to byte code
@@ -79,6 +84,13 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     // run compilation
     fl_intpr_context intpr_cnt;
     fl_intpr_context_init(&intpr_cnt, cnt->base);
+
+#ifndef NDEBUG
+
+    fl_byte_reader reader = fl_byte_reader_create(inl_cnt.byte_code);
+    fl_prt_print_byte_code_code(&reader);
+
+#endif
 
     fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
 
@@ -104,7 +116,7 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
     fl_cmp_context inl_cnt;
     fl_intpr_context intpr_cnt;
     fl_bool single_param = FL_FALSE;
-    fl_ast_node *param_node = arg_node->child;
+    const fl_ast_node *param_node = arg_node->child;
 
     fl_value_vec_init(labels);
     fl_cmp_context_init(&inl_cnt, cnt->base);
@@ -121,7 +133,7 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 
     while (param_node)
     {
-        if (arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
+        if (param_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
         {
             fl_id_chain *id_chain = param_node->data;
 
@@ -135,7 +147,7 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
         else
         {
             // compile node normally and eval compilation
-            fl_cmp_compile_node(arg_node, &inl_cnt);
+            fl_cmp_compile_node(param_node, &inl_cnt);
             fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
 
             // resulting value has to be a string
@@ -159,9 +171,14 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
     fl_intpr_context_free(&intpr_cnt);
 
     // convert array of strings to bytes
-    fl_value_vec_to_bytes(labels, &cnt->byte_code);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
+    fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_ARRAY, labels), &cnt->byte_code);
+
+    // free labels when they are already copied to the bc
+    fl_value_vec_free(labels);
+
     // parse lambda body
-    fl_cmp_compile_node(arg_node->next, &cnt);
+    fl_cmp_compile_node(arg_node->next, cnt);
 }
 
 inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params)

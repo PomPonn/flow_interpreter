@@ -32,7 +32,7 @@ typedef struct _fl_byte_reader fl_byte_reader;
 
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes);
 FL_HEADER_FN fl_unknown *_fl_byte_reader_next(fl_byte_reader *reader, fl_size size);
-FL_HEADER_FN fl_bool fl_byte_reader_end(fl_byte_reader *reader);
+FL_HEADER_FN fl_bool fl_byte_reader_is_end(fl_byte_reader *reader);
 FL_HEADER_FN const fl_char *fl_byte_reader_next_str(fl_byte_reader *reader);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
@@ -60,7 +60,7 @@ FL_HEADER_FN const fl_char *fl_byte_reader_next_str(fl_byte_reader *reader)
     return start;
 }
 
-FL_HEADER_FN fl_bool fl_byte_reader_end(fl_byte_reader *reader)
+FL_HEADER_FN fl_bool fl_byte_reader_is_end(fl_byte_reader *reader)
 {
     return reader->iterator >= reader->bytes.size;
 }

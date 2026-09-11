@@ -92,7 +92,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     // save byte code to file
     fl_file_write("bytecode.cfl", code);
     printf("\n------ Byte code: ------\n");
-    fl_prt_print_byte_code(code);
+    fl_prt_print_byte_code_file(code);
 #endif
 
     fl_token_arr_free(&token_arr);

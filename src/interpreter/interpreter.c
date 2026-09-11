@@ -73,7 +73,7 @@ fl_value fl_intpr_eval(fl_byte_vec bytes, fl_intpr_context *cnt)
 
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
-    while (!fl_byte_reader_end(reader))
+    while (!fl_byte_reader_is_end(reader))
     {
         fl_instruction instr = fl_byte_reader_next(reader, fl_instruction);
 

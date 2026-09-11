@@ -108,10 +108,6 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
 fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 {
     fl_byte_vec_push_t(bytes, v.data_type, fl_data_type);
-    const fl_size size = fl_value_mem_size(v);
-
-    if (fl_value_is_size_complex(v))
-        fl_byte_vec_push_t(bytes, size, fl_size);
 
     switch (v.data_type)
     {
@@ -119,7 +115,7 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_INT:
     case FL_DATA_TYPE_FLOAT:
-        fl_byte_vec_push_mem(bytes, v.data, size);
+        fl_byte_vec_push_mem(bytes, v.data, fl_value_mem_size(v));
         break;
     case FL_DATA_TYPE_SCOPE:
         fl_scope_to_bytes(v.data, bytes);
@@ -137,7 +133,17 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         fl_byte_vec_merge(bytes, var->body);
         break;
     }
+    case FL_DATA_TYPE_ARRAY:
+    {
+        fl_value_vec *items = v.data;
 
+        fl_byte_vec_push_t(bytes, items->size, fl_size);
+
+        for (fl_size i = 0; i < items->size; i++)
+            fl_value_to_bytes(items->data[i], bytes);
+
+        break;
+    }
     default:
         assert(FL_FALSE);
         break;
@@ -148,26 +154,6 @@ fl_size fl_value_mem_size(fl_value value)
 {
     switch (value.data_type)
     {
-    case FL_DATA_TYPE_ARRAY:
-        // TODO
-        assert(FL_FALSE);
-        return 0;
-    case FL_DATA_TYPE_SCOPE:
-        // TODO
-        // make sure it matches bytes count returned by fl_scope_to_bytes()
-        assert(FL_FALSE);
-        return 0;
-    case FL_DATA_TYPE_FN:
-    {
-        fl_fn_variant_vec *vars = value.data;
-        // assert only one variant for now
-        assert(vars->size == 1);
-        fl_fn_variant *var = &vars->data[0];
-
-        assert(!var->c_defined);
-        return fl_fn_interface_mem_size(var->interface) + var->body->size;
-    }
-        assert(FL_FALSE);
     case FL_DATA_TYPE_BOOL:
         return sizeof(fl_flow_bool);
     case FL_DATA_TYPE_FLOAT:
@@ -177,10 +163,8 @@ fl_size fl_value_mem_size(fl_value value)
     case FL_DATA_TYPE_STRING:
         // +1 char for '\0'
         return fl_str_len(value.data) + sizeof(fl_char);
-    case FL_DATA_TYPE_REF:
-        // is it correct?
-        return sizeof(fl_id_entry);
     default:
+        assert(FL_FALSE);
         return 0;
     }
 }

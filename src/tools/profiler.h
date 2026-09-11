@@ -1,5 +1,5 @@
 /**
- * ---------- profiler.h --------------------
+ * ---------- profiler.h ----------------
  *
  * Declares profiler logic.
  *
