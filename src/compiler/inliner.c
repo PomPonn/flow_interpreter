@@ -99,45 +99,69 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
 
-    assert(arg_node->type == FL_AST_NODE_TYPE_ARRAY || arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN);
-
     // init array of labels (lambda parameter names)
     fl_value_vec *labels = fl_mem_alloc_t(fl_value_vec);
-    fl_value_vec_init(labels);
-
-    // compile each potential label - all we want is a string
-
     fl_cmp_context inl_cnt;
-    fl_cmp_context_init(&inl_cnt, cnt->base);
-
     fl_intpr_context intpr_cnt;
+    fl_bool single_param = FL_FALSE;
+    fl_ast_node *param_node = arg_node->child;
+
+    fl_value_vec_init(labels);
+    fl_cmp_context_init(&inl_cnt, cnt->base);
     fl_intpr_context_init(&intpr_cnt, cnt->base);
 
     // how to make context state not mutated after this?
+    // compile each potential label - all we want is a string
 
-    if (arg_node->type != FL_AST_NODE_TYPE_ARRAY)
+    if (arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
     {
-        fl_cmp_compile_node(arg_node, &inl_cnt);
-        fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
-    }
-    // treat arrays differently, since we want to interpret id chains as strings
-    else
-    {
+        single_param = FL_TRUE;
+        param_node = arg_node;
     }
 
-    // fl_ast_node *param = arg_node->child;
-    // while (param)
-    // {
-    //     fl_value curr = labels->data[i];
+    while (param_node)
+    {
+        if (arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
+        {
+            fl_id_chain *id_chain = param_node->data;
 
-    //     // convert ref to string since it's what we want here
-    //     // just the name of 'id'
-    //     if (curr.data_type == FL_DATA_TYPE_REF)
-    //     {
-    //         fl_id_entry *id =
-    //     }
-    //     assert(labels->data[i].data_type);
-    // }
+            if (id_chain->size != 1)
+                // error
+                assert(FL_FALSE);
+
+            // push label
+            fl_value_vec_push(labels, fl_value_create(FL_DATA_TYPE_STRING, id_chain->data[0]));
+        }
+        else
+        {
+            // compile node normally and eval compilation
+            fl_cmp_compile_node(arg_node, &inl_cnt);
+            fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
+
+            // resulting value has to be a string
+            // (can it be ref too?)
+            if (res.data_type != FL_DATA_TYPE_STRING)
+            {
+                fl_value_free(&res);
+                assert(FL_FALSE);
+            }
+
+            fl_value_vec_push(labels, fl_value_create(FL_DATA_TYPE_STRING, res.data));
+        }
+
+        if (single_param)
+            break;
+
+        param_node = param_node->next;
+    }
+
+    fl_cmp_context_free(&inl_cnt);
+    fl_intpr_context_free(&intpr_cnt);
+
+    // convert array of strings to bytes
+    fl_value_vec_to_bytes(labels, &cnt->byte_code);
+    // parse lambda body
+    fl_cmp_compile_node(arg_node->next, &cnt);
 }
 
 inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params)
