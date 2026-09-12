@@ -139,8 +139,7 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 
         fl_byte_vec_push_t(bytes, items->size, fl_size);
 
-        for (fl_size i = 0; i < items->size; i++)
-            fl_value_to_bytes(items->data[i], bytes);
+        fl_value_vec_to_bytes(items, bytes);
 
         break;
     }
@@ -215,6 +214,18 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader)
     {
         const fl_size size = fl_value_mem_size(val);
         val.data = fl_byte_reader_next_bytes(reader, size);
+        break;
+    }
+    case FL_DATA_TYPE_ARRAY:
+    {
+        const fl_size size = fl_byte_reader_next(reader, fl_size);
+        fl_value_vec *items = fl_mem_alloc_t(fl_value_vec);
+        fl_value_vec_init_c(items, size);
+
+        for (fl_size i = 0; i < size; i++)
+            fl_value_vec_push(items, fl_value_from_bytes(reader));
+
+        val.data = items;
         break;
     }
     default:

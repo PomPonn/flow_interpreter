@@ -199,7 +199,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
 
             fl_uint offset = fl_byte_reader_next(reader, fl_uint);
             fl_size ind_count = fl_byte_reader_next(reader, fl_size);
-            printf("(Id access :i) Offset: %u, indexes: ", offset);
+            printf("[ID] %u; ", offset);
 
             for (fl_size i = 0; i < ind_count; i++)
             {
@@ -210,7 +210,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
-            printf("(Id access :s) %s\n", fl_byte_reader_next_str(reader));
+            printf("[ID] %s\n", fl_byte_reader_next_str(reader));
             break;
         case FL_INSTR_END_ARGS:
             printf("[ARGS END]\n");
@@ -218,7 +218,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
         case FL_INSTR_NEW_ID:
         {
             const fl_char *id_name = fl_byte_reader_next_str(reader);
-            printf(">>New Id<< %s\n", id_name);
+            printf("[DECL] '%s'\n", id_name);
             break;
         }
         case FL_INSTR_GET_LITERAL:
@@ -226,11 +226,11 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             assert(sizeof(fl_size) == sizeof(unsigned));
 
             fl_size ind = fl_byte_reader_next(reader, fl_size);
-            printf("(Literal access) Index: %u\n", ind);
+            printf("[LITERAL] %u\n", ind);
             break;
         }
         case FL_INSTR_IMMED_VALUE:
-            printf("(Immediate value) %s\n", _fl_prt_value_bytes_to_str(reader));
+            printf("[VALUE] %s\n", _fl_prt_value_bytes_to_str(reader));
             break;
             // ---- PREDEFINED INSTRUCTIONS ----
             _PRT_HANDLE_PREDEF_PRINT(IMPORT);
@@ -277,10 +277,14 @@ inline fl_char *_fl_prt_array_to_str(fl_byte_reader *reader)
     static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 
-    sprintf(buffer, ">>Array<<\n");
+    sprintf(buffer, "[");
 
     for (fl_size i = 0; !fl_byte_reader_is_end(reader) && i < count; i++)
-        sprintf(buffer, "[%u] %s\n", i, _fl_prt_value_bytes_to_str(reader));
+    {
+        fl_size buf_len = fl_str_len(buffer);
+        const fl_char *vstr = _fl_prt_value_bytes_to_str(reader);
+        sprintf(buffer + buf_len, i == count - 1 ? "%s]" : "%s, ", vstr);
+    }
 
     return buffer;
 }
@@ -307,7 +311,7 @@ const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
         sprintf(buffer, "%f", fl_byte_reader_next(reader, fl_flow_float));
         break;
     case FL_DATA_TYPE_ARRAY:
-        _fl_prt_array_to_str(reader);
+        sprintf(buffer, _fl_prt_array_to_str(reader));
         break;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:

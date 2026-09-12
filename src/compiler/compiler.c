@@ -75,8 +75,7 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
     {
         // add literals table
         fl_byte_vec_push(&compiled, FL_SECTION_MARK_LITERALS);
-        fl_byte_vec_push_t(&compiled, cnt.base->literals.size, fl_size);
-        fl_value_vec_to_bytes(&cnt.base->literals, &compiled);
+        fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_ARRAY, &cnt.base->literals), &compiled);
     }
 
     // merge both byte vecs
