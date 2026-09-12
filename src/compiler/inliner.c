@@ -44,7 +44,7 @@ inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface
 
 inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
-fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
+fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
@@ -71,19 +71,19 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     // handle lambdas differently
     if (op.type == FL_OPERATION_INSTR && op.instr == FL_INSTR_LAMBDA)
     {
-        fl_inl_lambda_to_bytes(arg_node, cnt);
+        _fl_inl_lambda_to_bytes(arg_node, cnt);
         return FL_TRUE;
     }
 
     // compile call to byte code
     fl_cmp_context inl_cnt;
-    fl_cmp_context_init(&inl_cnt, cnt->base);
+    fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
 
     fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
 
     // run compilation
     fl_intpr_context intpr_cnt;
-    fl_intpr_context_init(&intpr_cnt, cnt->base);
+    fl_intpr_context_from(&intpr_cnt, (fl_local_context *)cnt);
 
 #ifndef NDEBUG
 
@@ -107,7 +107,7 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     return FL_TRUE;
 }
 
-fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
+fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
 
@@ -119,8 +119,8 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
     const fl_ast_node *param_node = arg_node->child;
 
     fl_value_vec_init(labels);
-    fl_cmp_context_init(&inl_cnt, cnt->base);
-    fl_intpr_context_init(&intpr_cnt, cnt->base);
+    fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
+    fl_intpr_context_from(&intpr_cnt, (fl_local_context *)cnt);
 
     // how to make context state not mutated after this?
     // compile each potential label - all we want is a string
@@ -171,7 +171,7 @@ fl_void fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
     fl_intpr_context_free(&intpr_cnt);
 
     // convert array of strings to bytes
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_IMMED_VALUE);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
     fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_ARRAY, labels), &cnt->byte_code);
 
     // free labels when they are already copied to the bc
@@ -240,7 +240,7 @@ fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_conte
     case FL_AST_NODE_TYPE_OPERATOR:
     {
         fl_ast_node *id_node = node->child;
-        fl_operation op = _fl_inl_id_node_to_operation(id_node, cnt->base->scope);
+        fl_operation op = _fl_inl_id_node_to_operation(id_node, cnt->scope);
 
         assert(fl_operation_is_callable(op));
 
@@ -259,7 +259,7 @@ fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_conte
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
-        fl_id_entry *id = fl_scope_resolve_id(cnt->base->scope, node->data);
+        fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
         // do we want to allow use of undefined id chains?
         // (shoud an error be thrown?)
         return fl_param_create_traited(id ? id->value.data_type : FL_DATA_TYPE_NULL, FL_PARAM_TRAITS_REF);

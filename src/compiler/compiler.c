@@ -114,19 +114,32 @@ fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
 
 inline fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
 {
-    fl_scope *this_scope;
-    fl_scope_init(&this_scope, cnt->base->scope);
+    fl_cmp_context inner_cnt;
+    fl_cmp_context_from(&inner_cnt, (fl_local_context *)cnt);
+    fl_cmp_context_deepen(&inner_cnt);
 
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_START_BLOCK);
 
     node = node->child;
     while (node)
     {
-        fl_cmp_compile_node(node, cnt);
+        fl_cmp_compile_node(node, &inner_cnt);
         node = node->next;
     }
 
+    // push id declarations at block start
+    // put this in separate function?
+    fl_id_entry_vec ids = inner_cnt.scope->ids;
+    for (fl_size i = 0; i < ids.size; i++)
+    {
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_DECL_ID);
+        fl_byte_vec_push_str(&cnt->byte_code, ids.data[i]->name);
+    }
+
+    fl_byte_vec_merge(&cnt->byte_code, &inner_cnt.byte_code);
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BLOCK);
+
+    fl_cmp_context_free(&inner_cnt);
 }
 
 fl_operation _fl_cmp_id_node_to_operation(const fl_ast_node *id_node, const fl_scope *scope)
@@ -174,12 +187,10 @@ fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_opera
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 {
     fl_ast_node *id_node = op_node->child;
-    fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->base->scope);
+    fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->scope);
 
     if (!fl_operation_is_callable(op))
         assert(FL_FALSE);
-
-    // fl_bool success = _fl_cmp_try_op_inline(id_node, op, cnt);
 
     // try to inline at first
     fl_bool inlined = fl_inl_try_op_inline(id_node, op, cnt);
@@ -200,7 +211,7 @@ fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, fl_ast_node *id_node)
     fl_id_chain *id_chain = id_node->data;
 
     fl_uint offset;
-    fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
+    fl_int_vec inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
 
     if (fl_int_vec_is_empty(&inds))
         _fl_cmp_byte_code_push_id_access_by_names(&cnt->byte_code, id_chain);
@@ -239,8 +250,8 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
 
     // try to find this id
     fl_uint offset;
-    fl_int_vec inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
-    fl_id_entry *id = fl_scope_traverse(cnt->base->scope, inds, offset);
+    fl_int_vec inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
+    fl_id_entry *id = fl_scope_traverse(cnt->scope, inds, offset);
 
     // push opted info how to to access this id if it's found
     // (may be to change)
@@ -255,7 +266,7 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
 
         // find new ids path
         fl_int_vec_free(&inds);
-        inds = fl_scope_find_id_path(cnt->base->scope, id_chain, &offset);
+        inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
 
         _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
@@ -292,13 +303,10 @@ fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 
 inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
 {
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_NEW_ID);
-    fl_byte_vec_push_str(&cnt->byte_code, name);
-
     // create dummy id in base scope
     fl_id_entry *id;
     fl_id_entry_init(&id, fl_str_dup(name), FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
-    fl_id_entry_vec_push(&cnt->base->scope->ids, id);
+    fl_id_entry_vec_push(&cnt->scope->ids, id);
 
     return id;
 }

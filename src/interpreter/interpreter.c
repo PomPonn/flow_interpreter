@@ -73,6 +73,8 @@ fl_value fl_intpr_eval(fl_byte_vec bytes, fl_intpr_context *cnt)
 
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
+    fl_bool call_attached = FL_FALSE;
+
     while (!fl_byte_reader_is_end(reader))
     {
         fl_instruction instr = fl_byte_reader_next(reader, fl_instruction);
@@ -80,12 +82,9 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-        {
-            fl_scope *inner;
-            fl_scope_init(&inner, cnt->base->scope);
-            cnt->base->scope = inner;
+            fl_intpr_context_deepen(cnt);
+            call_attached = FL_FALSE;
             break;
-        }
         case FL_INSTR_END_BLOCK:
         {
             fl_operation op;
@@ -101,7 +100,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // {
             //     if (fl_operation_is_instr(op, FL_INSTR_START_BLOCK))
             //     {
-            //         cnt->base->scope = cnt->base->scope->outer;
+            //         cnt->scope = cnt->scope->outer;
             //         complete = FL_TRUE;
             //     }
             // }
@@ -118,10 +117,10 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             switch (fl_byte_reader_next(reader, fl_instruction))
             {
             case FL_INSTR_GET_ID_BY_INDS:
-                fn_id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->base->scope);
+                fn_id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
                 break;
             case FL_INSTR_GET_ID_BY_NAMES:
-                fn_id = _fl_intpr_resolve_id_get_by_names(reader, cnt->base->scope);
+                fn_id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
                 break;
             default:
                 assert(FL_FALSE);
@@ -132,26 +131,30 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             assert(val.data_type == FL_DATA_TYPE_FN);
 
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_fn_vars(val.data));
+
+            call_attached = FL_TRUE;
             break;
         }
-        case FL_INSTR_NEW_ID:
+        case FL_INSTR_DECL_ID:
         {
             fl_id_entry *new_id;
             fl_char *id_name = fl_str_dup(fl_byte_reader_next_str(reader));
             fl_id_entry_init(&new_id, id_name, FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
-            fl_id_entry_vec_push(&cnt->base->scope->ids, new_id);
+            fl_id_entry_vec_push(&cnt->scope->ids, new_id);
             break;
         }
         case FL_INSTR_GET_ID_BY_INDS:
         {
-            fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->base->scope);
+            fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
+            assert(id);
+
             fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
         {
-            fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->base->scope);
+            fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
             fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
@@ -163,7 +166,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(lit_val));
             break;
         }
-        case FL_INSTR_IMMED_VALUE:
+        case FL_INSTR_VALUE:
         {
             fl_value val = fl_value_from_bytes(reader);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(val));
@@ -182,11 +185,12 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // execute operation
             fl_value res = fl_operation_run(op, args, cnt->base);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
+
+            call_attached = FL_FALSE;
             break;
         }
         default:
             // CALLABLE INSTRUCTION
-
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_instr(instr));
             break;
         }

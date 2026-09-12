@@ -46,12 +46,11 @@ enum _fl_instruction
     FL_INSTR_CALL,
     FL_INSTR_GET_ID_BY_INDS,
     FL_INSTR_GET_ID_BY_NAMES,
-    FL_INSTR_NEW_ID,
+    FL_INSTR_DECL_ID,
     FL_INSTR_GET_LITERAL,
-    FL_INSTR_IMMED_VALUE,
+    FL_INSTR_VALUE,
     FL_INSTR_START_BLOCK,
     FL_INSTR_END_BLOCK,
-    // FL_INSTR_START_ARGS,
     FL_INSTR_END_ARGS,
 };
 typedef fl_byte fl_instruction;

@@ -22,7 +22,7 @@ struct _fl_base_context
     fl_lib_handle_vec lib_handles;
     fl_cstr_vec lib_names;
     fl_value_vec literals;
-    fl_scope *scope;
+    fl_scope *main_scope;
 };
 /**
  * @brief Describes base context.

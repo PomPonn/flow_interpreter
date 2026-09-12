@@ -80,7 +80,7 @@ fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *bytes)
 
     for (fl_size i = 0; i < ids.size; i++)
     {
-        fl_byte_vec_push(bytes, FL_INSTR_NEW_ID);
+        fl_byte_vec_push(bytes, FL_INSTR_DECL_ID);
         fl_value_to_bytes(ids.data[i]->value, bytes);
     }
 

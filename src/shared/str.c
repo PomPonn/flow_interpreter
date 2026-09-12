@@ -14,7 +14,7 @@
 
 // ---------- DEFINITIONS ---------------
 
-fl_bool fl_chr_is_digit(fl_char chr)
+fl_bool fl_chr_is_deepenit(fl_char chr)
 {
     return chr >= '0' && chr <= '9';
 }
@@ -95,7 +95,7 @@ fl_bool fl_str_is_num(const fl_char *str, fl_bool *floating)
             else
                 *floating = FL_TRUE;
         }
-        else if (!fl_chr_is_digit(str[i]))
+        else if (!fl_chr_is_deepenit(str[i]))
             return FL_FALSE;
     }
 

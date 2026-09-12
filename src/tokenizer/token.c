@@ -82,7 +82,7 @@ inline fl_bool _fl_token_deduce(fl_token *tok)
         tok->alias = FL_DATA_TYPE_STRING;
     }
     // is valid identifier
-    else if (!fl_chr_is_digit(*tok->value))
+    else if (!fl_chr_is_deepenit(*tok->value))
     {
         tok->type = FL_TOKEN_TYPE_ID;
         tok->alias = FL_TOKEN_ALIAS_NONE;

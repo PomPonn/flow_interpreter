@@ -215,7 +215,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
         case FL_INSTR_END_ARGS:
             printf("[ARGS END]\n");
             break;
-        case FL_INSTR_NEW_ID:
+        case FL_INSTR_DECL_ID:
         {
             const fl_char *id_name = fl_byte_reader_next_str(reader);
             printf("[DECL] '%s'\n", id_name);
@@ -229,7 +229,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             printf("[LITERAL] %u\n", ind);
             break;
         }
-        case FL_INSTR_IMMED_VALUE:
+        case FL_INSTR_VALUE:
             printf("[VALUE] %s\n", _fl_prt_value_bytes_to_str(reader));
             break;
             // ---- PREDEFINED INSTRUCTIONS ----
