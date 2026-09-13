@@ -27,7 +27,7 @@ struct _fl_fn_variant
     union
     {
         fl_c_fn_ptr fn_ptr;
-        fl_size body_ptr;
+        const fl_byte *body_ptr;
     };
 
     static_assert(sizeof(fl_c_fn_ptr) == sizeof(fl_byte_vec *), "fl_fn_variant union mismatch");
@@ -56,16 +56,16 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_interface interface,
-    fl_unknown *cll_ptr)
+    const fl_unknown *cll_ptr)
 {
 
     var->c_defined = c_defined;
     var->interface = interface;
 
     if (!c_defined)
-        var->body_ptr = *(fl_flow_int *)cll_ptr;
+        var->body_ptr = cll_ptr;
     else
-        var->fn_ptr = cll_ptr;
+        var->fn_ptr = (fl_c_fn_ptr)cll_ptr;
 }
 
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
@@ -75,7 +75,7 @@ FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
     if (var->c_defined)
         var->fn_ptr = FL_NULL;
     else
-        var->body_ptr = 0;
+        var->body_ptr = FL_NULL;
 
     var->c_defined = FL_FALSE;
 }

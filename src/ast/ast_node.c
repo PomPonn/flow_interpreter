@@ -60,6 +60,8 @@ fl_void fl_ast_node_free(fl_ast_node **node)
     if ((*node)->type == FL_AST_NODE_TYPE_LITERAL)
         fl_value_free((*node)->data);
 
+    // TODO: free other nodes data
+
     fl_mem_free((*node)->data);
     fl_mem_free(*node);
 

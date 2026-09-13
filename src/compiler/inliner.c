@@ -65,18 +65,13 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     else
         fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
 
-#ifndef NDEBUG
-
-    fl_byte_reader reader = fl_byte_reader_create(inl_cnt.byte_code);
-    fl_prt_print_byte_code_code(&reader);
-
-#endif
-
     // run this code snippet
     fl_value res = fl_intpr_eval(&inl_cnt);
 
-    assert(!fl_value_is_empty(res));
+    if (fl_value_is_empty(res))
+        assert(FL_FALSE);
 
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
     fl_value_to_bytes(res, &cnt->byte_code);
 
     // not sure if its always good to free resulting value
@@ -180,8 +175,7 @@ inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface
 {
     return fl_operation_is_compile_time(op) ||
            (fl_bitfield_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
-            fl_data_desc_vec_is_every_const(&actual_params)) ||
-           fl_operation_is_const_assign(op, actual_params.data[1]);
+            fl_data_desc_vec_is_every_const(&actual_params));
 }
 
 inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
@@ -191,8 +185,8 @@ inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_nod
 
     while (arg_node)
     {
-        fl_data_desc par = _fl_inl_parse_node_to_param(arg_node, cnt);
-        fl_data_desc_vec_push(&params, par);
+        fl_data_desc desc = _fl_inl_parse_node_to_param(arg_node, cnt);
+        fl_data_desc_vec_push(&params, desc);
         arg_node = arg_node->next;
     }
 
@@ -210,6 +204,9 @@ fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_c
     {
         fl_ast_node *id_node = node->child;
         fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
+
+        if (op.type == FL_OPERATION_UNKNOWN)
+            return fl_data_desc_create(FL_DATA_TYPE_ANY);
 
         assert(fl_operation_is_callable(op));
 
@@ -229,9 +226,8 @@ fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_c
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
-        // do we want to allow use of undefined id chains?
-        // (shoud an error be thrown?)
-        return fl_data_desc_create_traited(id ? id->value.desc.type : FL_DATA_TYPE_NULL, FL_DATA_TRAITS_REF);
+        fl_data_type type = id && id->value.desc.type ? id->value.desc.type : FL_DATA_TYPE_ANY;
+        return fl_data_desc_create_traited(type, FL_DATA_TRAITS_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:
     {

@@ -57,7 +57,7 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
 
 FL_HEADER_FN fl_void fl_fn_interface_set_labels(fl_fn_interface *intf, fl_cstr_vec labels)
 {
-    assert(intf->param_descs.size == intf->param_labels.size);
+    assert(intf->param_descs.size == labels.size);
     intf->param_labels = labels;
 }
 
@@ -95,12 +95,16 @@ FL_HEADER_FN fl_void fl_fn_interface_to_bytes(
 {
     // TEMP
 
-    // fl_byte_vec_push_mem(byte_vec, &intf, sizeof(fl_data_type) + sizeof(fl_fn_traits));
+    // other intf fields...
 
-    for (fl_size i = 0; i < intf.param_labels.size; i++)
+    const fl_size n = intf.param_labels.size;
+    fl_byte_vec_push_mem(byte_vec, &n, sizeof(fl_size));
+
+    for (fl_size i = 0; i < n; i++)
     {
         fl_char *label = intf.param_labels.data[i];
-        fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_STRING, label), byte_vec);
-        // fl_byte_vec_push_mem(byte_vec, &intf.param_descs.data[i], sizeof(fl_data_desc));
+        fl_byte_vec_push_str(byte_vec, label);
+
+        // param traits...
     }
 }

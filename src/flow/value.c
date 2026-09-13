@@ -29,6 +29,8 @@ fl_void fl_value_free(fl_value *value)
         fl_fn_variant_vec_free(value->data);
         break;
         // ???
+    case FL_DATA_TYPE_CODE_PTR:
+        break;
     case FL_DATA_TYPE_SCOPE:
     default:
         fl_mem_free(value->data);
@@ -122,7 +124,6 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         break;
     case FL_DATA_TYPE_FN:
     {
-
         fl_fn_variant_vec *vars = v.data;
         // assert only one variant for now
         assert(vars->size == 1);
@@ -130,7 +131,15 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         assert(!var->c_defined);
 
         fl_fn_interface_to_bytes(var->interface, bytes);
-        fl_byte_vec_push_t(bytes, var->body_ptr, fl_size);
+
+        assert(*var->body_ptr == FL_INSTR_START_BLOCK);
+
+        const fl_size block_len = *(fl_size *)(var->body_ptr + sizeof(fl_instruction));
+        const fl_byte *actual_body = var->body_ptr + sizeof(fl_instruction) + sizeof(fl_size);
+
+        fl_byte_vec_push_t(bytes, block_len, fl_size);
+        fl_byte_vec_push_mem(bytes, actual_body, block_len);
+        fl_byte_vec_push(bytes, FL_INSTR_BODY_END);
         break;
     }
     case FL_DATA_TYPE_ARRAY:
@@ -226,6 +235,44 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader)
             fl_value_vec_push(items, fl_value_from_bytes(reader));
 
         val.data = items;
+        break;
+    }
+    case FL_DATA_TYPE_FN:
+    {
+        const fl_size params_count = fl_byte_reader_next(reader, fl_size);
+
+        fl_data_desc_vec params;
+        fl_cstr_vec labels;
+        fl_data_desc_vec_init_c(&params, params_count);
+        fl_cstr_vec_init_c(&labels, params_count);
+
+        // parse paramaters
+        fl_data_desc desc = fl_data_desc_create(FL_DATA_TYPE_ANY);
+
+        for (fl_size i = 0; i < params_count; i++)
+        {
+            const fl_char *label = fl_byte_reader_next_str(reader);
+            fl_cstr_vec_push(&labels, fl_str_dup(label));
+            fl_data_desc_vec_push(&params, desc);
+        }
+
+        // handle body
+        const fl_byte *body_ptr = fl_byte_reader_current_ptr(reader);
+        const fl_size body_len = fl_byte_reader_next(reader, fl_size);
+        // +1 for FL_INSTR_BODY_END
+        fl_byte_reader_skip_bytes(reader, body_len + 1);
+
+        fl_fn_interface intf;
+        fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+        fl_fn_interface_set_labels(&intf, labels);
+
+        fl_fn_variant variant;
+        fl_fn_variant_init(&variant, FL_FALSE, intf, body_ptr);
+
+        fl_fn_variant_vec *vars = fl_mem_alloc_t(fl_fn_variant_vec);
+        fl_fn_variant_vec_init_with(vars, 1, (fl_fn_variant[]){variant});
+
+        val.data = vars;
         break;
     }
     default:

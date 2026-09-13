@@ -62,8 +62,12 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
     if (!fl_value_vec_is_empty(&cnt.base->literals))
     {
         // add literals table
+        const fl_size n = cnt.base->literals.size;
+
         fl_byte_vec_push(&compiled, FL_SECTION_MARK_LITERALS);
-        fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_ARRAY, &cnt.base->literals), &compiled);
+        fl_byte_vec_push_t(&compiled, n, fl_size);
+        for (fl_size i = 0; i < n; i++)
+            fl_value_to_bytes(cnt.base->literals.data[i], &compiled);
     }
 
     // merge both byte vecs
@@ -159,18 +163,21 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     fl_ast_node *id_node = op_node->child;
     fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
 
-    if (!fl_operation_is_callable(op))
-        assert(FL_FALSE);
+    if (op.type != FL_OPERATION_UNKNOWN)
+    {
+        if (!fl_operation_is_callable(op))
+            assert(FL_FALSE);
 
-    // try to inline at first
-    fl_bool inlined = fl_inl_try_op_inline(id_node, op, cnt);
+        // try to inline at first
+        fl_bool inlined = fl_inl_try_op_inline(id_node, op, cnt);
 
-    if (inlined)
-        return;
+        if (inlined)
+            return;
 
-    // throw an error if compile-time-only function wasn't inlined
-    if (fl_operation_is_compile_time(op))
-        assert(FL_FALSE);
+        // throw an error if compile-time-only function wasn't inlined
+        if (fl_operation_is_compile_time(op))
+            assert(FL_FALSE);
+    }
 
     // compile it normally
     fl_cmp_call_to_bytes(cnt, id_node, op);

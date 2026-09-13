@@ -116,7 +116,7 @@ fl_void fl_g_instrs_init()
         &params, 2,
         (fl_data_desc[]){
             fl_data_desc_create(FL_DATA_TYPE_ARRAY),
-            fl_data_desc_create(FL_DATA_TYPE_CODE_MARK),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_PTR),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);

@@ -63,11 +63,11 @@ fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scop
     // try to find function id
     fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
 
-    if (id)
+    if (id && !fl_value_is_empty(id->value))
     {
         fl_value id_val = id->value;
 
-        if (id_val.desc.type == FL_DATA_TYPE_FN)
+        if (id_val.desc.type != FL_DATA_TYPE_FN)
             // error (?) - not-a-function id used as a callable
             assert(FL_FALSE);
 

@@ -27,18 +27,13 @@
 
 // converts bytes in format: <i count><indices...> to fl_int_vec
 const fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader);
-
 fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope);
-
 fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope *scope);
-
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
-
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt);
-
-inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
-
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt);
+inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
+inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
 
 // ---------- DEFINITIONS -----------
 
@@ -90,28 +85,15 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         case FL_INSTR_START_BLOCK:
             if (call_attached)
             {
-                // add block start byte index to the stack and skip whole block
-                fl_flow_int *ind = fl_new_int(reader->iterator);
-
-                fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(fl_value_create(FL_DATA_TYPE_INT, ind)));
+                // add code pointer to the stack and skip whole block
+                fl_value cptr = fl_value_create_desc(
+                    fl_data_desc_create_traited(FL_DATA_TYPE_CODE_PTR, FL_DATA_TRAITS_CONST),
+                    (fl_byte *)fl_byte_reader_current_ptr(reader) - 1);
+                fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(cptr));
 
                 // + 2 for END and START tags
-                fl_size n = fl_byte_reader_next(reader, fl_size) + 2;
                 fl_size skip_count = fl_byte_reader_next(reader, fl_size) + 1;
                 fl_byte_reader_skip_bytes(reader, skip_count);
-
-                // fl_byte_vec view = (fl_byte_vec){
-                //     ._capacity = n,
-                //     .size = n,
-                //     .data =,
-                // };
-
-                fl_byte_reader *cm = fl_mem_alloc_t(fl_byte_reader);
-                *cm =
-
-                    fl_value val = fl_value_create_desc(
-                        fl_data_desc_create_traited(FL_DATA_TYPE_CODE_MARK, FL_DATA_TRAITS_CONST),
-                        cm);
 
                 call_attached = FL_FALSE;
             }
@@ -186,18 +168,14 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         {
             fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
             assert(id);
-
-            fl_value ref = fl_value_create_desc(id->value.desc, &id->value);
-            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
+            _fl_intpr_push_ref(cnt, id);
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
         {
             fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
             assert(id);
-
-            fl_value ref = fl_value_create_desc(id->value.desc, &id->value);
-            fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
+            _fl_intpr_push_ref(cnt, id);
             break;
         }
         case FL_INSTR_GET_LITERAL:
@@ -226,6 +204,10 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // execute operation (last popped operation is function op)
             fl_value res = fl_operation_run(op, args, cnt->base);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
+
+            // don't free args if it's assign
+            if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
+                fl_value_vec_free(&args);
 
             call_attached = FL_FALSE;
             break;
@@ -311,4 +293,11 @@ fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope 
     fl_id_chain_init_parse(&chain, id_str);
 
     return fl_scope_resolve_id(scope, &chain);
+}
+
+inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
+{
+    fl_data_desc ref_desc = fl_data_desc_create(FL_DATA_TRAITS_REF);
+    fl_value ref = fl_value_create_desc(ref_desc, &id->value);
+    fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
 }

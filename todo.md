@@ -2,6 +2,11 @@
 
 ## active
 
+- revise ids indexing
+- lambda body block optimalization
+- revise dummy ids concept
+- fix ast nodes freeing
+- free op_vec memory after usage - implement operation_free
 - update specs
 - revise token locations when sorting operators
 - LAST: fix creating variables from lambda parameters

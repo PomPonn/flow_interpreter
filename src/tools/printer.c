@@ -37,10 +37,10 @@
 
 // ---------- DECLARATIONS ----------
 
+fl_void _fl_prt_print_value_byted(fl_byte_reader *reader);
 inline fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
 inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
-const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader);
-inline fl_char *_fl_prt_array_to_str(fl_byte_reader *reader);
+inline fl_void _fl_prt_print_array(fl_byte_reader *reader);
 
 // ---------- DEFINITIONS ----------
 
@@ -179,7 +179,9 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
 
 fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
 {
-    while (!fl_byte_reader_is_end(reader))
+    fl_bool quit = FL_FALSE;
+
+    while (!quit && !fl_byte_reader_is_end(reader))
     {
         const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
         switch (instr)
@@ -195,6 +197,10 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             break;
         case FL_INSTR_CALL:
             printf("[CALL]\n");
+            break;
+        case FL_INSTR_BODY_END:
+            printf("[BODY END]");
+            quit = FL_TRUE;
             break;
         case FL_INSTR_GET_ID_BY_INDS:
         {
@@ -233,7 +239,9 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             break;
         }
         case FL_INSTR_VALUE:
-            printf("[VALUE] %s\n", _fl_prt_value_bytes_to_str(reader));
+            printf("[VALUE] ");
+            _fl_prt_print_value_byted(reader);
+            printf("\n");
             break;
             // ---- PREDEFINED INSTRUCTIONS ----
             _PRT_HANDLE_PREDEF_PRINT(IMPORT);
@@ -266,7 +274,16 @@ fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes)
     printf("[COMPILATION TIMESTAMP] %lld \n", fl_byte_reader_next(&reader, fl_long));
 
     if (fl_byte_reader_next(&reader, fl_section_mark) == FL_SECTION_MARK_LITERALS)
-        printf("==== LITERALS ====\n%s", _fl_prt_array_to_str(&reader));
+    {
+        printf("==== LITERALS ====\n");
+        const fl_size count = fl_byte_reader_next(&reader, fl_size);
+        for (fl_size i = 0; i < count; i++)
+        {
+            printf("[%u] ", i);
+            _fl_prt_print_value_byted(&reader);
+            printf("\n");
+        }
+    }
 
     if (fl_byte_reader_next(&reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
@@ -275,24 +292,20 @@ fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes)
     fl_prt_print_byte_code_code(&reader);
 }
 
-inline fl_char *_fl_prt_array_to_str(fl_byte_reader *reader)
+inline fl_void _fl_prt_print_array(fl_byte_reader *reader)
 {
-    static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 
-    sprintf(buffer, "[");
+    printf("[");
 
     for (fl_size i = 0; !fl_byte_reader_is_end(reader) && i < count; i++)
     {
-        fl_size buf_len = fl_str_len(buffer);
-        const fl_char *vstr = _fl_prt_value_bytes_to_str(reader);
-        sprintf(buffer + buf_len, i == count - 1 ? "%s]" : "%s, ", vstr);
+        _fl_prt_print_value_byted(reader);
+        printf(i == count - 1 ? "]" : ", ");
     }
-
-    return buffer;
 }
 
-const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
+fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
 {
     static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
     const fl_data_type data_type = fl_byte_reader_next(reader, fl_data_type);
@@ -300,29 +313,43 @@ const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
     switch (data_type)
     {
     case FL_DATA_TYPE_NULL:
-        sprintf(buffer, "NULL");
+        printf("NULL");
         break;
     case FL_DATA_TYPE_STRING:
-        sprintf(buffer, "'%s'", fl_byte_reader_next_str(reader));
+        printf("'%s'", fl_byte_reader_next_str(reader));
         break;
     case FL_DATA_TYPE_INT:
         assert(sizeof(fl_flow_int) == sizeof(long long));
-        sprintf(buffer, "%lld", fl_byte_reader_next(reader, fl_flow_int));
+        printf("%lld", fl_byte_reader_next(reader, fl_flow_int));
         break;
     case FL_DATA_TYPE_FLOAT:
         assert(sizeof(fl_flow_float) == sizeof(double));
-        sprintf(buffer, "%f", fl_byte_reader_next(reader, fl_flow_float));
+        printf("%f", fl_byte_reader_next(reader, fl_flow_float));
         break;
     case FL_DATA_TYPE_ARRAY:
-        sprintf(buffer, _fl_prt_array_to_str(reader));
+        _fl_prt_print_array(reader);
         break;
-    case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:
+    {
+        printf("*FN*\n{PARAMS} ");
+
+        const fl_size params_count = fl_byte_reader_next(reader, fl_size);
+
+        for (fl_size i = 0; i < params_count; i++)
+        {
+            const fl_char *label = fl_byte_reader_next_str(reader);
+            printf(i == params_count - 1 ? "%s\n" : "%s, ", label);
+        }
+
+        const fl_size body_len = fl_byte_reader_next(reader, fl_size);
+        printf("{BODY} n=%u\n", body_len);
+        fl_prt_print_byte_code_code(reader);
+    }
+    break;
+    case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_SCOPE:
     default:
         assert(FL_FALSE);
         break;
     }
-
-    return buffer;
 }

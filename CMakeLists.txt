@@ -22,7 +22,7 @@ set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output
 set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
 # byte code version. Format: [Y][M][D][00-99 (patch id)]
-set(BYTECODE_VERSION 2026060400)
+set(BYTECODE_VERSION 2026091400)
 
 # ---------- FUNCTIONS ----------
 
