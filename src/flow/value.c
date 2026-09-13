@@ -122,15 +122,15 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         break;
     case FL_DATA_TYPE_FN:
     {
+
         fl_fn_variant_vec *vars = v.data;
         // assert only one variant for now
         assert(vars->size == 1);
         fl_fn_variant *var = &vars->data[0];
+        assert(!var->c_defined);
 
         fl_fn_interface_to_bytes(var->interface, bytes);
-
-        assert(!var->c_defined);
-        fl_byte_vec_merge(bytes, var->body);
+        fl_byte_vec_push_t(bytes, var->body_ptr, fl_size);
         break;
     }
     case FL_DATA_TYPE_ARRAY:

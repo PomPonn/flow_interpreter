@@ -42,3 +42,16 @@
 #define FL_FORWARD_STRUCT(struct_name) \
     struct _##struct_name;             \
     typedef struct _##struct_name struct_name;
+
+// ---------- DECLARATIONS ----------
+
+FL_HEADER_FN fl_flow_int *fl_new_int(fl_flow_int init_value);
+
+// ---------- DEFINITIONS ----------
+
+FL_HEADER_FN fl_flow_int *fl_new_int(fl_flow_int init_value)
+{
+    fl_flow_int *f_int = fl_mem_alloc_t(fl_flow_int);
+    *f_int = init_value;
+    return f_int;
+}

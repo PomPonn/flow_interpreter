@@ -26,12 +26,13 @@ struct _fl_fn_variant
     // TODO: revise this
     union
     {
-        fl_c_fn_ptr pointer;
-        fl_byte_vec *body;
+        fl_c_fn_ptr fn_ptr;
+        fl_size body_ptr;
     };
 
     static_assert(sizeof(fl_c_fn_ptr) == sizeof(fl_byte_vec *), "fl_fn_variant union mismatch");
 };
+
 /**
  * @brief Function callable;
  * Contains information about function callable (overload).
@@ -62,12 +63,9 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
     var->interface = interface;
 
     if (!c_defined)
-    {
-        var->body = fl_mem_alloc_t(fl_byte_vec);
-        *var->body = *(fl_byte_vec *)cll_ptr;
-    }
+        var->body_ptr = *(fl_flow_int *)cll_ptr;
     else
-        var->pointer = cll_ptr;
+        var->fn_ptr = cll_ptr;
 }
 
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
@@ -75,20 +73,19 @@ FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
     fl_fn_interface_free(&var->interface);
 
     if (var->c_defined)
-        var->pointer = FL_NULL;
+        var->fn_ptr = FL_NULL;
     else
-    {
-        fl_byte_vec_free(var->body);
-        fl_mem_free(var->body);
-    }
+        var->body_ptr = 0;
 
     var->c_defined = FL_FALSE;
 }
 
 FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args)
 {
+    // temp
+    assert(var->c_defined);
     // var->body ???
-    return var->c_defined ? var->pointer(args) : fl_value_empty();
+    return var->c_defined ? var->fn_ptr(args) : fl_value_empty();
 }
 
 FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)

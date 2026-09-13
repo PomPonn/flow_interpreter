@@ -1,8 +1,12 @@
 io = import(":std.io");
 
+#
 add = [a, b] -> {
     a + b;
 };
+#
+
+add = [a, b] -> a + b;
 
 x = add(2, 4);
 io.put(x);

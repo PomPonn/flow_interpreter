@@ -29,6 +29,7 @@ typedef struct _fl_fn_interface fl_fn_interface;
 // ---------- DECLARATIONS ----------
 
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *intf);
+FL_HEADER_FN fl_void fl_fn_interface_set_labels(fl_fn_interface *intf, fl_cstr_vec labels);
 FL_HEADER_FN fl_bool fl_fn_interface_overlaps(fl_fn_interface left, fl_fn_interface right);
 FL_HEADER_FN fl_size fl_fn_interface_mem_size(const fl_fn_interface intf);
 
@@ -51,7 +52,13 @@ FL_HEADER_FN fl_void fl_fn_interface_init(
     intf->return_type = return_type;
     intf->traits = FL_FN_TRAITS_NONE;
     intf->param_descs = param_descs;
-    fl_cstr_vec_init_s(&intf->param_labels, param_descs.size);
+    fl_cstr_vec_init_empty(&intf->param_labels);
+}
+
+FL_HEADER_FN fl_void fl_fn_interface_set_labels(fl_fn_interface *intf, fl_cstr_vec labels)
+{
+    assert(intf->param_descs.size == intf->param_labels.size);
+    intf->param_labels = labels;
 }
 
 FL_HEADER_FN fl_void fl_fn_interface_free(fl_fn_interface *intf)
@@ -86,8 +93,14 @@ FL_HEADER_FN fl_void fl_fn_interface_to_bytes(
     const fl_fn_interface intf,
     fl_byte_vec *byte_vec)
 {
-    fl_byte_vec_push_mem(byte_vec, &intf, sizeof(fl_data_type) + sizeof(fl_fn_traits));
+    // TEMP
 
-    for (fl_size i = 0; i < intf.param_descs.size; i++)
-        fl_byte_vec_push_mem(byte_vec, &intf.param_descs.data[i], sizeof(fl_data_desc));
+    // fl_byte_vec_push_mem(byte_vec, &intf, sizeof(fl_data_type) + sizeof(fl_fn_traits));
+
+    for (fl_size i = 0; i < intf.param_labels.size; i++)
+    {
+        fl_char *label = intf.param_labels.data[i];
+        fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_STRING, label), byte_vec);
+        // fl_byte_vec_push_mem(byte_vec, &intf.param_descs.data[i], sizeof(fl_data_desc));
+    }
 }

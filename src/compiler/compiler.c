@@ -114,9 +114,18 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
         node = node->next;
     }
 
-    // push id declarations at block start
-    // put this in separate function?
     fl_id_entry_vec ids = inner_cnt.scope->ids;
+
+    // sum id declarations mem block size and rest of this block size
+    // ids.size * 2 for each FL_INSTR_DELC_ID tag and string termination '\0'
+    fl_size total_size = ids.size * 2 + inner_cnt.byte_code.size;
+    for (fl_size i = 0; i < ids.size; i++)
+        total_size += fl_str_len(ids.data[i]->name);
+
+    // push block byte size at the beginning
+    fl_byte_vec_push_t(&cnt->byte_code, total_size, fl_size);
+
+    // push id declarations at block start
     for (fl_size i = 0; i < ids.size; i++)
     {
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_DECL_ID);

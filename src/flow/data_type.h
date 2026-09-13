@@ -26,6 +26,6 @@ enum _fl_data_type
     FL_DATA_TYPE_FLOAT = 0b000010000,
     FL_DATA_TYPE_ARRAY = 0b000100000,
     FL_DATA_TYPE_STRING = 0b001000000,
-    // FL_DATA_TYPE_TYPE = 0b010000000,
+    FL_DATA_TYPE_CODE_MARK = 0b010000000,
 };
 typedef fl_ushort fl_data_type;

@@ -88,14 +88,47 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-            fl_local_context_deepen((fl_local_context *)cnt);
-            call_attached = FL_FALSE;
+            if (call_attached)
+            {
+                // add block start byte index to the stack and skip whole block
+                fl_flow_int *ind = fl_new_int(reader->iterator);
+
+                fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(fl_value_create(FL_DATA_TYPE_INT, ind)));
+
+                // + 2 for END and START tags
+                fl_size n = fl_byte_reader_next(reader, fl_size) + 2;
+                fl_size skip_count = fl_byte_reader_next(reader, fl_size) + 1;
+                fl_byte_reader_skip_bytes(reader, skip_count);
+
+                // fl_byte_vec view = (fl_byte_vec){
+                //     ._capacity = n,
+                //     .size = n,
+                //     .data =,
+                // };
+
+                fl_byte_reader *cm = fl_mem_alloc_t(fl_byte_reader);
+                *cm =
+
+                    fl_value val = fl_value_create_desc(
+                        fl_data_desc_create_traited(FL_DATA_TYPE_CODE_MARK, FL_DATA_TRAITS_CONST),
+                        cm);
+
+                call_attached = FL_FALSE;
+            }
+            else
+            {
+                fl_local_context_deepen((fl_local_context *)cnt);
+                // skip block size
+                fl_byte_reader_skip(reader, fl_size);
+            }
+
             break;
         case FL_INSTR_END_BLOCK:
         {
             fl_operation op;
             fl_bool complete = FL_TRUE;
 
+            assert(FL_FALSE);
             // TO CHANGE
             break;
 
@@ -190,7 +223,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             while (!fl_operation_is_callable(op = fl_op_vec_pop(&cnt->op_stack)))
                 fl_value_vec_put_back(&args, op.value);
 
-            // execute operation
+            // execute operation (last popped operation is function op)
             fl_value res = fl_operation_run(op, args, cnt->base);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
 
@@ -198,8 +231,12 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             break;
         }
         default:
+            assert(instr > FL_INSTR_NONE && instr <= FL_INSTR_POW);
+
             // CALLABLE INSTRUCTION
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_instr(instr));
+
+            call_attached = FL_TRUE;
             break;
         }
     }

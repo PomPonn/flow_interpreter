@@ -72,8 +72,6 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
 
 #endif
 
-    assert(FL_FALSE);
-
     // run this code snippet
     fl_value res = fl_intpr_eval(&inl_cnt);
 
@@ -88,7 +86,6 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     return FL_TRUE;
 }
 
-// TO CHANGE !!!
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
@@ -155,8 +152,28 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     // free labels when they are already copied to the bc
     fl_value_vec_free(labels);
 
-    // parse lambda body
-    fl_cmp_compile_node(arg_node->next, cnt);
+    // compile lambda body
+
+    if (arg_node->next->type == FL_AST_NODE_TYPE_BLOCK)
+        fl_cmp_compile_node(arg_node->next, cnt);
+    else
+    {
+        // simulate block if it's single operation lambda body
+
+        fl_cmp_context block_cnt;
+        fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
+
+        fl_cmp_compile_node(arg_node->next, &block_cnt);
+
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_START_BLOCK);
+        fl_byte_vec_push_t(&cnt->byte_code, block_cnt.byte_code.size, fl_size);
+        fl_byte_vec_merge(&cnt->byte_code, &block_cnt.byte_code);
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BLOCK);
+
+        fl_cmp_context_free(&block_cnt);
+    }
+
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_ARGS);
 }
 
 inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_params)

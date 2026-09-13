@@ -32,7 +32,6 @@ enum _fl_instruction
     // TODO: comment this when finished
 
     // callable instructions
-    // add new ones before FL_INSTR_POW to avoid dependancy problems
     FL_INSTR_IMPORT,
     FL_INSTR_ASSIGN,
     FL_INSTR_LAMBDA,
@@ -41,6 +40,7 @@ enum _fl_instruction
     FL_INSTR_DIV,
     FL_INSTR_MUL,
     FL_INSTR_MOD,
+    // add new ones before FL_INSTR_POW to avoid dependancy problems
     FL_INSTR_POW,
     // flow instructions
     FL_INSTR_CALL,

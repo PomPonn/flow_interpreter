@@ -2,6 +2,7 @@
 
 ## active
 
+- update specs
 - revise token locations when sorting operators
 - LAST: fix creating variables from lambda parameters
 - opt inlining process - reduce redundancy

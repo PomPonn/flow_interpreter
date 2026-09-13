@@ -185,7 +185,10 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-            printf("[BLOCK START]\n");
+            // block size
+            const fl_size n = fl_byte_reader_next(reader, fl_size);
+            printf("[BLOCK START] n=%u\n", n);
+
             break;
         case FL_INSTR_END_BLOCK:
             printf("[BLOCK END]\n");
