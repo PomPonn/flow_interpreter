@@ -23,7 +23,5 @@ FL_FORWARD_STRUCT(fl_base_context);
 // ---------- DECLARATIONS -----------
 
 fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *cnt);
-
 fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt);
-
 fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_operation op);

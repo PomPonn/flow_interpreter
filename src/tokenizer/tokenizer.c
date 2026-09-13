@@ -82,7 +82,7 @@ inline fl_bool _fl_tok_handle_escapement(
 inline fl_bool _fl_tok_handle_number(const fl_char **str)
 {
     fl_bool dot_found = FL_FALSE;
-    fl_bool deepenit_found = FL_FALSE;
+    fl_bool digit_found = FL_FALSE;
     const fl_char *ptr = *str;
 
     for (fl_size i = 0; ptr[i]; i++)
@@ -94,15 +94,15 @@ inline fl_bool _fl_tok_handle_number(const fl_char **str)
             else
             {
                 dot_found = FL_TRUE;
-                deepenit_found = FL_FALSE;
+                digit_found = FL_FALSE;
             }
         }
-        else if (fl_chr_is_deepenit(ptr[i]))
-            deepenit_found = FL_TRUE;
+        else if (fl_chr_is_digit(ptr[i]))
+            digit_found = FL_TRUE;
         else
         {
             *str += i;
-            return deepenit_found;
+            return digit_found;
         }
     }
 

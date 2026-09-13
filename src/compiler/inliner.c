@@ -26,25 +26,12 @@
 
 #endif
 
-// ---------- MACROS ----------------
-
-// ...
-
-// ---------- GLOBALS ---------------
-
-// ...
-
 // ---------- DECLARATIONS ----------
 
-fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
-
-fl_operation _fl_inl_id_node_to_operation(const fl_ast_node *id_node, const fl_scope *scope);
-
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params);
-
-inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
-
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
+fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params);
+inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
@@ -52,7 +39,7 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
 {
     fl_ast_node *arg_node = id_node->next;
     fl_param_vec params = _fl_inl_parse_nodes_to_params(arg_node, cnt);
-    const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
+    const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
 
     if (!fn_i)
     {
@@ -204,32 +191,6 @@ inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, c
     return params;
 }
 
-fl_operation _fl_inl_id_node_to_operation(const fl_ast_node *id_node, const fl_scope *scope)
-{
-    fl_id_chain *id_chain = id_node->data;
-
-    // check if it's instruction
-    fl_instruction instr = id_chain->size == 1 ? fl_instruction_from_alias(id_chain->data[0]) : FL_INSTR_NONE;
-    if (instr)
-        return fl_operation_from_instr(instr);
-
-    // try to find function id
-    fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
-
-    if (id)
-    {
-        fl_value id_val = id->value;
-
-        if (id_val.data_type == FL_DATA_TYPE_FN)
-            // error (?) - not-a-function id used as a callable
-            assert(FL_FALSE);
-
-        return fl_operation_from_fn_vars(id_val.data);
-    }
-
-    return fl_operation_unknown();
-}
-
 fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     switch (node->type)
@@ -240,12 +201,12 @@ fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_conte
     case FL_AST_NODE_TYPE_OPERATOR:
     {
         fl_ast_node *id_node = node->child;
-        fl_operation op = _fl_inl_id_node_to_operation(id_node, cnt->scope);
+        fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
 
         assert(fl_operation_is_callable(op));
 
         fl_param_vec params = _fl_inl_parse_nodes_to_params(id_node->next, cnt);
-        const fl_fn_interface *fn_i = fl_operation_get_interface_p(op, params);
+        const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
 
         assert(fn_i);
 

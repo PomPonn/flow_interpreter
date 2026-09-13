@@ -30,29 +30,17 @@
 
 // ---------- DECLARATIONS ----------
 
-inline fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt);
-
+fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt);
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt);
-
 fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *cnt);
-
-inline fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt);
-
-inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, fl_int_vec inds);
-
-inline fl_void _fl_cmp_byte_code_push_id_access_by_names(fl_byte_vec *code, const fl_id_chain *chain);
-
-fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
-
-inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
-
-fl_operation _fl_cmp_id_node_to_operation(const fl_ast_node *node, const fl_scope *scope);
-
-inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
-
-inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
-
 fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, fl_ast_node *id_node);
+fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt);
+inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
+inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, fl_int_vec inds);
+inline fl_void _fl_cmp_byte_code_push_id_access_by_names(fl_byte_vec *code, const fl_id_chain *chain);
+inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
+inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
+inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -83,7 +71,6 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
     fl_byte_vec_merge(&compiled, &cnt.byte_code);
 
     // free remains
-    // cnt.byte_code is freed
     fl_cmp_context_free(&cnt);
     return compiled;
 }
@@ -97,7 +84,7 @@ fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
         break;
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
-        // generalized to operation struct
+        // fn call and operator generalized to operation struct
         _fl_cmp_compile_op_call(node, cnt);
         break;
     case FL_AST_NODE_TYPE_ID_CHAIN:
@@ -112,11 +99,11 @@ fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
     }
 }
 
-inline fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
+fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
 {
     fl_cmp_context inner_cnt;
     fl_cmp_context_from(&inner_cnt, (fl_local_context *)cnt);
-    fl_cmp_context_deepen(&inner_cnt);
+    fl_local_context_deepen((fl_local_context *)&inner_cnt);
 
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_START_BLOCK);
 
@@ -142,32 +129,6 @@ inline fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cn
     fl_cmp_context_free(&inner_cnt);
 }
 
-fl_operation _fl_cmp_id_node_to_operation(const fl_ast_node *id_node, const fl_scope *scope)
-{
-    fl_id_chain *id_chain = id_node->data;
-
-    // check if it's instruction
-    fl_instruction instr = id_chain->size == 1 ? fl_instruction_from_alias(id_chain->data[0]) : FL_INSTR_NONE;
-    if (instr)
-        return fl_operation_from_instr(instr);
-
-    // try to find function id
-    fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
-
-    if (id)
-    {
-        fl_value id_val = id->value;
-
-        if (id_val.data_type == FL_DATA_TYPE_FN)
-            // error (?) - not-a-function id used as a callable
-            assert(FL_FALSE);
-
-        return fl_operation_from_fn_vars(id_val.data);
-    }
-
-    return fl_operation_unknown();
-}
-
 fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_operation op)
 {
     if (op.type == FL_OPERATION_FN)
@@ -187,7 +148,7 @@ fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_opera
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 {
     fl_ast_node *id_node = op_node->child;
-    fl_operation op = _fl_cmp_id_node_to_operation(id_node, cnt->scope);
+    fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
 
     if (!fl_operation_is_callable(op))
         assert(FL_FALSE);
@@ -235,7 +196,7 @@ inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt)
     return (fl_size)ind;
 }
 
-inline fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt)
+fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt)
 {
     fl_value *value = node->data;
     fl_size index = _fl_cmp_make_literal(*value, cnt);
@@ -290,7 +251,7 @@ inline fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_ui
     fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 }
 
-fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
+inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     while (arg_node)
     {

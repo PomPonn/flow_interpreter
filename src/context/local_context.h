@@ -28,3 +28,23 @@ struct _fl_local_context
  * @brief Describes generic local context. Used as an interface.
  */
 typedef struct _fl_local_context fl_local_context;
+
+// ---------- DECLARATIONS --------------
+
+FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt);
+FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt);
+
+// ---------- DEFINITIONS --------------
+
+FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt)
+{
+    fl_scope *scope;
+    fl_scope_init(&scope, cnt->scope);
+    cnt->scope = scope;
+}
+
+FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt)
+{
+    // TODO
+    assert(FL_FALSE);
+}

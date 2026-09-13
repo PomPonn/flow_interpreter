@@ -33,7 +33,7 @@
 #define FL_VEC_COMPARE(a, b) a == b
 #endif
 
-// Other properties set by the user:
+// Other properties set by a user:
 
 // #define FL_VEC_DESTROY(elem)
 // #define FL_VEC_EXCLUDE_FIND

@@ -82,7 +82,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-            fl_intpr_context_deepen(cnt);
+            fl_local_context_deepen((fl_local_context *)cnt);
             call_attached = FL_FALSE;
             break;
         case FL_INSTR_END_BLOCK:

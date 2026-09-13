@@ -8,7 +8,7 @@
 
 #include "ast_node.h"
 
-// ---------- DEPENDENCIES -----------
+// ---------- DEPENDENCIES --------------
 
 #include "flow/value.h"
 

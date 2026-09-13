@@ -1,5 +1,5 @@
 /**
- * ---------- shared.h --------------------
+ * ---------- shared.h ------------------
  *
  * Declares shared compiler logic.
  *

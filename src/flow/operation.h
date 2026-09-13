@@ -15,7 +15,6 @@
 #include "flow/instr/instruction.h"
 #include "vecs/fn_variant_vec.h"
 #include "vecs/value_vec.h"
-#include "context/base_context.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -43,6 +42,10 @@ typedef struct _fl_operation fl_operation;
 
 // ---------- DECLARATIONS ----------
 
+FL_FORWARD_STRUCT(fl_base_context);
+FL_FORWARD_STRUCT(fl_ast_node);
+FL_FORWARD_STRUCT(fl_scope);
+
 FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr);
 FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
 FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
@@ -54,11 +57,13 @@ FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right);
 FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
 FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op);
-FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
+
+fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
+fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt);
+
+const fl_fn_interface *fl_operation_get_interface(
     fl_operation op,
     const fl_param_vec params);
-
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
@@ -120,39 +125,6 @@ FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
     return op.type == FL_OPERATION_UNKNOWN ||
            op.type == FL_OPERATION_FN ||
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
-}
-
-FL_HEADER_FN fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt)
-{
-    if (!fl_operation_is_callable(op))
-        return FL_VALUE_EMPTY;
-
-    fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, args);
-
-    if (!var)
-        assert(FL_FALSE);
-
-    // add context as the first arg if META trait is set
-    if (fl_bitfield_is_set(var->interface.traits, FL_FN_TRAITS_META))
-    {
-        fl_value cnt_arg = fl_value_create(FL_DATA_TYPE_REF, cnt);
-        fl_value_vec_put_back(&args, cnt_arg);
-    }
-
-    return fl_fn_variant_call(var, args);
-}
-
-FL_HEADER_FN const fl_fn_interface *fl_operation_get_interface_p(
-    fl_operation op,
-    const fl_param_vec params)
-{
-    if (!fl_operation_is_callable(op))
-        return FL_NULL;
-    else
-    {
-        fl_fn_variant *match = fl_fn_variant_vec_find_match(op.vars, params);
-        return match ? &match->interface : FL_NULL;
-    }
 }
 
 FL_HEADER_FN fl_bool fl_operation_is_const_assign(fl_operation op, fl_param right)

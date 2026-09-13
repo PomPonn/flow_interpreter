@@ -32,7 +32,6 @@ typedef struct _fl_cmp_context fl_cmp_context;
 FL_HEADER_FN fl_void fl_cmp_context_init(fl_cmp_context *cnt, fl_base_context *base);
 FL_HEADER_FN fl_void fl_cmp_context_from(fl_cmp_context *cnt, const fl_local_context *ref);
 FL_HEADER_FN fl_void fl_cmp_context_free(fl_cmp_context *cnt);
-FL_HEADER_FN fl_void fl_cmp_context_deepen(fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS --------------
 
@@ -52,11 +51,4 @@ FL_HEADER_FN fl_void fl_cmp_context_init(fl_cmp_context *cnt, fl_base_context *b
     cnt->base = base;
     cnt->scope = base->main_scope;
     fl_byte_vec_init(&cnt->byte_code);
-}
-
-FL_HEADER_FN fl_void fl_cmp_context_deepen(fl_cmp_context *cnt)
-{
-    fl_scope *scope;
-    fl_scope_init(&scope, cnt->scope);
-    cnt->scope = scope;
 }
