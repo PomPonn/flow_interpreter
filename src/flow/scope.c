@@ -47,7 +47,7 @@ fl_int_vec fl_scope_find_id_path(
             {
                 fl_value id_value = scope->ids.data[ind]->value;
 
-                if (id_value.data_type != FL_DATA_TYPE_SCOPE)
+                if (id_value.desc.type != FL_DATA_TYPE_SCOPE)
                     goto __not_found_return;
 
                 scope = (fl_scope *)id_value.data;
@@ -118,7 +118,7 @@ fl_id_entry *fl_scope_traverse(
         {
             fl_value id_value = scope->ids.data[index]->value;
 
-            if (id_value.data_type != FL_DATA_TYPE_SCOPE)
+            if (id_value.desc.type != FL_DATA_TYPE_SCOPE)
                 return FL_NULL;
 
             ids = ((fl_scope *)id_value.data)->ids;

@@ -56,7 +56,7 @@
         fl_err_throw(FL_ERR_IMPORT, message, buffer, _FL_TEMP_LOCATION); \
     }
 
-#define FL_REGISTER_FN(name, scope, constant)                                       \
+#define FL_REGISTER_FN(name, scope)                                                 \
     fl_fn_variant_vec *_FL_MERGE2(name, _data) = fl_mem_alloc_t(fl_fn_variant_vec); \
     fl_fn_variant_vec_init(_FL_MERGE2(name, _data));                                \
     fl_id_entry *name;                                                              \
@@ -64,8 +64,7 @@
         &name,                                                                      \
         fl_str_dup(_FL_STRINGIFY(name)),                                            \
         FL_DATA_TYPE_FN,                                                            \
-        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)),                  \
-        constant);                                                                  \
+        fl_value_create(FL_DATA_TYPE_FN, _FL_MERGE2(name, _data)));                 \
     fl_id_entry_vec_push(&scope->ids, name);
 
 #define FL_OVERLOAD_FN(name, overload, return_type, ...) \

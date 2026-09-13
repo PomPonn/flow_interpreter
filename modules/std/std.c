@@ -14,7 +14,7 @@
 FL_FLOW_MODULE fl_value fl_module_resolve_id_value(const fl_id_chain *id_chain)
 {
     if (id_chain->size == 0)
-        return FL_VALUE_EMPTY;
+        return fl_value_empty();
 
     if (id_chain->size == 1)
     {
@@ -34,5 +34,5 @@ FL_FLOW_MODULE fl_value fl_module_resolve_id_value(const fl_id_chain *id_chain)
     if (fl_str_equal(id_chain->data[1], "io"))
         return fl_std_io_register(FL_NULL, id_chain);
     else
-        return FL_VALUE_EMPTY;
+        return fl_value_empty();
 }

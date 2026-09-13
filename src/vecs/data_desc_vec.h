@@ -77,13 +77,13 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(const fl_data_desc_vec *vec, fl_
     for (fl_size i = 0; i < vec->size; i++)
     {
         fl_value arg = args.data[i];
-        if (fl_data_desc_match_value(vec->data[i], arg))
+        if (fl_value_is_desc_by(arg, vec->data[i]))
             continue;
 
-        if (arg.data_type == FL_DATA_TYPE_REF)
+        if (fl_bitfield_is_set(arg.desc.traits, FL_DATA_TRAITS_REF))
         {
-            arg = ((fl_id_entry *)arg.data)->value;
-            if (!fl_data_desc_match_value(vec->data[i], arg))
+            arg = *(fl_value *)arg.data;
+            if (!fl_value_is_desc_by(arg, vec->data[i]))
                 return FL_FALSE;
 
             args.data[i] = arg;

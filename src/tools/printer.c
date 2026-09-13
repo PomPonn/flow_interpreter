@@ -52,7 +52,7 @@ inline const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 
     fl_value *v = lit_node->data;
 
-    switch (v->data_type)
+    switch (v->desc.type)
     {
     case FL_DATA_TYPE_STRING:
         sprintf(buffer, "'%s'", (fl_char *)v->data);
@@ -315,7 +315,6 @@ const fl_char *_fl_prt_value_bytes_to_str(fl_byte_reader *reader)
         break;
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_FN:
-    case FL_DATA_TYPE_REF:
     case FL_DATA_TYPE_SCOPE:
     default:
         assert(FL_FALSE);

@@ -20,7 +20,7 @@
 fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt)
 {
     if (!fl_operation_is_callable(op))
-        return FL_VALUE_EMPTY;
+        return fl_value_empty();
 
     fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, args);
 
@@ -30,7 +30,8 @@ fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *c
     // add context as the first arg if META trait is set
     if (fl_bitfield_is_set(var->interface.traits, FL_FN_TRAITS_META))
     {
-        fl_value cnt_arg = fl_value_create(FL_DATA_TYPE_REF, cnt);
+        fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAITS_META);
+        fl_value cnt_arg = fl_value_create_desc(desc, cnt);
         fl_value_vec_put_back(&args, cnt_arg);
     }
 
@@ -66,7 +67,7 @@ fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scop
     {
         fl_value id_val = id->value;
 
-        if (id_val.data_type == FL_DATA_TYPE_FN)
+        if (id_val.desc.type == FL_DATA_TYPE_FN)
             // error (?) - not-a-function id used as a callable
             assert(FL_FALSE);
 

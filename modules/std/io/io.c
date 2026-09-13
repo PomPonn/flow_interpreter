@@ -21,7 +21,7 @@ FL_MODULE_FN_HEAD_ONCE(put);
 fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
 {
     if (id_chain->size < 2)
-        return FL_VALUE_EMPTY;
+        return fl_value_empty();
 
     if (id_chain->size == 2)
     {
@@ -29,7 +29,7 @@ fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
         fl_scope *io_scope;
         fl_scope_init(&io_scope, scope);
 
-        FL_REGISTER_FN(put, io_scope, FL_FALSE);
+        FL_REGISTER_FN(put, io_scope);
         FL_OVERLOAD_FN_ONCE(
             put, FL_DATA_TYPE_NULL,
             fl_data_desc_create(FL_DATA_TYPE_ANY));
@@ -41,7 +41,7 @@ fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
 
     assert(FL_FALSE);
 
-    return FL_VALUE_EMPTY;
+    return fl_value_empty();
 }
 
 FL_MODULE_FN_HEAD_ONCE(put)
@@ -49,7 +49,7 @@ FL_MODULE_FN_HEAD_ONCE(put)
     for (fl_size i = 0; i < args.size; i++)
     {
         fl_value arg = args.data[i];
-        switch (arg.data_type)
+        switch (arg.desc.type)
         {
         case FL_DATA_TYPE_NULL:
             printf("<NULL>");
@@ -77,5 +77,5 @@ FL_MODULE_FN_HEAD_ONCE(put)
         }
     }
 
-    return FL_VALUE_EMPTY;
+    return fl_value_empty();
 }

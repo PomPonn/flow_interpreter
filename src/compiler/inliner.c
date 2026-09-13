@@ -132,7 +132,7 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
             // resulting value has to be a string
             // (can it be ref too?)
-            if (res.data_type != FL_DATA_TYPE_STRING)
+            if (res.desc.type != FL_DATA_TYPE_STRING)
             {
                 fl_value_free(&res);
                 assert(FL_FALSE);
@@ -214,12 +214,12 @@ fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_c
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
         // do we want to allow use of undefined id chains?
         // (shoud an error be thrown?)
-        return fl_data_desc_create_traited(id ? id->value.data_type : FL_DATA_TYPE_NULL, FL_DATA_TRAITS_REF);
+        return fl_data_desc_create_traited(id ? id->value.desc.type : FL_DATA_TYPE_NULL, FL_DATA_TRAITS_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:
     {
         fl_value *lit_val = node->data;
-        return fl_data_desc_create_traited(lit_val->data_type, FL_DATA_TRAITS_CONST);
+        return lit_val->desc;
     }
     case FL_AST_NODE_TYPE_ARRAY:
         return fl_data_desc_create(FL_DATA_TYPE_ARRAY);

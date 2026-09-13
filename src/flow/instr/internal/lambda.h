@@ -24,8 +24,8 @@ FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args);
 
 FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
 {
-    assert(args.data[0].data_type == FL_DATA_TYPE_ARRAY);
-    assert(args.data[1].data_type == FL_DATA_TYPE_SCOPE);
+    assert(args.data[0].desc.type == FL_DATA_TYPE_ARRAY);
+    assert(args.data[1].desc.type == FL_DATA_TYPE_SCOPE);
 
     fl_value_vec *head = args.data[0].data;
     fl_byte_vec *body = args.data[1].data;
@@ -38,7 +38,7 @@ FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
 
     for (fl_size i = 0; i < head->size; i++)
     {
-        // assert(head->data[i].data_type == FL_DATA_TYPE_REF);
+        // assert(head->data[i].desc.type == FL_DATA_TYPE_REF);
 
         // fl_id_entry *id = head->data[i].data;
         fl_data_desc_vec_push(&params, fl_data_desc_create(FL_DATA_TYPE_ANY));

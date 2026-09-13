@@ -266,7 +266,7 @@ inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *c
 {
     // create dummy id in base scope
     fl_id_entry *id;
-    fl_id_entry_init(&id, fl_str_dup(name), FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
+    fl_id_entry_init(&id, fl_str_dup(name), FL_DATA_TYPE_ANY, fl_value_empty());
     fl_id_entry_vec_push(&cnt->scope->ids, id);
 
     return id;

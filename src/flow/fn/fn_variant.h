@@ -88,7 +88,7 @@ FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
 FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args)
 {
     // var->body ???
-    return var->c_defined ? var->pointer(args) : FL_VALUE_EMPTY;
+    return var->c_defined ? var->pointer(args) : fl_value_empty();
 }
 
 FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)

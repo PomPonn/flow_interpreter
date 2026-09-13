@@ -23,21 +23,20 @@
 
 fl_void fl_value_free(fl_value *value)
 {
-    switch (value->data_type)
+    switch (value->desc.type)
     {
     case FL_DATA_TYPE_FN:
         fl_fn_variant_vec_free(value->data);
         break;
-    case FL_DATA_TYPE_SCOPE:
         // ???
-    case FL_DATA_TYPE_REF:
+    case FL_DATA_TYPE_SCOPE:
     default:
         fl_mem_free(value->data);
         break;
     }
 
     value->data = FL_NULL;
-    value->data_type = FL_DATA_TYPE_NULL;
+    value->desc = fl_data_desc_empty();
 }
 
 fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
@@ -76,19 +75,20 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
         break;
     }
 
-    return fl_value_create(lit_type, res_data);
+    fl_data_desc desc = fl_data_desc_create_traited(lit_type, FL_DATA_TRAITS_CONST);
+    return fl_value_create_desc(desc, res_data);
 }
 
 fl_bool fl_value_indentical(fl_value v1, fl_value v2)
 {
-    if (v1.data_type != v2.data_type)
+    if (v1.desc.type != v2.desc.type)
         return FL_FALSE;
 
     if (v1.data == v2.data)
         return FL_TRUE;
     else
     {
-        switch (v1.data_type)
+        switch (v1.desc.type)
         {
         case FL_DATA_TYPE_STRING:
             return fl_str_equal(v1.data, v2.data);
@@ -107,9 +107,9 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2)
 
 fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 {
-    fl_byte_vec_push_t(bytes, v.data_type, fl_data_type);
+    fl_byte_vec_push_t(bytes, v.desc.type, fl_data_type);
 
-    switch (v.data_type)
+    switch (v.desc.type)
     {
     case FL_DATA_TYPE_STRING:
     case FL_DATA_TYPE_BOOL:
@@ -151,7 +151,7 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 
 fl_size fl_value_mem_size(fl_value value)
 {
-    switch (value.data_type)
+    switch (value.desc.type)
     {
     case FL_DATA_TYPE_BOOL:
         return sizeof(fl_flow_bool);
@@ -170,9 +170,9 @@ fl_size fl_value_mem_size(fl_value value)
 
 fl_value fl_value_copy(fl_value value)
 {
-    fl_value copied = fl_value_create(value.data_type, FL_NULL);
+    fl_value copied = fl_value_create(value.desc.type, FL_NULL);
 
-    switch (value.data_type)
+    switch (value.desc.type)
     {
     case FL_DATA_TYPE_SCOPE:
         // TODO

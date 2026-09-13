@@ -74,7 +74,7 @@ fl_value fl_intpr_eval(fl_cmp_context *cmp_cnt)
     fl_operation last_op = fl_op_vec_peek(&intpr_cnt.op_stack);
 
     fl_intpr_context_free(&intpr_cnt);
-    return last_op.type == FL_OPERATION_VALUE ? last_op.value : FL_VALUE_EMPTY;
+    return last_op.type == FL_OPERATION_VALUE ? last_op.value : fl_value_empty();
 }
 
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
@@ -134,7 +134,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             }
 
             fl_value val = fn_id->value;
-            assert(val.data_type == FL_DATA_TYPE_FN);
+            assert(val.desc.type == FL_DATA_TYPE_FN);
 
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_fn_vars(val.data));
 
@@ -145,7 +145,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         {
             fl_id_entry *new_id;
             fl_char *id_name = fl_str_dup(fl_byte_reader_next_str(reader));
-            fl_id_entry_init(&new_id, id_name, FL_DATA_TYPE_ANY, FL_VALUE_EMPTY, FL_FALSE);
+            fl_id_entry_init(&new_id, id_name, FL_DATA_TYPE_ANY, fl_value_empty());
             fl_id_entry_vec_push(&cnt->scope->ids, new_id);
             break;
         }
@@ -154,14 +154,16 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
             assert(id);
 
-            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
+            fl_value ref = fl_value_create_desc(id->value.desc, &id->value);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }
         case FL_INSTR_GET_ID_BY_NAMES:
         {
             fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
-            fl_value ref = fl_value_create(FL_DATA_TYPE_REF, id);
+            assert(id);
+
+            fl_value ref = fl_value_create_desc(id->value.desc, &id->value);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
             break;
         }

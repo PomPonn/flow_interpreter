@@ -8,10 +8,6 @@
 
 #include "ast_node.h"
 
-// ---------- DEPENDENCIES --------------
-
-#include "flow/value.h"
-
 // ---------- DEFINITIONS ---------------
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)

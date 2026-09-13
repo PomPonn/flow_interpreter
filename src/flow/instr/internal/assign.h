@@ -30,7 +30,7 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value_vec args)
 
     fl_id_entry *id = (fl_id_entry *)id_ref.data;
 
-    if (!fl_bitfield_is_set(id->decl_type, what->data_type))
+    if (!fl_bitfield_is_set(id->decl_type, what->desc.type))
         // invalid data type
         assert(FL_FALSE);
 
@@ -38,7 +38,7 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value_vec args)
     id->value = *what;
 
     // clear 'what' value because it was moved
-    *what = FL_VALUE_EMPTY;
+    *what = fl_value_empty();
 
     return id->value;
 }

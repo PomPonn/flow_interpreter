@@ -115,7 +115,7 @@ fl_void fl_g_instrs_init()
     fl_data_desc_vec_init_with(
         &params, 2,
         (fl_data_desc[]){
-            fl_data_desc_create(FL_DATA_TYPE_ARRAY | FL_DATA_TYPE_REF),
+            fl_data_desc_create(FL_DATA_TYPE_ARRAY),
             fl_data_desc_create(FL_DATA_TYPE_SCOPE),
         });
     // init interface(s)
