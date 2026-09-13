@@ -29,16 +29,16 @@
 // ---------- DECLARATIONS ----------
 
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
-fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params);
-inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
+fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_params);
+inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
 fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt)
 {
     fl_ast_node *arg_node = id_node->next;
-    fl_param_vec params = _fl_inl_parse_nodes_to_params(arg_node, cnt);
+    fl_data_desc_vec params = _fl_inl_parse_nodes_to_params(arg_node, cnt);
     const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
 
     if (!fn_i)
@@ -48,29 +48,22 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     }
 
     fl_bool inlineable = _fl_inl_is_call_inlineable(op, fn_i, params);
-    fl_param_vec_free(&params);
+    fl_data_desc_vec_free(&params);
 
     if (!inlineable)
         return FL_FALSE;
 
     // ready to inline
 
-    // handle lambdas differently
-    if (op.type == FL_OPERATION_INSTR && op.instr == FL_INSTR_LAMBDA)
-    {
-        _fl_inl_lambda_to_bytes(arg_node, cnt);
-        return FL_TRUE;
-    }
-
     // compile call to byte code
     fl_cmp_context inl_cnt;
     fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
 
-    fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
-
-    // run compilation
-    fl_intpr_context intpr_cnt;
-    fl_intpr_context_from(&intpr_cnt, (fl_local_context *)cnt);
+    // handle lambdas differently
+    if (fl_operation_is_instr(op, FL_INSTR_LAMBDA))
+        _fl_inl_lambda_to_bytes(arg_node, &inl_cnt);
+    else
+        fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
 
 #ifndef NDEBUG
 
@@ -79,7 +72,10 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
 
 #endif
 
-    fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
+    assert(FL_FALSE);
+
+    // run this code snippet
+    fl_value res = fl_intpr_eval(&inl_cnt);
 
     assert(!fl_value_is_empty(res));
 
@@ -89,28 +85,22 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     fl_value_free(&res);
 
     fl_cmp_context_free(&inl_cnt);
-    fl_intpr_context_free(&intpr_cnt);
-
     return FL_TRUE;
 }
 
+// TO CHANGE !!!
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
 
     // init array of labels (lambda parameter names)
     fl_value_vec *labels = fl_mem_alloc_t(fl_value_vec);
-    fl_cmp_context inl_cnt;
-    fl_intpr_context intpr_cnt;
-    fl_bool single_param = FL_FALSE;
     const fl_ast_node *param_node = arg_node->child;
+    fl_bool single_param = FL_FALSE;
 
     fl_value_vec_init(labels);
-    fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
-    fl_intpr_context_from(&intpr_cnt, (fl_local_context *)cnt);
 
-    // how to make context state not mutated after this?
-    // compile each potential label - all we want is a string
+    // compile each potential label - all we want for now is a string
 
     if (arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
     {
@@ -133,9 +123,12 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
         }
         else
         {
+            fl_cmp_context inl_cnt;
+            fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
+
             // compile node normally and eval compilation
             fl_cmp_compile_node(param_node, &inl_cnt);
-            fl_value res = fl_intpr_eval(inl_cnt.byte_code, &intpr_cnt);
+            fl_value res = fl_intpr_eval(&inl_cnt);
 
             // resulting value has to be a string
             // (can it be ref too?)
@@ -146,6 +139,7 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
             }
 
             fl_value_vec_push(labels, fl_value_create(FL_DATA_TYPE_STRING, res.data));
+            fl_cmp_context_free(&inl_cnt);
         }
 
         if (single_param)
@@ -153,9 +147,6 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
         param_node = param_node->next;
     }
-
-    fl_cmp_context_free(&inl_cnt);
-    fl_intpr_context_free(&intpr_cnt);
 
     // convert array of strings to bytes
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
@@ -168,35 +159,35 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     fl_cmp_compile_node(arg_node->next, cnt);
 }
 
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_param_vec actual_params)
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_params)
 {
     return fl_operation_is_compile_time(op) ||
            (fl_bitfield_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
-            fl_param_vec_is_every_const(&actual_params)) ||
+            fl_data_desc_vec_is_every_const(&actual_params)) ||
            fl_operation_is_const_assign(op, actual_params.data[1]);
 }
 
-inline fl_param_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
+inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
 {
-    fl_param_vec params;
-    fl_param_vec_init(&params);
+    fl_data_desc_vec params;
+    fl_data_desc_vec_init(&params);
 
     while (arg_node)
     {
-        fl_param par = _fl_inl_parse_node_to_param(arg_node, cnt);
-        fl_param_vec_push(&params, par);
+        fl_data_desc par = _fl_inl_parse_node_to_param(arg_node, cnt);
+        fl_data_desc_vec_push(&params, par);
         arg_node = arg_node->next;
     }
 
     return params;
 }
 
-fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
+fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_BLOCK:
-        return fl_param_create_traited(FL_DATA_TYPE_SCOPE, FL_PARAM_TRAITS_CONST);
+        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE, FL_DATA_TRAITS_CONST);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
     {
@@ -205,37 +196,35 @@ fl_param _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_conte
 
         assert(fl_operation_is_callable(op));
 
-        fl_param_vec params = _fl_inl_parse_nodes_to_params(id_node->next, cnt);
+        fl_data_desc_vec params = _fl_inl_parse_nodes_to_params(id_node->next, cnt);
         const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
 
         assert(fn_i);
 
-        fl_param_traits traits = FL_PARAM_TRAITS_NONE;
+        fl_data_traits traits = FL_DATA_TRAITS_NONE;
 
         if (_fl_inl_is_call_inlineable(op, fn_i, params))
-            fl_bitfield_set(traits, FL_PARAM_TRAITS_CONST);
+            fl_bitfield_set(traits, FL_DATA_TRAITS_CONST);
 
-        fl_param_vec_free(&params);
-        return fl_param_create_traited(fn_i->return_type, traits);
+        fl_data_desc_vec_free(&params);
+        return fl_data_desc_create_traited(fn_i->return_type, traits);
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
         // do we want to allow use of undefined id chains?
         // (shoud an error be thrown?)
-        return fl_param_create_traited(id ? id->value.data_type : FL_DATA_TYPE_NULL, FL_PARAM_TRAITS_REF);
+        return fl_data_desc_create_traited(id ? id->value.data_type : FL_DATA_TYPE_NULL, FL_DATA_TRAITS_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:
     {
         fl_value *lit_val = node->data;
-        return fl_param_create_traited(lit_val->data_type, FL_PARAM_TRAITS_CONST);
+        return fl_data_desc_create_traited(lit_val->data_type, FL_DATA_TRAITS_CONST);
     }
     case FL_AST_NODE_TYPE_ARRAY:
-    {
-        return fl_param_create(FL_DATA_TYPE_ARRAY);
-    }
+        return fl_data_desc_create(FL_DATA_TYPE_ARRAY);
     default:
         assert(FL_FALSE);
-        return fl_param_create(FL_DATA_TYPE_NULL);
+        return fl_data_desc_create(FL_DATA_TYPE_NULL);
     }
 }

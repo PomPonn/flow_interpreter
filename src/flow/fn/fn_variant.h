@@ -10,7 +10,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "vecs/param_vec.h"
+#include "vecs/data_desc_vec.h"
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 #include "flow/fn/fn_interface.h"

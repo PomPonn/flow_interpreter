@@ -66,7 +66,7 @@ fl_void fl_g_instrs_init()
 
     fl_fn_variant_vec_vec_init_s(&g_variants, FL_CLL_INSTR_COUNT);
     fl_instr_info_vec_init_s(&g_info_vec, FL_CLL_INSTR_COUNT);
-    fl_param_vec params;
+    fl_data_desc_vec params;
     fl_fn_variant_vec vars;
     fl_fn_variant var;
     fl_fn_interface intf;
@@ -74,10 +74,10 @@ fl_void fl_g_instrs_init()
     // ---- IMPORT ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 1,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_STRING),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_STRING),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
@@ -93,11 +93,11 @@ fl_void fl_g_instrs_init()
     // ---- ASSIGN ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 2,
-        (fl_param[]){
-            fl_param_create_traited(FL_DATA_TYPE_ANY, FL_PARAM_TRAITS_REF),
-            fl_param_create(FL_DATA_TYPE_ANY),
+        (fl_data_desc[]){
+            fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAITS_REF),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
@@ -112,11 +112,11 @@ fl_void fl_g_instrs_init()
     // ---- LAMBDA ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 2,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_ARRAY | FL_DATA_TYPE_REF),
-            fl_param_create(FL_DATA_TYPE_SCOPE),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ARRAY | FL_DATA_TYPE_REF),
+            fl_data_desc_create(FL_DATA_TYPE_SCOPE),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);
@@ -132,11 +132,11 @@ fl_void fl_g_instrs_init()
     // ---- ADD ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 2,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_ANY),
-            fl_param_create(FL_DATA_TYPE_ANY),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
@@ -152,11 +152,11 @@ fl_void fl_g_instrs_init()
     // ---- SUB ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 2,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_ANY),
-            fl_param_create(FL_DATA_TYPE_ANY),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
@@ -172,11 +172,11 @@ fl_void fl_g_instrs_init()
     // ---- MUL ----
 
     // init params
-    fl_param_vec_init_with(
+    fl_data_desc_vec_init_with(
         &params, 2,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_ANY),
-            fl_param_create(FL_DATA_TYPE_ANY),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);

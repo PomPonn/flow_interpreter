@@ -32,7 +32,7 @@ fl_value fl_std_io_register(fl_scope *scope, const fl_id_chain *id_chain)
         FL_REGISTER_FN(put, io_scope, FL_FALSE);
         FL_OVERLOAD_FN_ONCE(
             put, FL_DATA_TYPE_NULL,
-            fl_param_create(FL_DATA_TYPE_ANY));
+            fl_data_desc_create(FL_DATA_TYPE_ANY));
 
         return fl_value_create(FL_DATA_TYPE_SCOPE, io_scope);
     }

@@ -13,6 +13,7 @@
 #include "tools/byte_reader.h"
 #include "flow/instr/instruction.h"
 #include "context/intpr_context.h"
+#include "context/cmp_context.h"
 #include "vecs/int_vec.h"
 #include "flow/section_mark.h"
 #include "macros/basic.h"
@@ -61,13 +62,18 @@ fl_void fl_intpr_interpret(fl_byte_vec bytes)
 }
 
 // returns last computed fl_value if it was the last operation on stack, otherwise empty fl_value
-fl_value fl_intpr_eval(fl_byte_vec bytes, fl_intpr_context *cnt)
+fl_value fl_intpr_eval(fl_cmp_context *cmp_cnt)
 {
-    fl_byte_reader reader = fl_byte_reader_create(bytes);
+    fl_intpr_context intpr_cnt;
+    fl_intpr_context_from(&intpr_cnt, (fl_local_context *)cmp_cnt);
 
-    _fl_intpr_interpret_bytes(&reader, cnt);
+    fl_byte_reader reader = fl_byte_reader_create(cmp_cnt->byte_code);
 
-    fl_operation last_op = fl_op_vec_peek(&cnt->op_stack);
+    _fl_intpr_interpret_bytes(&reader, &intpr_cnt);
+
+    fl_operation last_op = fl_op_vec_peek(&intpr_cnt.op_stack);
+
+    fl_intpr_context_free(&intpr_cnt);
     return last_op.type == FL_OPERATION_VALUE ? last_op.value : FL_VALUE_EMPTY;
 }
 

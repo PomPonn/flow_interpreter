@@ -10,7 +10,7 @@
 
 #include "shared/common.h"
 #include "flow/fn/fn_interface.h"
-#include "vecs/param_vec.h"
+#include "vecs/data_desc_vec.h"
 
 #include <unity/unity.h>
 
@@ -22,13 +22,13 @@ fl_fn_interface intf;
 
 void setUp()
 {
-    fl_param_vec params;
-    fl_param_vec_init_with(
+    fl_data_desc_vec params;
+    fl_data_desc_vec_init_with(
         &params,
         3,
-        (fl_param[]){
-            fl_param_create(FL_DATA_TYPE_BOOL),
-            fl_param_create_traited(FL_DATA_TYPE_FN, FL_PARAM_TRAITS_REF),
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_BOOL),
+            fl_data_desc_create_traited(FL_DATA_TYPE_FN, FL_DATA_TRAITS_REF),
         });
 
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FLOAT, params);
@@ -45,20 +45,20 @@ void test_fn_interface_overlaps(void)
 {
     fl_fn_interface other;
 
-    fl_param_vec params;
-    fl_param_vec_init_with(
+    fl_data_desc_vec params;
+    fl_data_desc_vec_init_with(
         &params,
         3,
-        (fl_param[]){
-            fl_param_create_traited(FL_DATA_TYPE_BOOL, FL_PARAM_TRAITS_CONST),
-            fl_param_create_traited(FL_DATA_TYPE_FN, FL_PARAM_TRAITS_REF),
+        (fl_data_desc[]){
+            fl_data_desc_create_traited(FL_DATA_TYPE_BOOL, FL_DATA_TRAITS_CONST),
+            fl_data_desc_create_traited(FL_DATA_TYPE_FN, FL_DATA_TRAITS_REF),
         });
 
     fl_fn_interface_init(&other, FL_DATA_TYPE_FLOAT, params);
 
     TEST_ASSERT_TRUE(fl_fn_interface_overlaps(intf, other));
 
-    intf.params.data[1].traits = FL_PARAM_TRAITS_NONE;
+    intf.param_descs.data[1].traits = FL_DATA_TRAITS_NONE;
 
     TEST_ASSERT_FALSE(fl_fn_interface_overlaps(intf, other));
 }

@@ -39,7 +39,7 @@ fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *c
 
 const fl_fn_interface *fl_operation_get_interface(
     fl_operation op,
-    const fl_param_vec params)
+    const fl_data_desc_vec params)
 {
     if (!fl_operation_is_callable(op))
         return FL_NULL;

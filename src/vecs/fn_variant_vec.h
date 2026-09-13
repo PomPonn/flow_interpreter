@@ -11,7 +11,7 @@
 // ---------- DEPENDENCIES --------------
 
 #include "flow/fn/fn_variant.h"
-#include "vecs/param_vec.h"
+#include "vecs/data_desc_vec.h"
 
 // ------------- MACROS -----------------
 
@@ -26,7 +26,7 @@
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match(
     const fl_fn_variant_vec *vec,
-    const fl_param_vec params);
+    const fl_data_desc_vec params);
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     const fl_fn_variant_vec *vec,
@@ -40,13 +40,13 @@ FL_HEADER_FN fl_bool fl_fn_variant_vec_overload(
 
 FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match(
     const fl_fn_variant_vec *vec,
-    const fl_param_vec params)
+    const fl_data_desc_vec params)
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_param_vec current = vec->data[i].interface.params;
+        const fl_data_desc_vec current = vec->data[i].interface.param_descs;
 
-        if (fl_param_vec_match_params(&current, &params))
+        if (fl_data_desc_vec_match_params(&current, &params))
             return &vec->data[i];
     }
 
@@ -59,9 +59,9 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_param_vec current = vec->data[i].interface.params;
+        const fl_data_desc_vec current = vec->data[i].interface.param_descs;
 
-        if (fl_param_vec_suit_args(&current, args))
+        if (fl_data_desc_vec_suit_args(&current, args))
             return &vec->data[i];
     }
 

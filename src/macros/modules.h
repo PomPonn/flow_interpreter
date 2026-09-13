@@ -15,7 +15,7 @@
 #include "shared/error.h"
 #include "flow/scope.h"
 #include "flow/data_type.h"
-#include "vecs/param_vec.h"
+#include "vecs/data_desc_vec.h"
 #include "vecs/fn_variant_vec.h"
 #include "flow/fn/fn_interface.h"
 
@@ -27,17 +27,17 @@
 #define _FL_TEMP_LOCATION (fl_token_location){.description = ""}
 
 #define _FL_TDESCS(...) \
-    (fl_param[]) { __VA_ARGS__ }
+    (fl_data_desc[]) { __VA_ARGS__ }
 
-#define _fl_paramS(...)                                               \
-    fl_param_vec params;                                              \
-    fl_param_vec_init_c(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
-    for (fl_size _i = 0; _i < params._capacity; _i++)                 \
-    fl_param_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
+#define _fl_data_descS(...)                                               \
+    fl_data_desc_vec params;                                              \
+    fl_data_desc_vec_init_c(&params, _FL_SSIZE(_FL_TDESCS(__VA_ARGS__))); \
+    for (fl_size _i = 0; _i < params._capacity; _i++)                     \
+    fl_data_desc_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
 
 #define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                                                 \
     {                                                                                                                     \
-        _fl_paramS(__VA_ARGS__);                                                                                          \
+        _fl_data_descS(__VA_ARGS__);                                                                                      \
         fl_fn_interface interface;                                                                                        \
         fl_fn_interface_init(&interface, return_type, params);                                                            \
         fl_fn_variant var;                                                                                                \
