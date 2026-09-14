@@ -41,16 +41,15 @@
 
 ```
 [HEADER SECTION]
-(version): 10B + 1B for '\0' (is a string)
---wip:
+(version): 10B + 1B for '\0' (end of string)
 (compilation timestamp): 8B
 ```
 
-### Literals section:
+### Literals section (optional):
 
 ```
 [LITERALS SECTION]
-(count): 4B
+(lits count): 4B
 ... <count> times: {
 (value type): 1B
 (value data): xB
@@ -87,25 +86,25 @@
 ##### get id:
 
 ```
-[GET ID]
+[ID]
 <id access>
 ```
 
-#### new id:
+#### id declaration:
 
 ```
-[NEW ID]
+[DECL]
 (id name): xB (string)
 ```
 
-##### get literal:
+#### get literal:
 
 ```
-[GET LITERAL]
-(index): 4B
+[LITERAL]
+(literal table index): 4B
 ```
 
-#### scope:
+#### block:
 
 ```
 [BLOCK START]
