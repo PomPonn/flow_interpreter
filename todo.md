@@ -1,26 +1,32 @@
 # TODO
 
-## active
+## interpreter
+
+- free op_vec memory after usage - implement operation_free
+- opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case)
+
+## compiler
 
 - simulate assign instruction in some cases
-- free op_vec memory after usage - implement operation_free
-- update specs
-- revise token locations when sorting operators
 - revise fn variants overloading
-- cleanup ast generator
+
+## ast generator
+
+- revise token locations when sorting operators
+- cleanup
 - think again about single arg calls without parantheses
-- opt. opportunity: implement container with unshifting without moving whole container data (used in interpreter ARGS_END)
-- handle ':' at the start of import string (maybe It's unnecessary?)
 - AST generating optimalization
 - AST operators sorting
 - AST function definitions handling
 - AST generation unused tokens handling
 - AST types handling; AST type dimensions(?) handling
 
-## distant
+## other
 
-- revise mod_importer implementation namings
+- update specs
+- handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration
+- revise mod_importer implementation namings
 - implement time measurement on unix systems
 - think if warnings should be a thing
 - handle other number bases (hex for instance)
