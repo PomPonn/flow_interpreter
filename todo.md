@@ -23,6 +23,7 @@
 
 ## other
 
+- data_desc & interfaces handling
 - update specs
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration

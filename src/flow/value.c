@@ -23,18 +23,21 @@
 
 fl_void fl_value_free(fl_value *value)
 {
-    switch (value->desc.type)
+    if (!fl_bitfield_is_set(value->desc.traits, FL_DATA_TRAITS_IMMUTABLE))
     {
-    case FL_DATA_TYPE_FN:
-        fl_fn_variant_vec_free(value->data);
-        break;
-        // ???
-    case FL_DATA_TYPE_CODE_PTR:
-        break;
-    case FL_DATA_TYPE_SCOPE:
-    default:
-        fl_mem_free(value->data);
-        break;
+        switch (value->desc.type)
+        {
+        case FL_DATA_TYPE_FN:
+            fl_fn_variant_vec_free(value->data);
+            break;
+            // ???
+        case FL_DATA_TYPE_CODE_PTR:
+            break;
+        case FL_DATA_TYPE_SCOPE:
+        default:
+            fl_mem_free(value->data);
+            break;
+        }
     }
 
     value->data = FL_NULL;
@@ -209,6 +212,7 @@ fl_value fl_value_copy(fl_value value)
 
 fl_value fl_value_from_bytes(fl_byte_reader *reader)
 {
+
     const fl_data_type type = fl_byte_reader_next(reader, fl_data_type);
     fl_value val = fl_value_create(type, FL_NULL);
 

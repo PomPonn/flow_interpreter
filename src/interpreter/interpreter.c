@@ -181,7 +181,10 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         case FL_INSTR_GET_LITERAL:
         {
             const fl_size ind = fl_byte_reader_next(reader, fl_size);
+            // fl_value_Create
             fl_value lit_val = cnt->base->literals.data[ind];
+            // make this a literal view
+            fl_bitfield_set(lit_val.desc.traits, FL_DATA_TRAITS_IMMUTABLE);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(lit_val));
             break;
         }
@@ -235,7 +238,7 @@ inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
     if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_LITERALS)
-        assert(FL_FALSE);
+        return;
 
     const fl_size lits_count = fl_byte_reader_next(reader, fl_size);
 
@@ -297,7 +300,6 @@ fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope 
 
 inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
 {
-    fl_data_desc ref_desc = fl_data_desc_create(FL_DATA_TRAITS_REF);
-    fl_value ref = fl_value_create_desc(ref_desc, &id->value);
+    fl_value ref = fl_value_create_ref(&id->value);
     fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));
 }

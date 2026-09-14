@@ -82,13 +82,11 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_prt_print_ast_tree(tree);
 #endif
 
-    fl_base_context cnt;
-    fl_base_context_init(&cnt);
+    // fl_prof_profile_once(fl_cmp_compile_ast(tree));
 
-    // fl_prof_profile_once(fl_cmp_compile_ast(tree, &cnt));
-    // return;
+    fl_byte_vec code = fl_cmp_compile_ast(tree);
 
-    fl_byte_vec code = fl_cmp_compile_ast(tree, &cnt);
+    fl_ast_node_free(&tree);
 
 #ifndef NDEBUG
     // save byte code to file
@@ -96,12 +94,6 @@ fl_void fl_flow_run(const fl_char *source_path)
     printf("\n------ Byte code: ------\n");
     fl_prt_print_byte_code_file(code);
 #endif
-
-    fl_ast_node_free(&tree);
-    fl_base_context_free(&cnt);
-
-    // temp
-    return;
 
 #ifndef NDEBUG
     printf("\n------ Interpretation: ------\n");

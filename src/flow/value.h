@@ -29,6 +29,7 @@ typedef struct _fl_value fl_value;
 FL_HEADER_FN fl_value fl_value_empty();
 FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
 FL_HEADER_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data);
+FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target);
 FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
 FL_HEADER_FN fl_bool fl_value_is_size_complex(fl_value v);
 FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc);
@@ -64,6 +65,14 @@ FL_HEADER_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data)
     };
 }
 
+FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target)
+{
+    return (fl_value){
+        .data = target,
+        .desc = fl_data_desc_create(FL_DATA_TYPE_REF | target->desc.type),
+    };
+}
+
 FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2)
 {
     return v1.desc.type == v2.desc.type && v1.data == v2.data;
@@ -92,12 +101,12 @@ FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
     // Is it enough?
     // (opt this out)
 
-    if (fl_bitfield_is_set(desc.traits, FL_DATA_TRAITS_REF) &&
-        !fl_bitfield_is_set(v.desc.traits, FL_DATA_TRAITS_REF))
+    if (fl_bitfield_is_set(desc.type, FL_DATA_TYPE_REF) &&
+        !fl_bitfield_is_set(v.desc.type, FL_DATA_TYPE_REF))
         return FL_FALSE;
 
-    if (!fl_bitfield_is_set(desc.traits, FL_DATA_TRAITS_REF) &&
-        fl_bitfield_is_set(v.desc.traits, FL_DATA_TRAITS_REF))
+    if (!fl_bitfield_is_set(desc.traits, FL_DATA_TYPE_REF) &&
+        fl_bitfield_is_set(v.desc.traits, FL_DATA_TYPE_REF))
         return FL_FALSE;
 
     return fl_bitfield_is_any(desc.type, v.desc.type);

@@ -15,6 +15,10 @@
 #include "ast/ast_node.h"
 #include "flow/scope.h"
 
+// ---------- DECLARATIONS ----------
+
+fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec args);
+
 // ---------- DEFINITIONS -----------
 
 fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt)
@@ -24,18 +28,42 @@ fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *c
 
     fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, args);
 
+    _fl_operation_adapt_args(op, args);
+
     if (!var)
         assert(FL_FALSE);
 
     // add context as the first arg if META trait is set
     if (fl_bitfield_is_set(var->interface.traits, FL_FN_TRAITS_META))
     {
-        fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAITS_META);
+        fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAITS_IMMUTABLE);
         fl_value cnt_arg = fl_value_create_desc(desc, cnt);
         fl_value_vec_put_back(&args, cnt_arg);
     }
 
     return fl_fn_variant_call(var, args);
+}
+
+fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec args)
+{
+    fl_data_desc_vec descs;
+    fl_data_desc_vec_from_values(&descs, &args);
+
+    const fl_fn_interface *intf = fl_operation_get_interface(op, descs);
+    assert(intf);
+    fl_data_desc_vec_free(&descs);
+
+    for (fl_size i = 0; i < args.size; i++)
+    {
+        if (args.data[i].desc.type != FL_DATA_TYPE_REF)
+            continue;
+
+        if (fl_bitfield_is_set(intf->param_descs.data[i].type, FL_DATA_TYPE_REF))
+            continue;
+
+        // convert ref to simple value
+        *(args.data + i) = *(fl_value *)args.data[i].data;
+    }
 }
 
 const fl_fn_interface *fl_operation_get_interface(

@@ -18,8 +18,7 @@ enum _fl_data_traits
 {
     FL_DATA_TRAITS_NONE = 0b00000000,
     FL_DATA_TRAITS_CONST = 0b00000001,
-    FL_DATA_TRAITS_REF = 0b00000010,
-    FL_DATA_TRAITS_META = 0b00000100,
+    FL_DATA_TRAITS_IMMUTABLE = 0b00000010,
     // ???
     // FL_DATA_TRAITS_EXPAND = 0b0000100,
 };
@@ -75,6 +74,8 @@ FL_HEADER_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
 
 FL_HEADER_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
 {
+    // TODO: change this
+
     if (!fl_bitfield_is_any(d1.type, d2.type))
         return FL_FALSE;
 
@@ -82,9 +83,9 @@ FL_HEADER_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
         !fl_bitfield_is_set(d2.traits, FL_DATA_TRAITS_CONST))
         return FL_FALSE;
 
-    if (fl_bitfield_is_set(d1.traits, FL_DATA_TRAITS_REF) &&
-        !fl_bitfield_is_set(d2.traits, FL_DATA_TRAITS_REF))
-        return FL_FALSE;
+    // if (fl_bitfield_is_set(d1.type, FL_DATA_TYPE_REF) &&
+    //     !fl_bitfield_is_set(d2.type, FL_DATA_TYPE_REF))
+    //     return FL_FALSE;
 
     return FL_TRUE;
 }

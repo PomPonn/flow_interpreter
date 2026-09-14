@@ -44,11 +44,14 @@ inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS ----------
 
-fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
+fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
 {
+    fl_base_context base;
+    fl_base_context_init(&base);
+
     // init blank context
     fl_cmp_context cnt;
-    fl_cmp_context_init(&cnt, base);
+    fl_cmp_context_init(&cnt, &base);
 
     // compile nodes
     fl_cmp_compile_node(tree, &cnt);
@@ -76,6 +79,7 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree, fl_base_context *base)
 
     // free remains
     fl_cmp_context_free(&cnt);
+    fl_base_context_free(&base);
     return compiled;
 }
 

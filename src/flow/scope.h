@@ -86,7 +86,7 @@ FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope)
         fl_mem_free(scp->inners);
     }
 
-    fl_mem_free(scope);
+    fl_mem_free(scp);
     *scope = FL_NULL;
 }
 

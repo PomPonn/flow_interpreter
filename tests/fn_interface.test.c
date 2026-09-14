@@ -28,7 +28,7 @@ void setUp()
         3,
         (fl_data_desc[]){
             fl_data_desc_create(FL_DATA_TYPE_BOOL),
-            fl_data_desc_create_traited(FL_DATA_TYPE_FN, FL_DATA_TRAITS_REF),
+            fl_data_desc_create(FL_DATA_TYPE_FN),
         });
 
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FLOAT, params);
@@ -51,7 +51,7 @@ void test_fn_interface_overlaps(void)
         3,
         (fl_data_desc[]){
             fl_data_desc_create_traited(FL_DATA_TYPE_BOOL, FL_DATA_TRAITS_CONST),
-            fl_data_desc_create_traited(FL_DATA_TYPE_FN, FL_DATA_TRAITS_REF),
+            fl_data_desc_create(FL_DATA_TYPE_FN),
         });
 
     fl_fn_interface_init(&other, FL_DATA_TYPE_FLOAT, params);

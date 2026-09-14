@@ -28,7 +28,6 @@ FL_FORWARD_STRUCT(fl_byte_vec);
 // ---------- DECLARATIONS --------------
 
 FL_HEADER_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem);
-
 FL_HEADER_FN fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes);
 
 // ---------- DEFINITIONS ---------------
