@@ -1,3 +1,5 @@
+# Language specification
+
 ## ast nodes
 
 ### block:
@@ -12,12 +14,12 @@
 
 ### id:
 
-- _data_: id path (fl_id_chain)
+- _data_: id chain (fl_id_chain)
 - _children_: none
 
 ### operator:
 
-- _data_: operator order (?)
+- _data_: is grouped flag (fl_bool)
 - _children_:
     - #1: operation id,
     - #2&3: operation arguments
@@ -27,7 +29,7 @@
 - _data_: none
 - _children_:
   first one is a function id chain,
-  next are arguments of varying node type
+  then n arguments
 
 ## byte code
 
