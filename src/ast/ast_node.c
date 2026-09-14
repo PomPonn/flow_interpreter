@@ -8,6 +8,12 @@
 
 #include "ast_node.h"
 
+// ---------- DEPENDENCIES --------------
+
+#include "shared/common.h"
+#include "flow/value.h"
+#include "flow/id/id_chain.h"
+
 // ---------- DEFINITIONS ---------------
 
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
@@ -43,11 +49,13 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node)
 
 fl_void fl_ast_node_free(fl_ast_node **node)
 {
-    if (!*node)
+    fl_ast_node *nd = *node;
+
+    if (!nd)
         return;
 
     // Free children recursively
-    fl_ast_node *child = (*node)->child;
+    fl_ast_node *child = nd->child;
     while (child)
     {
         fl_ast_node *next_child = child->next;
@@ -57,13 +65,21 @@ fl_void fl_ast_node_free(fl_ast_node **node)
 
     // Free current node and it's data
 
-    if ((*node)->type == FL_AST_NODE_TYPE_LITERAL)
-        fl_value_free((*node)->data);
-
     // TODO: free other nodes data
+    switch (nd->type)
+    {
+    case FL_AST_NODE_TYPE_LITERAL:
+        fl_value_free(nd->data);
+        break;
+    case FL_AST_NODE_TYPE_ID_CHAIN:
+        fl_id_chain_free(nd->data);
+        break;
+    default:
+        break;
+    }
 
-    fl_mem_free((*node)->data);
-    fl_mem_free(*node);
+    fl_mem_free(nd->data);
+    fl_mem_free(nd);
 
     *node = FL_NULL;
 }

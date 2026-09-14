@@ -157,6 +157,7 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
         fl_cmp_context block_cnt;
         fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
+        fl_local_context_deepen((fl_local_context *)&block_cnt);
 
         fl_cmp_compile_node(arg_node->next, &block_cnt);
 

@@ -75,6 +75,8 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
 
+    fl_token_arr_free(&token_arr);
+
 #ifndef NDEBUG
     printf("\n------ AST nodes: ------\n");
     fl_prt_print_ast_tree(tree);
@@ -95,9 +97,10 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_prt_print_byte_code_file(code);
 #endif
 
-    fl_token_arr_free(&token_arr);
     fl_ast_node_free(&tree);
-    // ----------------
+    fl_base_context_free(&cnt);
+
+    // temp
     return;
 
 #ifndef NDEBUG
@@ -110,5 +113,4 @@ fl_void fl_flow_run(const fl_char *source_path)
     fl_intpr_interpret(code);
 
     fl_byte_vec_free(&code);
-    fl_base_context_free(&cnt);
 }

@@ -2,7 +2,6 @@
 
 ## active
 
-- revise ids indexing
 - lambda body block optimalization
 - revise dummy ids concept
 - fix ast nodes freeing

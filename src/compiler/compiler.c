@@ -205,7 +205,7 @@ inline fl_size _fl_cmp_make_literal(fl_value lit_value, fl_cmp_context *cnt)
 
     if (ind == FL_FIND_FAIL)
     {
-        fl_value_vec_push(lits, lit_value);
+        fl_value_vec_push(lits, fl_value_copy(lit_value));
         return lits->size - 1;
     }
 
