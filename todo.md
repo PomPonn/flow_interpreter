@@ -2,25 +2,14 @@
 
 ## active
 
-- lambda body block optimalization
-- revise dummy ids concept
-- fix ast nodes freeing
+- simulate assign instruction in some cases
 - free op_vec memory after usage - implement operation_free
 - update specs
 - revise token locations when sorting operators
-- LAST: fix creating variables from lambda parameters
-- opt inlining process - reduce redundancy
 - revise fn variants overloading
 - cleanup ast generator
-- base context not freeing (problem with literals vec)
-- how to handle simulating and inlining in compilation process?
-- FL_DATA_TYPE_REF handling is quite messy
-- think again of single arg calls without parantheses
-- revise inline functions if they should be inline (not to big after expanding) - especially these header only
-- opt.: can id entry names be made const ptrs?
-- to opt.: simulated operations are called multiple times during compilation
-- opt. opportunity: implement container with unshifting without moving whole container data (for compiler ARGS_END)
-- what about operators ordering?
+- think again about single arg calls without parantheses
+- opt. opportunity: implement container with unshifting without moving whole container data (used in interpreter ARGS_END)
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - AST generating optimalization
 - AST operators sorting
@@ -36,4 +25,4 @@
 - think if warnings should be a thing
 - handle other number bases (hex for instance)
 - optimalize fl_std_io_put
-- revise error handling
+- create proper error handling
