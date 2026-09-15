@@ -53,10 +53,10 @@ fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec args)
     {
         // REFACTOR FROM HERE
 
-        if (args.data[i].desc.type != FL_DATA_TRAITS_REF)
+        if (!fl_bitfield_is_set(args.data[i].desc.traits, FL_DATA_TRAITS_REF))
             continue;
 
-        if (fl_bitfield_is_set(intf->param_descs.data[i].type, FL_DATA_TRAITS_REF))
+        if (fl_bitfield_is_set(intf->param_descs.data[i].traits, FL_DATA_TRAITS_REF))
             continue;
 
         // convert ref to simple value
