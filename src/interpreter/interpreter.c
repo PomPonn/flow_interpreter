@@ -18,6 +18,7 @@
 #include "flow/section_mark.h"
 #include "macros/basic.h"
 #include "flow/id/id_chain.h"
+#include "flow/byte_segm.h"
 
 // ------------- MACROS -----------------
 
@@ -85,16 +86,21 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         case FL_INSTR_START_BLOCK:
             if (call_attached)
             {
-                // add code pointer to the stack and skip whole block
-                fl_value cptr = fl_value_create_desc(
-                    fl_data_desc_create_traited(FL_DATA_TYPE_CODE_PTR, FL_DATA_TRAITS_CONST),
-                    (fl_byte *)fl_byte_reader_current_ptr(reader) - 1);
+                fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_CODE_SEGM, FL_DATA_TRAIT_CONST);
+
+                // add code segment pointer to the stack and skip whole block
+
+                const fl_byte *block_start = fl_byte_reader_get_ptr(reader) - 1;
+                const fl_size block_len = fl_byte_reader_next(reader, fl_size);
+                fl_byte_segm *segm = fl_mem_alloc_t(fl_byte_segm);
+                // + 2 for BLOCK START & END tags
+                *segm = fl_byte_segm_create(block_start, block_len + sizeof(fl_size) + 2);
+
+                fl_value cptr = fl_value_create_desc(desc, segm);
                 fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(cptr));
 
-                // + 2 for END and START tags
-                fl_size skip_count = fl_byte_reader_next(reader, fl_size) + 1;
-                fl_byte_reader_skip_bytes(reader, skip_count);
-
+                // skip whole block
+                fl_byte_reader_skip_bytes(reader, block_len + 1);
                 call_attached = FL_FALSE;
             }
             else
@@ -147,6 +153,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
                 assert(FL_FALSE);
                 break;
             }
+            assert(fn_id);
 
             fl_value val = fn_id->value;
             assert(val.desc.type == FL_DATA_TYPE_FN);
@@ -181,10 +188,9 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         case FL_INSTR_GET_LITERAL:
         {
             const fl_size ind = fl_byte_reader_next(reader, fl_size);
-            // fl_value_Create
             fl_value lit_val = cnt->base->literals.data[ind];
             // make this a literal view
-            fl_bitfield_set(lit_val.desc.traits, FL_DATA_TRAITS_IMMUTABLE);
+            fl_bits_set(lit_val.desc.traits, FL_DATA_TRAIT_VIEW);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(lit_val));
             break;
         }
@@ -194,7 +200,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(val));
             break;
         }
-        case FL_INSTR_END_ARGS:
+        case FL_INSTR_EXECUTE:
         {
             // consume arguments
             fl_value_vec args;
@@ -205,13 +211,11 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
                 fl_value_vec_put_back(&args, op.value);
 
             // execute operation (last popped operation is function op)
-            fl_value res = fl_operation_run(op, args, cnt->base);
+            fl_value res = fl_operation_run(op, &args, cnt->base);
+            // push value even if it's empty? (as in assign case - second arg)
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
 
-            // don't free args if it's assign
-            if (!fl_operation_is_instr(op, FL_INSTR_ASSIGN))
-                fl_value_vec_free(&args);
-
+            fl_value_vec_free(&args);
             call_attached = FL_FALSE;
             break;
         }
@@ -269,7 +273,11 @@ fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader)
 const fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader)
 {
     fl_size count = fl_byte_reader_next(reader, fl_size);
-    fl_int *data = fl_byte_reader_next_bytes(reader, sizeof(fl_int) * count);
+    fl_size mem_size = sizeof(fl_int) * count;
+
+    fl_int *data = FL_NULL;
+    const fl_unknown *mem = fl_byte_reader_next_bytes(reader, mem_size);
+    fl_mem_copy(mem, data, mem_size);
 
     return (fl_int_vec){
         .data = data,

@@ -13,12 +13,13 @@
 #include "shared/common.h"
 #include "shared/str.h"
 #include "vecs/byte_vec.h"
+#include "flow/byte_segm.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
 struct _fl_byte_reader
 {
-    const fl_byte_vec bytes;
+    const fl_byte_segm bytes;
     fl_size iterator;
 };
 typedef struct _fl_byte_reader fl_byte_reader;
@@ -33,17 +34,18 @@ typedef struct _fl_byte_reader fl_byte_reader;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_unknown *fl_byte_reader_next_bytes(fl_byte_reader *reader, fl_size size);
-FL_HEADER_FN const fl_byte *fl_byte_reader_current_ptr(fl_byte_reader *reader);
+FL_HEADER_FN const fl_unknown *fl_byte_reader_next_bytes(fl_byte_reader *reader, fl_size size);
 FL_HEADER_FN fl_void fl_byte_reader_skip_bytes(fl_byte_reader *reader, fl_size count);
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes);
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create_off(const fl_byte_vec bytes, fl_size offset);
+FL_HEADER_FN fl_byte_reader fl_byte_reader_create_segm(fl_byte_segm segm);
 FL_HEADER_FN const fl_char *fl_byte_reader_next_str(fl_byte_reader *reader);
 FL_HEADER_FN fl_bool fl_byte_reader_is_end(fl_byte_reader *reader);
+FL_HEADER_FN const fl_byte *fl_byte_reader_get_ptr(fl_byte_reader *reader);
 
 // ---------- HEADER-ONLY DEFINITIONS ----------
 
-FL_HEADER_FN const fl_byte *fl_byte_reader_current_ptr(fl_byte_reader *reader)
+FL_HEADER_FN const fl_byte *fl_byte_reader_get_ptr(fl_byte_reader *reader)
 {
     return reader->bytes.data + reader->iterator;
 }
@@ -51,7 +53,7 @@ FL_HEADER_FN const fl_byte *fl_byte_reader_current_ptr(fl_byte_reader *reader)
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes)
 {
     return (fl_byte_reader){
-        .bytes = bytes,
+        .bytes = fl_byte_segm_create(bytes.data, bytes.size),
         .iterator = 0,
     };
 }
@@ -61,22 +63,30 @@ FL_HEADER_FN fl_byte_reader fl_byte_reader_create_off(const fl_byte_vec bytes, f
     assert(bytes.size >= offset);
 
     return (fl_byte_reader){
-        .bytes = bytes,
+        .bytes = fl_byte_segm_create(bytes.data, bytes.size),
         .iterator = offset,
     };
 }
 
-FL_HEADER_FN fl_unknown *fl_byte_reader_next_bytes(fl_byte_reader *reader, fl_size size)
+FL_HEADER_FN fl_byte_reader fl_byte_reader_create_segm(fl_byte_segm segm)
 {
-    assert(reader->iterator < reader->bytes.size);
-    fl_unknown *value = &reader->bytes.data[reader->iterator];
+    return (fl_byte_reader){
+        .bytes = segm,
+        .iterator = 0,
+    };
+}
+
+FL_HEADER_FN const fl_unknown *fl_byte_reader_next_bytes(fl_byte_reader *reader, fl_size size)
+{
+    assert(reader->iterator < reader->bytes.len);
+    const fl_unknown *value = &reader->bytes.data[reader->iterator];
     reader->iterator += size;
     return value;
 }
 
 FL_HEADER_FN fl_void fl_byte_reader_skip_bytes(fl_byte_reader *reader, fl_size count)
 {
-    assert(reader->iterator + count <= reader->bytes.size);
+    assert(reader->iterator + count <= reader->bytes.len);
     reader->iterator += count;
 }
 
@@ -89,5 +99,5 @@ FL_HEADER_FN const fl_char *fl_byte_reader_next_str(fl_byte_reader *reader)
 
 FL_HEADER_FN fl_bool fl_byte_reader_is_end(fl_byte_reader *reader)
 {
-    return reader->iterator >= reader->bytes.size;
+    return reader->iterator >= reader->bytes.len;
 }

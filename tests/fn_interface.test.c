@@ -50,7 +50,7 @@ void test_fn_interface_overlaps(void)
         &params,
         3,
         (fl_data_desc[]){
-            fl_data_desc_create_traited(FL_DATA_TYPE_BOOL, FL_DATA_TRAITS_CONST),
+            fl_data_desc_create_traited(FL_DATA_TYPE_BOOL, FL_DATA_TRAIT_CONST),
             fl_data_desc_create(FL_DATA_TYPE_FN),
         });
 
@@ -58,7 +58,7 @@ void test_fn_interface_overlaps(void)
 
     TEST_ASSERT_TRUE(fl_fn_interface_overlaps(intf, other));
 
-    intf.param_descs.data[1].traits = FL_DATA_TRAITS_NONE;
+    intf.param_descs.data[1].traits = FL_DATA_TRAIT_NONE;
 
     TEST_ASSERT_FALSE(fl_fn_interface_overlaps(intf, other));
 }

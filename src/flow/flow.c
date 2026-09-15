@@ -33,7 +33,7 @@
 /**
  * @brief Shorthand for throwing a file error.
  */
-#define throw_file_error(message) \
+#define fl_throw_file_error(message) \
     fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
 
 // ---------- DEFINITIONS -----------
@@ -48,7 +48,7 @@ fl_void fl_flow_run(const fl_char *source_path)
 
     fl_char *source_code = fl_file_read(source_path);
     if (!source_code)
-        throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
+        fl_throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
 
 #ifndef NDEBUG
     printf("------ Source code: ------\n%s\n\n", source_code);

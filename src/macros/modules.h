@@ -48,7 +48,7 @@
 
 // ====== PUBLIC ======
 
-#define fl_throw_import_error(message)                                   \
+#define fl_fl_throw_import_error(message)                                \
     {                                                                    \
         fl_char buffer[FL_ID_CHAIN_MAX_SIZE];                            \
         fl_id_chain_to_string(id_chain, buffer, FL_ID_CHAIN_MAX_SIZE);   \

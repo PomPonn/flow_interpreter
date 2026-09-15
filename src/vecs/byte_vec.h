@@ -29,7 +29,7 @@
 
 FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n);
 FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str);
-FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, fl_byte_vec *other);
+FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other);
 
 // ---------- DEFINITIONS ---------------
 
@@ -52,7 +52,7 @@ FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str)
     bc->size += len;
 }
 
-FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, fl_byte_vec *other)
+FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other)
 {
     fl_byte_vec_push_mem(bc, other->data, other->size);
 }

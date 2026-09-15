@@ -27,7 +27,10 @@
 FL_HEADER_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const fl_value_vec *vals);
 FL_HEADER_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const fl_data_desc_vec *other);
 FL_HEADER_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec);
-FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(const fl_data_desc_vec *vec, fl_value_vec args);
+
+FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(
+    const fl_data_desc_vec *vec,
+    const fl_value_vec *args);
 
 FL_HEADER_FN fl_bool fl_data_desc_vec_match_params(
     const fl_data_desc_vec *vec,
@@ -58,7 +61,7 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const f
 FL_HEADER_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec)
 {
     for (fl_size i = 0; i < vec->size; i++)
-        if (!fl_bitfield_is_set(vec->data[i].traits, FL_DATA_TRAITS_CONST))
+        if (!fl_bits_is_set(vec->data[i].traits, FL_DATA_TRAIT_CONST))
             return FL_FALSE;
 
     return FL_TRUE;
@@ -78,24 +81,26 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_match_params(
     return FL_TRUE;
 }
 
-FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(const fl_data_desc_vec *vec, fl_value_vec args)
+FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(
+    const fl_data_desc_vec *vec,
+    const fl_value_vec *args)
 {
-    if (vec->size != args.size)
+    if (vec->size != args->size)
         return FL_FALSE;
 
     for (fl_size i = 0; i < vec->size; i++)
     {
-        fl_value arg = args.data[i];
+        fl_value arg = args->data[i];
         if (fl_value_is_desc_by(arg, vec->data[i]))
             continue;
 
-        if (arg.desc.type == FL_DATA_TRAITS_REF)
+        if (fl_bits_is_set(arg.desc.traits, FL_DATA_TRAIT_REF))
         {
             arg = *(fl_value *)arg.data;
             if (!fl_value_is_desc_by(arg, vec->data[i]))
                 return FL_FALSE;
 
-            args.data[i] = arg;
+            args->data[i] = arg;
         }
     }
 

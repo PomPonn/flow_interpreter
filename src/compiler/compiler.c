@@ -113,8 +113,6 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
     fl_cmp_context_from(&inner_cnt, (fl_local_context *)cnt);
     fl_local_context_deepen((fl_local_context *)&inner_cnt);
 
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_START_BLOCK);
-
     node = node->child;
     while (node)
     {
@@ -122,41 +120,25 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
         node = node->next;
     }
 
-    fl_id_entry_vec ids = inner_cnt.scope->ids;
-
-    // sum id declarations mem block size and rest of this block size
-    // ids.size * 2 for each FL_INSTR_DELC_ID tag and string termination '\0'
-    fl_size total_size = ids.size * 2 + inner_cnt.byte_code.size;
-    for (fl_size i = 0; i < ids.size; i++)
-        total_size += fl_str_len(ids.data[i]->name);
-
-    // push block byte size at the beginning
-    fl_byte_vec_push_t(&cnt->byte_code, total_size, fl_size);
-
-    // push id declarations at block start
-    for (fl_size i = 0; i < ids.size; i++)
-    {
-        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_DECL_ID);
-        fl_byte_vec_push_str(&cnt->byte_code, ids.data[i]->name);
-    }
-
-    fl_byte_vec_merge(&cnt->byte_code, &inner_cnt.byte_code);
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BLOCK);
+    // convert whole context to bytes
+    fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt);
 
     fl_cmp_context_free(&inner_cnt);
 }
 
 fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_operation op)
 {
-    if (op.type == FL_OPERATION_FN)
+    if (op.type == FL_OPERATION_INSTR)
+        fl_byte_vec_push(&cnt->byte_code, op.instr);
+    else if (fl_bits_is_any(op.type, FL_OPERATION_FN | FL_OPERATION_UNKNOWN))
     {
         // start CALL instruction
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
         // push information how to access id
         _fl_cmp_stamp_id_access(cnt, id_node);
     }
-    else if (op.type == FL_OPERATION_INSTR)
-        fl_byte_vec_push(&cnt->byte_code, op.instr);
+    else
+        assert(FL_FALSE);
 
     // compile args
     _fl_cmp_compile_args(id_node->next, cnt);
@@ -173,9 +155,7 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
             assert(FL_FALSE);
 
         // try to inline at first
-        fl_bool inlined = fl_inl_try_op_inline(id_node, op, cnt);
-
-        if (inlined)
+        if (fl_inl_try_op_inline(id_node, op, cnt))
             return;
 
         // throw an error if compile-time-only function wasn't inlined
@@ -279,7 +259,7 @@ inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context 
         arg_node = arg_node->next;
     }
 
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_ARGS);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
 }
 
 inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)

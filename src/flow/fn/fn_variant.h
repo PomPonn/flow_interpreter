@@ -14,6 +14,7 @@
 #include "vecs/value_vec.h"
 #include "vecs/byte_vec.h"
 #include "flow/fn/fn_interface.h"
+#include "flow/byte_segm.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -27,7 +28,7 @@ struct _fl_fn_variant
     union
     {
         fl_c_fn_ptr fn_ptr;
-        const fl_byte *body_ptr;
+        fl_byte_segm *body_ptr;
     };
 
     static_assert(sizeof(fl_c_fn_ptr) == sizeof(fl_byte_vec *), "fl_fn_variant union mismatch");
@@ -56,16 +57,16 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_interface interface,
-    const fl_unknown *cll_ptr)
+    fl_unknown *cll_ptr)
 {
 
     var->c_defined = c_defined;
     var->interface = interface;
 
-    if (!c_defined)
-        var->body_ptr = cll_ptr;
+    if (c_defined)
+        var->fn_ptr = cll_ptr;
     else
-        var->fn_ptr = (fl_c_fn_ptr)cll_ptr;
+        var->body_ptr = cll_ptr;
 }
 
 FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
@@ -82,9 +83,6 @@ FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
 
 FL_HEADER_FN fl_value fl_fn_variant_call(fl_fn_variant *var, fl_value_vec args)
 {
-    // temp
-    assert(var->c_defined);
-    // var->body ???
     return var->c_defined ? var->fn_ptr(args) : fl_value_empty();
 }
 

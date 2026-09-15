@@ -221,13 +221,13 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
         case FL_INSTR_GET_ID_BY_NAMES:
             printf("[ID] %s\n", fl_byte_reader_next_str(reader));
             break;
-        case FL_INSTR_END_ARGS:
-            printf("[ARGS END]\n");
+        case FL_INSTR_EXECUTE:
+            printf("[EXECUTE]\n");
             break;
         case FL_INSTR_DECL_ID:
         {
             const fl_char *id_name = fl_byte_reader_next_str(reader);
-            printf("[DECL] '%s'\n", id_name);
+            printf("[DECLARE] '%s'\n", id_name);
             break;
         }
         case FL_INSTR_GET_LITERAL:
@@ -341,8 +341,7 @@ fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
             printf(i == params_count - 1 ? "%s\n" : "%s, ", label);
         }
 
-        const fl_size body_len = fl_byte_reader_next(reader, fl_size);
-        printf("{BODY} n=%u\n", body_len);
+        printf("{BODY}\n");
         fl_prt_print_byte_code_code(reader);
     }
     break;

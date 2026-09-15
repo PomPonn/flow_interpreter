@@ -34,6 +34,7 @@ FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
 FL_HEADER_FN fl_bool fl_value_is_size_complex(fl_value v);
 FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc);
 
+fl_value fl_value_create_copy(fl_data_type type, const fl_unknown *data);
 fl_size fl_value_mem_size(fl_value value);
 fl_void fl_value_free(fl_value *value);
 fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data);
@@ -69,7 +70,7 @@ FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target)
 {
     return (fl_value){
         .data = target,
-        .desc = fl_data_desc_create(FL_DATA_TRAITS_REF | target->desc.type),
+        .desc = fl_data_desc_create_traited(target->desc.type, FL_DATA_TRAIT_REF),
     };
 }
 
@@ -101,13 +102,13 @@ FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
     // Is it enough?
     // (opt this out)
 
-    if (fl_bitfield_is_set(desc.type, FL_DATA_TRAITS_REF) &&
-        !fl_bitfield_is_set(v.desc.type, FL_DATA_TRAITS_REF))
+    if (fl_bits_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
+        !fl_bits_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
         return FL_FALSE;
 
-    if (!fl_bitfield_is_set(desc.traits, FL_DATA_TRAITS_REF) &&
-        fl_bitfield_is_set(v.desc.traits, FL_DATA_TRAITS_REF))
+    if (!fl_bits_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
+        fl_bits_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
         return FL_FALSE;
 
-    return fl_bitfield_is_any(desc.type, v.desc.type);
+    return fl_bits_is_any(desc.type, v.desc.type);
 }

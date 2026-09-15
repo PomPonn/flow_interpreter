@@ -29,26 +29,26 @@
 // ---------- DECLARATIONS ----------
 
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
-fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt);
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_params);
-inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
+fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_context *cnt);
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec descs);
+inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
 fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt)
 {
     fl_ast_node *arg_node = id_node->next;
-    fl_data_desc_vec params = _fl_inl_parse_nodes_to_params(arg_node, cnt);
-    const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
+    fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(arg_node, cnt);
+    const fl_fn_interface *fn_i = fl_operation_get_interface_by_descs(op, &descs);
 
     if (!fn_i)
     {
-        throw_compilation_error(id_node, "couldn't find function overload for given arguments");
+        fl_throw_compilation_error(id_node, "couldn't find function overload for given arguments");
         return FL_FALSE;
     }
 
-    fl_bool inlineable = _fl_inl_is_call_inlineable(op, fn_i, params);
-    fl_data_desc_vec_free(&params);
+    fl_bool inlineable = _fl_inl_is_call_inlineable(op, fn_i, descs);
+    fl_data_desc_vec_free(&descs);
 
     if (!inlineable)
         return FL_FALSE;
@@ -161,45 +161,42 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
         fl_cmp_compile_node(arg_node->next, &block_cnt);
 
-        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_START_BLOCK);
-        fl_byte_vec_push_t(&cnt->byte_code, block_cnt.byte_code.size, fl_size);
-        fl_byte_vec_merge(&cnt->byte_code, &block_cnt.byte_code);
-        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BLOCK);
+        fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt);
 
         fl_cmp_context_free(&block_cnt);
     }
 
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_ARGS);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
 }
 
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_params)
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_descs)
 {
     return fl_operation_is_compile_time(op) ||
-           (fl_bitfield_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
-            fl_data_desc_vec_is_every_const(&actual_params));
+           (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
+            fl_data_desc_vec_is_every_const(&actual_descs));
 }
 
-inline fl_data_desc_vec _fl_inl_parse_nodes_to_params(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
+inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
 {
-    fl_data_desc_vec params;
-    fl_data_desc_vec_init(&params);
+    fl_data_desc_vec descs;
+    fl_data_desc_vec_init(&descs);
 
     while (arg_node)
     {
-        fl_data_desc desc = _fl_inl_parse_node_to_param(arg_node, cnt);
-        fl_data_desc_vec_push(&params, desc);
+        fl_data_desc desc = _fl_inl_parse_node_to_desc(arg_node, cnt);
+        fl_data_desc_vec_push(&descs, desc);
         arg_node = arg_node->next;
     }
 
-    return params;
+    return descs;
 }
 
-fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_context *cnt)
+fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_BLOCK:
-        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE, FL_DATA_TRAITS_CONST);
+        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE, FL_DATA_TRAIT_CONST);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
     {
@@ -211,24 +208,24 @@ fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_c
 
         assert(fl_operation_is_callable(op));
 
-        fl_data_desc_vec params = _fl_inl_parse_nodes_to_params(id_node->next, cnt);
-        const fl_fn_interface *fn_i = fl_operation_get_interface(op, params);
+        fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(id_node->next, cnt);
+        const fl_fn_interface *fn_i = fl_operation_get_interface_by_descs(op, &descs);
 
         assert(fn_i);
 
-        fl_data_traits traits = FL_DATA_TRAITS_NONE;
+        fl_data_traits traits = FL_DATA_TRAIT_NONE;
 
-        if (_fl_inl_is_call_inlineable(op, fn_i, params))
-            fl_bitfield_set(traits, FL_DATA_TRAITS_CONST);
+        if (_fl_inl_is_call_inlineable(op, fn_i, descs))
+            fl_bits_set(traits, FL_DATA_TRAIT_CONST);
 
-        fl_data_desc_vec_free(&params);
+        fl_data_desc_vec_free(&descs);
         return fl_data_desc_create_traited(fn_i->return_type, traits);
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
         fl_data_type type = id && id->value.desc.type ? id->value.desc.type : FL_DATA_TYPE_NULL;
-        return fl_data_desc_create_traited(type, FL_DATA_TRAITS_REF);
+        return fl_data_desc_create_traited(type, FL_DATA_TRAIT_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:
     {

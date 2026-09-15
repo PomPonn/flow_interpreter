@@ -81,7 +81,7 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
-    fl_bitfield_set(intf.traits, FL_FN_TRAITS_META);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_META);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_import);
     // set variant vec
@@ -96,7 +96,7 @@ fl_void fl_g_instrs_init()
     fl_data_desc_vec_init_with(
         &params, 2,
         (fl_data_desc[]){
-            fl_data_desc_create(FL_DATA_TRAITS_REF),
+            fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAIT_REF),
             fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
     // init interface(s)
@@ -116,11 +116,11 @@ fl_void fl_g_instrs_init()
         &params, 2,
         (fl_data_desc[]){
             fl_data_desc_create(FL_DATA_TYPE_ARRAY),
-            fl_data_desc_create(FL_DATA_TYPE_CODE_PTR),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);
-    fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lambda);
     // set variant vec
@@ -140,7 +140,7 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
-    fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_add);
     // set variant vec
@@ -160,7 +160,7 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
-    fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_sub);
     // set variant vec
@@ -180,7 +180,7 @@ fl_void fl_g_instrs_init()
         });
     // init interface(s)
     fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
-    fl_bitfield_set(intf.traits, FL_FN_TRAITS_PURE);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_mul);
     // set variant vec

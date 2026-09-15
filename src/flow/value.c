@@ -16,24 +16,28 @@
 #include "shared/str.h"
 #include "flow/instr/instruction.h"
 #include "tools/byte_reader.h"
+#include "flow/byte_segm.h"
 
+// TODO: wrap this out
 #include <stdlib.h>
 
 // ---------- DEFINITIONS -----------
 
 fl_void fl_value_free(fl_value *value)
 {
-    if (!fl_bitfield_is_set(value->desc.traits, FL_DATA_TRAITS_IMMUTABLE))
+    if (!fl_bits_is_any(value->desc.traits, FL_DATA_TRAIT_VIEW | FL_DATA_TRAIT_REF))
     {
         switch (value->desc.type)
         {
+        case FL_DATA_TYPE_ARRAY:
+            fl_value_vec_free(value->data);
+            break;
         case FL_DATA_TYPE_FN:
             fl_fn_variant_vec_free(value->data);
             break;
-            // ???
-        case FL_DATA_TYPE_CODE_PTR:
-            break;
         case FL_DATA_TYPE_SCOPE:
+            fl_scope_free(value->data);
+            break;
         default:
             fl_mem_free(value->data);
             break;
@@ -80,7 +84,7 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
         break;
     }
 
-    fl_data_desc desc = fl_data_desc_create_traited(lit_type, FL_DATA_TRAITS_CONST);
+    fl_data_desc desc = fl_data_desc_create_traited(lit_type, FL_DATA_TRAIT_CONST);
     return fl_value_create_desc(desc, res_data);
 }
 
@@ -135,13 +139,10 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
 
         fl_fn_interface_to_bytes(var->interface, bytes);
 
-        assert(*var->body_ptr == FL_INSTR_START_BLOCK);
+        fl_byte_segm *body = var->body_ptr;
+        assert(*body->data == FL_INSTR_START_BLOCK);
 
-        const fl_size block_len = *(fl_size *)(var->body_ptr + sizeof(fl_instruction));
-        const fl_byte *actual_body = var->body_ptr + sizeof(fl_instruction) + sizeof(fl_size);
-
-        fl_byte_vec_push_t(bytes, block_len, fl_size);
-        fl_byte_vec_push_mem(bytes, actual_body, block_len);
+        fl_byte_vec_push_mem(bytes, body->data, body->len);
         fl_byte_vec_push(bytes, FL_INSTR_BODY_END);
         break;
     }
@@ -196,13 +197,15 @@ fl_value fl_value_copy(fl_value value)
     case FL_DATA_TYPE_BOOL:
     case FL_DATA_TYPE_INT:
     case FL_DATA_TYPE_FLOAT:
-    case FL_DATA_TYPE_STRING:
     {
         const fl_size size = fl_value_mem_size(value);
         copied.data = fl_mem_alloc(size);
         fl_mem_copy(value.data, copied.data, size);
         break;
     }
+    case FL_DATA_TYPE_STRING:
+        copied.data = fl_str_dup(value.data);
+        break;
     default:
         break;
     }
@@ -210,24 +213,29 @@ fl_value fl_value_copy(fl_value value)
     return copied;
 }
 
+fl_value fl_value_create_copy(fl_data_type type, const fl_unknown *data)
+{
+    return fl_value_copy(fl_value_create(type, (fl_unknown *)data));
+}
+
 fl_value fl_value_from_bytes(fl_byte_reader *reader)
 {
-
     const fl_data_type type = fl_byte_reader_next(reader, fl_data_type);
     fl_value val = fl_value_create(type, FL_NULL);
 
     switch (type)
     {
     case FL_DATA_TYPE_STRING:
-        val.data = fl_str_dup(fl_byte_reader_next_str(reader));
-        break;
+    {
+        const fl_char *str = fl_byte_reader_next_str(reader);
+        return fl_value_create_copy(FL_DATA_TYPE_STRING, str);
+    }
     case FL_DATA_TYPE_INT:
     case FL_DATA_TYPE_FLOAT:
     case FL_DATA_TYPE_BOOL:
     {
-        const fl_size size = fl_value_mem_size(val);
-        val.data = fl_byte_reader_next_bytes(reader, size);
-        break;
+        const fl_byte *mem = fl_byte_reader_get_ptr(reader);
+        return fl_value_create_copy(type, mem);
     }
     case FL_DATA_TYPE_ARRAY:
     {
@@ -238,8 +246,7 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader)
         for (fl_size i = 0; i < size; i++)
             fl_value_vec_push(items, fl_value_from_bytes(reader));
 
-        val.data = items;
-        break;
+        return fl_value_create(FL_DATA_TYPE_ARRAY, items);
     }
     case FL_DATA_TYPE_FN:
     {
@@ -260,29 +267,29 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader)
             fl_data_desc_vec_push(&params, desc);
         }
 
-        // handle body
-        const fl_byte *body_ptr = fl_byte_reader_current_ptr(reader);
-        const fl_size body_len = fl_byte_reader_next(reader, fl_size);
-        // +1 for FL_INSTR_BODY_END
-        fl_byte_reader_skip_bytes(reader, body_len + 1);
+        // handle body code segment
+        fl_byte_segm *seg = fl_mem_alloc_t(fl_byte_segm);
+        // +1 for BODY END tag
+        const fl_size len = fl_byte_reader_next(reader, fl_size) + 1;
+        *seg = fl_byte_segm_create(fl_byte_reader_get_ptr(reader), len);
+
+        // skip body bytes
+        fl_byte_reader_skip_bytes(reader, len);
 
         fl_fn_interface intf;
         fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
         fl_fn_interface_set_labels(&intf, labels);
 
         fl_fn_variant variant;
-        fl_fn_variant_init(&variant, FL_FALSE, intf, body_ptr);
+        fl_fn_variant_init(&variant, FL_FALSE, intf, seg);
 
         fl_fn_variant_vec *vars = fl_mem_alloc_t(fl_fn_variant_vec);
         fl_fn_variant_vec_init_with(vars, 1, (fl_fn_variant[]){variant});
 
-        val.data = vars;
-        break;
+        return fl_value_create(FL_DATA_TYPE_FN, vars);
     }
     default:
         assert(FL_FALSE);
-        break;
+        return fl_value_empty();
     }
-
-    return val;
 }

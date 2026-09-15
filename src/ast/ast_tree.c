@@ -30,7 +30,7 @@
 /**
  * @brief Shorthand for throwing syntax error.
  */
-#define throw_syntax_error(message) \
+#define fl_throw_syntax_error(message) \
     fl_err_throw(FL_ERR_AST, message, arr->current->value, arr->current->location)
 
 /**
@@ -203,7 +203,7 @@ fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *ar
 
     // expect lparen
     if (arr->current->alias != FL_TOKEN_ALIAS_LPAREN)
-        throw_syntax_error("Expected '(' when calling a function");
+        fl_throw_syntax_error("Expected '(' when calling a function");
 
     do
     {
@@ -216,7 +216,7 @@ fl_ast_node *_fl_ast_process_function_call(fl_ast_node *parent, fl_token_arr *ar
 
     // expect rparen
     if (arr->current->alias != FL_TOKEN_ALIAS_RPAREN)
-        throw_syntax_error("Missing ')' (closing of function call)");
+        fl_throw_syntax_error("Missing ')' (closing of function call)");
 
     next_token_safe;
     return parent;
@@ -245,7 +245,7 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
     else
-        throw_syntax_error("Unexpected token");
+        fl_throw_syntax_error("Unexpected token");
 
     if (node->type == FL_AST_NODE_TYPE_ID_CHAIN)
     {
@@ -263,7 +263,7 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
     if (grouped)
     {
         if (arr->current->alias != FL_TOKEN_ALIAS_RPAREN)
-            throw_syntax_error("Missing closure of group ')'");
+            fl_throw_syntax_error("Missing closure of group ')'");
         else
             next_token_safe;
     }
@@ -285,7 +285,7 @@ fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bo
     if (!is_root)
     {
         if (arr->current->alias != FL_TOKEN_ALIAS_LBRACE)
-            throw_syntax_error("Expected block opening '{'");
+            fl_throw_syntax_error("Expected block opening '{'");
         else
             next_token_safe;
     }
@@ -312,7 +312,7 @@ fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bo
             break;
         case FL_TOKEN_ALIAS_RBRACE:
             if (is_root)
-                throw_syntax_error("Unexpected block closure ('}')");
+                fl_throw_syntax_error("Unexpected block closure ('}')");
 
             quit = FL_TRUE;
             break;
@@ -323,7 +323,7 @@ fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bo
 
             // throw error if expression isn't ending with a semicolon
             if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
-                throw_syntax_error("expected semicolon ';' at the end of expression");
+                fl_throw_syntax_error("expected semicolon ';' at the end of expression");
 
 #if _INCLUDE_INLINE_LOGS
             printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
