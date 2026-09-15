@@ -60,9 +60,13 @@ FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op);
 fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
 fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *cnt);
 
-const fl_fn_interface *fl_operation_get_interface(
+const fl_fn_interface *fl_operation_get_interface_by_descs(
     fl_operation op,
-    const fl_data_desc_vec params);
+    const fl_data_desc_vec descs);
+
+const fl_fn_interface *fl_operation_get_interface_by_args(
+    fl_operation op,
+    const fl_value_vec args);
 
 // ---------- DEFINITIONS ----------
 
