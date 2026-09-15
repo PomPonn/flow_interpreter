@@ -23,7 +23,8 @@
 
 ## other
 
-- data_desc & interfaces handling
+- implement values dereferencing (adapt_args function - rename it to sth less general)
+- fix messy data_desc & interfaces handling.
 - update specs
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration
