@@ -69,7 +69,7 @@ fl_void fl_g_instrs_init()
     fl_data_desc_vec params;
     fl_fn_variant_vec vars;
     fl_fn_variant var;
-    fl_fn_interface intf;
+    fl_fn_intf intf;
 
     // ---- IMPORT ----
 
@@ -79,8 +79,8 @@ fl_void fl_g_instrs_init()
         (fl_data_desc[]){
             fl_data_desc_create(FL_DATA_TYPE_STRING),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bits_set(intf.traits, FL_FN_TRAITS_META);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_import);
@@ -99,8 +99,8 @@ fl_void fl_g_instrs_init()
             fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAIT_REF),
             fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_assign);
     // set variant vec
@@ -118,8 +118,8 @@ fl_void fl_g_instrs_init()
             fl_data_desc_create(FL_DATA_TYPE_ARRAY),
             fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_FN, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_FN, params);
     fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lambda);
@@ -138,8 +138,8 @@ fl_void fl_g_instrs_init()
             fl_data_desc_create(FL_DATA_TYPE_ANY),
             fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_add);
@@ -158,8 +158,8 @@ fl_void fl_g_instrs_init()
             fl_data_desc_create(FL_DATA_TYPE_ANY),
             fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_sub);
@@ -178,8 +178,8 @@ fl_void fl_g_instrs_init()
             fl_data_desc_create(FL_DATA_TYPE_ANY),
             fl_data_desc_create(FL_DATA_TYPE_ANY),
         });
-    // init interface(s)
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
     fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_mul);

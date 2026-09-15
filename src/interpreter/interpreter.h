@@ -16,10 +16,12 @@
 
 FL_FORWARD_STRUCT(fl_value);
 FL_FORWARD_STRUCT(fl_byte_vec);
-FL_FORWARD_STRUCT(fl_cmp_context);
+FL_FORWARD_STRUCT(fl_byte_segm);
+FL_FORWARD_STRUCT(fl_local_context);
 
 // ---------- DECLARATIONS ----------
 
-fl_void fl_intpr_interpret(fl_byte_vec bytes);
+fl_void fl_intpr_interpret(fl_byte_vec code);
 
-fl_value fl_intpr_eval(fl_cmp_context *cmp_cnt);
+// returns last computed fl_value if it was the last operation on stack, otherwise empty fl_value
+fl_value fl_intpr_eval(fl_byte_segm code, fl_local_context *cnt);

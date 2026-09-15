@@ -24,9 +24,12 @@
 
 ## other
 
+- free unused scopes?
+- add const specifiers where possible (leave pointers)
+- make fl_id_entry use data_desc instead of just data_type? (decl_type fields)
 - wrap std string to x type conversion functions
 - implement values dereferencing
-- fix messy data_desc & interfaces handling.
+- fix messy data_desc & intfs handling.
 - update specs
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration

@@ -28,14 +28,14 @@ FL_HEADER_FN fl_value fl_instr_assign(fl_value_vec args)
     // it is probably unwanted behaviour
     // TODO: change this behaviour
 
-    fl_value *val = ref.data;
+    fl_id_entry *id = ref.data;
 
-    if (!fl_value_is_desc_by(*val, what->desc))
-        // invalid data descriptors
+    // invalid data types
+    if (!fl_bits_is_set(id->decl_type, what->desc.type))
         assert(FL_FALSE);
 
-    fl_value_free(val);
-    *val = *what;
+    fl_value_free(&id->value);
+    id->value = *what;
 
     // clear 'what' value because it was moved
     *what = fl_value_empty();

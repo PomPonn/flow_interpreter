@@ -1,7 +1,7 @@
 /**
- * ---------- fn_interface_vec.h --------------------
+ * ---------- fn_intf_vec.h --------------------
  *
- * Declares function interface vector logic.
+ * Declares function intf vector logic.
  *
  * -------------------------------------------------
  */
@@ -14,9 +14,9 @@
 
 // ------------- MACROS -----------------
 
-#define FL_VEC_NAME fl_fn_interface_vec
-#define FL_VEC_TYPE fl_fn_interface
+#define FL_VEC_NAME fl_fn_intf_vec
+#define FL_VEC_TYPE fl_fn_intf
 #define FL_VEC_CAP 2
 #define FL_VEC_EXCLUDE_FIND
-#define FL_VEC_DESTROY(elem) fl_fn_interface_free(&elem)
+#define FL_VEC_DESTROY(elem) fl_fn_intf_free(&elem)
 #include "templates/vector.h"

@@ -198,7 +198,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
         case FL_INSTR_CALL:
             printf("[CALL]\n");
             break;
-        case FL_INSTR_BODY_END:
+        case FL_INSTR_END_BODY:
             printf("[BODY END]");
             quit = FL_TRUE;
             break;

@@ -29,7 +29,8 @@
 
 FL_FORWARD_STRUCT(fl_byte_vec);
 FL_FORWARD_STRUCT(fl_cmp_context);
+FL_FORWARD_STRUCT(fl_cstr_vec);
 
 // ---------- DECLARATIONS --------------
 
-fl_void fl_cmp_block_cnt_to_bytes(fl_byte_vec *bytes, const fl_cmp_context *cnt);
+fl_void fl_cmp_block_cnt_to_bytes(fl_byte_vec *bytes, const fl_cmp_context *cnt, const fl_cstr_vec *ignore_labels);

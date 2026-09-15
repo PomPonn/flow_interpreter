@@ -34,6 +34,8 @@ typedef struct _fl_byte_reader fl_byte_reader;
 
 // ---------- DECLARATIONS ----------
 
+fl_byte_segm fl_byte_reader_extract_block_segm(fl_byte_reader *reader);
+
 FL_HEADER_FN const fl_unknown *fl_byte_reader_next_bytes(fl_byte_reader *reader, fl_size size);
 FL_HEADER_FN fl_void fl_byte_reader_skip_bytes(fl_byte_reader *reader, fl_size count);
 FL_HEADER_FN fl_byte_reader fl_byte_reader_create(const fl_byte_vec bytes);

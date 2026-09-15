@@ -44,7 +44,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_match(
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_data_desc_vec current = vec->data[i].interface.param_descs;
+        const fl_data_desc_vec current = vec->data[i].intf.param_descs;
 
         if (fl_data_desc_vec_match_params(&current, params))
             return &vec->data[i];
@@ -59,7 +59,7 @@ FL_HEADER_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
 {
     for (fl_size i = 0; i < vec->size; i++)
     {
-        const fl_data_desc_vec current = vec->data[i].interface.param_descs;
+        const fl_data_desc_vec current = vec->data[i].intf.param_descs;
 
         if (fl_data_desc_vec_suit_args(&current, args))
             return &vec->data[i];

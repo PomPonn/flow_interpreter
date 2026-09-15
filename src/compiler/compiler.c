@@ -121,8 +121,7 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
     }
 
     // convert whole context to bytes
-    fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt);
-
+    fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt, FL_NULL);
     fl_cmp_context_free(&inner_cnt);
 }
 
@@ -229,7 +228,9 @@ fl_void _fl_cmp_compile_plain_id_chain(const fl_ast_node *node, fl_cmp_context *
         fl_int_vec_free(&inds);
         inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
 
-        _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
+        // MAYBE TEMP: push it by names here
+        _fl_cmp_byte_code_push_id_access_by_names(&cnt->byte_code, id_chain);
+        // _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
     }
     // if id is unrecognized just push id chain string
     // (put responsibility on the interpreter to handle import etc.)

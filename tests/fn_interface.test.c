@@ -1,7 +1,7 @@
 /**
- * ---------- fn_interface.test.c -------------------
+ * ---------- fn_intf.test.c -------------------
  *
- * Defines tests for 'flow/fn/fn_interface'.
+ * Defines tests for 'flow/fn/fn_intf'.
  *
  * --------------------------------------------------
  */
@@ -16,7 +16,7 @@
 
 // ---------- GLOBALS ----------
 
-fl_fn_interface intf;
+fl_fn_intf intf;
 
 // ----------  SETUP ----------
 
@@ -31,19 +31,19 @@ void setUp()
             fl_data_desc_create(FL_DATA_TYPE_FN),
         });
 
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_FLOAT, params);
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_FLOAT, params);
 }
 
 void tearDown()
 {
-    fl_fn_interface_free(&intf);
+    fl_fn_intf_free(&intf);
 }
 
 // ---------- TESTS ----------
 
-void test_fn_interface_overlaps(void)
+void test_fn_intf_overlaps(void)
 {
-    fl_fn_interface other;
+    fl_fn_intf other;
 
     fl_data_desc_vec params;
     fl_data_desc_vec_init_with(
@@ -54,13 +54,13 @@ void test_fn_interface_overlaps(void)
             fl_data_desc_create(FL_DATA_TYPE_FN),
         });
 
-    fl_fn_interface_init(&other, FL_DATA_TYPE_FLOAT, params);
+    fl_fn_intf_init(&other, FL_DATA_TYPE_FLOAT, params);
 
-    TEST_ASSERT_TRUE(fl_fn_interface_overlaps(intf, other));
+    TEST_ASSERT_TRUE(fl_fn_intf_overlaps(intf, other));
 
     intf.param_descs.data[1].traits = FL_DATA_TRAIT_NONE;
 
-    TEST_ASSERT_FALSE(fl_fn_interface_overlaps(intf, other));
+    TEST_ASSERT_FALSE(fl_fn_intf_overlaps(intf, other));
 }
 
 // ---------- ENTRY ----------
@@ -69,7 +69,7 @@ int main()
 {
     UNITY_BEGIN();
 
-    RUN_TEST(test_fn_interface_overlaps);
+    RUN_TEST(test_fn_intf_overlaps);
 
     return UNITY_END();
 }

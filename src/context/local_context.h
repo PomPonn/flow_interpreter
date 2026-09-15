@@ -25,7 +25,7 @@ struct _fl_local_context
     fl_scope *scope;
 };
 /**
- * @brief Describes generic local context. Used as an interface.
+ * @brief Describes generic local context. Used as an intf.
  */
 typedef struct _fl_local_context fl_local_context;
 
@@ -45,6 +45,5 @@ FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt)
 
 FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt)
 {
-    // TODO
-    assert(FL_FALSE);
+    cnt->scope = cnt->scope->outer;
 }

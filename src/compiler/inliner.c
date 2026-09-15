@@ -18,6 +18,8 @@
 #include "context/intpr_context.h"
 #include "flow/id/id_chain.h"
 #include "compiler/shared.h"
+#include "flow/byte_segm.h"
+#include "vecs/cstr_vec.h"
 
 #ifndef NDEBUG
 
@@ -30,7 +32,7 @@
 
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
 fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_context *cnt);
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec descs);
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec descs);
 inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
@@ -39,7 +41,7 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
 {
     fl_ast_node *arg_node = id_node->next;
     fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(arg_node, cnt);
-    const fl_fn_interface *fn_i = fl_operation_get_interface_by_descs(op, &descs);
+    const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
 
     if (!fn_i)
     {
@@ -66,7 +68,8 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
         fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
 
     // run this code snippet
-    fl_value res = fl_intpr_eval(&inl_cnt);
+    fl_byte_segm segm = fl_byte_segm_create_from_vec(&inl_cnt.byte_code);
+    fl_value res = fl_intpr_eval(segm, (fl_local_context *)&inl_cnt);
 
     if (fl_value_is_empty(res))
         assert(FL_FALSE);
@@ -85,12 +88,12 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 {
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
 
-    // init array of labels (lambda parameter names)
-    fl_value_vec *labels = fl_mem_alloc_t(fl_value_vec);
     const fl_ast_node *param_node = arg_node->child;
     fl_bool single_param = FL_FALSE;
+    // init array of labels (lambda parameter names)
+    fl_cstr_vec labels;
 
-    fl_value_vec_init(labels);
+    fl_cstr_vec_init(&labels);
 
     // compile each potential label - all we want for now is a string
 
@@ -111,7 +114,7 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
                 assert(FL_FALSE);
 
             // push label
-            fl_value_vec_push(labels, fl_value_create(FL_DATA_TYPE_STRING, id_chain->data[0]));
+            fl_cstr_vec_push(&labels, id_chain->data[0]);
         }
         else
         {
@@ -120,17 +123,18 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
             // compile node normally and eval compilation
             fl_cmp_compile_node(param_node, &inl_cnt);
-            fl_value res = fl_intpr_eval(&inl_cnt);
+
+            fl_byte_segm segm = fl_byte_segm_create_from_vec(&inl_cnt.byte_code);
+            fl_value res = fl_intpr_eval(segm, (fl_local_context *)&inl_cnt);
 
             // resulting value has to be a string
-            // (can it be ref too?)
             if (res.desc.type != FL_DATA_TYPE_STRING)
             {
                 fl_value_free(&res);
                 assert(FL_FALSE);
             }
 
-            fl_value_vec_push(labels, fl_value_create(FL_DATA_TYPE_STRING, res.data));
+            fl_cstr_vec_push(&labels, res.data);
             fl_cmp_context_free(&inl_cnt);
         }
 
@@ -141,35 +145,39 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     }
 
     // convert array of strings to bytes
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
-    fl_value_to_bytes(fl_value_create(FL_DATA_TYPE_ARRAY, labels), &cnt->byte_code);
+    fl_value lbl_arr = fl_value_from_cstr_vec(labels);
 
-    // free labels when they are already copied to the bc
-    fl_value_vec_free(labels);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
+    fl_value_to_bytes(lbl_arr, &cnt->byte_code);
 
     // compile lambda body
 
-    if (arg_node->next->type == FL_AST_NODE_TYPE_BLOCK)
-        fl_cmp_compile_node(arg_node->next, cnt);
-    else
+    fl_cmp_context block_cnt;
+    fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
+    fl_local_context_deepen((fl_local_context *)&block_cnt);
+
+    // if lambda is a single operator, wrap it in a block
+    fl_ast_node *inner_node = arg_node->next->type == FL_AST_NODE_TYPE_BLOCK ? arg_node->next->child : arg_node->next;
+
+    while (inner_node)
     {
-        // simulate block if it's single operation lambda body
-
-        fl_cmp_context block_cnt;
-        fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
-        fl_local_context_deepen((fl_local_context *)&block_cnt);
-
         fl_cmp_compile_node(arg_node->next, &block_cnt);
-
-        fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt);
-
-        fl_cmp_context_free(&block_cnt);
+        inner_node = inner_node->next;
     }
 
+    fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt, &labels);
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BODY);
+
+    fl_byte_reader rd = fl_byte_reader_create(cnt->byte_code);
+    fl_prt_print_byte_code_code(&rd);
+
+    fl_value_free(&lbl_arr);
+    fl_cstr_vec_free_shallow(&labels);
+    fl_cmp_context_free(&block_cnt);
 }
 
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_interface *intf, const fl_data_desc_vec actual_descs)
+inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec actual_descs)
 {
     return fl_operation_is_compile_time(op) ||
            (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
@@ -209,7 +217,7 @@ fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_co
         assert(fl_operation_is_callable(op));
 
         fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(id_node->next, cnt);
-        const fl_fn_interface *fn_i = fl_operation_get_interface_by_descs(op, &descs);
+        const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
 
         assert(fn_i);
 
@@ -224,7 +232,7 @@ fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_co
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
-        fl_data_type type = id && id->value.desc.type ? id->value.desc.type : FL_DATA_TYPE_NULL;
+        fl_data_type type = id ? id->decl_type : FL_DATA_TYPE_NULL;
         return fl_data_desc_create_traited(type, FL_DATA_TRAIT_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:

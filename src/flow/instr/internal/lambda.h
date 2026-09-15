@@ -37,7 +37,7 @@ FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
     args.data[1] = fl_value_empty();
     assert(*body->data == FL_INSTR_START_BLOCK);
 
-    // interface fn traits ???
+    // intf fn traits ???
 
     fl_data_desc_vec params;
     fl_cstr_vec labels;
@@ -54,9 +54,9 @@ FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
         fl_cstr_vec_push(&labels, fl_str_dup(head->data[i].data));
     }
 
-    fl_fn_interface intf;
-    fl_fn_interface_init(&intf, FL_DATA_TYPE_ANY, params);
-    fl_fn_interface_set_labels(&intf, labels);
+    fl_fn_intf intf;
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
+    fl_fn_intf_set_labels(&intf, labels);
 
     fl_fn_variant variant;
     fl_fn_variant_init(&variant, FL_FALSE, intf, body);

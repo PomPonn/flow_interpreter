@@ -16,6 +16,8 @@
 
 FL_FORWARD_STRUCT(fl_byte_reader);
 FL_FORWARD_STRUCT(fl_byte_vec);
+FL_FORWARD_STRUCT(fl_id_entry);
+FL_FORWARD_STRUCT(fl_cstr_vec);
 
 struct _fl_value
 {
@@ -29,7 +31,6 @@ typedef struct _fl_value fl_value;
 FL_HEADER_FN fl_value fl_value_empty();
 FL_HEADER_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
 FL_HEADER_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data);
-FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target);
 FL_HEADER_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
 FL_HEADER_FN fl_bool fl_value_is_size_complex(fl_value v);
 FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc);
@@ -42,6 +43,9 @@ fl_bool fl_value_indentical(fl_value v1, fl_value v2);
 fl_value fl_value_copy(fl_value value);
 fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes);
 fl_value fl_value_from_bytes(fl_byte_reader *reader);
+// doesn't copy vector content
+fl_value fl_value_from_cstr_vec(const fl_cstr_vec vec);
+fl_value fl_value_create_ref(fl_id_entry *target);
 
 // ---------- DEFINITIONS ----------
 
@@ -63,14 +67,6 @@ FL_HEADER_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data)
     return (fl_value){
         .data = data,
         .desc = desc,
-    };
-}
-
-FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target)
-{
-    return (fl_value){
-        .data = target,
-        .desc = fl_data_desc_create_traited(target->desc.type, FL_DATA_TRAIT_REF),
     };
 }
 

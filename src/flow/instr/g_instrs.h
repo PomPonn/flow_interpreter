@@ -14,7 +14,7 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
-FL_FORWARD_STRUCT(fl_fn_interface);
+FL_FORWARD_STRUCT(fl_fn_intf);
 FL_FORWARD_STRUCT(fl_const_cstr_vec);
 FL_FORWARD_STRUCT(fl_fn_variant_vec);
 FL_FORWARD_STRUCT(fl_instr_info_vec);

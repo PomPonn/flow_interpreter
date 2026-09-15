@@ -35,15 +35,15 @@
     for (fl_size _i = 0; _i < params._capacity; _i++)                     \
     fl_data_desc_vec_push(&params, _FL_TDESCS(__VA_ARGS__)[_i])
 
-#define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                                                 \
-    {                                                                                                                     \
-        _fl_data_descS(__VA_ARGS__);                                                                                      \
-        fl_fn_interface interface;                                                                                        \
-        fl_fn_interface_init(&interface, return_type, params);                                                            \
-        fl_fn_variant var;                                                                                                \
-        fl_fn_variant_init(&var, FL_TRUE, interface, _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload)); \
-        fl_bool success = fl_fn_variant_vec_overload(name->value.data, var);                                              \
-        assert(success);                                                                                                  \
+#define _FL_OVERLOAD_FN(name, overload, return_type, ...)                                                            \
+    {                                                                                                                \
+        _fl_data_descS(__VA_ARGS__);                                                                                 \
+        fl_fn_intf intf;                                                                                             \
+        fl_fn_intf_init(&intf, return_type, params);                                                                 \
+        fl_fn_variant var;                                                                                           \
+        fl_fn_variant_init(&var, FL_TRUE, intf, _FL_MERGE3(_FL_MERGE4(_fl_, FL_MODULE_NAME, _, name), _, overload)); \
+        fl_bool success = fl_fn_variant_vec_overload(name->value.data, var);                                         \
+        assert(success);                                                                                             \
     }
 
 // ====== PUBLIC ======
