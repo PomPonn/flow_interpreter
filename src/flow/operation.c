@@ -46,12 +46,8 @@ fl_value fl_operation_run(fl_operation op, fl_value_vec args, fl_base_context *c
 
 fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec args)
 {
-    fl_data_desc_vec descs;
-    fl_data_desc_vec_from_values(&descs, &args);
-
-    const fl_fn_interface *intf = fl_operation_get_interface(op, descs);
+    const fl_fn_interface *intf = fl_operation_get_interface_by_args(op, args);
     assert(intf);
-    fl_data_desc_vec_free(&descs);
 
     for (fl_size i = 0; i < args.size; i++)
     {
@@ -68,15 +64,28 @@ fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec args)
     }
 }
 
-const fl_fn_interface *fl_operation_get_interface(
+const fl_fn_interface *fl_operation_get_interface_by_descs(
     fl_operation op,
-    const fl_data_desc_vec params)
+    const fl_data_desc_vec descs)
 {
     if (!fl_operation_is_callable(op))
         return FL_NULL;
     else
     {
-        fl_fn_variant *match = fl_fn_variant_vec_find_match(op.vars, params);
+        fl_fn_variant *match = fl_fn_variant_vec_find_match(op.vars, descs);
+        return match ? &match->interface : FL_NULL;
+    }
+}
+
+const fl_fn_interface *fl_operation_get_interface_by_args(
+    fl_operation op,
+    const fl_value_vec args)
+{
+    if (!fl_operation_is_callable(op))
+        return FL_NULL;
+    else
+    {
+        fl_fn_variant *match = fl_fn_variant_vec_find_suit(op.vars, vals);
         return match ? &match->interface : FL_NULL;
     }
 }
