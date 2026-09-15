@@ -228,8 +228,7 @@ fl_data_desc _fl_inl_parse_node_to_param(const fl_ast_node *node, const fl_cmp_c
     {
         fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
         fl_data_type type = id && id->value.desc.type ? id->value.desc.type : FL_DATA_TYPE_NULL;
-        // not sure about this
-        return fl_data_desc_create(FL_DATA_TYPE_REF | type);
+        return fl_data_desc_create_traited(type, FL_DATA_TRAITS_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:
     {

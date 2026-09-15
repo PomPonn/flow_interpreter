@@ -69,7 +69,7 @@ FL_HEADER_FN fl_value fl_value_create_ref(fl_value *target)
 {
     return (fl_value){
         .data = target,
-        .desc = fl_data_desc_create(FL_DATA_TYPE_REF | target->desc.type),
+        .desc = fl_data_desc_create(FL_DATA_TRAITS_REF | target->desc.type),
     };
 }
 
@@ -101,12 +101,12 @@ FL_HEADER_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
     // Is it enough?
     // (opt this out)
 
-    if (fl_bitfield_is_set(desc.type, FL_DATA_TYPE_REF) &&
-        !fl_bitfield_is_set(v.desc.type, FL_DATA_TYPE_REF))
+    if (fl_bitfield_is_set(desc.type, FL_DATA_TRAITS_REF) &&
+        !fl_bitfield_is_set(v.desc.type, FL_DATA_TRAITS_REF))
         return FL_FALSE;
 
-    if (!fl_bitfield_is_set(desc.traits, FL_DATA_TYPE_REF) &&
-        fl_bitfield_is_set(v.desc.traits, FL_DATA_TYPE_REF))
+    if (!fl_bitfield_is_set(desc.traits, FL_DATA_TRAITS_REF) &&
+        fl_bitfield_is_set(v.desc.traits, FL_DATA_TRAITS_REF))
         return FL_FALSE;
 
     return fl_bitfield_is_any(desc.type, v.desc.type);

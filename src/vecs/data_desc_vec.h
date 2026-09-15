@@ -89,7 +89,7 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(const fl_data_desc_vec *vec, fl_
         if (fl_value_is_desc_by(arg, vec->data[i]))
             continue;
 
-        if (arg.desc.type == FL_DATA_TYPE_REF)
+        if (arg.desc.type == FL_DATA_TRAITS_REF)
         {
             arg = *(fl_value *)arg.data;
             if (!fl_value_is_desc_by(arg, vec->data[i]))
