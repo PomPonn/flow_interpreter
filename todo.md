@@ -2,7 +2,7 @@
 
 ## interpreter
 
-- free op_vec memory after usage - implement operation_free
+- free op_vec memory after usage - implement operation_free (is it an error if sth stays unused on op_stack?)
 - opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case)
 
 ## compiler
