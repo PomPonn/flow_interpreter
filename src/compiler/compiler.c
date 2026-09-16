@@ -122,6 +122,8 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
 
     // convert whole context to bytes
     fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt, FL_NULL);
+
+    fl_local_context_free_scope((fl_local_context *)&inner_cnt);
     fl_cmp_context_free(&inner_cnt);
 }
 

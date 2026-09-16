@@ -79,7 +79,7 @@ void test_vector_put_back(void)
 
 void test_vector_pop(void)
 {
-    fl_int last = fl_vector_peek(&vec);
+    fl_int last = vec.data[vec.size - 1];
     fl_int popped = fl_vector_pop(&vec);
 
     TEST_ASSERT_EQUAL_INT(last, popped);

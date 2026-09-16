@@ -20,6 +20,50 @@ inline const fl_scope *_fl_scope_go_back(const fl_scope *scope, fl_uint back_off
 
 // ---------- DEFINITIONS -----------
 
+fl_void fl_scope_free(fl_scope **scope)
+{
+    fl_scope *scp = *scope;
+
+    if (!scp)
+        return;
+
+    fl_id_entry_vec_free(&scp->ids);
+
+    if (scp->inners)
+    {
+        fl_scope_vec_free((fl_scope_vec *)scp->inners);
+        fl_mem_free(scp->inners);
+    }
+
+    if (scp->outer)
+    {
+        fl_scope_vec *inners = scp->outer->inners;
+        fl_int ind = fl_scope_vec_find(inners, scp);
+        assert(ind != FL_FIND_FAIL);
+
+        inners->data[ind] = FL_NULL;
+    }
+
+    fl_mem_free(scp);
+    *scope = FL_NULL;
+}
+
+fl_void fl_scope_init(fl_scope **scope, fl_scope *outer)
+{
+    fl_scope *scp = fl_mem_alloc_t(fl_scope);
+
+    fl_id_entry_vec_init(&scp->ids);
+
+    scp->outer = outer;
+    if (scp->outer)
+        fl_scope_add_inner(outer, scp);
+
+    scp->inners = fl_mem_alloc_t(fl_scope_vec);
+    fl_scope_vec_init((fl_scope_vec *)scp->inners);
+
+    *scope = scp;
+}
+
 fl_int_vec fl_scope_find_id_path(
     const fl_scope *scope,
     const fl_id_chain *id_chain,

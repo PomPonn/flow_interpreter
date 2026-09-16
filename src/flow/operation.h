@@ -59,6 +59,7 @@ FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op);
 
 fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
 fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_base_context *cnt);
+fl_void fl_operation_free(fl_operation *op);
 
 const fl_fn_intf *fl_operation_get_intf_by_descs(
     fl_operation op,

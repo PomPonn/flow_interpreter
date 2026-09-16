@@ -43,7 +43,7 @@ inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr
 inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
 
 // frees passed args when function execution is completed
-fl_value _fl_intpr_exec_fn(const fl_fn_variant *var, fl_value_vec args, const fl_local_context *local_cnt);
+fl_value _fl_intpr_exec_fn(const fl_fn_variant *var, fl_value_vec *args, const fl_local_context *local_cnt);
 
 // ---------- DEFINITIONS -----------
 
@@ -75,7 +75,7 @@ fl_value fl_intpr_eval(fl_byte_segm code, fl_local_context *cnt)
 
     _fl_intpr_interpret_bytes(&reader, &intpr_cnt);
 
-    fl_operation last_op = fl_op_vec_peek(&intpr_cnt.op_stack);
+    fl_operation last_op = fl_op_vec_pop(&intpr_cnt.op_stack);
 
     fl_intpr_context_free(&intpr_cnt);
     return last_op.type == FL_OPERATION_VALUE ? last_op.value : fl_value_empty();
@@ -114,13 +114,14 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             break;
         case FL_INSTR_END_BLOCK:
-            // what else to do here?
+        {
             fl_local_context_shallow((fl_local_context *)cnt);
 
             // if this block is nested call attach won't work
             // TODO: make it per scope
             call_attached = FL_FALSE;
             break;
+        }
         case FL_INSTR_CALL:
         {
             fl_id_entry *fn_id = FL_NULL;
@@ -199,7 +200,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             // execute operation (last popped operation is function op)
             fl_fn_variant *var = fl_operation_prep_run(op, &args, cnt->base);
-            fl_value res = _fl_intpr_exec_fn(var, args, (fl_local_context *)cnt);
+            fl_value res = _fl_intpr_exec_fn(var, &args, (fl_local_context *)cnt);
             // no need to free the args, it's handled by _fl_intpr_exec_fn function
 
             // push value even if it's empty? (as in assign case)
@@ -220,12 +221,12 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
     }
 }
 
-fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const fl_local_context *local_cnt)
+fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec *args, const fl_local_context *local_cnt)
 {
     if (fn_var->c_defined)
     {
-        fl_value res = fn_var->fn_ptr(args);
-        fl_value_vec_free(&args);
+        fl_value res = fn_var->fn_ptr(*args);
+        fl_value_vec_free(args);
         return res;
     }
 
@@ -237,14 +238,14 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
     fl_data_desc_vec descs = fn_var->intf.param_descs;
     fl_cstr_vec labels = fn_var->intf.param_labels;
 
-    assert(descs.size == labels.size && labels.size == args.size);
+    assert(descs.size == labels.size && labels.size == args->size);
 
     // add args to context as ids
-    for (fl_size i = 0; i < args.size; i++)
+    for (fl_size i = 0; i < args->size; i++)
     {
         // TODO: extend this
         fl_id_entry *id;
-        fl_id_entry_init(&id, fl_str_dup(labels.data[i]), descs.data[i].type, args.data[i]);
+        fl_id_entry_init(&id, fl_str_dup(labels.data[i]), descs.data[i].type, args->data[i]);
         fl_id_entry_vec_push(&cnt.scope->ids, id);
     }
 
@@ -261,8 +262,9 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
 
     // free array only
     // each individual arg will is freed through the context
-    fl_value_vec_free_shallow(&args);
-    // fl_intpr_context_free(&cnt);
+    fl_value_vec_free_shallow(args);
+    // Don't free local scope, because it's already invalid and handled by eval function
+
     return res;
 }
 

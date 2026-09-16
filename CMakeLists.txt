@@ -21,8 +21,8 @@ set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple_fn.fl)
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output
 set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
-# byte code version. Format: [Y][M][D][00-99 (patch id)]
-set(BYTECODE_VERSION 2026091400)
+# byte code version. Format: [Y][M][D][00-99 (patch)]
+set(BYTECODE_VERSION 2026091601)
 
 # ---------- FUNCTIONS ----------
 

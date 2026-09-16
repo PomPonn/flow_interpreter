@@ -37,6 +37,8 @@ FL_HEADER_FN fl_void fl_intpr_context_free(fl_intpr_context *cnt);
 FL_HEADER_FN fl_void fl_intpr_context_free(fl_intpr_context *cnt)
 {
     fl_op_vec_free(&cnt->op_stack);
+    cnt->base = FL_NULL;
+    cnt->scope = FL_NULL;
 }
 
 FL_HEADER_FN fl_void fl_intpr_context_from(fl_intpr_context *cnt, const fl_local_context *ref)

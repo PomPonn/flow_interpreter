@@ -93,15 +93,6 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(
         fl_value arg = args->data[i];
         if (fl_value_is_desc_by(arg, vec->data[i]))
             continue;
-
-        if (fl_bits_is_set(arg.desc.traits, FL_DATA_TRAIT_REF))
-        {
-            arg = ((fl_id_entry *)arg.data)->value;
-            if (!fl_value_is_desc_by(arg, vec->data[i]))
-                return FL_FALSE;
-
-            args->data[i] = arg;
-        }
     }
 
     return FL_TRUE;

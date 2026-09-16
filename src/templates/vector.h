@@ -65,7 +65,6 @@ FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value);
 FL_HEADER_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec);
 FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec);
-FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _peek)(FL_VEC_CONST FL_VEC_NAME *vec);
 
 #ifndef FL_VEC_EXCLUDE_FIND
 
@@ -183,16 +182,6 @@ FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec)
 
     vec->size--;
     return vec->data[vec->size];
-}
-
-FL_HEADER_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _peek)(FL_VEC_CONST FL_VEC_NAME *vec)
-{
-#ifdef FL_VEC_NULL_VALUE
-    if (vec->size == 0)
-        return FL_VEC_NULL_VALUE;
-#endif
-
-    return vec->data[vec->size - 1];
 }
 
 FL_HEADER_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec)

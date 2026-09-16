@@ -64,7 +64,8 @@ fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec *args)
             continue;
 
         // convert ref to simple value
-        *(args->data + i) = ((fl_id_entry *)args->data[i].data)->value;
+        fl_value target = ((fl_id_entry *)args->data[i].data)->value;
+        args->data[i] = fl_value_copy(target);
     }
 }
 
@@ -118,4 +119,24 @@ fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scop
     }
 
     return fl_operation_unknown();
+}
+
+fl_void fl_operation_free(fl_operation *op)
+{
+    switch (op->type)
+    {
+    case FL_OPERATION_UNKNOWN:
+        assert(FL_FALSE);
+        break;
+    case FL_OPERATION_FN:
+        assert(FL_FALSE);
+        // ???
+        break;
+    case FL_OPERATION_VALUE:
+        fl_value_free(&op->value);
+    default:
+        break;
+    }
+
+    *op = fl_operation_uninitialized();
 }

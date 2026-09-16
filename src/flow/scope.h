@@ -34,8 +34,6 @@ typedef struct _fl_scope fl_scope;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_init(fl_scope **scope, fl_scope *outer);
-FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope);
 FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
@@ -51,44 +49,14 @@ fl_id_entry *fl_scope_traverse(
     const fl_int_vec inds,
     fl_uint back_offset);
 
+fl_void fl_scope_free(fl_scope **scope);
+fl_void fl_scope_init(fl_scope **scope, fl_scope *outer);
 fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
 // depends on fl_scope_free
 #include "vecs/scope_vec.h"
 
-// ---------- HEADER-ONLY IMPLEMENTATIONS ----------
-
-FL_HEADER_FN fl_void fl_scope_init(fl_scope **scope, fl_scope *outer)
-{
-    fl_scope *scp = fl_mem_alloc_t(fl_scope);
-
-    fl_id_entry_vec_init(&scp->ids);
-
-    scp->outer = outer;
-    if (scp->outer)
-        fl_scope_add_inner(outer, scp);
-
-    scp->inners = fl_mem_alloc_t(fl_scope_vec);
-    fl_scope_vec_init((fl_scope_vec *)scp->inners);
-
-    *scope = scp;
-}
-
-FL_HEADER_FN fl_void fl_scope_free(fl_scope **scope)
-{
-    fl_scope *scp = *scope;
-
-    fl_id_entry_vec_free(&scp->ids);
-
-    if (scp->inners)
-    {
-        fl_scope_vec_free((fl_scope_vec *)scp->inners);
-        fl_mem_free(scp->inners);
-    }
-
-    fl_mem_free(scp);
-    *scope = FL_NULL;
-}
+// ---------- DEFINITIONS ----------
 
 FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,

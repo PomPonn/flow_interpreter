@@ -34,6 +34,7 @@ typedef struct _fl_local_context fl_local_context;
 FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt);
 FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt);
 FL_HEADER_FN fl_void fl_local_context_from(fl_local_context *cnt, const fl_local_context *ref);
+FL_HEADER_FN fl_void fl_local_context_free_scope(fl_local_context *cnt);
 
 // ---------- DEFINITIONS --------------
 
@@ -52,5 +53,12 @@ FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt)
 
 FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt)
 {
+    fl_scope *prev = cnt->scope;
     cnt->scope = cnt->scope->outer;
+    fl_scope_free(&prev);
+}
+
+FL_HEADER_FN fl_void fl_local_context_free_scope(fl_local_context *cnt)
+{
+    fl_scope_free(&cnt->scope);
 }
