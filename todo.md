@@ -22,6 +22,10 @@
 - AST generation unused tokens handling
 - AST types handling; AST type dimensions(?) handling
 
+## tokenizer
+
+- revise fl_token_location
+
 ## other
 
 - add call_attached to local_context (rename this field?)
