@@ -3,7 +3,6 @@
 ## interpreter
 
 - opt. opportunity: \_fl_intpr_indices_from_bytes - make indices readonly and don't alloc copy of them
-- free op_vec memory after usage - implement operation_free (is it an error if sth stays unused on op_stack?)
 - opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case)
 
 ## compiler
@@ -29,8 +28,8 @@
 
 ## other
 
+- revise context scopes freeing
 - add call_attached to local_context (rename this field?)
-- free unused scopes faster?
 - add const specifiers where possible
 - make fl_id_entry use data_desc instead of just data_type? (decl_type fields)
 - wrap std string to x type conversion functions
