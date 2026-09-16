@@ -25,7 +25,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_UNKNOWN,
 
     /**
-     * @brief Block which defines local scope.
+     * @brief Code block.
      */
     FL_AST_NODE_TYPE_BLOCK,
 
@@ -35,7 +35,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_LITERAL,
 
     /**
-     * @brief Chained identifiers, that point at some kind of value.
+     * @brief Chained identifiers, representing a value.
      */
     FL_AST_NODE_TYPE_ID_CHAIN,
 
@@ -50,7 +50,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_FN_CALL,
 
     /**
-     * @brief Array node, contains all elements as children
+     * @brief Array node, contains all elements as children.
      */
     FL_AST_NODE_TYPE_ARRAY,
 };
