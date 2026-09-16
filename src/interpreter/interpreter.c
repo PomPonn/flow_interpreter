@@ -20,6 +20,12 @@
 #include "flow/id/id_chain.h"
 #include "flow/byte_segm.h"
 
+#ifndef NDEBUG
+
+#include "tools/printer.h"
+
+#endif
+
 // ------------- MACROS -----------------
 
 #define INTPR_REQUIRED_BC_VERSION _BYTECODE_VERSION
@@ -244,14 +250,19 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
 
     // inner block start is already handled
     assert(*fn_var->body_ptr->data == FL_INSTR_START_BLOCK);
-    
-    fl_byte_segm body_content = fl_byte_segm_create(fn_var->body_ptr->data + 1, fn_var->body_ptr->len - 1); 
+
+    // skip block start and block size
+    const fl_ushort diff = sizeof(fl_size) + 1;
+    fl_byte_segm body_content = fl_byte_segm_create(
+        fn_var->body_ptr->data + diff,
+        fn_var->body_ptr->len - diff);
+
     fl_value res = fl_intpr_eval(body_content, &cnt);
 
     // free array only
-    // each individual arg will is freed trough the context
+    // each individual arg will is freed through the context
     fl_value_vec_free_shallow(&args);
-    fl_intpr_context_free(&cnt);
+    // fl_intpr_context_free(&cnt);
     return res;
 }
 

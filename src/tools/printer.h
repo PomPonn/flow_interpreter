@@ -12,6 +12,10 @@
 
 #include "shared/common.h"
 
+// ---------- MACROS ---------------
+
+#define FL_PRT_PRINT_ALL 0
+
 // ---------- TYPE DEFINITIONS ----------
 
 FL_FORWARD_STRUCT(fl_token_arr);
@@ -29,7 +33,7 @@ fl_void fl_prt_print_tokens_joined(fl_token_arr *arr);
 
 fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes);
 
-fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader);
+fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size count);
 
 FL_HEADER_FN fl_void fl_prt_print_ast_tree(fl_ast_node *tree);
 

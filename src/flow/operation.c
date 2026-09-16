@@ -26,6 +26,9 @@ fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_bas
     if (!fl_operation_is_callable(op))
         return FL_NULL;
 
+    // TODO:
+    // don't check values under refs twice
+
     fl_fn_variant *var = fl_fn_variant_vec_find_suit(op.vars, args);
 
     if (!var)

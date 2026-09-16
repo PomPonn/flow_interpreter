@@ -96,7 +96,7 @@ FL_HEADER_FN fl_bool fl_data_desc_vec_suit_args(
 
         if (fl_bits_is_set(arg.desc.traits, FL_DATA_TRAIT_REF))
         {
-            arg = *(fl_value *)arg.data;
+            arg = ((fl_id_entry *)arg.data)->value;
             if (!fl_value_is_desc_by(arg, vec->data[i]))
                 return FL_FALSE;
 

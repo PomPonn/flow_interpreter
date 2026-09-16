@@ -11,7 +11,6 @@
 // ---------- DEPENDENCIES --------------
 
 #include "vecs/op_vec.h"
-#include "context/base_context.h"
 #include "context/local_context.h"
 
 // ---------- TYPE DEFINITIONS ----------

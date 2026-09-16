@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// ---------- MACROS ----------
+// ---------- MACROS ---------------
 
 #define _POSITION_STR_BUFFER_SIZE 16
 #define _LITERAL_STR_BUFFER_SIZE 2048
@@ -177,9 +177,12 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
     }
 }
 
-fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
+fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size n)
 {
-    while (!fl_byte_reader_is_end(reader))
+    fl_size start_it = reader->iterator;
+
+    while ((!n || n >= reader->iterator - start_it) &&
+           !fl_byte_reader_is_end(reader))
     {
         const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
         switch (instr)
@@ -283,7 +286,7 @@ fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes)
         assert(FL_FALSE);
 
     printf("==== CODE ====\n");
-    fl_prt_print_byte_code_code(&reader);
+    fl_prt_print_byte_code_code(&reader, FL_PRT_PRINT_ALL);
 }
 
 inline fl_void _fl_prt_print_array(fl_byte_reader *reader)
@@ -335,9 +338,19 @@ fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
             printf(i == params_count - 1 ? "%s\n" : "%s, ", label);
         }
 
+        fl_instruction block_start = fl_byte_reader_next(reader, fl_instruction);
+
+        if (block_start != FL_INSTR_START_BLOCK)
+            assert(FL_FALSE);
+
         printf("{BODY START}\n");
-        fl_prt_print_byte_code_code(reader);
-        printf("{BODY END}\n");
+
+        // block size
+        const fl_size n = fl_byte_reader_next(reader, fl_size);
+        printf("[BLOCK START] n=%u\n", n);
+
+        fl_prt_print_byte_code_code(reader, n);
+        printf("{BODY END}");
     }
     break;
     case FL_DATA_TYPE_BOOL:
