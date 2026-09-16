@@ -16,7 +16,7 @@ set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/logs)
 # base directory to third party libraries
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 # path to the sample flow code to use
-set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple_fn.fl)
+set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/functions.fl)
 # path to unity library source file
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output

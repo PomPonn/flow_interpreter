@@ -28,6 +28,20 @@
 #include "compiler/shared.h"
 #include "tools/time.h"
 
+#ifndef NDEBUG
+
+#include <stdio.h>
+
+#endif
+
+// ------------- MACROS -----------------
+
+#ifndef NDEBUG
+
+#define _FL_ID_STRING_MAX_SIZE 1024
+
+#endif
+
 // ---------- DECLARATIONS ----------
 
 fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt);
@@ -157,7 +171,7 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 
         // try to inline at first
         if (fl_inl_try_op_inline(id_node, op, cnt))
-            return;
+            goto __return;
 
         // throw an error if compile-time-only function wasn't inlined
         if (fl_operation_is_compile_time(op))
@@ -166,6 +180,17 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 
     // compile it normally
     fl_cmp_call_to_bytes(cnt, id_node, op);
+
+__return:
+
+#ifndef NDEBUG
+
+    const fl_size line = id_node->location.line + 1;
+    fl_char buffer[_FL_ID_STRING_MAX_SIZE];
+    assert(fl_id_chain_to_string(id_node->data, buffer, _FL_ID_STRING_MAX_SIZE));
+    printf("!!! COMPILER !!! Passed operation '%s', line %u\n", buffer, line);
+
+#endif
 }
 
 fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, fl_ast_node *id_node)
