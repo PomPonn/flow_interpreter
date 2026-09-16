@@ -21,8 +21,10 @@
 #include "flow/instr/g_instrs.h"
 
 #ifndef NDEBUG
+
 #include "tools/printer.h"
 #include <stdio.h>
+
 #endif
 
 // ---------- MACROS ----------------
