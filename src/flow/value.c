@@ -153,7 +153,6 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         assert(*body->data == FL_INSTR_START_BLOCK);
 
         fl_byte_vec_push_mem(bytes, body->data, body->len);
-        fl_byte_vec_push(bytes, FL_INSTR_END_BODY);
         break;
     }
     case FL_DATA_TYPE_ARRAY:
@@ -283,9 +282,6 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader)
         // handle body code segment
         fl_byte_segm *seg = fl_mem_alloc_t(fl_byte_segm);
         *seg = fl_byte_reader_extract_block_segm(reader);
-        // +1 for BODY END tag
-        fl_byte_reader_skip_bytes(reader, 1);
-        seg->len++;
 
         fl_fn_intf intf;
         fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);

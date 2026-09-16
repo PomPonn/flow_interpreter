@@ -86,9 +86,6 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
         switch (instr)
         {
-        case FL_INSTR_END_BODY:
-            assert(fl_byte_reader_is_end(reader));
-            break;
         case FL_INSTR_START_BLOCK:
             if (call_attached)
             {
@@ -235,6 +232,8 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
     fl_cstr_vec labels = fn_var->intf.param_labels;
 
     assert(descs.size == labels.size && labels.size == args.size);
+
+    // handle inner block start here
 
     // add args to context as ids
     for (fl_size i = 0; i < args.size; i++)

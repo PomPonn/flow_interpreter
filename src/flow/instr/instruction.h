@@ -52,7 +52,6 @@ enum _fl_instruction
     FL_INSTR_START_BLOCK,
     FL_INSTR_END_BLOCK,
     FL_INSTR_EXECUTE,
-    FL_INSTR_END_BODY,
 };
 typedef fl_byte fl_instruction;
 

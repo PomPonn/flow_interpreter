@@ -167,7 +167,6 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
     fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt, &labels);
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_END_BODY);
 
     fl_byte_reader rd = fl_byte_reader_create(cnt->byte_code);
     fl_prt_print_byte_code_code(&rd);

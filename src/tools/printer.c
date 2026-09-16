@@ -179,9 +179,7 @@ fl_void fl_prt_print_ast_node(fl_ast_node *root, fl_ushort nest_level)
 
 fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
 {
-    fl_bool quit = FL_FALSE;
-
-    while (!quit && !fl_byte_reader_is_end(reader))
+    while (!fl_byte_reader_is_end(reader))
     {
         const fl_byte instr = fl_byte_reader_next(reader, fl_byte);
         switch (instr)
@@ -197,10 +195,6 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader)
             break;
         case FL_INSTR_CALL:
             printf("[CALL]\n");
-            break;
-        case FL_INSTR_END_BODY:
-            printf("[BODY END]");
-            quit = FL_TRUE;
             break;
         case FL_INSTR_GET_ID_BY_INDS:
         {
@@ -341,8 +335,9 @@ fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
             printf(i == params_count - 1 ? "%s\n" : "%s, ", label);
         }
 
-        printf("{BODY}\n");
+        printf("{BODY START}\n");
         fl_prt_print_byte_code_code(reader);
+        printf("{BODY END}\n");
     }
     break;
     case FL_DATA_TYPE_BOOL:
