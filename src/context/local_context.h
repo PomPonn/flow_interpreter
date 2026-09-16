@@ -25,7 +25,7 @@ struct _fl_local_context
     fl_scope *scope;
 };
 /**
- * @brief Describes generic local context. Used as an intf.
+ * @brief Describes generic local context.
  */
 typedef struct _fl_local_context fl_local_context;
 
@@ -33,8 +33,15 @@ typedef struct _fl_local_context fl_local_context;
 
 FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt);
 FL_HEADER_FN fl_void fl_local_context_shallow(fl_local_context *cnt);
+FL_HEADER_FN fl_void fl_local_context_from(fl_local_context *cnt, const fl_local_context *ref);
 
 // ---------- DEFINITIONS --------------
+
+FL_HEADER_FN fl_void fl_local_context_from(fl_local_context *cnt, const fl_local_context *ref)
+{
+    cnt->base = ref->base;
+    cnt->scope = ref->scope;
+}
 
 FL_HEADER_FN fl_void fl_local_context_deepen(fl_local_context *cnt)
 {
