@@ -13,6 +13,7 @@
 
 ## ast generator
 
+- cleanup ast_tree.c
 - revise token locations when sorting operators
 - cleanup
 - think again about single arg calls without parantheses
