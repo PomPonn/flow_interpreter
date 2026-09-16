@@ -249,7 +249,7 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
     fl_value res = fl_intpr_eval(body_content, &cnt);
 
     // free array only
-    // each individual arg will be freed through the context later
+    // each individual arg will is freed trough the context
     fl_value_vec_free_shallow(&args);
     fl_intpr_context_free(&cnt);
     return res;
