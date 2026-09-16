@@ -224,16 +224,14 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
     }
 
     // prepare context
-    fl_intpr_context cnt;
-    fl_intpr_context_from(&cnt, local_cnt);
-    fl_local_context_deepen((fl_local_context *)&cnt);
+    fl_local_context cnt;
+    fl_local_context_from(&cnt, local_cnt);
+    fl_local_context_deepen(&cnt);
 
     fl_data_desc_vec descs = fn_var->intf.param_descs;
     fl_cstr_vec labels = fn_var->intf.param_labels;
 
     assert(descs.size == labels.size && labels.size == args.size);
-
-    // handle inner block start here
 
     // add args to context as ids
     for (fl_size i = 0; i < args.size; i++)
@@ -244,7 +242,11 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec args, const
         fl_id_entry_vec_push(&cnt.scope->ids, id);
     }
 
-    fl_value res = fl_intpr_eval(*fn_var->body_ptr, (fl_local_context *)&cnt);
+    // inner block start is already handled
+    assert(*fn_var->body_ptr->data == FL_INSTR_START_BLOCK);
+    
+    fl_byte_segm body_content = fl_byte_segm_create(fn_var->body_ptr->data + 1, fn_var->body_ptr->len - 1); 
+    fl_value res = fl_intpr_eval(body_content, &cnt);
 
     // free array only
     // each individual arg will be freed through the context later
