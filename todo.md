@@ -24,8 +24,9 @@
 
 ## other
 
+- add call_attached to local_context (rename this field?)
 - free unused scopes?
-- add const specifiers where possible (leave pointers)
+- add const specifiers where possible
 - make fl_id_entry use data_desc instead of just data_type? (decl_type fields)
 - wrap std string to x type conversion functions
 - implement values dereferencing
