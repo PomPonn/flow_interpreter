@@ -20,7 +20,7 @@ FL_FORWARD_STRUCT(fl_ast_node);
 // ---------- DECLARATIONS --------------
 
 /**
- * @brief Generates Abstract Syntax Tree from specified token array.
+ * @brief Generate Abstract Syntax Tree from specified token array.
  * @param arr Array of tokens from which to generate the tree.
  * @throw `FL_ERR_AST`
  * @return AST root block node.

@@ -21,6 +21,16 @@ FL_FORWARD_STRUCT(fl_cmp_context);
 
 // ---------- DECLARATIONS ------------
 
+/**
+ * @brief Compile AST tree to byte code.
+ * @param tree AST tree to compile.
+ * @return Compiled byte code.
+ */
 fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree);
+
+/**
+ * @brief Compile single AST node.
+ * @param node Node to compile.
+ * @param cnt Context to use while compilation.
+ */
 fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt);
-fl_void fl_cmp_call_to_bytes(fl_cmp_context *cnt, fl_ast_node *id_node, fl_operation op);

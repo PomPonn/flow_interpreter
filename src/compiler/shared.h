@@ -28,9 +28,20 @@
 // ---------- TYPE DEFINITIONS ----------
 
 FL_FORWARD_STRUCT(fl_byte_vec);
-FL_FORWARD_STRUCT(fl_cmp_context);
 FL_FORWARD_STRUCT(fl_cstr_vec);
+FL_FORWARD_STRUCT(fl_ast_node);
+FL_FORWARD_STRUCT(fl_operation);
+FL_FORWARD_STRUCT(fl_cmp_context);
 
 // ---------- DECLARATIONS --------------
 
 fl_void fl_cmp_block_cnt_to_bytes(fl_byte_vec *bytes, const fl_cmp_context *cnt, const fl_cstr_vec *ignore_labels);
+
+/**
+ * @brief Compiles function call AST nodes.
+ * @param cnt
+ * @param id_node
+ * @param op
+ * @return
+ */
+fl_void fl_cmp_call_to_bytes(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt);

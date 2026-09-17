@@ -11,11 +11,11 @@
 // ---------- DEPENDENCIES ----------
 
 #include "interpreter/interpreter.h"
+#include "context/cmp_context.h"
+#include "context/intpr_context.h"
 #include "compiler/compiler.h"
 #include "ast/ast_node.h"
 #include "flow/operation.h"
-#include "context/cmp_context.h"
-#include "context/intpr_context.h"
 #include "flow/id/id_chain.h"
 #include "compiler/shared.h"
 #include "flow/byte_segm.h"
@@ -30,16 +30,48 @@
 
 // ---------- DECLARATIONS ----------
 
+/**
+ * @brief Convert lambda AST nodes to bytes.
+ * @param arg_node First lambda argument node.
+ * @param cnt Context to use.
+ */
 fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
-fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_context *cnt);
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec descs);
-inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *arg_node, const fl_cmp_context *cnt);
+
+/**
+ * @brief Guess node's resulting data descriptor.
+ * @param node Node to examine.
+ * @param cnt Context to use
+ * @return Deduced data descriptor.
+ */
+fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_context *cnt);
+
+/**
+ * @brief Tell whether it's possible to inline operation.
+ * @param op Operation to check.
+ * @param intf Operation interface.
+ * @param arg_descs Argument data descriptors
+ * @return Boolean value whether operation is inlineable.
+ */
+fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs);
+
+/**
+ * @brief Convert AST nodes to data descriptors vector describing them.
+ * @param node First node to convert.
+ * @param cnt Context to use.
+ * @return Nodes data descriptors vector.
+ */
+inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
-fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt)
+fl_bool fl_inl_try_operation_inline(
+    const fl_ast_node *id_node,
+    const fl_operation op,
+    fl_cmp_context *cnt)
 {
     fl_ast_node *arg_node = id_node->next;
+
+    // Retrieve operation data
     fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(arg_node, cnt);
     const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
 
@@ -55,19 +87,19 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     if (!inlineable)
         return FL_FALSE;
 
-    // ready to inline
+    // Ready to inline
 
-    // compile call to byte code
+    // Compile call to byte code
     fl_cmp_context inl_cnt;
     fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
 
-    // handle lambdas differently
+    // Handle lambdas differently
     if (fl_operation_is_instr(op, FL_INSTR_LAMBDA))
         _fl_inl_lambda_to_bytes(arg_node, &inl_cnt);
     else
-        fl_cmp_call_to_bytes(&inl_cnt, id_node, op);
+        fl_cmp_call_to_bytes(id_node, op, &inl_cnt);
 
-    // run this code snippet
+    // Run this code snippet
     fl_byte_segm segm = fl_byte_segm_create_from_vec(&inl_cnt.byte_code);
     fl_value res = fl_intpr_eval(segm, (fl_local_context *)&inl_cnt);
 
@@ -77,10 +109,10 @@ fl_bool fl_inl_try_op_inline(fl_ast_node *id_node, fl_operation op, fl_cmp_conte
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
     fl_value_to_bytes(res, &cnt->byte_code);
 
-    // not sure if its always good to free resulting value
+    // Free resulting value? Is it always safe?
     fl_value_free(&res);
-
     fl_cmp_context_free(&inl_cnt);
+
     return FL_TRUE;
 }
 
@@ -90,12 +122,13 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 
     const fl_ast_node *param_node = arg_node->child;
     fl_bool single_param = FL_FALSE;
-    // init array of labels (lambda parameter names)
+    // Init array of labels (lambda parameter names)
     fl_cstr_vec labels;
 
     fl_cstr_vec_init(&labels);
 
-    // compile each potential label - all we want for now is a string
+    // Compile each label
+    // For now the only information is parameter name
 
     if (arg_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
     {
@@ -110,10 +143,9 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
             fl_id_chain *id_chain = param_node->data;
 
             if (id_chain->size != 1)
-                // error
                 assert(FL_FALSE);
 
-            // push label
+            // Push label
             fl_cstr_vec_push(&labels, id_chain->data[0]);
         }
         else
@@ -121,13 +153,13 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
             fl_cmp_context inl_cnt;
             fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
 
-            // compile node normally and eval compilation
+            // Compile node normally and evaluate compilation
             fl_cmp_compile_node(param_node, &inl_cnt);
 
             fl_byte_segm segm = fl_byte_segm_create_from_vec(&inl_cnt.byte_code);
             fl_value res = fl_intpr_eval(segm, (fl_local_context *)&inl_cnt);
 
-            // resulting value has to be a string
+            // Resulting value has to be a string
             if (res.desc.type != FL_DATA_TYPE_STRING)
             {
                 fl_value_free(&res);
@@ -144,19 +176,19 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
         param_node = param_node->next;
     }
 
-    // convert array of strings to bytes
+    // Convert array of strings to bytes
     fl_value lbl_arr = fl_value_from_cstr_vec(labels);
 
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
     fl_value_to_bytes(lbl_arr, &cnt->byte_code);
 
-    // compile lambda body
+    // Compile lambda body
 
     fl_cmp_context block_cnt;
     fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
     fl_local_context_deepen((fl_local_context *)&block_cnt);
 
-    // if lambda is a single operator, wrap it in a block
+    // If lambda is a single operator, wrap it in a block
     fl_ast_node *inner_node = arg_node->next->type == FL_AST_NODE_TYPE_BLOCK ? arg_node->next->child : arg_node->next;
 
     while (inner_node)
@@ -168,34 +200,35 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt, &labels);
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
 
+    // Free structs
     fl_value_free(&lbl_arr);
     fl_cstr_vec_free_shallow(&labels);
     fl_cmp_context_free(&block_cnt);
 }
 
-inline fl_bool _fl_inl_is_call_inlineable(fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec actual_descs)
+fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs)
 {
     return fl_operation_is_compile_time(op) ||
            (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
-            fl_data_desc_vec_is_every_const(&actual_descs));
+            fl_data_desc_vec_is_every_const(&arg_descs));
 }
 
-inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *arg_node, const fl_cmp_context *cnt)
+inline fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     fl_data_desc_vec descs;
     fl_data_desc_vec_init(&descs);
 
-    while (arg_node)
+    while (node)
     {
-        fl_data_desc desc = _fl_inl_parse_node_to_desc(arg_node, cnt);
+        fl_data_desc desc = _fl_inl_guess_node_desc(node, cnt);
         fl_data_desc_vec_push(&descs, desc);
-        arg_node = arg_node->next;
+        node = node->next;
     }
 
     return descs;
 }
 
-fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_context *cnt)
+fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     switch (node->type)
     {
@@ -212,13 +245,16 @@ fl_data_desc _fl_inl_parse_node_to_desc(const fl_ast_node *node, const fl_cmp_co
 
         assert(fl_operation_is_callable(op));
 
+        // Get operation interface
         fl_data_desc_vec descs = _fl_inl_convert_nodes_to_descs(id_node->next, cnt);
         const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
 
         assert(fn_i);
 
+        // Set descriptor
         fl_data_traits traits = FL_DATA_TRAIT_NONE;
 
+        // If we can predict result of the operation, it's inherently constant.
         if (_fl_inl_is_call_inlineable(op, fn_i, descs))
             fl_bits_set(traits, FL_DATA_TRAIT_CONST);
 

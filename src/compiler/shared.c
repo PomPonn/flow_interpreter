@@ -10,7 +10,9 @@
 
 // ---------- DEPENDENCIES ----------
 
+#include "ast/ast_node.h"
 #include "vecs/byte_vec.h"
+#include "flow/operation.h"
 #include "context/cmp_context.h"
 #include "flow/instr/instruction.h"
 
@@ -46,4 +48,22 @@ fl_void fl_cmp_block_cnt_to_bytes(fl_byte_vec *bytes, const fl_cmp_context *cnt,
 
     fl_byte_vec_merge(bytes, &cnt->byte_code);
     fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
+}
+
+fl_void fl_cmp_call_to_bytes(fl_ast_node *id_node, fl_operation op, fl_cmp_context *cnt)
+{
+    if (op.type == FL_OPERATION_INSTR)
+        fl_byte_vec_push(&cnt->byte_code, op.instr);
+    else if (fl_bits_is_any(op.type, FL_OPERATION_FN | FL_OPERATION_UNKNOWN))
+    {
+        // start CALL instruction
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
+        // push information how to access id
+        _fl_cmp_stamp_id_access(cnt, id_node);
+    }
+    else
+        assert(FL_FALSE);
+
+    // compile args
+    _fl_cmp_compile_args(id_node->next, cnt);
 }
