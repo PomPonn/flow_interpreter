@@ -39,6 +39,8 @@
         b = temp;            \
     }
 
+#define _fl_max(a, b) (a > b ? a : b)
+
 #define FL_FORWARD_STRUCT(struct_name) \
     struct _##struct_name;             \
     typedef struct _##struct_name struct_name;

@@ -15,8 +15,6 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
-FL_FORWARD_STRUCT(fl_token_location);
-
 enum _fl_ast_node_type
 {
     /**
@@ -30,7 +28,7 @@ enum _fl_ast_node_type
     FL_AST_NODE_TYPE_BLOCK,
 
     /**
-     * @brief ast literal - a number, string etc.
+     * @brief AST literal - a number, string etc.
      */
     FL_AST_NODE_TYPE_LITERAL,
 

@@ -11,8 +11,8 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
-#include "flow/value.h"
 #include "flow/id/id_chain.h"
+#include "flow/value.h"
 
 // ---------- DEFINITIONS ---------------
 
