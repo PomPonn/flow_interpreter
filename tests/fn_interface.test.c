@@ -56,11 +56,11 @@ void test_fn_intf_overlaps(void)
 
     fl_fn_intf_init(&other, FL_DATA_TYPE_FLOAT, params);
 
-    TEST_ASSERT_TRUE(fl_fn_intf_overlaps(intf, other));
+    TEST_ASSERT_TRUE(fl_fn_intf_overlaps(&intf, &other));
 
     intf.param_descs.data[1].traits = FL_DATA_TRAIT_NONE;
 
-    TEST_ASSERT_FALSE(fl_fn_intf_overlaps(intf, other));
+    TEST_ASSERT_FALSE(fl_fn_intf_overlaps(&intf, &other));
 }
 
 // ---------- ENTRY ----------

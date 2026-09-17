@@ -17,39 +17,25 @@
 
 enum _fl_ast_node_type
 {
-    /**
-     * @brief Fallback node type.
-     */
+    // Fallback node type.
     FL_AST_NODE_TYPE_UNKNOWN,
 
-    /**
-     * @brief Code block.
-     */
+    // Code block.
     FL_AST_NODE_TYPE_BLOCK,
 
-    /**
-     * @brief AST literal - a number, string etc.
-     */
+    // AST literal - a number, string etc.
     FL_AST_NODE_TYPE_LITERAL,
 
-    /**
-     * @brief Chained identifiers, representing a value.
-     */
+    // Chained identifiers.
     FL_AST_NODE_TYPE_ID_CHAIN,
 
-    /**
-     * @brief Operator node, which consists of one id chain node and two argument nodes (of varying type).
-     */
+    // Operator node, which consists of one id chain node and two argument nodes (of varying type).
     FL_AST_NODE_TYPE_OPERATOR,
 
-    /**
-     * @brief Function call, first child is an id chain node, the rest are the arguments.
-     */
+    // Function call, first child is an id chain node, the rest are the arguments.
     FL_AST_NODE_TYPE_FN_CALL,
 
-    /**
-     * @brief Array node, contains all elements as children.
-     */
+    // Array node, contains all elements as children.
     FL_AST_NODE_TYPE_ARRAY,
 };
 
@@ -60,37 +46,22 @@ typedef fl_byte fl_ast_node_type;
 
 struct _fl_ast_node
 {
-    /**
-     * @brief Parent of the node.
-     * `FL_NULL` when has no parent.
-     */
+    // Parent of the node. `FL_NULL` when has no parent.
     struct _fl_ast_node *parent;
 
-    /**
-     * @brief First child of the node.
-     * `FL_NULL` when has no child.
-     */
+    // First child of the node. `FL_NULL` when has no child.
     struct _fl_ast_node *child;
 
-    /**
-     * @brief Next linked node.
-     * `FL_NULL` when current node is the last one.
-     */
+    // Next linked node. `FL_NULL` when current node is the last one.
     struct _fl_ast_node *next;
 
-    /**
-     * @brief Type of the node.
-     */
+    // Type of the node.
     fl_ast_node_type type;
 
-    /**
-     * @brief File location of this node.
-     */
+    // File location of this node.
     fl_token_location location;
 
-    /**
-     * @brief Data associated with this node.
-     */
+    // Data associated with this node.
     fl_unknown *data;
 };
 

@@ -28,7 +28,8 @@
 
 ## other
 
-- revise context scopes freeing
+- make some function struct instead of fn_variant_vec?
+- revise context scopes management
 - add call_attached to local_context (rename this field?)
 - add const specifiers where possible
 - make fl_id_entry use data_desc instead of just data_type? (decl_type fields)

@@ -36,7 +36,7 @@ const fl_instr_info_vec *fl_g_instrs_get_info_vec()
     return &g_info_vec;
 }
 
-fl_fn_variant_vec *fl_g_instrs_get_variants_of(fl_instruction instr)
+const fl_fn_variant_vec *fl_g_instrs_get_variants_of(fl_instruction instr)
 {
     return &g_variants.data[instr];
 }
@@ -66,6 +66,7 @@ fl_void fl_g_instrs_init()
 
     fl_fn_variant_vec_vec_init_s(&g_variants, FL_CLL_INSTR_COUNT);
     fl_instr_info_vec_init_s(&g_info_vec, FL_CLL_INSTR_COUNT);
+
     fl_data_desc_vec params;
     fl_fn_variant_vec vars;
     fl_fn_variant var;
@@ -88,7 +89,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_IMPORT] = vars;
-    g_info_vec.data[FL_INSTR_IMPORT] = fl_instr_info_create("import");
+    g_info_vec.data[FL_INSTR_IMPORT] = fl_instr_info_create("import", FL_OP_ORDER_NEUTRAL);
 
     // ---- ASSIGN ----
 
@@ -107,7 +108,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_ASSIGN] = vars;
-    g_info_vec.data[FL_INSTR_ASSIGN] = fl_instr_info_create_op("=", FL_OP_ORDER_ASSIGN);
+    g_info_vec.data[FL_INSTR_ASSIGN] = fl_instr_info_create("=", FL_OP_ORDER_ASSIGN);
 
     // ---- LAMBDA ----
 
@@ -127,7 +128,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_LAMBDA] = vars;
-    g_info_vec.data[FL_INSTR_LAMBDA] = fl_instr_info_create_op("->", FL_OP_ORDER_LAMBDA);
+    g_info_vec.data[FL_INSTR_LAMBDA] = fl_instr_info_create("->", FL_OP_ORDER_LAMBDA);
 
     // ---- ADD ----
 
@@ -147,7 +148,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_ADD] = vars;
-    g_info_vec.data[FL_INSTR_ADD] = fl_instr_info_create_op("+", FL_OP_ORDER_ARITHM_LOW);
+    g_info_vec.data[FL_INSTR_ADD] = fl_instr_info_create("+", FL_OP_ORDER_ARITHM_LOW);
 
     // ---- SUB ----
 
@@ -167,7 +168,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_SUB] = vars;
-    g_info_vec.data[FL_INSTR_SUB] = fl_instr_info_create_op("-", FL_OP_ORDER_ARITHM_LOW);
+    g_info_vec.data[FL_INSTR_SUB] = fl_instr_info_create("-", FL_OP_ORDER_ARITHM_LOW);
 
     // ---- MUL ----
 
@@ -187,7 +188,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_MUL] = vars;
-    g_info_vec.data[FL_INSTR_MUL] = fl_instr_info_create_op("*", FL_OP_ORDER_ARITHM_MED);
+    g_info_vec.data[FL_INSTR_MUL] = fl_instr_info_create("*", FL_OP_ORDER_ARITHM_MED);
 
     g_escapes = fl_instr_info_vec_to_escapes(&g_info_vec);
     g_initialized = FL_TRUE;

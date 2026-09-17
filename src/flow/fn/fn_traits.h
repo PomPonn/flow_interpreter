@@ -17,8 +17,17 @@
 
 enum _fl_fn_traits
 {
+    // Nothing special.
     FL_FN_TRAITS_NONE = 0b00000000,
+
+    // Function returns same result for same arguments (no side effects).
     FL_FN_TRAITS_PURE = 0b00000001,
+
+    // Function directly alters flow context - receives base context as a first argument.
     FL_FN_TRAITS_META = 0b00000010,
 };
+
+/**
+ * @brief Function traits.
+ */
 typedef fl_byte fl_fn_traits;

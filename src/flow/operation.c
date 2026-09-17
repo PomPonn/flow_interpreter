@@ -128,10 +128,6 @@ fl_void fl_operation_free(fl_operation *op)
     case FL_OPERATION_UNKNOWN:
         assert(FL_FALSE);
         break;
-    case FL_OPERATION_FN:
-        assert(FL_FALSE);
-        // ???
-        break;
     case FL_OPERATION_VALUE:
         fl_value_free(&op->value);
     default:

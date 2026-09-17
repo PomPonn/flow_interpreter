@@ -147,7 +147,7 @@ fl_void fl_value_to_bytes(fl_value v, fl_byte_vec *bytes)
         fl_fn_variant *var = &vars->data[0];
         assert(!var->c_defined);
 
-        fl_fn_intf_to_bytes(var->intf, bytes);
+        fl_fn_intf_to_bytes(&var->intf, bytes);
 
         fl_byte_segm *body = var->body_ptr;
         assert(*body->data == FL_INSTR_START_BLOCK);

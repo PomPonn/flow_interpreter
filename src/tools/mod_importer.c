@@ -30,7 +30,7 @@ fl_value fl_mimp_import_id_value(const fl_char *id_str, fl_base_context *cnt)
 {
     // parse id string
     fl_id_chain chain;
-    fl_id_chain_init_parse(&chain, id_str);
+    fl_id_chain_from_str(&chain, id_str);
 
     // check if library dll is already imported
     fl_lib_handle handle = FL_NULL;

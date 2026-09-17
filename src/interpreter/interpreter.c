@@ -338,7 +338,7 @@ fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope 
     const fl_char *id_str = fl_byte_reader_next_str(reader);
 
     fl_id_chain chain;
-    fl_id_chain_init_parse(&chain, id_str);
+    fl_id_chain_from_str(&chain, id_str);
 
     return fl_scope_resolve_id(scope, &chain);
 }

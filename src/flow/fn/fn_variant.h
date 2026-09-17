@@ -8,7 +8,7 @@
 
 #pragma once
 
-// ---------- DEPENDENCIES ----------
+// ---------- DEPENDENCIES --------------
 
 #include "vecs/data_desc_vec.h"
 #include "vecs/value_vec.h"
@@ -22,12 +22,18 @@ typedef fl_value (*fl_c_fn_ptr)(fl_value_vec args);
 
 struct _fl_fn_variant
 {
+    // Whether variant is defined in C or Flow.
     fl_bool c_defined;
+
+    // Interface of this function variant.
     fl_fn_intf intf;
-    // TODO: revise this
+
     union
     {
+        // Pointer to C function definition.
         fl_c_fn_ptr fn_ptr;
+
+        // Pointer to Flow function body.
         fl_byte_segm *body_ptr;
     };
 
@@ -35,15 +41,34 @@ struct _fl_fn_variant
 };
 
 /**
- * @brief Function callable;
- * Contains information about function callable (overload).
+ * @brief Callable function variant (overload).
  */
 typedef struct _fl_fn_variant fl_fn_variant;
 
 // ---------- DECLARATIONS --------------
 
+/**
+ * @brief Free function variant.
+ * @param var Variant to free.
+ */
 FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
-FL_SEALED_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
+
+/**
+ * @brief Check if two function variants overlap.
+ * @param left First one.
+ * @param right Second one.
+ * @return Boolean value whether it's overlapping.
+ */
+FL_SEALED_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right);
+
+/**
+ * @brief Initialize function variant.
+ * @param var Uninitialized variant to init.
+ * @param c_defined Whether the variant is c defined.
+ * @param intf Variant interface. Becomes owned by this variant.
+ * @param cll_ptr Pointer to callable segment of the variant. If C defined, it's a pointer to the function.
+ *                If Flow defined, it's a pointer to the function body code segment.
+ */
 FL_SEALED_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
@@ -80,7 +105,7 @@ FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
     var->c_defined = FL_FALSE;
 }
 
-FL_SEALED_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)
+FL_SEALED_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right)
 {
-    return fl_fn_intf_overlaps(left.intf, right.intf);
+    return fl_fn_intf_overlaps(&left->intf, &right->intf);
 }

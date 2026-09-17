@@ -34,7 +34,7 @@ struct _fl_operation
     fl_instruction instr;
     union
     {
-        fl_fn_variant_vec *vars;
+        const fl_fn_variant_vec *vars;
         fl_value value;
     };
 };
@@ -47,7 +47,7 @@ FL_FORWARD_STRUCT(fl_ast_node);
 FL_FORWARD_STRUCT(fl_scope);
 
 FL_SEALED_FN fl_operation fl_operation_from_instr(fl_instruction instr);
-FL_SEALED_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
+FL_SEALED_FN fl_operation fl_operation_from_fn_vars(const fl_fn_variant_vec *vars);
 FL_SEALED_FN fl_operation fl_operation_from_value(fl_value val);
 FL_SEALED_FN fl_operation fl_operation_uninitialized();
 FL_SEALED_FN fl_operation fl_operation_unknown();
@@ -80,7 +80,7 @@ FL_SEALED_FN fl_operation fl_operation_from_instr(fl_instruction instr)
     };
 }
 
-FL_SEALED_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
+FL_SEALED_FN fl_operation fl_operation_from_fn_vars(const fl_fn_variant_vec *vars)
 {
     return (fl_operation){
         .type = FL_OPERATION_FN,
