@@ -24,11 +24,11 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name);
+FL_SEALED_FN fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
+FL_SEALED_FN fl_int fl_id_entry_vec_find(const fl_id_entry_vec *vec, const fl_char *id_name)
 {
     for (fl_int i = 0; i < vec->size; i++)
         if (fl_str_equal(vec->data[i]->name, id_name))

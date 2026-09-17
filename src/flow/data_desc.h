@@ -33,16 +33,16 @@ typedef struct _fl_data_desc fl_data_desc;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_data_desc fl_data_desc_empty();
-FL_HEADER_FN fl_data_desc fl_data_desc_create(fl_data_type type);
-FL_HEADER_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits);
+FL_SEALED_FN fl_data_desc fl_data_desc_empty();
+FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type);
+FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits);
 
-FL_HEADER_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
-FL_HEADER_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2);
+FL_SEALED_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
+FL_SEALED_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2);
 
 // ---------- DEFINITIONS -----------
 
-FL_HEADER_FN fl_data_desc fl_data_desc_empty()
+FL_SEALED_FN fl_data_desc fl_data_desc_empty()
 {
     return (fl_data_desc){
         .type = FL_DATA_TYPE_NULL,
@@ -50,7 +50,7 @@ FL_HEADER_FN fl_data_desc fl_data_desc_empty()
     };
 }
 
-FL_HEADER_FN fl_data_desc fl_data_desc_create(fl_data_type type)
+FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type)
 {
     return (fl_data_desc){
         .type = type,
@@ -58,7 +58,7 @@ FL_HEADER_FN fl_data_desc fl_data_desc_create(fl_data_type type)
     };
 }
 
-FL_HEADER_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits)
+FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits)
 {
     return (fl_data_desc){
         .type = type,
@@ -66,13 +66,13 @@ FL_HEADER_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data
     };
 }
 
-FL_HEADER_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
+FL_SEALED_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
 {
     return fl_bits_is_set(d1.type, d2.type) &&
            d1.traits == d2.traits;
 }
 
-FL_HEADER_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
+FL_SEALED_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
 {
     // TODO: change this
 

@@ -28,7 +28,7 @@
 #define FL_NULL (void *)0
 #define FL_FIND_FAIL -1
 #define FL_FLOW_MODULE __declspec(dllexport)
-#define FL_HEADER_FN static inline
+#define FL_SEALED_FN static inline
 
 #define FL_ID_CHAIN_MAX_SIZE 256
 
@@ -47,11 +47,11 @@
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_flow_int *fl_new_int(fl_flow_int init_value);
+FL_SEALED_FN fl_flow_int *fl_new_int(fl_flow_int init_value);
 
 // ---------- DEFINITIONS ----------
 
-FL_HEADER_FN fl_flow_int *fl_new_int(fl_flow_int init_value)
+FL_SEALED_FN fl_flow_int *fl_new_int(fl_flow_int init_value)
 {
     fl_flow_int *f_int = fl_mem_alloc_t(fl_flow_int);
     *f_int = init_value;

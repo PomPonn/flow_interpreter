@@ -34,8 +34,8 @@ typedef struct _fl_scope fl_scope;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
-FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
+FL_SEALED_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
+FL_SEALED_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
     const fl_id_chain *id_chain);
 
@@ -58,7 +58,7 @@ fl_void fl_scope_to_bytes(const fl_scope *scope, fl_byte_vec *byte_vec);
 
 // ---------- DEFINITIONS ----------
 
-FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
+FL_SEALED_FN fl_id_entry *fl_scope_resolve_id(
     const fl_scope *scope,
     const fl_id_chain *id_chain)
 {
@@ -74,7 +74,7 @@ FL_HEADER_FN fl_id_entry *fl_scope_resolve_id(
     return id;
 }
 
-FL_HEADER_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner)
+FL_SEALED_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner)
 {
     fl_scope_vec_push(fl_scope_get_inners(scope), inner);
     inner->outer = scope;

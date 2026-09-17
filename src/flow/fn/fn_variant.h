@@ -42,9 +42,9 @@ typedef struct _fl_fn_variant fl_fn_variant;
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
-FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
-FL_HEADER_FN fl_void fl_fn_variant_init(
+FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
+FL_SEALED_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right);
+FL_SEALED_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_intf intf,
@@ -52,7 +52,7 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_void fl_fn_variant_init(
+FL_SEALED_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_intf intf,
@@ -68,7 +68,7 @@ FL_HEADER_FN fl_void fl_fn_variant_init(
         var->body_ptr = cll_ptr;
 }
 
-FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
+FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
 {
     fl_fn_intf_free(&var->intf);
 
@@ -80,7 +80,7 @@ FL_HEADER_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
     var->c_defined = FL_FALSE;
 }
 
-FL_HEADER_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)
+FL_SEALED_FN fl_bool fl_fn_variant_overlaps(fl_fn_variant left, fl_fn_variant right)
 {
     return fl_fn_intf_overlaps(left.intf, right.intf);
 }

@@ -57,23 +57,23 @@ typedef fl_byte fl_instruction;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
-FL_HEADER_FN fl_instruction fl_instruction_from_alias(const fl_char *alias);
-FL_HEADER_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr);
+FL_SEALED_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
+FL_SEALED_FN fl_instruction fl_instruction_from_alias(const fl_char *alias);
+FL_SEALED_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr);
 
 // ---------- DEFINITIONS -----------
 
-FL_HEADER_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
+FL_SEALED_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
 {
     return instr < FL_INSTR_CALL;
 }
 
-FL_HEADER_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr)
+FL_SEALED_FN fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr)
 {
     return fl_instruction_is_callable(instr) ? fl_g_instrs_get_variants_of(instr) : FL_NULL;
 }
 
-FL_HEADER_FN fl_instruction fl_instruction_from_alias(const fl_char *alias)
+FL_SEALED_FN fl_instruction fl_instruction_from_alias(const fl_char *alias)
 {
     return fl_g_instrs_resolve_alias(alias);
 }

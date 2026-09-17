@@ -96,11 +96,11 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_i
 
 /**
  * @brief Process function call.
- * @param arr Token array to process from.
  * @param func_id Already parsed called function id.
+ * @param arr Token array to process from.
  * @return Resulting AST node.
  */
-fl_ast_node *_fl_ast_process_function_call(fl_token_arr *arr, fl_ast_node *func_id);
+fl_ast_node *_fl_ast_process_function_call(fl_ast_node *func_id, fl_token_arr *arr);
 
 /**
  * @brief Process array.
@@ -142,7 +142,7 @@ fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
  * @param arr Token array to process from.
  * @return Resulting AST node.
  */
-inline fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
+FL_SEALED_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
 
 // ---------- DEFINITIONS ---------------
 
@@ -165,11 +165,10 @@ fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
 fl_op_order _fl_ast_get_op_order(const fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
 {
     assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+    assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
 
     fl_bool is_grouped = *(fl_bool *)op_node->data;
     fl_op_order order = is_grouped ? FL_OP_ORDER_GROUP : FL_OP_ORDER_NEUTRAL;
-
-    assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
     fl_id_chain *id_chain = op_node->child[0].data;
 
     if (!is_grouped && id_chain->size == 1)
@@ -216,7 +215,6 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_i
         if (outer_order > inner_order)
         {
             // Swap operator nodes
-
             _fl_swap(fl_ast_node *, op_node->parent, inner_node->parent);
             _fl_swap(fl_ast_node *, op_node->child, inner_node->child);
 
@@ -261,7 +259,7 @@ fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
     return node;
 }
 
-fl_ast_node *_fl_ast_process_function_call(fl_token_arr *arr, fl_ast_node *func_id)
+fl_ast_node *_fl_ast_process_function_call(fl_ast_node *func_id, fl_token_arr *arr)
 {
     fl_ast_node *node;
     __init_node_empty(FL_AST_NODE_TYPE_FN_CALL, FL_NULL);
@@ -317,7 +315,7 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
     {
         // If lparen is next, it's a function
         if (arr->current->alias == FL_TOKEN_ALIAS_LPAREN)
-            node = _fl_ast_process_function_call(arr, node);
+            node = _fl_ast_process_function_call(node, arr);
     }
 
     // Check if it is the end of expression - try to add this node to the parent
@@ -434,12 +432,13 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
     return node;
 }
 
-inline fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr)
+FL_SEALED_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr)
 {
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 
     fl_ast_node *node;
     fl_value *literal_value = fl_mem_alloc_t(fl_value);
+
     *literal_value = fl_value_from_literal(arr->current->alias, arr->current->value);
 
     __init_node_filled(FL_AST_NODE_TYPE_LITERAL, literal_value, FL_NULL);

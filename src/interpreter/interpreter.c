@@ -38,9 +38,9 @@ fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope 
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt);
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt);
-inline fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope);
-inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
-inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
+FL_SEALED_FN fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope);
+FL_SEALED_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
+FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
 
 // frees passed args when function execution is completed
 fl_value _fl_intpr_exec_fn(const fl_fn_variant *var, fl_value_vec *args, const fl_local_context *local_cnt);
@@ -268,7 +268,7 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec *args, cons
     return res;
 }
 
-inline fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt)
+FL_SEALED_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
     if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
@@ -322,7 +322,7 @@ fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader)
     };
 }
 
-inline fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope)
+FL_SEALED_FN fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope)
 {
     fl_uint offset = fl_byte_reader_next(reader, fl_uint);
     fl_int_vec inds = _fl_intpr_indices_from_bytes(reader);
@@ -343,7 +343,7 @@ fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope 
     return fl_scope_resolve_id(scope, &chain);
 }
 
-inline fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
+FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
 {
     fl_value ref = fl_value_create_ref(id);
     fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));

@@ -24,7 +24,7 @@ fl_bool fl_file_append_str(const fl_char *filename, const fl_char *content);
 
 fl_bool fl_file_write(const fl_char *filename, const fl_byte_vec bytes);
 
-FL_HEADER_FN fl_void fl_file_content_free(fl_char **buffer)
+FL_SEALED_FN fl_void fl_file_content_free(fl_char **buffer)
 {
     fl_mem_free(*buffer);
     *buffer = FL_NULL;

@@ -18,6 +18,7 @@
 #include "shared/error.h"
 #include "tokenizer/tokenizer.h"
 #include "ast/ast_tree.h"
+#include "ast/ast_node.h"
 #include "tools/file.h"
 #include "flow/globals.h"
 #include "context/base_context.h"

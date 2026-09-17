@@ -28,23 +28,21 @@ typedef struct _fl_fn_intf fl_fn_intf;
 
 // ---------- DECLARATIONS ----------
 
-FL_HEADER_FN fl_void fl_fn_intf_free(fl_fn_intf *intf);
-FL_HEADER_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels);
-FL_HEADER_FN fl_bool fl_fn_intf_overlaps(fl_fn_intf left, fl_fn_intf right);
-FL_HEADER_FN fl_size fl_fn_intf_mem_size(const fl_fn_intf intf);
+FL_SEALED_FN fl_void fl_fn_intf_free(fl_fn_intf *intf);
+FL_SEALED_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels);
+FL_SEALED_FN fl_size fl_fn_intf_mem_size(const fl_fn_intf intf);
 
-FL_HEADER_FN fl_void fl_fn_intf_init(
+FL_SEALED_FN fl_void fl_fn_intf_init(
     fl_fn_intf *intf,
     fl_data_type return_type,
     fl_data_desc_vec param_descs);
 
-FL_HEADER_FN fl_void fl_fn_intf_to_bytes(
-    const fl_fn_intf intf,
-    fl_byte_vec *byte_vec);
+fl_void fl_fn_intf_to_bytes(const fl_fn_intf intf, fl_byte_vec *byte_vec);
+fl_bool fl_fn_intf_overlaps(fl_fn_intf left, fl_fn_intf right);
 
 // ---------- DEFINITIONS ----------
 
-FL_HEADER_FN fl_void fl_fn_intf_init(
+FL_SEALED_FN fl_void fl_fn_intf_init(
     fl_fn_intf *intf,
     fl_data_type return_type,
     fl_data_desc_vec param_descs)
@@ -55,13 +53,13 @@ FL_HEADER_FN fl_void fl_fn_intf_init(
     fl_cstr_vec_init_empty(&intf->param_labels);
 }
 
-FL_HEADER_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels)
+FL_SEALED_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels)
 {
     assert(intf->param_descs.size == labels.size);
     intf->param_labels = labels;
 }
 
-FL_HEADER_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
+FL_SEALED_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
 {
     fl_data_desc_vec_free(&intf->param_descs);
     fl_cstr_vec_free(&intf->param_labels);
@@ -69,42 +67,7 @@ FL_HEADER_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
     intf->traits = FL_FN_TRAITS_NONE;
 }
 
-FL_HEADER_FN fl_bool fl_fn_intf_overlaps(fl_fn_intf left, fl_fn_intf right)
-{
-    if (left.param_descs.size == 0 && right.param_descs.size == 0)
-        return FL_TRUE;
-
-    if (left.param_descs.size != right.param_descs.size)
-        return FL_FALSE;
-
-    for (fl_size i = 0; i < left.param_descs.size; i++)
-        if (!fl_data_desc_match_other(left.param_descs.data[i], right.param_descs.data[i]))
-            return FL_FALSE;
-
-    return FL_TRUE;
-}
-
-FL_HEADER_FN fl_size fl_fn_intf_mem_size(const fl_fn_intf intf)
+FL_SEALED_FN fl_size fl_fn_intf_mem_size(const fl_fn_intf intf)
 {
     return sizeof(fl_data_type) + sizeof(fl_fn_traits) + intf.param_descs.size * sizeof(fl_data_desc);
-}
-
-FL_HEADER_FN fl_void fl_fn_intf_to_bytes(
-    const fl_fn_intf intf,
-    fl_byte_vec *byte_vec)
-{
-    // TEMP
-
-    // other intf fields...
-
-    const fl_size n = intf.param_labels.size;
-    fl_byte_vec_push_mem(byte_vec, &n, sizeof(fl_size));
-
-    for (fl_size i = 0; i < n; i++)
-    {
-        fl_char *label = intf.param_labels.data[i];
-        fl_byte_vec_push_str(byte_vec, label);
-
-        // param traits...
-    }
 }

@@ -27,13 +27,13 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n);
-FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str);
-FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other);
+FL_SEALED_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n);
+FL_SEALED_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str);
+FL_SEALED_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n)
+FL_SEALED_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem, fl_size bytes_n)
 {
     if (bc->size + bytes_n > bc->_capacity)
         fl_byte_vec_reserve(bc, bc->_capacity + bytes_n + _FL_BC_CAP_STEP);
@@ -42,7 +42,7 @@ FL_HEADER_FN fl_void fl_byte_vec_push_mem(fl_byte_vec *bc, const fl_unknown *mem
     bc->size += bytes_n;
 }
 
-FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str)
+FL_SEALED_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str)
 {
     const fl_size len = fl_str_len(str) + 1;
     if (bc->size + len > bc->_capacity)
@@ -52,7 +52,7 @@ FL_HEADER_FN fl_void fl_byte_vec_push_str(fl_byte_vec *bc, const fl_char *str)
     bc->size += len;
 }
 
-FL_HEADER_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other)
+FL_SEALED_FN fl_void fl_byte_vec_merge(fl_byte_vec *bc, const fl_byte_vec *other)
 {
     fl_byte_vec_push_mem(bc, other->data, other->size);
 }

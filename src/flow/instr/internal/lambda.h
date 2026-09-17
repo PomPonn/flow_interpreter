@@ -18,11 +18,11 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args);
+FL_SEALED_FN fl_value fl_instr_lambda(fl_value_vec args);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_value fl_instr_lambda(fl_value_vec args)
+FL_SEALED_FN fl_value fl_instr_lambda(fl_value_vec args)
 {
     // params
     assert(args.data[0].desc.type == FL_DATA_TYPE_ARRAY);

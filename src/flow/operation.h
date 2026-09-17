@@ -46,16 +46,16 @@ FL_FORWARD_STRUCT(fl_base_context);
 FL_FORWARD_STRUCT(fl_ast_node);
 FL_FORWARD_STRUCT(fl_scope);
 
-FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr);
-FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
-FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val);
-FL_HEADER_FN fl_operation fl_operation_uninitialized();
-FL_HEADER_FN fl_operation fl_operation_unknown();
+FL_SEALED_FN fl_operation fl_operation_from_instr(fl_instruction instr);
+FL_SEALED_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars);
+FL_SEALED_FN fl_operation fl_operation_from_value(fl_value val);
+FL_SEALED_FN fl_operation fl_operation_uninitialized();
+FL_SEALED_FN fl_operation fl_operation_unknown();
 
-FL_HEADER_FN fl_bool fl_operation_is_initialized(fl_operation op);
-FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
-FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op);
-FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op);
+FL_SEALED_FN fl_bool fl_operation_is_initialized(fl_operation op);
+FL_SEALED_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
+FL_SEALED_FN fl_bool fl_operation_is_callable(fl_operation op);
+FL_SEALED_FN fl_bool fl_operation_is_compile_time(fl_operation op);
 
 fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
 fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_base_context *cnt);
@@ -71,7 +71,7 @@ const fl_fn_intf *fl_operation_get_intf_by_args(
 
 // ---------- DEFINITIONS ----------
 
-FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr)
+FL_SEALED_FN fl_operation fl_operation_from_instr(fl_instruction instr)
 {
     return (fl_operation){
         .type = FL_OPERATION_INSTR,
@@ -80,7 +80,7 @@ FL_HEADER_FN fl_operation fl_operation_from_instr(fl_instruction instr)
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
+FL_SEALED_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
 {
     return (fl_operation){
         .type = FL_OPERATION_FN,
@@ -89,7 +89,7 @@ FL_HEADER_FN fl_operation fl_operation_from_fn_vars(fl_fn_variant_vec *vars)
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
+FL_SEALED_FN fl_operation fl_operation_from_value(fl_value val)
 {
     return (fl_operation){
         .type = FL_OPERATION_VALUE,
@@ -98,7 +98,7 @@ FL_HEADER_FN fl_operation fl_operation_from_value(fl_value val)
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_uninitialized()
+FL_SEALED_FN fl_operation fl_operation_uninitialized()
 {
     return (fl_operation){
         .type = FL_OPERATION_UNINIT,
@@ -106,7 +106,7 @@ FL_HEADER_FN fl_operation fl_operation_uninitialized()
     };
 }
 
-FL_HEADER_FN fl_operation fl_operation_unknown()
+FL_SEALED_FN fl_operation fl_operation_unknown()
 {
     return (fl_operation){
         .type = FL_OPERATION_UNKNOWN,
@@ -114,25 +114,25 @@ FL_HEADER_FN fl_operation fl_operation_unknown()
     };
 }
 
-FL_HEADER_FN fl_bool fl_operation_is_initialized(fl_operation op)
+FL_SEALED_FN fl_bool fl_operation_is_initialized(fl_operation op)
 {
     return op.type != FL_OPERATION_UNINIT;
 }
 
-FL_HEADER_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)
+FL_SEALED_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr)
 {
     return op.type == FL_OPERATION_INSTR && op.instr == instr;
 }
 
-FL_HEADER_FN fl_bool fl_operation_is_callable(fl_operation op)
+FL_SEALED_FN fl_bool fl_operation_is_callable(fl_operation op)
 {
     return op.type == FL_OPERATION_FN ||
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
 }
 
-FL_HEADER_FN fl_bool fl_operation_is_compile_time(fl_operation op)
+FL_SEALED_FN fl_bool fl_operation_is_compile_time(fl_operation op)
 {
-    if (!op.type == FL_OPERATION_INSTR)
+    if (op.type != FL_OPERATION_INSTR)
         return FL_FALSE;
 
     return op.instr == FL_INSTR_LAMBDA;

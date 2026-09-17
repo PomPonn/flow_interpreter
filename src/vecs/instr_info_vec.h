@@ -23,12 +23,12 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_const_cstr_vec fl_instr_info_vec_to_escapes(const fl_instr_info_vec *vec);
-FL_HEADER_FN fl_instr_info *fl_instr_info_vec_find(const fl_instr_info_vec *vec, const fl_char *name);
+FL_SEALED_FN fl_const_cstr_vec fl_instr_info_vec_to_escapes(const fl_instr_info_vec *vec);
+FL_SEALED_FN fl_instr_info *fl_instr_info_vec_find(const fl_instr_info_vec *vec, const fl_char *name);
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_const_cstr_vec fl_instr_info_vec_to_escapes(const fl_instr_info_vec *vec)
+FL_SEALED_FN fl_const_cstr_vec fl_instr_info_vec_to_escapes(const fl_instr_info_vec *vec)
 {
     fl_const_cstr_vec escapes;
     fl_const_cstr_vec_init_c(&escapes, vec->size);
@@ -43,7 +43,7 @@ FL_HEADER_FN fl_const_cstr_vec fl_instr_info_vec_to_escapes(const fl_instr_info_
     return escapes;
 }
 
-FL_HEADER_FN fl_instr_info *fl_instr_info_vec_find(const fl_instr_info_vec *vec, const fl_char *name)
+FL_SEALED_FN fl_instr_info *fl_instr_info_vec_find(const fl_instr_info_vec *vec, const fl_char *name)
 {
     for (fl_size i = 0; i < vec->size; i++)
         if (fl_str_equal(vec->data[i].name, name))

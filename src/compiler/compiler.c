@@ -25,7 +25,6 @@
 #include "context/cmp_context.h"
 #include "flow/id/id_chain.h"
 #include "compiler/inliner.h"
-#include "compiler/shared.h"
 #include "tools/time.h"
 
 #ifndef NDEBUG
@@ -95,25 +94,18 @@ fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offs
 fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_chain *chain);
 
 /**
- * @brief Compile arguments.
- * @param arg_node First argument node.
- * @param cnt Context to use.
- */
-inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt);
-
-/**
  * @brief Handle new identifier.
  * @param name Identifier name.
  * @param cnt Context to use.
  * @return New id entry.
  */
-inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
+FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
 
 /**
  * @brief Stamp byte code header in byte vector.
  * @param bytes Byte vector to stamp to.
  */
-inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
+FL_SEALED_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
 
 /**
  * @brief Create literal from value
@@ -121,7 +113,7 @@ inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
  * @param cnt Context to use.
  * @return Index of created literal in context literal table.
  */
-inline fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt);
+FL_SEALED_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS --------------
 
@@ -222,11 +214,11 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 
     if (op.type != FL_OPERATION_UNKNOWN)
     {
-        // Try to inline first
-        if (fl_inl_try_operation_inline(id_node, op, cnt))
+        // Try to FL_SEALED_FN first
+        if (fl_inl_try_operation_FL_SEALED_FN(id_node, op, cnt))
             goto __return;
 
-        // Throw an error if compile-time only function wasn't inlined
+        // Throw an error if compile-time only function wasn't FL_SEALED_FNd
         if (fl_operation_is_compile_time(op))
             assert(FL_FALSE);
     }
@@ -238,10 +230,12 @@ __return:
 
 #ifndef NDEBUG
 
-    const fl_size line = id_node->location.line + 1;
-    fl_char buffer[_FL_ID_STRING_MAX_SIZE];
-    assert(fl_id_chain_to_string(id_node->data, buffer, _FL_ID_STRING_MAX_SIZE));
-    printf("!!! COMPILER !!! Passed operation '%s', line %u\n", buffer, line);
+    {
+        const fl_size line = id_node->location.line + 1;
+        fl_char buffer[_FL_ID_STRING_MAX_SIZE];
+        assert(fl_id_chain_to_string(id_node->data, buffer, _FL_ID_STRING_MAX_SIZE));
+        printf("!!! COMPILER !!! Passed operation '%s', line %u\n", buffer, line);
+    }
 
 #endif
 }
@@ -260,7 +254,7 @@ fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
     fl_int_vec_free(&inds);
 }
 
-inline fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt)
+FL_SEALED_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt)
 {
     fl_value_vec *lits = &cnt->base->literals;
     fl_int ind = fl_value_vec_find_identical(lits, lit_value);
@@ -332,18 +326,7 @@ fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offs
     fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
 }
 
-inline fl_void _fl_cmp_compile_args(const fl_ast_node *arg_node, fl_cmp_context *cnt)
-{
-    while (arg_node)
-    {
-        fl_cmp_compile_node(arg_node, cnt);
-        arg_node = arg_node->next;
-    }
-
-    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
-}
-
-inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
+FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
 {
     // Create dummy id in base scope
     fl_id_entry *id;
@@ -353,7 +336,7 @@ inline fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *c
     return id;
 }
 
-inline fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
+FL_SEALED_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
 {
     fl_byte_vec_push(bytes, FL_SECTION_MARK_HEADER);
 
@@ -371,4 +354,71 @@ fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_
     fl_id_chain_to_string(chain, buffer, FL_ID_CHAIN_MAX_SIZE);
     fl_byte_vec_push(code, FL_INSTR_GET_ID_BY_NAMES);
     fl_byte_vec_push_str(code, buffer);
+}
+
+fl_void fl_cmp_call_to_bytes(
+    const fl_ast_node *id_node,
+    const fl_operation op,
+    fl_cmp_context *cnt)
+{
+    if (op.type == FL_OPERATION_INSTR)
+    {
+        fl_byte_vec_push(&cnt->byte_code, op.instr);
+    }
+    else if (fl_bits_is_any(op.type, FL_OPERATION_FN | FL_OPERATION_UNKNOWN))
+    {
+        // Start CALL instruction
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);
+        // Push information how to access id
+        _fl_cmp_stamp_id_access(cnt, id_node);
+    }
+    else
+        assert(FL_FALSE);
+
+    // Compile args
+    fl_ast_node *arg_node = id_node->next;
+
+    while (arg_node)
+    {
+        fl_cmp_compile_node(arg_node, cnt);
+        arg_node = arg_node->next;
+    }
+
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
+}
+
+fl_void fl_cmp_block_cnt_to_bytes(
+    fl_byte_vec *bytes,
+    const fl_cmp_context *cnt,
+    const fl_cstr_vec *ignore_labels)
+{
+    fl_id_entry_vec ids = cnt->scope->ids;
+    fl_size ignore_count = ignore_labels ? ignore_labels->size : 0;
+
+    // Sum id declarations mem block size and rest of this block size
+    // ids.size * 2 for each FL_INSTR_DECL_ID tag and string termination '\0'
+    fl_size total_size = (ids.size - ignore_count) * 2 + cnt->byte_code.size;
+
+    fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
+    // Push block byte size at the beginning and fill it later
+    fl_size size_ind = bytes->size;
+    fl_byte_vec_push_t(bytes, total_size, fl_size);
+
+    // Push id declarations at block start
+    for (fl_size i = 0; i < ids.size; i++)
+    {
+        const fl_char *name = ids.data[i]->name;
+        if (ignore_count && fl_cstr_vec_find(ignore_labels, name) != FL_FIND_FAIL)
+            continue;
+
+        total_size += fl_str_len(name);
+        fl_byte_vec_push(bytes, FL_INSTR_DECL_ID);
+        fl_byte_vec_push_str(bytes, ids.data[i]->name);
+    }
+
+    // Set final block size
+    *(fl_size *)&bytes->data[size_ind] = total_size;
+
+    fl_byte_vec_merge(bytes, &cnt->byte_code);
+    fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
 }

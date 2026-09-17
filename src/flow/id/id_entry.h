@@ -25,9 +25,9 @@ typedef struct _fl_id_entry fl_id_entry;
 
 // ---------- DECLARATIONS --------------
 
-FL_HEADER_FN fl_void fl_id_entry_free(fl_id_entry **entry);
+FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry);
 
-FL_HEADER_FN fl_void fl_id_entry_init(
+FL_SEALED_FN fl_void fl_id_entry_init(
     fl_id_entry **entry,
     fl_char *name,
     fl_data_type declared_type,
@@ -35,7 +35,7 @@ FL_HEADER_FN fl_void fl_id_entry_init(
 
 // ---------- DEFINITIONS ---------------
 
-FL_HEADER_FN fl_void fl_id_entry_free(fl_id_entry **entry)
+FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry)
 {
     fl_id_entry *ptr = *entry;
 
@@ -46,7 +46,7 @@ FL_HEADER_FN fl_void fl_id_entry_free(fl_id_entry **entry)
     *entry = FL_NULL;
 }
 
-FL_HEADER_FN fl_void fl_id_entry_init(
+FL_SEALED_FN fl_void fl_id_entry_init(
     fl_id_entry **entry,
     fl_char *name,
     fl_data_type declared_type,
