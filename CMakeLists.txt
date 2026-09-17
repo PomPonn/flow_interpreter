@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 4.0.0)
 project(FlowInterpreter VERSION 0.1.2 LANGUAGES C)
 
+set(CMAKE_STATIC_LIBRARY_PREFIX "")
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
 include(CTest)
 
 # ---------- GLOBAL VARIABLES -----------
@@ -16,7 +19,7 @@ set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/logs)
 # base directory to third party libraries
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 # path to the sample flow code to use
-set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/functions.fl)
+set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/simple_fn.fl)
 # path to unity library source file
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output

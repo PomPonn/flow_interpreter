@@ -22,6 +22,8 @@
 // 10 KB
 #define BUFFER_SIZE 1024 * 10
 
+#define MEDIAN(arr, count) (count % 2 == 0 ? (arr[(fl_size)(count / 2)] + arr[(fl_size)(count / 2) + 1]) / 2 : arr[(fl_size)(count / 2)])
+
 // ------------- GLOBALS ----------------
 
 fl_char buffer[BUFFER_SIZE];
@@ -38,7 +40,7 @@ fl_void _fl_prof_log(
 {
     fl_double sum = 0;
     fl_double max = 0, min = INT32_MAX;
-    fl_double med = measures[(fl_size)(measures_count / 2)];
+    fl_double med = MEDIAN(measures, measures_count);
 
     for (fl_size i = 0; i < measures_count; i++)
     {
@@ -49,10 +51,12 @@ fl_void _fl_prof_log(
         sum += measures[i];
     }
 
+    fl_double avg = sum / measures_count;
+
     sprintf(
         buffer,
         "[PROFILER LOG ENTRY]\n"
-        "Timestamp: %s\n"
+        "Timestamp: %s"
         "Expression: '%s'\n"
         "Compiler: '%s'\n"
 #ifdef NDEBUG
@@ -62,14 +66,18 @@ fl_void _fl_prof_log(
 #endif
         "Samples: %u calls\n"
         "Input: %u %s\n"
-        "Average: %." FLOAT_PRECISION "f microseconds\n"
-        "Median: %." FLOAT_PRECISION "f microseconds\n"
-        "Minimum: %." FLOAT_PRECISION "f microseconds\n"
-        "Maximum: %." FLOAT_PRECISION "f microseconds\n"
-        "Total: %." FLOAT_PRECISION "f miliseconds (%." FLOAT_PRECISION "f microseconds)\n\n",
+        "Average: %." FLOAT_PRECISION "f ms / %." FLOAT_PRECISION "f us\n"
+        "Median:  %." FLOAT_PRECISION "f ms / %." FLOAT_PRECISION "f us\n"
+        "Minimum:  %." FLOAT_PRECISION "f ms / %." FLOAT_PRECISION "f us\n"
+        "Maximum:  %." FLOAT_PRECISION "f ms / %." FLOAT_PRECISION "f us\n"
+        "Total: %." FLOAT_PRECISION "f s / %." FLOAT_PRECISION "f ms / %." FLOAT_PRECISION "f us\n\n",
         fl_time_to_str(FL_TIME_NULL), what, _C_COMPILER_PATH,
         measures_count, input_size, input_unit,
-        sum / measures_count, med, min, max, sum * 1e-3, sum);
+        avg * 1e-3, avg,
+        med * 1e-3, med,
+        min * 1e-3, min,
+        max * 1e-3, max,
+        sum * 1e-6, sum * 1e-3, sum);
 
     fl_file_append_str(filename, buffer);
 

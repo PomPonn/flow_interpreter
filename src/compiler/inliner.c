@@ -63,7 +63,7 @@ FL_SEALED_FN fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *
 
 // ---------- DEFINITIONS -----------
 
-fl_bool fl_inl_try_operation_FL_SEALED_FN(
+fl_bool fl_inl_try_operation_inline(
     const fl_ast_node *id_node,
     const fl_operation op,
     fl_cmp_context *cnt)

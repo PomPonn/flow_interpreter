@@ -209,16 +209,22 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     fl_ast_node *id_node = op_node->child;
     fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
 
-    if (!fl_operation_is_callable(op))
-        assert(FL_FALSE);
-
     if (op.type != FL_OPERATION_UNKNOWN)
     {
-        // Try to FL_SEALED_FN first
-        if (fl_inl_try_operation_FL_SEALED_FN(id_node, op, cnt))
-            goto __return;
+        if (!fl_operation_is_callable(op))
+            assert(FL_FALSE);
 
-        // Throw an error if compile-time only function wasn't FL_SEALED_FNd
+        // Try to inline first
+        if (fl_inl_try_operation_inline(id_node, op, cnt))
+        {
+#if _INCLUDE_INLINE_LOGS
+            goto __return;
+#else
+            return;
+#endif
+        }
+
+        // Throw an error if compile-time only function wasn't inlined
         if (fl_operation_is_compile_time(op))
             assert(FL_FALSE);
     }
@@ -226,9 +232,9 @@ fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
     // Compile it normally
     fl_cmp_call_to_bytes(id_node, op, cnt);
 
-__return:
+#if _INCLUDE_INLINE_LOGS
 
-#ifndef NDEBUG
+__return:
 
     {
         const fl_size line = id_node->location.line + 1;
