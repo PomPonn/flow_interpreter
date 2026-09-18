@@ -26,7 +26,5 @@ fl_char *fl_str_find_any(const fl_char *str, const fl_char *chrs);
 fl_bool fl_str_is_num(const fl_char *str, fl_bool *floating);
 fl_char *fl_str_find(const fl_char *str, fl_char chr);
 fl_size fl_str_index(const fl_char *str, fl_char chr);
-fl_size fl_str_count_chrs(const fl_char *str, fl_char chr);
-
-// resulting string has to be free
+fl_size fl_str_count_chr(const fl_char *str, fl_char chr);
 fl_void fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len);

@@ -167,16 +167,16 @@ fl_op_order _fl_ast_get_op_order(const fl_ast_node *op_node, const fl_instr_info
     assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
     assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
 
-    fl_bool is_grouped = *(fl_bool *)op_node->data;
-    fl_op_order order = is_grouped ? FL_OP_ORDER_GROUP : FL_OP_ORDER_NEUTRAL;
     fl_id_chain *id_chain = op_node->child[0].data;
+    fl_op_order order = FL_OP_ORDER_NEUTRAL;
 
-    if (!is_grouped && id_chain->size == 1)
+    if (id_chain->size == 1)
     {
+        // Assume it's instruction and try to find information about it
         fl_instr_info *info = fl_instr_info_vec_find(instr_infos, id_chain->data[0]);
 
         if (info)
-            // It's an instruction, use it's order
+            // It's an instruction, use it's sorting order
             return info->order;
     }
 
@@ -205,10 +205,16 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_i
 
     fl_op_order outer_order = _fl_ast_get_op_order(op_node, instr_infos);
 
+    // Expose grouping info only when climbing higher
+    fl_bool is_grouped = *(fl_bool *)op_node->data;
+
     for (fl_ast_node *inner_node = op_node->child->next; inner_node; inner_node = inner_node->next)
     {
         if (inner_node->type != FL_AST_NODE_TYPE_OPERATOR)
+        {
+            _fl_ast_sort_operators(inner_node);
             continue;
+        }
 
         fl_op_order inner_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
 
@@ -225,11 +231,11 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_i
             inner_node->child->next = outer_last;
             outer_last->next = inner_last;
 
-            return _fl_ast_sort_operators_helper(inner_node, instr_infos);
+            outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
         }
     }
 
-    return outer_order;
+    return is_grouped ? FL_OP_ORDER_GROUP : outer_order;
 }
 
 fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
@@ -425,7 +431,10 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
 
     // check for operators chaining
     if (arr->current && arr->current->type == FL_TOKEN_TYPE_ID)
-        node = _fl_ast_process_operator(parent, arr, node, FL_FALSE);
+    {
+        node = _fl_ast_process_operator(parent, arr, node, grouped);
+        *data = FL_FALSE;
+    }
     else if (parent)
         fl_ast_node_add_child(parent, node);
 

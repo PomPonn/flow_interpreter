@@ -12,6 +12,7 @@
 
 ## ast generator
 
+- test if second \_fl_ast_sort_operators_helper call in this function is necessary.
 - revise token locations when sorting operators
 - think again about single arg calls without parantheses
 - AST types handling; AST type dimensions(?) handling
@@ -23,6 +24,7 @@
 
 ## other
 
+- fix typing prediction system when checking lambda
 - handle in-string escapes better (fl_value_from_literal function)
 - make some function struct instead of fn_variant_vec?
 - revise context scopes management

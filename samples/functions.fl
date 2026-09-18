@@ -6,7 +6,7 @@ pow2_fn_2 = [a] -> a * a;
 
 avg_fn = [a, b, c] -> {
     div = [] -> 3;
-
+    
     # last expression is returned #
     (a + b + c) / div();
 };

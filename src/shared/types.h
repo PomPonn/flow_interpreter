@@ -18,6 +18,9 @@
 #define FL_INT_MAX INT32_MAX
 #define FL_INT_MIN INT32_MIN
 
+#define FL_FALSE 0
+#define FL_TRUE 1
+
 // ---------- TYPE DEFINITIONS ----------
 
 typedef void fl_unknown;
@@ -32,12 +35,6 @@ typedef int32_t fl_int;
 typedef uint64_t fl_ulong;
 typedef int64_t fl_long;
 typedef fl_uint fl_size;
-
-enum _fl_bool
-{
-    FL_FALSE,
-    FL_TRUE,
-};
 typedef fl_byte fl_bool;
 
 // language types

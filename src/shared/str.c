@@ -123,13 +123,25 @@ fl_size fl_str_index(const fl_char *str, fl_char chr)
 fl_size fl_str_count_substrs(const fl_char *str, const fl_char *substr)
 {
     const fl_size sub_len = fl_str_len(substr);
-    const fl_char *ptr = str;
     fl_size count = 0;
 
-    while (ptr = strstr(ptr, substr))
+    while (str = strstr(str, substr))
     {
-        ptr += sub_len;
+        str += sub_len;
         count++;
+    }
+
+    return count;
+}
+
+fl_size fl_str_count_chr(const fl_char *str, fl_char chr)
+{
+    fl_size count = 0;
+
+    while (str = fl_str_find(str, chr))
+    {
+        count++;
+        str++;
     }
 
     return count;
@@ -137,12 +149,23 @@ fl_size fl_str_count_substrs(const fl_char *str, const fl_char *substr)
 
 fl_void fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len)
 {
-    // UNFINISHED
+    assert(fl_str_len(str) + fl_str_count_chr(str, '\n') <= buff_len);
+
     const fl_size n = fl_str_len(str);
 
-    for (fl_size i, j; i < n; i++, j++)
+    fl_size j = 0;
+    for (fl_size i = 0; i < n; i++, j++)
     {
+        if (str[i] == '\n')
+        {
+            buffer[j++] = '\\';
+            buffer[j] = 'n';
 
-        // if (str[i] == '\n')
+            continue;
+        }
+
+        buffer[j] = str[i];
     }
+
+    buffer[j] = '\0';
 }

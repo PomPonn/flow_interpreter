@@ -47,6 +47,7 @@ FL_SEALED_FN fl_void _fl_prt_print_array(fl_byte_reader *reader);
 const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
     static fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
+    static fl_char buffer2[_LITERAL_STR_BUFFER_SIZE];
 
     assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
@@ -55,7 +56,8 @@ const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
     switch (v->desc.type)
     {
     case FL_DATA_TYPE_STRING:
-        sprintf(buffer, "'%s'", (fl_char *)v->data);
+        fl_str_as_printable(v->data, buffer2, _LITERAL_STR_BUFFER_SIZE);
+        sprintf(buffer, "'%s'", buffer2);
         return buffer;
     case FL_DATA_TYPE_NULL:
         return "NULL";
@@ -97,8 +99,12 @@ FL_SEALED_FN fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
         break;
     }
     case FL_AST_NODE_TYPE_OPERATOR:
-        printf("<operator>");
+    {
+        fl_bool grouped = *(fl_bool *)node->data;
+        printf(grouped ? "<operator> (grouped)" : "<operator>");
         break;
+    }
+
     case FL_AST_NODE_TYPE_FN_CALL:
         printf("<call>");
         break;
