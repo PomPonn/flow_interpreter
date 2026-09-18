@@ -128,3 +128,15 @@
 ... arguments
 [ARGS END]
 ```
+
+### special values
+
+#### function
+
+```
+(parameters count) 4B
+... <parameters count> times: {
+(parameter label) xB (string)
+}
+... body block
+```

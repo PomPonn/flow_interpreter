@@ -388,7 +388,7 @@ fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bo
 
 #if _INCLUDE_INLINE_LOGS
 
-            printf("[DEBUG] AST generator passed expression at line %lu:\n", arr->current->location.line + 1);
+            printf("[DEBUG] AST generator passed expression at line %u:\n", arr->current->location.line + 1);
             fl_prt_print_ast_tree(fl_ast_node_peek_child(parent));
             printf("\n");
 

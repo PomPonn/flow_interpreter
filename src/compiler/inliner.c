@@ -45,13 +45,13 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
 fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_context *cnt);
 
 /**
- * @brief Tell whether it's possible to FL_SEALED_FN operation.
+ * @brief Tell whether it's possible to inline operation.
  * @param op Operation to check.
  * @param intf Operation interface.
  * @param arg_descs Argument data descriptors
- * @return Boolean value whether operation is FL_SEALED_FNable.
+ * @return Boolean value whether operation is inlineable.
  */
-fl_bool _fl_inl_is_call_FL_SEALED_FNable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs);
+fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs);
 
 /**
  * @brief Convert AST nodes to data descriptors vector describing them.
@@ -80,13 +80,13 @@ fl_bool fl_inl_try_operation_inline(
         return FL_FALSE;
     }
 
-    fl_bool FL_SEALED_FNable = _fl_inl_is_call_FL_SEALED_FNable(op, fn_i, descs);
+    fl_bool inlineable = _fl_inl_is_call_inlineable(op, fn_i, descs);
     fl_data_desc_vec_free(&descs);
 
-    if (!FL_SEALED_FNable)
+    if (!inlineable)
         return FL_FALSE;
 
-    // Ready to FL_SEALED_FN
+    // Ready to inline
 
     // Compile call to byte code
     fl_cmp_context inl_cnt;
@@ -205,7 +205,7 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     fl_cmp_context_free(&block_cnt);
 }
 
-fl_bool _fl_inl_is_call_FL_SEALED_FNable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs)
+fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf, const fl_data_desc_vec arg_descs)
 {
     return fl_operation_is_compile_time(op) ||
            (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
@@ -254,7 +254,7 @@ fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_conte
         fl_data_traits traits = FL_DATA_TRAIT_NONE;
 
         // If we can predict result of the operation, it's inherently constant.
-        if (_fl_inl_is_call_FL_SEALED_FNable(op, fn_i, descs))
+        if (_fl_inl_is_call_inlineable(op, fn_i, descs))
             fl_bits_set(traits, FL_DATA_TRAIT_CONST);
 
         fl_data_desc_vec_free(&descs);

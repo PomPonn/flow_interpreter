@@ -12,15 +12,10 @@
 
 ## ast generator
 
-- cleanup ast_tree.c
 - revise token locations when sorting operators
-- cleanup
 - think again about single arg calls without parantheses
-- AST generating optimalization
-- AST operators sorting
-- AST function definitions handling
-- AST generation unused tokens handling
 - AST types handling; AST type dimensions(?) handling
+- AST generation unused tokens handling
 
 ## tokenizer
 
@@ -30,18 +25,15 @@
 
 - make some function struct instead of fn_variant_vec?
 - revise context scopes management
-- add call_attached to local_context (rename this field?)
+- add call_attached to local_context? (rename this field?)
 - add const specifiers where possible
 - make fl_id_entry use data_desc instead of just data_type? (decl_type fields)
 - wrap std string to x type conversion functions
-- implement values dereferencing
 - fix messy data_desc & intfs handling.
-- update specs
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration
 - revise mod_importer implementation namings
 - implement time measurement on unix systems
-- think if warnings should be a thing
-- handle other number bases (hex for instance)
+- handle other number bases
+- create proper error(/warning?) handling
 - optimalize fl_std_io_put
-- create proper error handling

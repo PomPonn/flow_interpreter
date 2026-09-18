@@ -13,8 +13,6 @@
 
 #include "shared/memory.h"
 #include "shared/types.h"
-
-// included only when profiler is on
 #include "tools/profiler.h"
 
 #include <assert.h>

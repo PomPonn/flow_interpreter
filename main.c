@@ -8,7 +8,6 @@
 
 #include "flow/globals.h"
 #include "flow/flow.h"
-#include "tools/profiler.h"
 
 #include <stdio.h>
 
