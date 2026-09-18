@@ -402,8 +402,10 @@ fl_void fl_cmp_block_cnt_to_bytes(
     fl_size ignore_count = ignore_labels ? ignore_labels->size : 0;
 
     // Sum id declarations mem block size and rest of this block size
-    // ids.size * 2 for each FL_INSTR_DECL_ID tag and string termination '\0'
-    fl_size total_size = (ids.size - ignore_count) * 2 + cnt->byte_code.size;
+    fl_size total_size = cnt->byte_code.size;
+    if (ids.size > ignore_count)
+        // ids.size * 2 for each FL_INSTR_DECL_ID tag and string termination '\0'
+        total_size += (ids.size - ignore_count) * 2;
 
     fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
     // Push block byte size at the beginning and fill it later

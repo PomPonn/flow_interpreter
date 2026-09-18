@@ -190,6 +190,26 @@ fl_void fl_g_instrs_init()
     g_variants.data[FL_INSTR_MUL] = vars;
     g_info_vec.data[FL_INSTR_MUL] = fl_instr_info_create("*", FL_OP_ORDER_ARITHM_MED);
 
+    // ---- DIV ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_ANY, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_div);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_DIV] = vars;
+    g_info_vec.data[FL_INSTR_DIV] = fl_instr_info_create("/", FL_OP_ORDER_ARITHM_MED);
+
     g_escapes = fl_instr_info_vec_to_escapes(&g_info_vec);
     g_initialized = FL_TRUE;
 }

@@ -5,15 +5,25 @@ pow2_fn_1 = a -> a * a;
 pow2_fn_2 = [a] -> a * a;
 
 avg_fn = [a, b, c] -> {
-    return((a + b + c) / 3);
-};
+    div = [] -> 3;
 
-hello_fn = [] -> {
     # last expression is returned #
-    io.put("Hello!");
+    (a + b + c) / div();
 };
 
 x = pow2_fn_1(2);
 y = pow2_fn_2(2);
 z = avg_fn(2, 3, 4);
-w = hello_fn();
+
+hello_fn = [] -> {
+    io.put("Hello!\nx:");
+    io.put(x);
+
+    io.put("y:");
+    io.put(y);
+
+    io.put("z:");
+    io.put(z);
+};
+
+hello_fn();

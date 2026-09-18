@@ -23,6 +23,7 @@
 
 ## other
 
+- handle in-string escapes better (fl_value_from_literal function)
 - make some function struct instead of fn_variant_vec?
 - revise context scopes management
 - add call_attached to local_context? (rename this field?)

@@ -107,9 +107,9 @@ fl_char *fl_str_find(const fl_char *str, fl_char chr)
     return strchr(str, chr);
 }
 
-fl_long fl_str_index(const fl_char *str, fl_char chr)
+fl_size fl_str_index(const fl_char *str, fl_char chr)
 {
-    for (fl_long i = 0; *str; i++)
+    for (fl_size i = 0; *str; i++)
     {
         if (*str == chr)
             return i;
@@ -117,5 +117,32 @@ fl_long fl_str_index(const fl_char *str, fl_char chr)
         str++;
     }
 
-    return -1;
+    return FL_FIND_FAIL;
+}
+
+fl_size fl_str_count_substrs(const fl_char *str, const fl_char *substr)
+{
+    const fl_size sub_len = fl_str_len(substr);
+    const fl_char *ptr = str;
+    fl_size count = 0;
+
+    while (ptr = strstr(ptr, substr))
+    {
+        ptr += sub_len;
+        count++;
+    }
+
+    return count;
+}
+
+fl_void fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len)
+{
+    // UNFINISHED
+    const fl_size n = fl_str_len(str);
+
+    for (fl_size i, j; i < n; i++, j++)
+    {
+
+        // if (str[i] == '\n')
+    }
 }

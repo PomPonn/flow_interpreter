@@ -79,13 +79,31 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
         break;
     case FL_DATA_TYPE_STRING:
     {
+        // TEMP
+        const fl_char *old = lit_data;
+        const fl_size nl_escapes = fl_str_count_substrs(old + 1, "\\n");
+        const fl_size old_len = fl_str_len(lit_data);
         // substract quotes count data len
-        const fl_size len = fl_str_len(lit_data) - 2;
-        res_data = fl_mem_alloc_arr(sizeof(fl_char), len + 1);
-        // copy string wiouth quotes
-        fl_mem_copy((fl_char *)lit_data + 1, res_data, len);
-        // add end-of-string char at the end
-        ((fl_char *)res_data)[len] = '\0';
+        const fl_size new_len = old_len - nl_escapes - 2;
+
+        // copy string with handled escapes
+        fl_char *new = fl_mem_alloc_arr(sizeof(fl_char), new_len + 1);
+        for (fl_size j = 0, i = 1; i < old_len - 1; i++, j++)
+        {
+            if (old[i] == '\\' && old[i + 1] == 'n')
+            {
+                new[j] = '\n';
+                i++;
+                continue;
+            }
+
+            new[j] = old[i];
+        }
+
+        // add null char at the end
+        new[new_len] = '\0';
+
+        res_data = new;
         break;
     }
     case FL_DATA_TYPE_ARRAY:

@@ -15,4 +15,5 @@
 #include "lambda.h"
 #include "add.h"
 #include "mul.h"
+#include "div.h"
 #include "sub.h"

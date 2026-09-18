@@ -182,18 +182,21 @@ fl_void _fl_inl_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt
     fl_value_to_bytes(lbl_arr, &cnt->byte_code);
 
     // Compile lambda body
+    const fl_ast_node *body_node = arg_node->next;
 
+    // If lambda is a single operator, wrap it in a block
     fl_cmp_context block_cnt;
     fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
     fl_local_context_deepen((fl_local_context *)&block_cnt);
 
-    // If lambda is a single operator, wrap it in a block
-    fl_ast_node *inner_node = arg_node->next->type == FL_AST_NODE_TYPE_BLOCK ? arg_node->next->child : arg_node->next;
+    // Skip block handling, since we override it's default behaviour
+    if (body_node->type == FL_AST_NODE_TYPE_BLOCK)
+        body_node = body_node->child;
 
-    while (inner_node)
+    while (body_node)
     {
-        fl_cmp_compile_node(arg_node->next, &block_cnt);
-        inner_node = inner_node->next;
+        fl_cmp_compile_node(body_node, &block_cnt);
+        body_node = body_node->next;
     }
 
     fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt, &labels);
@@ -232,7 +235,7 @@ fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_conte
     switch (node->type)
     {
     case FL_AST_NODE_TYPE_BLOCK:
-        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE, FL_DATA_TRAIT_CONST);
+        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE | FL_DATA_TYPE_CODE_SEGM, FL_DATA_TRAIT_CONST);
     case FL_AST_NODE_TYPE_FN_CALL:
     case FL_AST_NODE_TYPE_OPERATOR:
     {
