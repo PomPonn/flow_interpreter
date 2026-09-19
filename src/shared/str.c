@@ -170,3 +170,11 @@ fl_char *fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_l
     buffer[j] = '\0';
     return buffer;
 }
+
+fl_char *fl_str_concat(fl_char *dest, const fl_char *src, fl_size dest_size)
+{
+    // -1 for '\0' char at the end of the string
+    const fl_size left_size = dest_size - fl_str_len(dest) - 1;
+
+    return fl_str_len(src) > left_size ? FL_NULL : strcat(dest, src);
+}

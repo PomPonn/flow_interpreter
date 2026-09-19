@@ -82,11 +82,11 @@ fl_id_entry *fl_scope_find_id(const fl_scope *scope, const fl_id_chain *id_chain
 
             fl_value id_value = ids->data[ind]->value;
 
-            // Do we want to continue if id chain is so deceptive?
             if (id_value.desc.type != FL_DATA_TYPE_SCOPE)
+                // Do we want to continue searching if id chain is so deceptive?
                 break;
 
-            curr_scope = (fl_scope *)id_value.data;
+            curr_scope = id_value.data;
         }
 
         // If didn't found id in current scope, go to outer scope

@@ -7,11 +7,13 @@
 
 ## compiler
 
+- opt.: search for unused literals (by inlining)?
 - simulate assign instruction in some cases
 - revise fn variants overloading
 
 ## ast generator
 
+- tweak lambdas sorting order?
 - test if second \_fl_ast_sort_operators_helper call in this function is necessary.
 - revise token locations when sorting operators
 - think again about single arg calls without parantheses

@@ -108,7 +108,7 @@ fl_bool fl_inl_try_operation_inline(
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
     fl_value_to_bytes(res, &cnt->byte_code);
 
-    // Free resulting value? Is it always safe?
+    // Free resulting stuff
     fl_value_free(&res);
     fl_cmp_context_free(&inl_cnt);
 

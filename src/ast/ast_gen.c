@@ -1,12 +1,12 @@
 /**
- * ---------- ast_tree.c -----------------------------
+ * ---------- ast_gen.c -------------------------------
  *
- * Implements general Abstract Syntax Tree logic.
+ * Implements Abstract Syntax Tree generation logic.
  *
- * ---------------------------------------------------
+ * ----------------------------------------------------
  */
 
-#include "ast_tree.h"
+#include "ast_gen.h"
 
 // ---------- DEPENDENCIES -----------
 
@@ -46,7 +46,7 @@
  */
 #define __next_token_safe \
     if (!__next_token)    \
-    fl_err_throw(FL_ERR_AST, "Unexpected end of code", arr->_data[arr->_iterator].value, arr->_data[arr->_iterator].location)
+    fl_err_throw(FL_ERR_AST, "Unexpected end of code (missing ';'?)", arr->_data[arr->_iterator].value, arr->_data[arr->_iterator].location)
 
 /**
  * @brief Shorthand for creating empty AST node.
@@ -146,7 +146,7 @@ FL_SEALED_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
 
 // ---------- DEFINITIONS ---------------
 
-fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr)
+fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 {
     fl_token_arr_reset_ptr(arr);
 

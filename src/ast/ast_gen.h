@@ -1,9 +1,9 @@
 /**
- * ---------- ast_tree.h --------------------------
+ * ---------- ast_gen.h ------------------------------
  *
- * Declares general Abstract Syntax Tree logic.
+ * Declares Abstract Syntax Tree generationn logic.
  *
- * ------------------------------------------------
+ * ---------------------------------------------------
  */
 
 #pragma once
@@ -25,4 +25,4 @@ FL_FORWARD_STRUCT(fl_ast_node);
  * @throw `FL_ERR_AST`
  * @return AST root block node.
  */
-fl_ast_node *fl_ast_tree_gen(fl_token_arr *arr);
+fl_ast_node *fl_ast_gen(fl_token_arr *arr);

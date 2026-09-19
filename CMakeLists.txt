@@ -18,14 +18,14 @@ set(CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/logs)
 # base directory to third party libraries
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-# path to the sample flow code to use
-set(SAMPLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samples/functions.fl)
+# base directory to sample files
+set(SAMPLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/samples)
 # path to unity library source file
 set(UNITY_SOURCE ${LIBS_DIR}/unity/unity.c)
 # base binary directory for tests compilation output
 set(TESTS_BIN_DIR ${CMAKE_BINARY_DIR}/mytests) 
 # byte code version. Format: [Y][M][D][00-99 (patch)]
-set(BYTECODE_VERSION 2026091601)
+set(BYTECODE_VERSION 2026091900)
 
 # ---------- FUNCTIONS ----------
 
@@ -75,10 +75,10 @@ include_directories(${CORE_DIR} ${LIBS_DIR})
 
 add_compile_definitions(
     _INCLUDE_PROFILER=0
-    _INCLUDE_INLINE_LOGS=1
+    _INCLUDE_INLINE_LOGS=0
     _SUPPRESS_ERRORS=0
     _C_COMPILER_PATH="${CMAKE_C_COMPILER}"
-    _TEST_INPUT_PATH="${SAMPLE_PATH}"
+    _SAMPLE_DIR="${SAMPLE_DIR}"
     _PROFILER_LOGS_PATH="${LOG_DIR}/profiler.txt"
     _BYTECODE_VERSION="${BYTECODE_VERSION}"
 )

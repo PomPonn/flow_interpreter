@@ -1,0 +1,8 @@
+io = import(":std.io");
+
+# nested lambdas #
+l1 = [] -> {
+    [] -> ([a] -> a * 2);
+};
+
+io.print(l1()()(4));

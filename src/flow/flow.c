@@ -13,11 +13,11 @@
 #include "compiler/compiler.h"
 #include "tokenizer/token_arr.h"
 #include "interpreter/interpreter.h"
-#include "ast/ast_tree.h"
+#include "ast/ast_gen.h"
 #include "tools/file.h"
 #include "shared/error.h"
 #include "tokenizer/tokenizer.h"
-#include "ast/ast_tree.h"
+#include "ast/ast_gen.h"
 #include "ast/ast_node.h"
 #include "tools/file.h"
 #include "flow/globals.h"
@@ -71,10 +71,10 @@ fl_void fl_flow_run(const fl_char *source_path)
         // there are no meaningful tokens in the file
         return;
 
-    // fl_prof_profile_once(fl_ast_tree_gen(&token_arr));
+    // fl_prof_profile_once(fl_ast_gen(&token_arr));
     // return;
 
-    fl_ast_node *tree = fl_ast_tree_gen(&token_arr);
+    fl_ast_node *tree = fl_ast_gen(&token_arr);
 
     fl_token_arr_free(&token_arr);
 
