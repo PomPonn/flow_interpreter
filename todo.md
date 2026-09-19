@@ -7,7 +7,7 @@
 
 ## compiler
 
-- opt.: search for unused literals (by inlining)?
+- opt.: search for unused literals (by inlining) and discard them
 - simulate assign instruction in some cases
 - revise fn variants overloading
 
