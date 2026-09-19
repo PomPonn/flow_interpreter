@@ -48,8 +48,7 @@ enum _fl_instruction
      */
 
     FL_INSTR_CALL,
-    FL_INSTR_GET_ID_BY_INDS,
-    FL_INSTR_GET_ID_BY_NAMES,
+    FL_INSTR_GET_ID,
     FL_INSTR_DECL_ID,
     FL_INSTR_GET_LITERAL,
     FL_INSTR_VALUE,

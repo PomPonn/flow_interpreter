@@ -105,7 +105,7 @@ fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scop
         return fl_operation_from_instr(instr);
 
     // try to find function id
-    fl_id_entry *id = fl_scope_resolve_id(scope, id_chain);
+    fl_id_entry *id = fl_scope_find_id(scope, id_chain);
 
     if (id && !fl_value_is_empty(id->value))
     {

@@ -265,7 +265,7 @@ fl_data_desc _fl_inl_guess_node_desc(const fl_ast_node *node, const fl_cmp_conte
     }
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
-        fl_id_entry *id = fl_scope_resolve_id(cnt->scope, node->data);
+        fl_id_entry *id = fl_scope_find_id(cnt->scope, node->data);
         fl_data_type type = id ? id->decl_type : FL_DATA_TYPE_NULL;
         return fl_data_desc_create_traited(type, FL_DATA_TRAIT_REF);
     }

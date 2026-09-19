@@ -27,8 +27,7 @@
 // ---------- MACROS ---------------
 
 #define _POSITION_STR_BUFFER_SIZE 16
-#define _LITERAL_STR_BUFFER_SIZE 2048
-#define _VALUE_STR_BUFFER_SIZE 1024
+#define _STR_BUFFER_SIZE 2048
 
 #define _PRT_HANDLE_PREDEF_PRINT(predef_name_uc)         \
     case _FL_MERGE2(FL_INSTR_, predef_name_uc):          \
@@ -46,8 +45,8 @@ FL_SEALED_FN fl_void _fl_prt_print_array(fl_byte_reader *reader);
 
 const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
 {
-    static fl_char buffer[_LITERAL_STR_BUFFER_SIZE];
-    static fl_char buffer2[_LITERAL_STR_BUFFER_SIZE];
+    static fl_char buffer[_STR_BUFFER_SIZE];
+    static fl_char buffer2[_STR_BUFFER_SIZE];
 
     assert(lit_node->type == FL_AST_NODE_TYPE_LITERAL);
 
@@ -56,7 +55,7 @@ const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
     switch (v->desc.type)
     {
     case FL_DATA_TYPE_STRING:
-        fl_str_as_printable(v->data, buffer2, _LITERAL_STR_BUFFER_SIZE);
+        fl_str_as_printable(v->data, buffer2, _STR_BUFFER_SIZE);
         sprintf(buffer, "'%s'", buffer2);
         return buffer;
     case FL_DATA_TYPE_NULL:
@@ -207,23 +206,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size n)
         case FL_INSTR_CALL:
             printf("[CALL]\n");
             break;
-        case FL_INSTR_GET_ID_BY_INDS:
-        {
-            assert(sizeof(fl_size) == sizeof(unsigned));
-
-            fl_uint offset = fl_byte_reader_next(reader, fl_uint);
-            fl_size ind_count = fl_byte_reader_next(reader, fl_size);
-            printf("[ID] %u; ", offset);
-
-            for (fl_size i = 0; i < ind_count; i++)
-            {
-                fl_int ind = fl_byte_reader_next(reader, fl_int);
-                printf("%d%s", ind, i == ind_count - 1 ? "\n" : ", ");
-            }
-
-            break;
-        }
-        case FL_INSTR_GET_ID_BY_NAMES:
+        case FL_INSTR_GET_ID:
             printf("[ID] %s\n", fl_byte_reader_next_str(reader));
             break;
         case FL_INSTR_EXECUTE:
@@ -312,7 +295,7 @@ FL_SEALED_FN fl_void _fl_prt_print_array(fl_byte_reader *reader)
 
 fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
 {
-    static fl_char buffer[_VALUE_STR_BUFFER_SIZE];
+    static fl_char buffer[_STR_BUFFER_SIZE];
     const fl_data_type data_type = fl_byte_reader_next(reader, fl_data_type);
 
     switch (data_type)
@@ -321,7 +304,7 @@ fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
         printf("NULL");
         break;
     case FL_DATA_TYPE_STRING:
-        printf("'%s'", fl_byte_reader_next_str(reader));
+        printf("'%s'", fl_str_as_printable(fl_byte_reader_next_str(reader), buffer, _STR_BUFFER_SIZE));
         break;
     case FL_DATA_TYPE_INT:
         assert(sizeof(fl_flow_int) == sizeof(long long));

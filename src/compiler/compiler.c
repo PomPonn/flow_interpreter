@@ -69,7 +69,7 @@ fl_void _fl_cmp_compile_id_chain(const fl_ast_node *node, fl_cmp_context *cnt);
  * @param cnt Context to stamp to.
  * @param id_node Id node to use.
  */
-fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node);
+FL_SEALED_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node);
 
 /**
  * @brief Compile literal node.
@@ -77,14 +77,6 @@ fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
  * @param cnt Context to use.
  */
 fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt);
-
-/**
- * @brief Write id access by indices to byte code vector.
- * @param code Byte code vector to write to.
- * @param offset Id access offset.
- * @param inds Id access indices.
- */
-fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, const fl_int_vec inds);
 
 /**
  * @brief Write id access by name (id chain) to byte code vector.
@@ -246,18 +238,14 @@ __return:
 #endif
 }
 
-fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
+FL_SEALED_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
 {
-    fl_uint offset = 0;
+    fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
     fl_id_chain *id_chain = id_node->data;
-    fl_int_vec inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
 
-    if (fl_int_vec_is_empty(&inds))
-        _fl_cmp_byte_code_push_id_access_by_name(&cnt->byte_code, id_chain);
-    else
-        _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
-
-    fl_int_vec_free(&inds);
+    fl_id_chain_to_string(id_chain, buffer, FL_ID_CHAIN_MAX_SIZE);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_GET_ID);
+    fl_byte_vec_push_str(&cnt->byte_code, buffer);
 }
 
 FL_SEALED_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt)
@@ -285,51 +273,17 @@ fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt)
 
 fl_void _fl_cmp_compile_id_chain(const fl_ast_node *node, fl_cmp_context *cnt)
 {
-    fl_id_chain *id_chain = (fl_id_chain *)node->data;
+    fl_id_chain *id_chain = node->data;
 
     // Try to find this id
-    fl_uint offset;
-    fl_int_vec inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
-    fl_id_entry *id = fl_scope_traverse(cnt->scope, inds, offset);
+    fl_id_entry *id = fl_scope_find_id(cnt->scope, id_chain);
 
-    // Push opted info how to to access this id if it's found (may be to change)
-    if (id)
-        _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
+    if (!id && id_chain->size == 1)
+        // Create new id in current scope if accessor isn't chained
+        id = _fl_cmp_handle_new_id(id_chain->data[0], cnt);
 
-    // Create new id if accessor isn't chained
-    else if (id_chain->size == 1)
-    {
-        const fl_char *name = id_chain->data[0];
-        // handle new id creation
-        id = _fl_cmp_handle_new_id(name, cnt);
-
-        // find new ids path
-        fl_int_vec_free(&inds);
-        inds = fl_scope_find_id_path(cnt->scope, id_chain, &offset);
-
-        // MAYBE TEMP: push it by names here
-        _fl_cmp_byte_code_push_id_access_by_name(&cnt->byte_code, id_chain);
-        // Alt:
-        // _fl_cmp_byte_code_push_id_access_by_inds(&cnt->byte_code, offset, inds);
-    }
-    // If id is unrecognized just push id chain string
-    // (put responsibility on the interpreter to handle import etc.)
-    else
-        _fl_cmp_byte_code_push_id_access_by_name(&cnt->byte_code, id_chain);
-
-    fl_int_vec_free(&inds);
-}
-
-fl_void _fl_cmp_byte_code_push_id_access_by_inds(fl_byte_vec *code, fl_uint offset, const fl_int_vec inds)
-{
-    fl_byte_vec_push(code, FL_INSTR_GET_ID_BY_INDS);
-
-    // Push scope back offset
-    fl_byte_vec_push_mem(code, &offset, sizeof(offset));
-    // Push size of indexes
-    fl_byte_vec_push_mem(code, &inds.size, sizeof(inds.size));
-    // Push actual indexes
-    fl_byte_vec_push_mem(code, inds.data, sizeof(inds.data[0]) * inds.size);
+    // Stamp id access even if id is unrecognized at this stage
+    _fl_cmp_stamp_id_access(cnt, node);
 }
 
 FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
@@ -358,7 +312,7 @@ fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_
 {
     fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
     fl_id_chain_to_string(chain, buffer, FL_ID_CHAIN_MAX_SIZE);
-    fl_byte_vec_push(code, FL_INSTR_GET_ID_BY_NAMES);
+    fl_byte_vec_push(code, FL_INSTR_GET_ID);
     fl_byte_vec_push_str(code, buffer);
 }
 

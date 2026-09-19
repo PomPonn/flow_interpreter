@@ -125,7 +125,7 @@ fl_size fl_str_count_substrs(const fl_char *str, const fl_char *substr)
     const fl_size sub_len = fl_str_len(substr);
     fl_size count = 0;
 
-    while (str = strstr(str, substr))
+    while ((str = strstr(str, substr)))
     {
         str += sub_len;
         count++;
@@ -138,7 +138,7 @@ fl_size fl_str_count_chr(const fl_char *str, fl_char chr)
 {
     fl_size count = 0;
 
-    while (str = fl_str_find(str, chr))
+    while ((str = fl_str_find(str, chr)))
     {
         count++;
         str++;
@@ -147,7 +147,7 @@ fl_size fl_str_count_chr(const fl_char *str, fl_char chr)
     return count;
 }
 
-fl_void fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len)
+fl_char *fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len)
 {
     assert(fl_str_len(str) + fl_str_count_chr(str, '\n') <= buff_len);
 
@@ -168,4 +168,5 @@ fl_void fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_le
     }
 
     buffer[j] = '\0';
+    return buffer;
 }

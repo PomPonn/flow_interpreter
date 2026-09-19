@@ -34,11 +34,10 @@
 
 // converts bytes in format: <i count><indices...> to fl_int_vec
 fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader);
-fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope *scope);
+fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope);
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt);
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt);
-FL_SEALED_FN fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope);
 FL_SEALED_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
 FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
 
@@ -126,18 +125,10 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         {
             fl_id_entry *fn_id = FL_NULL;
 
-            switch (fl_byte_reader_next(reader, fl_instruction))
-            {
-            case FL_INSTR_GET_ID_BY_INDS:
-                fn_id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
-                break;
-            case FL_INSTR_GET_ID_BY_NAMES:
-                fn_id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
-                break;
-            default:
+            if (fl_byte_reader_next(reader, fl_instruction) != FL_INSTR_GET_ID)
                 assert(FL_FALSE);
-                break;
-            }
+
+            fn_id = _fl_intpr_resolve_id_chain(reader, cnt->scope);
             assert(fn_id);
 
             fl_value val = fn_id->value;
@@ -156,17 +147,11 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             fl_id_entry_vec_push(&cnt->scope->ids, new_id);
             break;
         }
-        case FL_INSTR_GET_ID_BY_INDS:
+        case FL_INSTR_GET_ID:
         {
-            fl_id_entry *id = _fl_intpr_resolve_id_get_by_inds(reader, cnt->scope);
+            fl_id_entry *id = _fl_intpr_resolve_id_chain(reader, cnt->scope);
             assert(id);
-            _fl_intpr_push_ref(cnt, id);
-            break;
-        }
-        case FL_INSTR_GET_ID_BY_NAMES:
-        {
-            fl_id_entry *id = _fl_intpr_resolve_id_get_by_names(reader, cnt->scope);
-            assert(id);
+
             _fl_intpr_push_ref(cnt, id);
             break;
         }
@@ -253,10 +238,10 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec *args, cons
     assert(*fn_var->body_ptr->data == FL_INSTR_START_BLOCK);
 
     // skip block start and block size
-    const fl_ushort diff = sizeof(fl_size) + 1;
+    const fl_ushort offset = sizeof(fl_size) + 1;
     fl_byte_segm body_content = fl_byte_segm_create(
-        fn_var->body_ptr->data + diff,
-        fn_var->body_ptr->len - diff);
+        fn_var->body_ptr->data + offset,
+        fn_var->body_ptr->len - offset);
 
     fl_value res = fl_intpr_eval(body_content, &cnt);
 
@@ -322,25 +307,17 @@ fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader)
     };
 }
 
-FL_SEALED_FN fl_id_entry *_fl_intpr_resolve_id_get_by_inds(fl_byte_reader *reader, fl_scope *scope)
-{
-    fl_uint offset = fl_byte_reader_next(reader, fl_uint);
-    fl_int_vec inds = _fl_intpr_indices_from_bytes(reader);
-
-    fl_id_entry *id = fl_scope_traverse(scope, inds, offset);
-
-    fl_int_vec_free(&inds);
-    return id;
-}
-
-fl_id_entry *_fl_intpr_resolve_id_get_by_names(fl_byte_reader *reader, fl_scope *scope)
+fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope)
 {
     const fl_char *id_str = fl_byte_reader_next_str(reader);
 
     fl_id_chain chain;
     fl_id_chain_from_str(&chain, id_str);
 
-    return fl_scope_resolve_id(scope, &chain);
+    fl_id_entry *res = fl_scope_find_id(scope, &chain);
+
+    fl_id_chain_free(&chain);
+    return res;
 }
 
 FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
