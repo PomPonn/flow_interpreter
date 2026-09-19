@@ -13,3 +13,9 @@ io.put(x - y);
 
 io.put("Multiplication:");
 io.put(x * y);
+
+io.put("Multiplication:");
+io.put(x * y);
+
+io.put("Division:");
+io.put(x / y);
