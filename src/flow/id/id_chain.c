@@ -8,11 +8,11 @@
 
 #include "id_chain.h"
 
-// ---------- DEPENDENCIES ------------
+// ---------- DEPENDENCIES -------------
 
 #include "shared/str.h"
 
-// ---------- DEFINITIONS -------------
+// ---------- DEFINITIONS --------------
 
 fl_char *fl_id_chain_to_string(const fl_id_chain *chain, fl_char *buffer, fl_size buffer_size)
 {

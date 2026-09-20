@@ -94,11 +94,11 @@ fl_void fl_ast_node_init(
 fl_void fl_ast_node_free(fl_ast_node **node);
 
 /**
- * @brief Add child to the node at the end of children list.
+ * @brief Add child(ren) to the node at the end of children list.
  * @param parent Node to which the child should be added.
- * @param node Node to add.
+ * @param node Node(s) to add.
  */
-fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
+fl_void fl_ast_node_append_child(fl_ast_node *parent, fl_ast_node *node);
 
 /**
  * @brief Peek child of the node from the end of the children list.
@@ -106,3 +106,27 @@ fl_void fl_ast_node_add_child(fl_ast_node *parent, fl_ast_node *node);
  * @return Node's last child or `FL_NULL` if there are no chldren.
  */
 fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);
+
+/**
+ * @brief Detach node from it's node tree.
+ * @param node Node to detach.
+ * @return Detached node.
+ */
+fl_ast_node *fl_ast_node_detach(fl_ast_node *node);
+
+/**
+ * @brief Insert node after given one.
+ * @param prev Previous node.
+ * @param node Node to insert.
+ */
+FL_SEALED_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node);
+
+// ---------- DEFINITIONS ----------
+
+FL_SEALED_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node)
+{
+    fl_ast_node *temp = prev->next;
+    prev->next = node;
+    node->parent = prev->parent;
+    node->next = temp;
+}

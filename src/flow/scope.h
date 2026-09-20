@@ -11,7 +11,6 @@
 // ---------- DEPENDENCIES ----------
 
 #include "vecs/id_entry_vec.h"
-#include "vecs/int_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------
 

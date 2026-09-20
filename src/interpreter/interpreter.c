@@ -14,7 +14,6 @@
 #include "flow/instr/instruction.h"
 #include "context/intpr_context.h"
 #include "context/cmp_context.h"
-#include "vecs/int_vec.h"
 #include "flow/section_mark.h"
 #include "macros/basic.h"
 #include "flow/id/id_chain.h"
@@ -32,8 +31,6 @@
 
 // ---------- DECLARATIONS ----------
 
-// converts bytes in format: <i count><indices...> to fl_int_vec
-fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader);
 fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope);
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt);
@@ -289,22 +286,6 @@ fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader)
     fl_long creation_timestamp = fl_byte_reader_next(reader, fl_long);
 
     // do sth with this info...
-}
-
-fl_int_vec _fl_intpr_indices_from_bytes(fl_byte_reader *reader)
-{
-    fl_size count = fl_byte_reader_next(reader, fl_size);
-    fl_size mem_size = sizeof(fl_int) * count;
-
-    fl_int *data = fl_mem_alloc_arr_t(fl_int, count);
-    const fl_unknown *mem = fl_byte_reader_next_bytes(reader, mem_size);
-    fl_mem_copy(mem, data, mem_size);
-
-    return (fl_int_vec){
-        .data = data,
-        .size = count,
-        ._capacity = count,
-    };
 }
 
 fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope)

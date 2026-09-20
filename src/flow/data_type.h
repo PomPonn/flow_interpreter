@@ -27,6 +27,6 @@ enum _fl_data_type
     FL_DATA_TYPE_ARRAY = 0b00100000,
     FL_DATA_TYPE_STRING = 0b01000000,
     FL_DATA_TYPE_CODE_SEGM = 0b10000000,
-    // increase fl_data_type size when adding more
 };
+
 typedef fl_byte fl_data_type;

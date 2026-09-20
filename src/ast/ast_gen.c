@@ -24,6 +24,7 @@
 
 #include "tools/printer.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #endif
 
@@ -88,11 +89,11 @@ fl_op_order _fl_ast_get_op_order(const fl_ast_node *op_node, const fl_instr_info
 
 /**
  * @brief `_fl_ast_sort_operators` helper function.
- * @param op_node Operator node.
+ * @param outer_node Outer operator node.
  * @param instr_infos Instruction info vector.
  * @return Operation sorting order.
  */
-fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos);
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos);
 
 /**
  * @brief Process function call.
@@ -153,6 +154,8 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
     // Assume the whole program is a block
     fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
 
+    fl_prt_print_ast_tree(node);
+
     _fl_ast_sort_operators(node);
 
     // TODO: check this when correct error handling will be implemented
@@ -199,16 +202,16 @@ fl_void _fl_ast_sort_operators(fl_ast_node *parent)
     }
 }
 
-fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_info_vec *instr_infos)
+fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_instr_info_vec *instr_infos)
 {
-    assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
+    assert(outer_node->type == FL_AST_NODE_TYPE_OPERATOR);
 
-    fl_op_order outer_order = _fl_ast_get_op_order(op_node, instr_infos);
+    fl_op_order outer_order = _fl_ast_get_op_order(outer_node, instr_infos);
 
     // Expose grouping info only when climbing higher
-    fl_bool is_grouped = *(fl_bool *)op_node->data;
+    fl_bool is_grouped = *(fl_bool *)outer_node->data;
 
-    for (fl_ast_node *inner_node = op_node->child->next; inner_node; inner_node = inner_node->next)
+    for (fl_ast_node *inner_node = outer_node->child->next; inner_node; inner_node = inner_node->next)
     {
         if (inner_node->type != FL_AST_NODE_TYPE_OPERATOR)
         {
@@ -220,18 +223,23 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *op_node, const fl_instr_i
 
         if (outer_order > inner_order)
         {
-            // Swap operator nodes
-            _fl_swap(fl_ast_node *, op_node->parent, inner_node->parent);
-            _fl_swap(fl_ast_node *, op_node->child, inner_node->child);
+            // Detach nodes children
+            fl_ast_node *outer_children = outer_node->child;
+            fl_ast_node *inner_children = inner_node->child;
+            fl_ast_node *mid_arg = fl_ast_node_detach(inner_children->next);
+            outer_node->child = FL_NULL;
+            inner_node->child = FL_NULL;
 
-            fl_ast_node *outer_last = op_node->child->next->next;
-            fl_ast_node *inner_last = inner_node->child->next->next;
-            op_node->child->next->next = inner_node;
-            inner_node->next = FL_NULL;
-            inner_node->child->next = outer_last;
-            outer_last->next = inner_last;
+            // Incrementally swap children
 
-            outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
+            outer_children->next->next = FL_NULL;
+            fl_ast_node_append_child(inner_node, outer_children);
+            fl_ast_node_append_child(inner_node, mid_arg);
+
+            fl_ast_node_append_child(outer_node, inner_children);
+            fl_ast_node_insert_after(outer_node->child, inner_node);
+
+            // outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
         }
     }
 
@@ -271,7 +279,7 @@ fl_ast_node *_fl_ast_process_function_call(fl_ast_node *func_id, fl_token_arr *a
     __init_node_empty(FL_AST_NODE_TYPE_FN_CALL, FL_NULL);
 
     // Add id as a first child
-    fl_ast_node_add_child(node, func_id);
+    fl_ast_node_append_child(node, func_id);
 
     // Handle parameters
 
@@ -324,11 +332,12 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
             node = _fl_ast_process_function_call(node, arr);
     }
 
-    // Check if it is the end of expression - try to add this node to the parent
-    if (parent && (fl_token_is_delim(arr->current) || parent->type == FL_AST_NODE_TYPE_OPERATOR))
-        fl_ast_node_add_child(parent, node);
-    else
+    // If the token isn't a delim, assume it's operator
+    if (!fl_token_is_delim(arr->current))
         node = _fl_ast_process_operator(parent, arr, node, grouped);
+    // Else just add child to the parent if it's not null
+    else if (parent)
+        fl_ast_node_append_child(parent, node);
 
     if (grouped)
     {
@@ -420,7 +429,7 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
     // add operator id node
     _fl_ast_process_id(node, arr);
     // add left side of the operator as a child
-    fl_ast_node_add_child(node, left);
+    fl_ast_node_append_child(node, left);
 
     if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
         // handle block on the right side of the operator...
@@ -436,7 +445,7 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
         *data = FL_FALSE;
     }
     else if (parent)
-        fl_ast_node_add_child(parent, node);
+        fl_ast_node_append_child(parent, node);
 
     return node;
 }

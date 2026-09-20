@@ -2,7 +2,6 @@
 
 ## interpreter
 
-- opt. opportunity: \_fl_intpr_indices_from_bytes - make indices readonly and don't alloc copy of them
 - opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case)
 
 ## compiler
@@ -13,8 +12,8 @@
 
 ## ast generator
 
+- is second \_fl_ast_sort_operators_helper call needed?
 - tweak lambdas sorting order?
-- test if second \_fl_ast_sort_operators_helper call in this function is necessary.
 - revise token locations when sorting operators
 - think again about single arg calls without parantheses
 - AST types handling; AST type dimensions(?) handling
