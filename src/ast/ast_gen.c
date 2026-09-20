@@ -143,7 +143,7 @@ fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
  * @param arr Token array to process from.
  * @return Resulting AST node.
  */
-FL_SEALED_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
+FL_INLINE_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
 
 // ---------- DEFINITIONS ---------------
 
@@ -153,8 +153,6 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 
     // Assume the whole program is a block
     fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
-
-    fl_prt_print_ast_tree(node);
 
     _fl_ast_sort_operators(node);
 
@@ -230,7 +228,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
             outer_node->child = FL_NULL;
             inner_node->child = FL_NULL;
 
-            // Incrementally swap children
+            // Swap children
 
             outer_children->next->next = FL_NULL;
             fl_ast_node_append_child(inner_node, outer_children);
@@ -239,7 +237,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
             fl_ast_node_append_child(outer_node, inner_children);
             fl_ast_node_insert_after(outer_node->child, inner_node);
 
-            // outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
+            outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
         }
     }
 
@@ -450,7 +448,7 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
     return node;
 }
 
-FL_SEALED_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr)
+FL_INLINE_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr)
 {
     assert(arr->current->type == FL_TOKEN_TYPE_LITERAL);
 

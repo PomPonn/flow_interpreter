@@ -28,12 +28,12 @@ typedef struct _fl_value fl_value;
 
 // ---------- DECLARATIONS ----------
 
-FL_SEALED_FN fl_value fl_value_empty();
-FL_SEALED_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
-FL_SEALED_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data);
-FL_SEALED_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
-FL_SEALED_FN fl_bool fl_value_is_size_complex(fl_value v);
-FL_SEALED_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc);
+FL_INLINE_FN fl_value fl_value_empty();
+FL_INLINE_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data);
+FL_INLINE_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data);
+FL_INLINE_FN fl_bool fl_value_equal(fl_value v1, fl_value v2);
+FL_INLINE_FN fl_bool fl_value_is_size_complex(fl_value v);
+FL_INLINE_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc);
 
 fl_value fl_value_create_copy(fl_data_type type, const fl_unknown *data);
 fl_size fl_value_mem_size(fl_value value);
@@ -49,12 +49,12 @@ fl_value fl_value_create_ref(fl_id_entry *target);
 
 // ---------- DEFINITIONS ----------
 
-FL_SEALED_FN fl_value fl_value_empty()
+FL_INLINE_FN fl_value fl_value_empty()
 {
     return fl_value_create(FL_DATA_TYPE_NULL, FL_NULL);
 }
 
-FL_SEALED_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data)
+FL_INLINE_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data)
 {
     return (fl_value){
         .data = data,
@@ -62,7 +62,7 @@ FL_SEALED_FN fl_value fl_value_create(fl_data_type type, fl_unknown *data)
     };
 }
 
-FL_SEALED_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data)
+FL_INLINE_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data)
 {
     return (fl_value){
         .data = data,
@@ -70,17 +70,17 @@ FL_SEALED_FN fl_value fl_value_create_desc(fl_data_desc desc, fl_unknown *data)
     };
 }
 
-FL_SEALED_FN fl_bool fl_value_equal(fl_value v1, fl_value v2)
+FL_INLINE_FN fl_bool fl_value_equal(fl_value v1, fl_value v2)
 {
     return v1.desc.type == v2.desc.type && v1.data == v2.data;
 }
 
-FL_SEALED_FN fl_bool fl_value_is_empty(fl_value v)
+FL_INLINE_FN fl_bool fl_value_is_empty(fl_value v)
 {
     return v.data == FL_NULL;
 }
 
-FL_SEALED_FN fl_bool fl_value_is_size_complex(fl_value v)
+FL_INLINE_FN fl_bool fl_value_is_size_complex(fl_value v)
 {
     switch (v.desc.type)
     {
@@ -93,7 +93,7 @@ FL_SEALED_FN fl_bool fl_value_is_size_complex(fl_value v)
     }
 }
 
-FL_SEALED_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
+FL_INLINE_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
 {
     // Is it enough?
     // (opt this out)

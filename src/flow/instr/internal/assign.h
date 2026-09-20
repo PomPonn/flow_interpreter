@@ -15,11 +15,11 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_value fl_instr_assign(fl_value_vec args);
+FL_INLINE_FN fl_value fl_instr_assign(fl_value_vec args);
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_value fl_instr_assign(fl_value_vec args)
+FL_INLINE_FN fl_value fl_instr_assign(fl_value_vec args)
 {
     fl_value ref = args.data[0];
     fl_value *what = &args.data[1];

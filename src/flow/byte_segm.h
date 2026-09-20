@@ -37,18 +37,18 @@ typedef struct _fl_byte_segm fl_byte_segm;
  * @param len Number of bytes in the segment.
  * @return A byte segment referencing the supplied buffer.
  */
-FL_SEALED_FN fl_byte_segm fl_byte_segm_create(const fl_byte *bytes, fl_size len);
+FL_INLINE_FN fl_byte_segm fl_byte_segm_create(const fl_byte *bytes, fl_size len);
 
 /**
  * @brief Creates a readonly byte segment from a byte vector.
  * @param vec Pointer to the byte vector.
  * @return A byte segment referencing the vector's data.
  */
-FL_SEALED_FN fl_byte_segm fl_byte_segm_create_from_vec(const fl_byte_vec *vec);
+FL_INLINE_FN fl_byte_segm fl_byte_segm_create_from_vec(const fl_byte_vec *vec);
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_byte_segm fl_byte_segm_create(const fl_byte *bytes, fl_size len)
+FL_INLINE_FN fl_byte_segm fl_byte_segm_create(const fl_byte *bytes, fl_size len)
 {
     return (fl_byte_segm){
         .data = bytes,
@@ -56,7 +56,7 @@ FL_SEALED_FN fl_byte_segm fl_byte_segm_create(const fl_byte *bytes, fl_size len)
     };
 }
 
-FL_SEALED_FN fl_byte_segm fl_byte_segm_create_from_vec(const fl_byte_vec *vec)
+FL_INLINE_FN fl_byte_segm fl_byte_segm_create_from_vec(const fl_byte_vec *vec)
 {
     return (fl_byte_segm){
         .data = vec->data,

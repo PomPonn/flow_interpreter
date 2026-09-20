@@ -34,8 +34,17 @@ enum _fl_instruction
      */
 
     FL_INSTR_IMPORT,
+    FL_INSTR_IF,
+    FL_INSTR_ELSE,
+    FL_INSTR_LOOP,
     FL_INSTR_ASSIGN,
     FL_INSTR_LAMBDA,
+    FL_INSTR_EQUAL,
+    FL_INSTR_NOT_EQUAL,
+    FL_INSTR_GT,
+    FL_INSTR_GT_OR_EQ,
+    FL_INSTR_LT,
+    FL_INSTR_LT_OR_EQ,
     FL_INSTR_ADD,
     FL_INSTR_SUB,
     FL_INSTR_DIV,
@@ -69,35 +78,35 @@ typedef fl_byte fl_instruction;
  * @param instr Instruction to check.
  * @return Boolean value whether instruction is callable.
  */
-FL_SEALED_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
+FL_INLINE_FN fl_bool fl_instruction_is_callable(fl_instruction instr);
 
 /**
  * @brief Get instruction by alias (using global instructions).
  * @param alias Alias to look for.
  * @return Found (or not found) instruction.
  */
-FL_SEALED_FN fl_instruction fl_instruction_from_alias(const fl_char *alias);
+FL_INLINE_FN fl_instruction fl_instruction_from_alias(const fl_char *alias);
 
 /**
  * @brief Retrieve instruction callable variants.
  * @param instr Instruction to get info about.
  * @return Instruction variants.
  */
-FL_SEALED_FN const fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr);
+FL_INLINE_FN const fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr);
 
 // ---------- DEFINITIONS -----------
 
-FL_SEALED_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
+FL_INLINE_FN fl_bool fl_instruction_is_callable(fl_instruction instr)
 {
     return instr <= FL_INSTR_POW;
 }
 
-FL_SEALED_FN const fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr)
+FL_INLINE_FN const fl_fn_variant_vec *fl_instruction_get_variants(fl_instruction instr)
 {
     return fl_instruction_is_callable(instr) ? fl_g_instrs_get_variants_of(instr) : FL_NULL;
 }
 
-FL_SEALED_FN fl_instruction fl_instruction_from_alias(const fl_char *alias)
+FL_INLINE_FN fl_instruction fl_instruction_from_alias(const fl_char *alias)
 {
     return fl_g_instrs_resolve_alias(alias);
 }

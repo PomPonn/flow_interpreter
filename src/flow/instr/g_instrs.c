@@ -72,6 +72,46 @@ fl_void fl_g_instrs_init()
     fl_fn_variant var;
     fl_fn_intf intf;
 
+    // ---- IF ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_BOOL),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_META | FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_if);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_IF] = vars;
+    g_info_vec.data[FL_INSTR_IF] = fl_instr_info_create("?", FL_OP_ORDER_COND);
+
+    // ---- ELSE ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_BOOL),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_META | FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_else);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_ELSE] = vars;
+    g_info_vec.data[FL_INSTR_ELSE] = fl_instr_info_create(":", FL_OP_ORDER_COND);
+
     // ---- IMPORT ----
 
     // init params
@@ -129,6 +169,126 @@ fl_void fl_g_instrs_init()
     // set globals
     g_variants.data[FL_INSTR_LAMBDA] = vars;
     g_info_vec.data[FL_INSTR_LAMBDA] = fl_instr_info_create("->", FL_OP_ORDER_LAMBDA);
+
+    // ---- EQUAL ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_equal);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_EQUAL] = vars;
+    g_info_vec.data[FL_INSTR_EQUAL] = fl_instr_info_create("==", FL_OP_ORDER_NEUTRAL);
+
+    // ---- NOT EQUAL ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_not_equal);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_NOT_EQUAL] = vars;
+    g_info_vec.data[FL_INSTR_NOT_EQUAL] = fl_instr_info_create("!=", FL_OP_ORDER_NEUTRAL);
+
+    // ---- GT ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_gt);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_GT] = vars;
+    g_info_vec.data[FL_INSTR_GT] = fl_instr_info_create(">", FL_OP_ORDER_NEUTRAL);
+
+    // ---- LT ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lt);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_LT] = vars;
+    g_info_vec.data[FL_INSTR_LT] = fl_instr_info_create("<", FL_OP_ORDER_NEUTRAL);
+
+    // ---- LT OR EQ ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lt_or_eq);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_LT_OR_EQ] = vars;
+    g_info_vec.data[FL_INSTR_LT_OR_EQ] = fl_instr_info_create("<=", FL_OP_ORDER_NEUTRAL);
+
+    // ---- GT OR EQ ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_ANY),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_BOOL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_gt_or_eq);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_GT_OR_EQ] = vars;
+    g_info_vec.data[FL_INSTR_GT_OR_EQ] = fl_instr_info_create(">=", FL_OP_ORDER_NEUTRAL);
 
     // ---- ADD ----
 

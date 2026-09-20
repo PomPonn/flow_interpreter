@@ -1,0 +1,5 @@
+io = import(":std.io");
+
+n : range(10) @ {
+
+}

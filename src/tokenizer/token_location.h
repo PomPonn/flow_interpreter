@@ -28,14 +28,14 @@ typedef struct _fl_token_location fl_token_location;
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_token_location fl_token_location_create(
+FL_INLINE_FN fl_token_location fl_token_location_create(
     const fl_char *description,
     fl_size line,
     fl_size column);
 
 // ---------- DEFINITIONS -----------
 
-FL_SEALED_FN fl_token_location fl_token_location_create(
+FL_INLINE_FN fl_token_location fl_token_location_create(
     const fl_char *description,
     fl_size line,
     fl_size column)

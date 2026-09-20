@@ -60,9 +60,9 @@ endfunction()
 
 # ---------- TARGETS ----------
 
-add_library(flow STATIC)
-link_libraries(flow)
-add_executable(main)
+add_library(flowlib STATIC)
+link_libraries(flowlib)
+add_executable(flow)
 add_flow_modules()
 
 if (BUILD_TESTING)
@@ -91,5 +91,5 @@ file(GLOB_RECURSE tests_sources CONFIGURE_DEPENDS ${TESTS_DIR}/*.test.c)
 file(GLOB_RECURSE unity_sources CONFIGURE_DEPENDS ${LIBS_DIR}/unity/*.c)
 
 # add sources
-target_sources(flow PRIVATE ${flow_sources})
-target_sources(main PRIVATE ${CMAKE_SOURCE_DIR}/main.c)
+target_sources(flowlib PRIVATE ${flow_sources})
+target_sources(flow PRIVATE ${CMAKE_SOURCE_DIR}/main.c)

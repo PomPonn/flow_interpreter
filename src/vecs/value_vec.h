@@ -27,12 +27,12 @@ FL_FORWARD_STRUCT(fl_byte_vec);
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem);
-FL_SEALED_FN fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes);
+FL_INLINE_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem);
+FL_INLINE_FN fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes);
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem)
+FL_INLINE_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem)
 {
     for (fl_size i = 0; i < vec->size; i++)
         if (fl_value_indentical(vec->data[i], elem))
@@ -41,7 +41,7 @@ FL_SEALED_FN fl_int fl_value_vec_find_identical(fl_value_vec *vec, fl_value elem
     return FL_FIND_FAIL;
 }
 
-FL_SEALED_FN fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes)
+FL_INLINE_FN fl_void fl_value_vec_to_bytes(const fl_value_vec *vec, fl_byte_vec *bytes)
 {
     for (fl_size i = 0; i < vec->size; i++)
         fl_value_to_bytes(vec->data[i], bytes);

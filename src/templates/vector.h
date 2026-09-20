@@ -51,37 +51,37 @@ typedef struct _FL_MERGE2(_, FL_VEC_NAME) FL_VEC_NAME;
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size size);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size size);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data);
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap);
-FL_SEALED_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC_TYPE value);
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value);
-FL_SEALED_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec);
-FL_SEALED_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap);
+FL_INLINE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC_TYPE value);
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value);
+FL_INLINE_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec);
+FL_INLINE_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec);
 
 #ifndef FL_VEC_EXCLUDE_FIND
 
-FL_SEALED_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem);
+FL_INLINE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem);
 
 #endif
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_c)(FL_VEC_NAME *vec, fl_size capacity)
 {
     vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), capacity);
     vec->_capacity = capacity;
     vec->size = 0;
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size size)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size size)
 {
     vec->data = (FL_VEC_TYPE *)fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), size);
     vec->_capacity = size;
@@ -90,12 +90,12 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_s)(FL_VEC_NAME *vec, fl_size 
     fl_mem_zero(vec->data, size * sizeof(FL_VEC_TYPE));
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init)(FL_VEC_NAME *vec)
 {
     _FL_MERGE2(FL_VEC_NAME, _init_c)(vec, FL_VEC_CAP);
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec)
 {
     vec->data = FL_NULL;
     vec->size = 0;
@@ -103,7 +103,7 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_empty)(FL_VEC_NAME *vec)
 }
 
 // elem count of data must match size param
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_size size, FL_VEC_TYPE *data)
 {
     vec->data = fl_mem_alloc_arr(sizeof(FL_VEC_TYPE), size);
     fl_mem_copy(data, vec->data, sizeof(FL_VEC_TYPE) * size);
@@ -111,7 +111,7 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _init_with)(FL_VEC_NAME *vec, fl_si
     vec->size = size;
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
 {
 #ifdef FL_VEC_DESTROY
     for (fl_size i = 0; i < vec->size; i++)
@@ -124,18 +124,18 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free)(FL_VEC_NAME *vec)
     vec->size = 0;
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _reserve)(FL_VEC_NAME *vec, fl_size new_cap)
 {
     vec->data = (FL_VEC_TYPE *)fl_mem_realloc_arr(vec->data, sizeof(FL_VEC_TYPE), new_cap);
     vec->_capacity = new_cap;
 }
 
-FL_SEALED_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
+FL_INLINE_FN fl_bool _FL_MERGE2(FL_VEC_NAME, _is_empty)(const FL_VEC_NAME *vec)
 {
     return vec->size == 0;
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
 {
     if (vec->size == vec->_capacity)
         _FL_MERGE2(FL_VEC_NAME, _reserve)(vec, vec->_capacity + FL_VEC_CAP);
@@ -155,7 +155,7 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _put_back)(FL_VEC_NAME *vec, FL_VEC
     }
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYPE value)
 {
     if (vec->size == vec->_capacity)
         _FL_MERGE2(FL_VEC_NAME, _reserve)(vec, vec->_capacity + FL_VEC_CAP);
@@ -164,7 +164,7 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _push)(FL_VEC_NAME *vec, FL_VEC_TYP
     vec->size++;
 }
 
-FL_SEALED_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec)
+FL_INLINE_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME *vec)
 {
     FL_VEC_NAME copied;
     _FL_MERGE2(FL_VEC_NAME, _init_c)(&copied, vec->size);
@@ -173,7 +173,7 @@ FL_SEALED_FN FL_VEC_NAME _FL_MERGE2(FL_VEC_NAME, _copy)(FL_VEC_CONST FL_VEC_NAME
     return copied;
 }
 
-FL_SEALED_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec)
+FL_INLINE_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec)
 {
 #ifdef FL_VEC_NULL_VALUE
     if (vec->size == 0)
@@ -184,7 +184,7 @@ FL_SEALED_FN FL_VEC_TYPE _FL_MERGE2(FL_VEC_NAME, _pop)(FL_VEC_NAME *vec)
     return vec->data[vec->size];
 }
 
-FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec)
+FL_INLINE_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec)
 {
     fl_mem_free(vec->data);
     vec->data = FL_NULL;
@@ -194,7 +194,7 @@ FL_SEALED_FN fl_void _FL_MERGE2(FL_VEC_NAME, _free_shallow)(FL_VEC_NAME *vec)
 
 #ifndef FL_VEC_EXCLUDE_FIND
 
-FL_SEALED_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem)
+FL_INLINE_FN fl_int _FL_MERGE2(FL_VEC_NAME, _find)(const FL_VEC_NAME *vec, FL_VEC_CONST FL_VEC_TYPE elem)
 {
     for (fl_size i = 0; i < vec->size; i++)
         if (FL_VEC_COMPARE(vec->data[i], elem))

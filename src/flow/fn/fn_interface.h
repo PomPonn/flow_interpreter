@@ -43,14 +43,14 @@ typedef struct _fl_fn_intf fl_fn_intf;
  * @brief Free function interface.
  * @param intf Interface to free.
  */
-FL_SEALED_FN fl_void fl_fn_intf_free(fl_fn_intf *intf);
+FL_INLINE_FN fl_void fl_fn_intf_free(fl_fn_intf *intf);
 
 /**
  * @brief Set interface parameter labels.
  * @param intf Interface to change labels in.
  * @param labels New labels to set. They belong to the interface struct from this point.
  */
-FL_SEALED_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels);
+FL_INLINE_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels);
 
 /**
  * @brief Init function interface.
@@ -58,7 +58,7 @@ FL_SEALED_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels)
  * @param return_type Function return type.
  * @param param_descs Function parameters data descriptors.
  */
-FL_SEALED_FN fl_void fl_fn_intf_init(
+FL_INLINE_FN fl_void fl_fn_intf_init(
     fl_fn_intf *intf,
     fl_data_type return_type,
     fl_data_desc_vec param_descs);
@@ -80,7 +80,7 @@ fl_bool fl_fn_intf_overlaps(const fl_fn_intf *left, const fl_fn_intf *right);
 
 // ---------- DEFINITIONS ----------
 
-FL_SEALED_FN fl_void fl_fn_intf_init(
+FL_INLINE_FN fl_void fl_fn_intf_init(
     fl_fn_intf *intf,
     fl_data_type return_type,
     fl_data_desc_vec param_descs)
@@ -92,14 +92,14 @@ FL_SEALED_FN fl_void fl_fn_intf_init(
     fl_cstr_vec_init_empty(&intf->param_labels);
 }
 
-FL_SEALED_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels)
+FL_INLINE_FN fl_void fl_fn_intf_set_labels(fl_fn_intf *intf, fl_cstr_vec labels)
 {
     assert(intf->param_descs.size == labels.size);
 
     intf->param_labels = labels;
 }
 
-FL_SEALED_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
+FL_INLINE_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
 {
     fl_data_desc_vec_free(&intf->param_descs);
     fl_cstr_vec_free(&intf->param_labels);

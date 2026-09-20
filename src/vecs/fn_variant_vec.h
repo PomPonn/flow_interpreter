@@ -24,21 +24,21 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_match(
+FL_INLINE_FN fl_fn_variant *fl_fn_variant_vec_find_match(
     const fl_fn_variant_vec *vec,
     const fl_data_desc_vec *params);
 
-FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
+FL_INLINE_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     const fl_fn_variant_vec *vec,
     const fl_value_vec *args);
 
-FL_SEALED_FN fl_bool fl_fn_variant_vec_overload(
+FL_INLINE_FN fl_bool fl_fn_variant_vec_overload(
     fl_fn_variant_vec *fn_vars,
     fl_fn_variant new_variant);
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_match(
+FL_INLINE_FN fl_fn_variant *fl_fn_variant_vec_find_match(
     const fl_fn_variant_vec *vec,
     const fl_data_desc_vec *params)
 {
@@ -53,7 +53,7 @@ FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_match(
     return FL_NULL;
 }
 
-FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
+FL_INLINE_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     const fl_fn_variant_vec *vec,
     const fl_value_vec *args)
 {
@@ -68,7 +68,7 @@ FL_SEALED_FN fl_fn_variant *fl_fn_variant_vec_find_suit(
     return FL_NULL;
 }
 
-FL_SEALED_FN fl_bool fl_fn_variant_vec_overload(fl_fn_variant_vec *fn_vars, fl_fn_variant new_variant)
+FL_INLINE_FN fl_bool fl_fn_variant_vec_overload(fl_fn_variant_vec *fn_vars, fl_fn_variant new_variant)
 {
     for (fl_size i = 0; i < fn_vars->size; i++)
         if (fl_fn_variant_overlaps(&fn_vars->data[i], &new_variant))

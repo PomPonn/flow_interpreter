@@ -1,0 +1,11 @@
+io = import(":std.io");
+
+x = 4;
+
+x > 5 ? {
+    io.put("gt than 5");
+} : {
+    io.put("lt than 5 or eq");
+};
+
+x == 4 ? io.put("eq 4") : io.put("neq 4");

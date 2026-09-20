@@ -19,11 +19,11 @@
 
 // ---------- DECLARATIONS -------------
 
-FL_SEALED_FN fl_value fl_instr_div(fl_value_vec args);
+FL_INLINE_FN fl_value fl_instr_div(fl_value_vec args);
 
 // ---------- DEFINITIONS --------------
 
-FL_SEALED_FN fl_value fl_instr_div(fl_value_vec args)
+FL_INLINE_FN fl_value fl_instr_div(fl_value_vec args)
 {
     fl_value left = args.data[0];
     fl_value right = args.data[1];

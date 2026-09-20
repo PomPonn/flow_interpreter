@@ -20,8 +20,8 @@
 
 // ---------- DECLARATIONS  ----------
 
-FL_SEALED_FN fl_bool _fl_token_deduce(fl_token *tok);
-FL_SEALED_FN fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
+FL_INLINE_FN fl_bool _fl_token_deduce(fl_token *tok);
+FL_INLINE_FN fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper);
 
 // ---------- DEFINITIONS ----------
 
@@ -50,7 +50,7 @@ fl_bool fl_token_init(fl_token *token, fl_char *value, fl_token_location locatio
     return _fl_token_deduce(token);
 }
 
-FL_SEALED_FN fl_bool _fl_token_deduce(fl_token *tok)
+FL_INLINE_FN fl_bool _fl_token_deduce(fl_token *tok)
 {
     assert(tok != FL_NULL);
 
@@ -97,7 +97,7 @@ FL_SEALED_FN fl_bool _fl_token_deduce(fl_token *tok)
     return FL_TRUE;
 }
 
-FL_SEALED_FN fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
+FL_INLINE_FN fl_bool _fl_token_is_wrapper(fl_token *tok, fl_char wrapper)
 {
     return tok->value[0] == wrapper && tok->value[fl_str_len(tok->value) - 1] == wrapper;
 }

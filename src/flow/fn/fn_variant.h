@@ -51,7 +51,7 @@ typedef struct _fl_fn_variant fl_fn_variant;
  * @brief Free function variant.
  * @param var Variant to free.
  */
-FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
+FL_INLINE_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
 
 /**
  * @brief Check if two function variants overlap.
@@ -59,7 +59,7 @@ FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var);
  * @param right Second one.
  * @return Boolean value whether it's overlapping.
  */
-FL_SEALED_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right);
+FL_INLINE_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right);
 
 /**
  * @brief Initialize function variant.
@@ -69,7 +69,7 @@ FL_SEALED_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_
  * @param cll_ptr Pointer to callable segment of the variant. If C defined, it's a pointer to the function.
  *                If Flow defined, it's a pointer to the function body code segment.
  */
-FL_SEALED_FN fl_void fl_fn_variant_init(
+FL_INLINE_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_intf intf,
@@ -77,7 +77,7 @@ FL_SEALED_FN fl_void fl_fn_variant_init(
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_void fl_fn_variant_init(
+FL_INLINE_FN fl_void fl_fn_variant_init(
     fl_fn_variant *var,
     fl_bool c_defined,
     fl_fn_intf intf,
@@ -93,7 +93,7 @@ FL_SEALED_FN fl_void fl_fn_variant_init(
         var->body_ptr = cll_ptr;
 }
 
-FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
+FL_INLINE_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
 {
     fl_fn_intf_free(&var->intf);
 
@@ -105,7 +105,7 @@ FL_SEALED_FN fl_void fl_fn_variant_free(fl_fn_variant *var)
     var->c_defined = FL_FALSE;
 }
 
-FL_SEALED_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right)
+FL_INLINE_FN fl_bool fl_fn_variant_overlaps(const fl_fn_variant *left, const fl_fn_variant *right)
 {
     return fl_fn_intf_overlaps(&left->intf, &right->intf);
 }

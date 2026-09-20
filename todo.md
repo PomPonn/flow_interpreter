@@ -25,6 +25,7 @@
 
 ## other
 
+- opt.: fl_instr_info_vec_to_escapes putting back
 - fix typing prediction system when checking lambda (temp solution - set second arg type as ANY)
 - handle in-string escapes better (fl_value_from_literal function)
 - make some function struct instead of fn_variant_vec?

@@ -38,8 +38,8 @@
 
 fl_void _fl_prt_print_value_byted(fl_byte_reader *reader);
 const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node);
-FL_SEALED_FN fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
-FL_SEALED_FN fl_void _fl_prt_print_array(fl_byte_reader *reader);
+FL_INLINE_FN fl_void _fl_prt_print_ast_node_str(fl_ast_node *node);
+FL_INLINE_FN fl_void _fl_prt_print_array(fl_byte_reader *reader);
 
 // ---------- DEFINITIONS ----------
 
@@ -76,7 +76,7 @@ const fl_char *_fl_prt_convert_ast_literal(fl_ast_node *lit_node)
     }
 }
 
-FL_SEALED_FN fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
+FL_INLINE_FN fl_void _fl_prt_print_ast_node_str(fl_ast_node *node)
 {
     switch (node->type)
     {
@@ -280,7 +280,7 @@ fl_void fl_prt_print_byte_code_file(const fl_byte_vec bytes)
     fl_prt_print_byte_code_code(&reader, FL_PRT_PRINT_ALL);
 }
 
-FL_SEALED_FN fl_void _fl_prt_print_array(fl_byte_reader *reader)
+FL_INLINE_FN fl_void _fl_prt_print_array(fl_byte_reader *reader)
 {
     const fl_size count = fl_byte_reader_next(reader, fl_size);
 

@@ -41,11 +41,11 @@ typedef struct _fl_instr_info fl_instr_info;
  * @param order Sorting order of instruction.
  * @return New instruction info.
  */
-FL_SEALED_FN fl_instr_info fl_instr_info_create(const fl_char *name, fl_op_order order);
+FL_INLINE_FN fl_instr_info fl_instr_info_create(const fl_char *name, fl_op_order order);
 
 // ---------- DEFINITIONS -----------
 
-FL_SEALED_FN fl_instr_info fl_instr_info_create(const fl_char *name, fl_op_order order)
+FL_INLINE_FN fl_instr_info fl_instr_info_create(const fl_char *name, fl_op_order order)
 {
     return (fl_instr_info){
         .name = name,

@@ -69,7 +69,7 @@ fl_void _fl_cmp_compile_id_chain(const fl_ast_node *node, fl_cmp_context *cnt);
  * @param cnt Context to stamp to.
  * @param id_node Id node to use.
  */
-FL_SEALED_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node);
+FL_INLINE_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node);
 
 /**
  * @brief Compile literal node.
@@ -91,13 +91,13 @@ fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_
  * @param cnt Context to use.
  * @return New id entry.
  */
-FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
+FL_INLINE_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt);
 
 /**
  * @brief Stamp byte code header in byte vector.
  * @param bytes Byte vector to stamp to.
  */
-FL_SEALED_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
+FL_INLINE_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
 
 /**
  * @brief Create literal from value
@@ -105,7 +105,7 @@ FL_SEALED_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes);
  * @param cnt Context to use.
  * @return Index of created literal in context literal table.
  */
-FL_SEALED_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt);
+FL_INLINE_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS --------------
 
@@ -238,7 +238,7 @@ __return:
 #endif
 }
 
-FL_SEALED_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
+FL_INLINE_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_node *id_node)
 {
     fl_char buffer[FL_ID_CHAIN_MAX_SIZE];
     fl_id_chain *id_chain = id_node->data;
@@ -248,7 +248,7 @@ FL_SEALED_FN fl_void _fl_cmp_stamp_id_access(fl_cmp_context *cnt, const fl_ast_n
     fl_byte_vec_push_str(&cnt->byte_code, buffer);
 }
 
-FL_SEALED_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt)
+FL_INLINE_FN fl_size _fl_cmp_make_literal(const fl_value lit_value, fl_cmp_context *cnt)
 {
     fl_value_vec *lits = &cnt->base->literals;
     fl_int ind = fl_value_vec_find_identical(lits, lit_value);
@@ -286,7 +286,7 @@ fl_void _fl_cmp_compile_id_chain(const fl_ast_node *node, fl_cmp_context *cnt)
     _fl_cmp_stamp_id_access(cnt, node);
 }
 
-FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
+FL_INLINE_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_context *cnt)
 {
     // Create dummy id in base scope
     fl_id_entry *id;
@@ -296,7 +296,7 @@ FL_SEALED_FN fl_id_entry *_fl_cmp_handle_new_id(const fl_char *name, fl_cmp_cont
     return id;
 }
 
-FL_SEALED_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
+FL_INLINE_FN fl_void _fl_cmp_paste_byte_code_header(fl_byte_vec *bytes)
 {
     fl_byte_vec_push(bytes, FL_SECTION_MARK_HEADER);
 

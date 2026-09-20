@@ -15,8 +15,8 @@
 
 // ------------- MACROS -----------------
 
-#define FL_INT_MAX INT32_MAX
-#define FL_INT_MIN INT32_MIN
+#define FL_SHORT_MAX INT16_MAX
+#define FL_SHORT_MIN INT16_MIN
 
 #define FL_FALSE 0
 #define FL_TRUE 1

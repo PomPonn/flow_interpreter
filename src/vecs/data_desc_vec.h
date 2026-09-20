@@ -24,21 +24,21 @@
 
 // ---------- DECLARATIONS --------------
 
-FL_SEALED_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const fl_value_vec *vals);
-FL_SEALED_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const fl_data_desc_vec *other);
-FL_SEALED_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec);
+FL_INLINE_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const fl_value_vec *vals);
+FL_INLINE_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const fl_data_desc_vec *other);
+FL_INLINE_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec);
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_suit_args(
+FL_INLINE_FN fl_bool fl_data_desc_vec_suit_args(
     const fl_data_desc_vec *vec,
     const fl_value_vec *args);
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_match_params(
+FL_INLINE_FN fl_bool fl_data_desc_vec_match_params(
     const fl_data_desc_vec *vec,
     const fl_data_desc_vec *params);
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const fl_value_vec *vals)
+FL_INLINE_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const fl_value_vec *vals)
 {
     fl_data_desc_vec_init_c(vec, vals->size);
 
@@ -46,7 +46,7 @@ FL_SEALED_FN fl_void fl_data_desc_vec_from_values(fl_data_desc_vec *vec, const f
         fl_data_desc_vec_push(vec, vals->data[i].desc);
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const fl_data_desc_vec *other)
+FL_INLINE_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const fl_data_desc_vec *other)
 {
     if (vec->size != other->size)
         return FL_FALSE;
@@ -58,7 +58,7 @@ FL_SEALED_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const f
     return FL_TRUE;
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec)
+FL_INLINE_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec)
 {
     for (fl_size i = 0; i < vec->size; i++)
         if (!fl_bits_is_set(vec->data[i].traits, FL_DATA_TRAIT_CONST))
@@ -67,7 +67,7 @@ FL_SEALED_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec
     return FL_TRUE;
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_match_params(
+FL_INLINE_FN fl_bool fl_data_desc_vec_match_params(
     const fl_data_desc_vec *vec,
     const fl_data_desc_vec *params)
 {
@@ -81,7 +81,7 @@ FL_SEALED_FN fl_bool fl_data_desc_vec_match_params(
     return FL_TRUE;
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_vec_suit_args(
+FL_INLINE_FN fl_bool fl_data_desc_vec_suit_args(
     const fl_data_desc_vec *vec,
     const fl_value_vec *args)
 {

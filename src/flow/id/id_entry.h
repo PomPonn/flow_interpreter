@@ -38,7 +38,7 @@ typedef struct _fl_id_entry fl_id_entry;
  * @brief Free Identifier entry.
  * @param entry Entry to free.
  */
-FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry);
+FL_INLINE_FN fl_void fl_id_entry_free(fl_id_entry **entry);
 
 /**
  * @brief Initialize identifier entry.
@@ -47,7 +47,7 @@ FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry);
  * @param declared_type Id's declared type.
  * @param value Initial id's value.
  */
-FL_SEALED_FN fl_void fl_id_entry_init(
+FL_INLINE_FN fl_void fl_id_entry_init(
     fl_id_entry **entry,
     fl_char *name,
     fl_data_type declared_type,
@@ -55,7 +55,7 @@ FL_SEALED_FN fl_void fl_id_entry_init(
 
 // ---------- DEFINITIONS ---------------
 
-FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry)
+FL_INLINE_FN fl_void fl_id_entry_free(fl_id_entry **entry)
 {
     fl_id_entry *ptr = *entry;
 
@@ -66,7 +66,7 @@ FL_SEALED_FN fl_void fl_id_entry_free(fl_id_entry **entry)
     *entry = FL_NULL;
 }
 
-FL_SEALED_FN fl_void fl_id_entry_init(
+FL_INLINE_FN fl_void fl_id_entry_init(
     fl_id_entry **entry,
     fl_char *name,
     fl_data_type declared_type,

@@ -35,8 +35,8 @@ fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope)
 fl_void _fl_intpr_parse_header_section(fl_byte_reader *reader);
 fl_void _fl_intpr_parse_literals_section(fl_byte_reader *reader, fl_intpr_context *cnt);
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt);
-FL_SEALED_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
-FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
+FL_INLINE_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt);
+FL_INLINE_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id);
 
 // frees passed args when function execution is completed
 fl_value _fl_intpr_exec_fn(const fl_fn_variant *var, fl_value_vec *args, const fl_local_context *local_cnt);
@@ -250,7 +250,7 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec *args, cons
     return res;
 }
 
-FL_SEALED_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt)
+FL_INLINE_FN fl_void _fl_intpr_interpret_code_section(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
     if (fl_byte_reader_next(reader, fl_section_mark) != FL_SECTION_MARK_CODE)
         assert(FL_FALSE);
@@ -301,7 +301,7 @@ fl_id_entry *_fl_intpr_resolve_id_chain(fl_byte_reader *reader, fl_scope *scope)
     return res;
 }
 
-FL_SEALED_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
+FL_INLINE_FN fl_void _fl_intpr_push_ref(fl_intpr_context *cnt, fl_id_entry *id)
 {
     fl_value ref = fl_value_create_ref(id);
     fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(ref));

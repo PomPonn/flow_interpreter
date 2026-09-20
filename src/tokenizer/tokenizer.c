@@ -19,12 +19,12 @@
 
 // ---------- DECLARATIONS ----------
 
-FL_SEALED_FN fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
-FL_SEALED_FN fl_bool _fl_tok_handle_number(const fl_char **str);
-FL_SEALED_FN fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
-FL_SEALED_FN fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
-FL_SEALED_FN fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
-FL_SEALED_FN fl_bool _fl_tok_handle_escapement(const fl_char **str, const fl_const_cstr_vec *escapes);
+FL_INLINE_FN fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes);
+FL_INLINE_FN fl_bool _fl_tok_handle_number(const fl_char **str);
+FL_INLINE_FN fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index);
+FL_INLINE_FN fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter);
+FL_INLINE_FN fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter);
+FL_INLINE_FN fl_bool _fl_tok_handle_escapement(const fl_char **str, const fl_const_cstr_vec *escapes);
 fl_char *_fl_tok_next_token(fl_char *str, const fl_const_cstr_vec *escapes, fl_size *line, fl_size *column);
 
 // ---------- DEFINITIONS ----------
@@ -59,7 +59,7 @@ fl_token_arr fl_tok_tokenize(fl_char *source, const fl_char *src_location)
     return token_arr;
 }
 
-FL_SEALED_FN fl_bool _fl_tok_handle_escapement(
+FL_INLINE_FN fl_bool _fl_tok_handle_escapement(
     const fl_char **str,
     const fl_const_cstr_vec *escapes)
 {
@@ -79,7 +79,7 @@ FL_SEALED_FN fl_bool _fl_tok_handle_escapement(
     return FL_FALSE;
 }
 
-FL_SEALED_FN fl_bool _fl_tok_handle_number(const fl_char **str)
+FL_INLINE_FN fl_bool _fl_tok_handle_number(const fl_char **str)
 {
     fl_bool dot_found = FL_FALSE;
     fl_bool digit_found = FL_FALSE;
@@ -109,7 +109,7 @@ FL_SEALED_FN fl_bool _fl_tok_handle_number(const fl_char **str)
     return FL_FALSE;
 }
 
-FL_SEALED_FN fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
+FL_INLINE_FN fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_index)
 {
     if (chr_index == 0)
         return FL_FALSE;
@@ -122,7 +122,7 @@ FL_SEALED_FN fl_bool _fl_tok_is_char_escaped(const fl_char *chr, fl_size chr_ind
     return res;
 }
 
-FL_SEALED_FN fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
+FL_INLINE_FN fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_counter, fl_size *column_counter)
 {
     const fl_char *ptr = *str;
 
@@ -157,7 +157,7 @@ FL_SEALED_FN fl_bool _fl_tok_handle_wrapper(const fl_char **str, fl_size *line_c
 }
 
 // reduces any following whitespace
-FL_SEALED_FN fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter)
+FL_INLINE_FN fl_char *_fl_tok_handle_whitespace(fl_char *token_start, fl_size *line_counter, fl_size *col_counter)
 {
     fl_char *ptr = token_start;
 
@@ -274,7 +274,7 @@ __std_return:
     return token_start;
 }
 
-FL_SEALED_FN fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes)
+FL_INLINE_FN fl_size _fl_tok_count_tokens(fl_char *str, const fl_const_cstr_vec *escapes)
 {
     fl_size count = 0;
 

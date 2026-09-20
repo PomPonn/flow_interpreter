@@ -16,6 +16,8 @@
 
 int main(int argc, char **argv)
 {
+    int ***wianek = FL_NULL;
+
     if (argc < 2)
     {
         printf("Missing sample file path (relative to 'samples' directory)");

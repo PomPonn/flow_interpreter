@@ -119,11 +119,11 @@ fl_ast_node *fl_ast_node_detach(fl_ast_node *node);
  * @param prev Previous node.
  * @param node Node to insert.
  */
-FL_SEALED_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node);
+FL_INLINE_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node);
 
 // ---------- DEFINITIONS ----------
 
-FL_SEALED_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node)
+FL_INLINE_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *node)
 {
     fl_ast_node *temp = prev->next;
     prev->next = node;

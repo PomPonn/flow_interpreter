@@ -36,14 +36,14 @@ typedef struct _fl_data_desc fl_data_desc;
  * @brief Creates an empty data descriptor.
  * @return A descriptor with a null type and no traits.
  */
-FL_SEALED_FN fl_data_desc fl_data_desc_empty();
+FL_INLINE_FN fl_data_desc fl_data_desc_empty();
 
 /**
  * @brief Creates a data descriptor for a type without traits.
  * @param type The data type to describe.
  * @return A descriptor for the specified type.
  */
-FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type);
+FL_INLINE_FN fl_data_desc fl_data_desc_create(fl_data_type type);
 
 /**
  * @brief Creates a data descriptor for a type with the specified traits.
@@ -51,7 +51,7 @@ FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type);
  * @param traits The traits associated with the data type.
  * @return A descriptor for the specified type and traits.
  */
-FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits);
+FL_INLINE_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits);
 
 /**
  * @brief Compares two data descriptors for equality.
@@ -59,7 +59,7 @@ FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data
  * @param d2 The second descriptor.
  * @return FL_TRUE if the descriptors are equal; otherwise, FL_FALSE.
  */
-FL_SEALED_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
+FL_INLINE_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
 
 /**
  * @brief Checks whether one descriptor matches another descriptor.
@@ -67,11 +67,11 @@ FL_SEALED_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
  * @param d2 The descriptor being matched against.
  * @return FL_TRUE if d2 satisfies d1; otherwise, FL_FALSE.
  */
-FL_SEALED_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2);
+FL_INLINE_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2);
 
 // ---------- DEFINITIONS -----------
 
-FL_SEALED_FN fl_data_desc fl_data_desc_empty()
+FL_INLINE_FN fl_data_desc fl_data_desc_empty()
 {
     return (fl_data_desc){
         .type = FL_DATA_TYPE_NULL,
@@ -79,7 +79,7 @@ FL_SEALED_FN fl_data_desc fl_data_desc_empty()
     };
 }
 
-FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type)
+FL_INLINE_FN fl_data_desc fl_data_desc_create(fl_data_type type)
 {
     return (fl_data_desc){
         .type = type,
@@ -87,7 +87,7 @@ FL_SEALED_FN fl_data_desc fl_data_desc_create(fl_data_type type)
     };
 }
 
-FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits)
+FL_INLINE_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data_traits traits)
 {
     return (fl_data_desc){
         .type = type,
@@ -95,13 +95,13 @@ FL_SEALED_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data
     };
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
+FL_INLINE_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
 {
     return fl_bits_is_set(d1.type, d2.type) &&
            d1.traits == d2.traits;
 }
 
-FL_SEALED_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
+FL_INLINE_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
 {
     // TODO: change this
 

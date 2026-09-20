@@ -59,7 +59,7 @@ fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf
  * @param cnt Context to use.
  * @return Nodes data descriptors vector.
  */
-FL_SEALED_FN fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt);
+FL_INLINE_FN fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt);
 
 // ---------- DEFINITIONS -----------
 
@@ -215,7 +215,7 @@ fl_bool _fl_inl_is_call_inlineable(const fl_operation op, const fl_fn_intf *intf
             fl_data_desc_vec_is_every_const(&arg_descs));
 }
 
-FL_SEALED_FN fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt)
+FL_INLINE_FN fl_data_desc_vec _fl_inl_convert_nodes_to_descs(const fl_ast_node *node, const fl_cmp_context *cnt)
 {
     fl_data_desc_vec descs;
     fl_data_desc_vec_init(&descs);
