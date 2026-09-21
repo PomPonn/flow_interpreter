@@ -2,21 +2,18 @@
 
 ## interpreter
 
-- opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case)
+- opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case (and fl_instr_info_vec_to_escapes?))
 
 ## compiler
 
-- opt.: search for unused literals (by inlining) and discard them
+- opt.: search for unused literals (got inlined) and discard them
 - simulate assign instruction in some cases
 - revise fn variants overloading
 
 ## ast generator
 
-- is second \_fl_ast_sort_operators_helper call needed?
+- opt. \_fl_ast_sort_operators_helper - redundant calls
 - tweak lambdas sorting order?
-- revise token locations when sorting operators
-- think again about single arg calls without parantheses
-- AST types handling; AST type dimensions(?) handling
 - AST generation unused tokens handling
 
 ## tokenizer
@@ -28,13 +25,12 @@
 - opt.: fl_instr_info_vec_to_escapes putting back
 - fix typing prediction system when checking lambda (temp solution - set second arg type as ANY)
 - handle in-string escapes better (fl_value_from_literal function)
-- make some function struct instead of fn_variant_vec?
+- make some function struct instead of using fn_variant_vec directly?
 - revise context scopes management
-- add call_attached to local_context? (rename this field?)
-- add const specifiers where possible
+- add call_attached to local_context or scope? (rename this field?)
 - make fl_id_entry use data_desc instead of just data_type? (decl_type fields)
-- wrap std string to x type conversion functions
-- fix messy data_desc & intfs handling.
+- wrap string to x type conversion std functions
+- handle messy data_desc & intfs handling.
 - handle ':' at the start of import string (maybe It's unnecessary?)
 - revise c modules registration
 - revise mod_importer implementation namings
