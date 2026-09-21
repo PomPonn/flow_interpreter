@@ -10,6 +10,7 @@
 
 // ---------- DEPENDENCIES -------------
 
+#include "shared/error.h"
 #include "ast/ast_node.h"
 #include "shared/str.h"
 #include "vecs/fn_variant_vec.h"
@@ -24,7 +25,6 @@
 #include "interpreter/interpreter.h"
 #include "context/cmp_context.h"
 #include "flow/id/id_chain.h"
-#include "compiler/inliner.h"
 #include "tools/time.h"
 
 #ifndef NDEBUG
@@ -34,6 +34,16 @@
 #endif
 
 // ------------- MACROS -----------------
+
+/**
+ * @brief Shorthand for throwing a compilation error.
+ */
+#define __fl_throw_compilation_error(ast_node_ptr, message)                        \
+    {                                                                              \
+        fl_char buffer[FL_ID_CHAIN_MAX_SIZE];                                      \
+        fl_id_chain_to_string(ast_node_ptr->data, buffer, FL_ID_CHAIN_MAX_SIZE);   \
+        fl_err_throw(FL_ERR_COMPILATION, message, buffer, ast_node_ptr->location); \
+    }
 
 #ifndef NDEBUG
 
@@ -86,6 +96,51 @@ fl_void _fl_cmp_compile_literal(const fl_ast_node *node, fl_cmp_context *cnt);
 fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_chain *chain);
 
 /**
+ * @brief Convert lambda AST nodes to bytes.
+ * @param arg_node First lambda argument node.
+ * @param cnt Context to use.
+ */
+fl_void _fl_cmp_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt);
+
+/**
+ * @brief Parse lambda parameter nodes.
+ * @param param_node First parameter. May be single param or param array.
+ * @param cnt Context to use.
+ * @return Resulting labels string vector.
+ */
+fl_cstr_vec _fl_cmp_parse_lambda_params(const fl_ast_node *param_node, const fl_local_context *cnt);
+
+/**
+ * @brief Compiles operation call AST nodes.
+ * @param id_node AST node of id of the operation.
+ * @param op Operation to compile.
+ * @param cnt Context to use.
+ */
+fl_void _fl_cmp_call_to_bytes(
+    const fl_ast_node *id_node,
+    const fl_operation op,
+    fl_cmp_context *cnt);
+
+/**
+ * @brief Convert compilation context as a code block to bytes.
+ * @param bytes Byte vector to write to.
+ * @param cnt Context to convert.
+ * @param ignore_labels Optional id labels to ignore when
+ *                      declaring ids at the beginning of the block.
+ */
+fl_void _fl_cmp_block_cnt_to_bytes(
+    fl_byte_vec *bytes,
+    const fl_cmp_context *cnt,
+    const fl_cstr_vec *ignore_labels);
+
+/**
+ * @brief Compile single AST node.
+ * @param node Node to compile.
+ * @param cnt Context to use while compilation.
+ */
+fl_void _fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt);
+
+/**
  * @brief Handle new identifier.
  * @param name Identifier name.
  * @param cnt Context to use.
@@ -121,7 +176,7 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
     fl_byte_vec_init(&compiled);
 
     // Compile nodes
-    fl_cmp_compile_node(tree, &cnt);
+    _fl_cmp_compile_node(tree, &cnt);
 
     // Add byte code version info
     _fl_cmp_paste_byte_code_header(&compiled);
@@ -149,7 +204,7 @@ fl_byte_vec fl_cmp_compile_ast(const fl_ast_node *tree)
     return compiled;
 }
 
-fl_void fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
+fl_void _fl_cmp_compile_node(const fl_ast_node *node, fl_cmp_context *cnt)
 {
     switch (node->type)
     {
@@ -184,12 +239,12 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
     node = node->child;
     while (node)
     {
-        fl_cmp_compile_node(node, &inner_cnt);
+        _fl_cmp_compile_node(node, &inner_cnt);
         node = node->next;
     }
 
     // Convert whole context to bytes
-    fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt, FL_NULL);
+    _fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &inner_cnt, FL_NULL);
 
     // Free context
     fl_local_context_free_scope((fl_local_context *)&inner_cnt);
@@ -198,34 +253,111 @@ fl_void _fl_cmp_compile_block(const fl_ast_node *node, fl_cmp_context *cnt)
 
 fl_void _fl_cmp_compile_op_call(const fl_ast_node *op_node, fl_cmp_context *cnt)
 {
+    fl_bool compiled = FL_FALSE;
     fl_ast_node *id_node = op_node->child;
+    fl_ast_node *arg_node = id_node->next;
+
     fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
 
-    if (op.type != FL_OPERATION_UNKNOWN)
+    if (op.type == FL_OPERATION_UNKNOWN)
     {
-        if (!fl_operation_is_callable(op))
-            assert(FL_FALSE);
+        // Just compile it since we can't opt this out
+        _fl_cmp_call_to_bytes(id_node, op, cnt);
 
-        // Try to inline first
-        if (fl_inl_try_operation_inline(id_node, op, cnt))
-        {
 #if _INCLUDE_INLINE_LOGS
-            goto __return;
+        goto __return;
 #else
-            return;
+        return;
 #endif
-        }
-
-        // Throw an error if compile-time only function wasn't inlined
-        if (fl_operation_is_compile_time(op))
-            assert(FL_FALSE);
     }
 
-    // Compile it normally
-    fl_cmp_call_to_bytes(id_node, op, cnt);
+    fl_data_desc_vec descs = fl_ast_nodes_get_desc_vec(arg_node, (fl_local_context *)cnt);
+    const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
+
+    if (!fn_i)
+    {
+        __fl_throw_compilation_error(id_node, "couldn't find function overload for given arguments");
+        assert(FL_FALSE);
+    }
+
+    fl_cmp_context inl_cnt;
+
+    fl_bool inlineable = fl_fn_intf_is_inlineable(fn_i, &descs);
+    fl_data_desc_vec_free(&descs);
+
+    fl_cmp_context *curr_cnt = cnt;
+
+    if (inlineable)
+    {
+        fl_cmp_context_from(&inl_cnt, (fl_local_context *)cnt);
+        // Write to internal context if we are going to inline this
+        curr_cnt = &inl_cnt;
+    }
+
+    if (!fl_operation_is_callable(op))
+        assert(FL_FALSE);
+
+    if (op.type == FL_OPERATION_INSTR)
+    {
+        // Compile some instructions differently
+
+        switch (op.instr)
+        {
+        case FL_INSTR_LAMBDA:
+            _fl_cmp_lambda_to_bytes(arg_node, curr_cnt);
+            compiled = FL_TRUE;
+            break;
+        case FL_INSTR_IF:
+        case FL_INSTR_ELSE:
+            if (arg_node->next->type != FL_AST_NODE_TYPE_BLOCK)
+            {
+                _fl_cmp_compile_node(arg_node, curr_cnt);
+
+                fl_byte_vec *bytes = &curr_cnt->byte_code;
+                fl_size size = curr_cnt->byte_code.size;
+
+                fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
+
+                fl_size size_ind = bytes->size;
+                // Push block size and fill it later
+                fl_byte_vec_push_t(bytes, size, fl_size);
+
+                _fl_cmp_compile_node(arg_node->next, curr_cnt);
+                fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
+
+                *(fl_size *)&bytes->data[size_ind] = bytes->size - size;
+
+                assert(arg_node->next->next == FL_NULL);
+                compiled = FL_TRUE;
+            }
+            break;
+        }
+    }
+
+    if (!compiled)
+        // Compile it normally
+        _fl_cmp_call_to_bytes(id_node, op, curr_cnt);
+
+    // Inline if possible
+    if (inlineable)
+    {
+        // Run this code snippet
+        fl_byte_segm segm = fl_byte_segm_create_from_vec(&curr_cnt->byte_code);
+        fl_value res = fl_intpr_eval(segm, (fl_local_context *)curr_cnt);
+
+        if (fl_value_is_empty(res))
+            assert(FL_FALSE);
+
+        fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
+        fl_value_to_bytes(res, &cnt->byte_code);
+
+        // Free resulting value after converting it to byte code
+        fl_value_free(&res);
+        // Free internal context
+        fl_cmp_context_free(&inl_cnt);
+    }
 
 #if _INCLUDE_INLINE_LOGS
-
 __return:
 
     {
@@ -234,7 +366,6 @@ __return:
         assert(fl_id_chain_to_string(id_node->data, buffer, _FL_ID_STRING_MAX_SIZE));
         printf("!!! COMPILER !!! Passed operation '%s', line %u\n", buffer, line);
     }
-
 #endif
 }
 
@@ -316,7 +447,7 @@ fl_void _fl_cmp_byte_code_push_id_access_by_name(fl_byte_vec *code, const fl_id_
     fl_byte_vec_push_str(code, buffer);
 }
 
-fl_void fl_cmp_call_to_bytes(
+fl_void _fl_cmp_call_to_bytes(
     const fl_ast_node *id_node,
     const fl_operation op,
     fl_cmp_context *cnt)
@@ -340,14 +471,14 @@ fl_void fl_cmp_call_to_bytes(
 
     while (arg_node)
     {
-        fl_cmp_compile_node(arg_node, cnt);
+        _fl_cmp_compile_node(arg_node, cnt);
         arg_node = arg_node->next;
     }
 
     fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
 }
 
-fl_void fl_cmp_block_cnt_to_bytes(
+fl_void _fl_cmp_block_cnt_to_bytes(
     fl_byte_vec *bytes,
     const fl_cmp_context *cnt,
     const fl_cstr_vec *ignore_labels)
@@ -383,4 +514,106 @@ fl_void fl_cmp_block_cnt_to_bytes(
 
     fl_byte_vec_merge(bytes, &cnt->byte_code);
     fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
+}
+
+fl_cstr_vec _fl_cmp_parse_lambda_params(const fl_ast_node *param_node, const fl_local_context *cnt)
+{
+    fl_bool single_param = FL_FALSE;
+    // Init array of labels (lambda parameter names)
+    fl_cstr_vec labels;
+    fl_cstr_vec_init(&labels);
+
+    switch (param_node->type)
+    {
+    case FL_AST_NODE_TYPE_ID_CHAIN:
+        single_param = FL_TRUE;
+        break;
+    case FL_AST_NODE_TYPE_ARRAY:
+        param_node = param_node->child;
+        break;
+    default:
+        assert(FL_FALSE);
+        break;
+    }
+
+    while (param_node)
+    {
+        if (param_node->type == FL_AST_NODE_TYPE_ID_CHAIN)
+        {
+            fl_id_chain *id_chain = param_node->data;
+
+            if (id_chain->size != 1)
+                assert(FL_FALSE);
+
+            // Push label
+            fl_cstr_vec_push(&labels, id_chain->data[0]);
+        }
+        else
+        {
+            fl_cmp_context inl_cnt;
+            fl_cmp_context_from(&inl_cnt, cnt);
+
+            // Compile node normally and evaluate compilation
+            _fl_cmp_compile_node(param_node, &inl_cnt);
+
+            fl_byte_segm segm = fl_byte_segm_create_from_vec(&inl_cnt.byte_code);
+            fl_value res = fl_intpr_eval(segm, (fl_local_context *)&inl_cnt);
+
+            // Resulting value has to be a string
+            if (res.desc.type != FL_DATA_TYPE_STRING)
+            {
+                fl_value_free(&res);
+                assert(FL_FALSE);
+            }
+
+            fl_cstr_vec_push(&labels, res.data);
+            fl_cmp_context_free(&inl_cnt);
+        }
+
+        if (single_param)
+            break;
+
+        param_node = param_node->next;
+    }
+
+    return labels;
+}
+
+fl_void _fl_cmp_lambda_to_bytes(const fl_ast_node *arg_node, fl_cmp_context *cnt)
+{
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_LAMBDA);
+
+    fl_cstr_vec labels = _fl_cmp_parse_lambda_params(arg_node, (fl_local_context *)cnt);
+
+    // Convert array of strings to bytes
+    fl_value lbl_arr = fl_value_from_cstr_vec(labels);
+
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_VALUE);
+    fl_value_to_bytes(lbl_arr, &cnt->byte_code);
+
+    // Compile lambda body
+    const fl_ast_node *body_node = arg_node->next;
+
+    // If lambda is a single operator, wrap it in a block
+    fl_cmp_context block_cnt;
+    fl_cmp_context_from(&block_cnt, (fl_local_context *)cnt);
+    fl_local_context_deepen((fl_local_context *)&block_cnt);
+
+    // Skip block handling, since we override it's default behaviour
+    if (body_node->type == FL_AST_NODE_TYPE_BLOCK)
+        body_node = body_node->child;
+
+    while (body_node)
+    {
+        _fl_cmp_compile_node(body_node, &block_cnt);
+        body_node = body_node->next;
+    }
+
+    _fl_cmp_block_cnt_to_bytes(&cnt->byte_code, &block_cnt, &labels);
+    fl_byte_vec_push(&cnt->byte_code, FL_INSTR_EXECUTE);
+
+    // Free structs
+    fl_value_free(&lbl_arr);
+    fl_cstr_vec_free_shallow(&labels);
+    fl_cmp_context_free(&block_cnt);
 }

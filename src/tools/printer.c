@@ -29,7 +29,7 @@
 #define _POSITION_STR_BUFFER_SIZE 16
 #define _STR_BUFFER_SIZE 2048
 
-#define _PRT_HANDLE_PREDEF_PRINT(predef_name_uc)         \
+#define _PRT_HANDLE_CLL_INSTR_PRINT(predef_name_uc)      \
     case _FL_MERGE2(FL_INSTR_, predef_name_uc):          \
         printf("|" _FL_STRINGIFY(predef_name_uc) "|\n"); \
         break
@@ -223,7 +223,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size n)
             assert(sizeof(fl_size) == sizeof(unsigned));
 
             fl_size ind = fl_byte_reader_next(reader, fl_size);
-            printf("[LITERAL] %u\n", ind);
+            printf("[LITERAL] ind: %u\n", ind);
             break;
         }
         case FL_INSTR_VALUE:
@@ -232,15 +232,23 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size n)
             printf("\n");
             break;
             // ---- PREDEFINED INSTRUCTIONS ----
-            _PRT_HANDLE_PREDEF_PRINT(IMPORT);
-            _PRT_HANDLE_PREDEF_PRINT(ASSIGN);
-            _PRT_HANDLE_PREDEF_PRINT(LAMBDA);
-            _PRT_HANDLE_PREDEF_PRINT(ADD);
-            _PRT_HANDLE_PREDEF_PRINT(SUB);
-            _PRT_HANDLE_PREDEF_PRINT(DIV);
-            _PRT_HANDLE_PREDEF_PRINT(MUL);
-            _PRT_HANDLE_PREDEF_PRINT(MOD);
-            _PRT_HANDLE_PREDEF_PRINT(POW);
+            _PRT_HANDLE_CLL_INSTR_PRINT(IMPORT);
+            _PRT_HANDLE_CLL_INSTR_PRINT(ASSIGN);
+            _PRT_HANDLE_CLL_INSTR_PRINT(LAMBDA);
+            _PRT_HANDLE_CLL_INSTR_PRINT(ADD);
+            _PRT_HANDLE_CLL_INSTR_PRINT(SUB);
+            _PRT_HANDLE_CLL_INSTR_PRINT(DIV);
+            _PRT_HANDLE_CLL_INSTR_PRINT(MUL);
+            _PRT_HANDLE_CLL_INSTR_PRINT(MOD);
+            _PRT_HANDLE_CLL_INSTR_PRINT(POW);
+            _PRT_HANDLE_CLL_INSTR_PRINT(EQUAL);
+            _PRT_HANDLE_CLL_INSTR_PRINT(NOT_EQUAL);
+            _PRT_HANDLE_CLL_INSTR_PRINT(GT);
+            _PRT_HANDLE_CLL_INSTR_PRINT(LT);
+            _PRT_HANDLE_CLL_INSTR_PRINT(GT_OR_EQ);
+            _PRT_HANDLE_CLL_INSTR_PRINT(LT_OR_EQ);
+            _PRT_HANDLE_CLL_INSTR_PRINT(ELSE);
+            _PRT_HANDLE_CLL_INSTR_PRINT(IF);
         default:
             // undefined instruction
             assert(FL_FALSE);
@@ -289,8 +297,11 @@ FL_INLINE_FN fl_void _fl_prt_print_array(fl_byte_reader *reader)
     for (fl_size i = 0; !fl_byte_reader_is_end(reader) && i < count; i++)
     {
         _fl_prt_print_value_byted(reader);
-        printf(i == count - 1 ? "]" : ", ");
+        if (i != count - 1)
+            printf(", ");
     }
+
+    printf("]");
 }
 
 fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)

@@ -11,9 +11,13 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
+#include "flow/data_desc.h"
 #include "tokenizer/token_location.h"
+#include "vecs/data_desc_vec.h"
 
 // ---------- TYPE DEFINITIONS ----------
+
+FL_FORWARD_STRUCT(fl_local_context);
 
 enum _fl_ast_node_type
 {
@@ -115,6 +119,26 @@ fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent);
 fl_ast_node *fl_ast_node_detach(fl_ast_node *node);
 
 /**
+ * @brief Deduce data descriptor of given node in given context.
+ * @param node Node to describe.
+ * @param cnt Context to use.
+ * @return Deduced data descriptor.
+ */
+fl_data_desc fl_ast_node_get_desc(
+    const fl_ast_node *node,
+    const fl_local_context *cnt);
+
+/**
+ * @brief Deduce data descriptors of given nodes in given context.
+ * @param first_node First node to describe.
+ * @param cnt Context to use.
+ * @return Deduced data descriptor vector.
+ */
+FL_INLINE_FN fl_data_desc_vec fl_ast_nodes_get_desc_vec(
+    const fl_ast_node *first_node,
+    const fl_local_context *cnt);
+
+/**
  * @brief Insert node after given one.
  * @param prev Previous node.
  * @param node Node to insert.
@@ -129,4 +153,21 @@ FL_INLINE_FN fl_void fl_ast_node_insert_after(fl_ast_node *prev, fl_ast_node *no
     prev->next = node;
     node->parent = prev->parent;
     node->next = temp;
+}
+
+FL_INLINE_FN fl_data_desc_vec fl_ast_nodes_get_desc_vec(
+    const fl_ast_node *first_node,
+    const fl_local_context *cnt)
+{
+    fl_data_desc_vec descs;
+    fl_data_desc_vec_init(&descs);
+
+    while (first_node)
+    {
+        fl_data_desc desc = fl_ast_node_get_desc(first_node, cnt);
+        fl_data_desc_vec_push(&descs, desc);
+        first_node = first_node->next;
+    }
+
+    return descs;
 }

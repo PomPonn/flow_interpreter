@@ -161,7 +161,7 @@ fl_void fl_g_instrs_init()
         });
     // init intf(s)
     fl_fn_intf_init(&intf, FL_DATA_TYPE_FN, params);
-    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_PURE | FL_FN_TRAITS_COMPILE_TIME);
     // init variant(s)
     fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_lambda);
     // set variant vec

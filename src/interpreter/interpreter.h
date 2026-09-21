@@ -24,4 +24,4 @@ FL_FORWARD_STRUCT(fl_local_context);
 fl_void fl_intpr_interpret(fl_byte_vec code);
 
 // returns last computed fl_value if it was the last operation on stack, otherwise empty fl_value
-fl_value fl_intpr_eval(fl_byte_segm code, fl_local_context *cnt);
+fl_value fl_intpr_eval(fl_byte_segm code, const fl_local_context *cnt);

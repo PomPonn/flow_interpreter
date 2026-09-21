@@ -55,19 +55,14 @@ FL_INLINE_FN fl_operation fl_operation_unknown();
 FL_INLINE_FN fl_bool fl_operation_is_initialized(fl_operation op);
 FL_INLINE_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr);
 FL_INLINE_FN fl_bool fl_operation_is_callable(fl_operation op);
-FL_INLINE_FN fl_bool fl_operation_is_compile_time(fl_operation op);
 
 fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
 fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_base_context *cnt);
 fl_void fl_operation_free(fl_operation *op);
 
-const fl_fn_intf *fl_operation_get_intf_by_descs(
-    fl_operation op,
-    const fl_data_desc_vec *descs);
+const fl_fn_intf *fl_operation_get_intf_by_descs(fl_operation op, const fl_data_desc_vec *descs);
 
-const fl_fn_intf *fl_operation_get_intf_by_args(
-    fl_operation op,
-    const fl_value_vec *args);
+const fl_fn_intf *fl_operation_get_intf_by_args(fl_operation op, const fl_value_vec *args);
 
 // ---------- DEFINITIONS ----------
 
@@ -128,12 +123,4 @@ FL_INLINE_FN fl_bool fl_operation_is_callable(fl_operation op)
 {
     return op.type == FL_OPERATION_FN ||
            (op.type == FL_OPERATION_INSTR && fl_instruction_is_callable(op.instr));
-}
-
-FL_INLINE_FN fl_bool fl_operation_is_compile_time(fl_operation op)
-{
-    if (op.type != FL_OPERATION_INSTR)
-        return FL_FALSE;
-
-    return op.instr == FL_INSTR_LAMBDA;
 }

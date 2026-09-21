@@ -25,6 +25,9 @@ enum _fl_fn_traits
 
     // Function directly alters flow context - receives base context as a first argument.
     FL_FN_TRAITS_META = 0b00000010,
+
+    // Function is meant to be executed at compilation time.
+    FL_FN_TRAITS_COMPILE_TIME = 0b00000100,
 };
 
 /**

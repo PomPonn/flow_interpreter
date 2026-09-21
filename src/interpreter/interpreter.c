@@ -62,7 +62,7 @@ fl_void fl_intpr_interpret(fl_byte_vec code)
     fl_base_context_free(&base_cnt);
 }
 
-fl_value fl_intpr_eval(fl_byte_segm code, fl_local_context *cnt)
+fl_value fl_intpr_eval(fl_byte_segm code, const fl_local_context *cnt)
 {
     fl_intpr_context intpr_cnt;
     fl_intpr_context_from(&intpr_cnt, cnt);

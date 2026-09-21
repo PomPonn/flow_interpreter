@@ -12,6 +12,8 @@
 
 #include "shared/common.h"
 #include "flow/id/id_chain.h"
+#include "context/local_context.h"
+#include "flow/operation.h"
 #include "flow/value.h"
 
 // ---------- DEFINITIONS ---------------
@@ -134,4 +136,57 @@ fl_ast_node *fl_ast_node_detach(fl_ast_node *node)
     node->next = FL_NULL;
 
     return node;
+}
+
+fl_data_desc fl_ast_node_get_desc(
+    const fl_ast_node *node,
+    const fl_local_context *cnt)
+{
+    switch (node->type)
+    {
+    case FL_AST_NODE_TYPE_BLOCK:
+        // ???????????
+        return fl_data_desc_create_traited(FL_DATA_TYPE_SCOPE | FL_DATA_TYPE_CODE_SEGM, FL_DATA_TRAIT_CONST);
+    case FL_AST_NODE_TYPE_FN_CALL:
+    case FL_AST_NODE_TYPE_OPERATOR:
+    {
+        fl_ast_node *id_node = node->child;
+        fl_operation op = fl_operation_from_id_node(id_node, cnt->scope);
+        fl_data_desc_vec descs = fl_ast_nodes_get_desc_vec(id_node->next, (fl_local_context *)cnt);
+        const fl_fn_intf *fn_i = fl_operation_get_intf_by_descs(op, &descs);
+
+        if (op.type == FL_OPERATION_UNKNOWN)
+            return fl_data_desc_create(FL_DATA_TYPE_ANY);
+
+        if (!fl_operation_is_callable(op))
+            assert(FL_FALSE);
+
+        // Init descriptor
+        fl_data_traits traits = FL_DATA_TRAIT_NONE;
+
+        // If we can predict result of the operation, it's inherently constant.
+        if (fl_fn_intf_is_inlineable(fn_i, &descs))
+            fl_bits_set(traits, FL_DATA_TRAIT_CONST);
+
+        fl_data_desc_vec_free(&descs);
+
+        return fl_data_desc_create_traited(fn_i->return_type, traits);
+    }
+    case FL_AST_NODE_TYPE_ID_CHAIN:
+    {
+        fl_id_entry *id = fl_scope_find_id(cnt->scope, node->data);
+        fl_data_type type = id ? id->decl_type : FL_DATA_TYPE_NULL;
+        return fl_data_desc_create_traited(type, FL_DATA_TRAIT_REF);
+    }
+    case FL_AST_NODE_TYPE_LITERAL:
+    {
+        fl_value *lit_val = node->data;
+        return lit_val->desc;
+    }
+    case FL_AST_NODE_TYPE_ARRAY:
+        return fl_data_desc_create(FL_DATA_TYPE_ARRAY);
+    default:
+        assert(FL_FALSE);
+        return fl_data_desc_create(FL_DATA_TYPE_NULL);
+    }
 }

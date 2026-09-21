@@ -64,6 +64,14 @@ FL_INLINE_FN fl_void fl_fn_intf_init(
     fl_data_desc_vec param_descs);
 
 /**
+ * @brief Check whether a function interface can be inlined for the given arguments.
+ * @param intf Interface to check.
+ * @param arg_descs Argument data descriptors.
+ * @return Boolean value indicating whether the function can be inlined.
+ */
+FL_INLINE_FN fl_bool fl_fn_intf_is_inlineable(const fl_fn_intf *intf, const fl_data_desc_vec *arg_descs);
+
+/**
  * @brief Convert function interface to bytes.
  * @param intf Interface to convert.
  * @param byte_vec Byte vector to write to.
@@ -106,4 +114,11 @@ FL_INLINE_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
 
     intf->return_type = FL_DATA_TYPE_NULL;
     intf->traits = FL_FN_TRAITS_NONE;
+}
+
+FL_INLINE_FN fl_bool fl_fn_intf_is_inlineable(const fl_fn_intf *intf, const fl_data_desc_vec *arg_descs)
+{
+    return fl_bits_is_set(intf->traits, FL_FN_TRAITS_COMPILE_TIME) ||
+           (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
+            fl_data_desc_vec_is_every_const(arg_descs));
 }
