@@ -2,7 +2,7 @@
 
 ## interpreter
 
-- opt. opportunity: implement container with unshifting without moving whole container data (used in ARGS_END case (and fl_instr_info_vec_to_escapes?))
+- opt.: implement container with unshifting without moving whole container data (used in ARGS_END case (and fl_instr_info_vec_to_escapes?))
 
 ## compiler
 
@@ -12,7 +12,7 @@
 
 ## ast generator
 
-- opt. \_fl_ast_sort_operators_helper - redundant calls
+- opt. \_fl_ast_sort_operators_helper - redundant calls?
 - tweak lambdas sorting order?
 - AST generation unused tokens handling
 
@@ -22,8 +22,7 @@
 
 ## other
 
-- opt.: fl_instr_info_vec_to_escapes putting back
-- fix typing prediction system when checking lambda (temp solution - set second arg type as ANY)
+- fix typing prediction system when checking lambda (current temp solution - set second arg type as ANY)
 - handle in-string escapes better (fl_value_from_literal function)
 - make some function struct instead of using fn_variant_vec directly?
 - revise context scopes management
