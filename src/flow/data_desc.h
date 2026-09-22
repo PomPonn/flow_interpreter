@@ -16,18 +16,36 @@
 
 enum _fl_data_traits
 {
+    // No traits.
     FL_DATA_TRAIT_NONE = 0b00000000,
+    
+    // Data is immutable.
     FL_DATA_TRAIT_CONST = 0b00000001,
+    
+    // Data is a view of something. Shouldn't be freed.
     FL_DATA_TRAIT_VIEW = 0b00000010,
+
+    // Data is a reference to some data.
     FL_DATA_TRAIT_REF = 0b00000100,
 };
+
+/**
+ * @brief Data traits.
+ */
 typedef fl_byte fl_data_traits;
 
 struct _fl_data_desc
 {
+    // Data type.
     fl_data_type type;
+
+    // Data traits.
     fl_data_traits traits;
 };
+
+/**
+ * @brief Data descriptor.
+ */
 typedef struct _fl_data_desc fl_data_desc;
 
 // ---------- DECLARATIONS ----------
