@@ -39,7 +39,7 @@
 
 // ---------- DEFINITIONS -----------
 
-fl_void fl_flow_run(const fl_char *source_path)
+fl_void fl_flow_run_file(const fl_char *file_path)
 {
     if (!fl_globals_initialized())
         assert(FL_FALSE);
@@ -47,7 +47,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     // fl_prof_profile_once(fl_file_read(source_path));
     // return;
 
-    fl_char *source_code = fl_file_read(source_path);
+    fl_char *source_code = fl_file_read(file_path);
     if (!source_code)
         fl_throw_file_error("[ERROR] Couldn't read the file (does it exist?)");
 
@@ -58,7 +58,7 @@ fl_void fl_flow_run(const fl_char *source_path)
     // fl_prof_profile_once(fl_tok_tokenize(source_code, source_path));
     // return;
 
-    fl_token_arr token_arr = fl_tok_tokenize(source_code, source_path);
+    fl_token_arr token_arr = fl_tok_tokenize(source_code, file_path);
 
 #ifndef NDEBUG
     printf("------ Tokens: ------\n");
