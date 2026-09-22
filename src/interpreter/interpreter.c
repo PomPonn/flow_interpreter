@@ -89,7 +89,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-            if (call_attached)
+            if (cnt->scope->freeze_blocks)
             {
                 fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_CODE_SEGM, FL_DATA_TRAIT_CONST);
 
@@ -98,8 +98,6 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
                 *segm = fl_byte_reader_extract_block_segm(reader);
                 fl_value cptr = fl_value_create_desc(desc, segm);
                 fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(cptr));
-
-                call_attached = FL_FALSE;
             }
             else
             {
@@ -110,14 +108,8 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             break;
         case FL_INSTR_END_BLOCK:
-        {
             fl_local_context_shallow((fl_local_context *)cnt);
-
-            // if this block is nested call attach won't work
-            // TODO: make it per scope
-            call_attached = FL_FALSE;
             break;
-        }
         case FL_INSTR_CALL:
         {
             fl_id_entry *fn_id = FL_NULL;
@@ -133,7 +125,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_fn_vars(val.data));
 
-            call_attached = FL_TRUE;
+            fl_scope_freeze_blocks(cnt->scope, FL_TRUE);
             break;
         }
         case FL_INSTR_DECL_ID:
@@ -188,7 +180,8 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // push value even if it's empty? (as in assign case)
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
 
-            call_attached = FL_FALSE;
+            // Stop freezing
+            fl_scope_freeze_blocks(cnt->scope, FL_FALSE);
             break;
         }
         default:
@@ -197,7 +190,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // CALLABLE INSTRUCTION
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_instr(instr));
 
-            call_attached = FL_TRUE;
+            fl_scope_freeze_blocks(cnt->scope, FL_TRUE);
             break;
         }
     }
