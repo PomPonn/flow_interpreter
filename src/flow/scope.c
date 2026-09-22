@@ -57,7 +57,6 @@ fl_void fl_scope_init(fl_scope **scope, fl_scope *outer)
     scp->inners = fl_mem_alloc_t(fl_scope_vec);
     fl_scope_vec_init(fl_scope_get_inners(scp));
 
-    scp->freeze_blocks = FL_FALSE;
     *scope = scp;
 }
 

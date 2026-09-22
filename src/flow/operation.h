@@ -18,6 +18,8 @@
 
 // ---------- TYPE DEFINITIONS ----------
 
+FL_FORWARD_STRUCT(fl_local_context);
+
 enum _fl_operation_type
 {
     FL_OPERATION_UNINIT,
@@ -57,7 +59,7 @@ FL_INLINE_FN fl_bool fl_operation_is_instr(fl_operation op, fl_instruction instr
 FL_INLINE_FN fl_bool fl_operation_is_callable(fl_operation op);
 
 fl_operation fl_operation_from_id_node(const fl_ast_node *id_node, const fl_scope *scope);
-fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_base_context *cnt);
+fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_local_context *cnt);
 fl_void fl_operation_free(fl_operation *op);
 
 const fl_fn_intf *fl_operation_get_intf_by_descs(fl_operation op, const fl_data_desc_vec *descs);

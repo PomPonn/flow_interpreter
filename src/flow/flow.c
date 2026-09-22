@@ -35,7 +35,7 @@
  * @brief Shorthand for throwing a file error.
  */
 #define fl_throw_file_error(message) \
-    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = source_path})
+    fl_err_throw(FL_ERR_FILE, message, FL_NULL, (fl_token_location){.description = file_path})
 
 // ---------- DEFINITIONS -----------
 

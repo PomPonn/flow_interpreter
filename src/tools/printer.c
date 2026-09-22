@@ -356,6 +356,11 @@ fl_void _fl_prt_print_value_byted(fl_byte_reader *reader)
     }
     break;
     case FL_DATA_TYPE_BOOL:
+    {
+        fl_flow_bool b = fl_byte_reader_next(reader, fl_flow_bool);
+        printf(b ? "TRUE" : "FALSE");
+        break;
+    }
     case FL_DATA_TYPE_SCOPE:
     default:
         assert(FL_FALSE);

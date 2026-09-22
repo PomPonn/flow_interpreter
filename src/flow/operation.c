@@ -10,7 +10,7 @@
 
 // ---------- DEPENDENCIES ----------
 
-#include "context/base_context.h"
+#include "context/local_context.h"
 #include "flow/id/id_chain.h"
 #include "ast/ast_node.h"
 #include "flow/scope.h"
@@ -21,7 +21,7 @@ fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec *args);
 
 // ---------- DEFINITIONS -----------
 
-fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_base_context *cnt)
+fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_local_context *cnt)
 {
     if (!fl_operation_is_callable(op))
         return FL_NULL;

@@ -1,0 +1,2 @@
+io = import(":std.io");
+3 == 4 ? io.put("eq 4") : io.put("neq 4");

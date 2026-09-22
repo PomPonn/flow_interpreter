@@ -30,7 +30,7 @@ FL_INLINE_FN fl_value fl_instr_if(fl_value_vec args)
     assert(left.desc.type == FL_DATA_TYPE_BOOL);
     assert(right.desc.type == FL_DATA_TYPE_CODE_SEGM);
 
-    fl_bool *cond = left.data;
+    fl_flow_bool *cond = left.data;
     fl_local_context *cnt = cnt_ref.data;
     fl_byte_segm *segm = right.data;
 

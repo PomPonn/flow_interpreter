@@ -79,6 +79,8 @@ fl_value fl_intpr_eval(fl_byte_segm code, const fl_local_context *cnt)
 
 fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
+    fl_uint block_freeze_layers = 0;
+
     // should it be bond to fl_scope?
     fl_bool call_attached = FL_FALSE;
 
@@ -89,7 +91,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
         switch (instr)
         {
         case FL_INSTR_START_BLOCK:
-            if (cnt->scope->freeze_blocks)
+            if (block_freeze_layers)
             {
                 fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_CODE_SEGM, FL_DATA_TRAIT_CONST);
 
@@ -125,7 +127,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_fn_vars(val.data));
 
-            fl_scope_freeze_blocks(cnt->scope, FL_TRUE);
+            block_freeze_layers++;
             break;
         }
         case FL_INSTR_DECL_ID:
@@ -173,15 +175,15 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             }
 
             // execute operation (last popped operation is function op)
-            fl_fn_variant *var = fl_operation_prep_run(op, &args, cnt->base);
+            fl_fn_variant *var = fl_operation_prep_run(op, &args, (fl_local_context *)cnt);
             fl_value res = _fl_intpr_exec_fn(var, &args, (fl_local_context *)cnt);
             // no need to free the args, it's handled by _fl_intpr_exec_fn function
 
             // push value even if it's empty? (as in assign case)
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(res));
 
-            // Stop freezing
-            fl_scope_freeze_blocks(cnt->scope, FL_FALSE);
+            // Pop freezing
+            block_freeze_layers--;
             break;
         }
         default:
@@ -190,7 +192,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             // CALLABLE INSTRUCTION
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_instr(instr));
 
-            fl_scope_freeze_blocks(cnt->scope, FL_TRUE);
+            block_freeze_layers++;
             break;
         }
     }

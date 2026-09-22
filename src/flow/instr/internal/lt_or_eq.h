@@ -27,7 +27,7 @@ FL_INLINE_FN fl_value fl_instr_lt_or_eq(fl_value_vec args)
     assert(right.desc.type == FL_DATA_TYPE_INT);
 
     fl_flow_int *l = left.data;
-    fl_flow_int *r = left.data;
+    fl_flow_int *r = right.data;
 
     fl_flow_bool *res = fl_new_bool(*l <= *r);
 
