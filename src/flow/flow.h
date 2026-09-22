@@ -14,4 +14,4 @@
 
 // ---------- DECLARATIONS --------------
 
-fl_void fl_flow_run(const fl_char *source_path);
+fl_void fl_flow_run_file(const fl_char *file_path);
