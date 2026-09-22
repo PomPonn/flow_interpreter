@@ -19,9 +19,11 @@
 fl_char *fl_file_read(const fl_char *filename)
 {
     FILE *file = fopen(filename, "rb");
+    
     if (!file)
         return FL_NULL;
 
+    // Find file size
     fseek(file, 0, SEEK_END);
     fl_size size = ftell(file);
     fseek(file, 0, SEEK_SET);
@@ -31,7 +33,8 @@ fl_char *fl_file_read(const fl_char *filename)
         return FL_NULL;
 
     fread(buffer, size, 1, file);
-    buffer[size] = '\0'; // null-terminate the string
+    // Null-terminate the string
+    buffer[size] = '\0'; 
 
     fclose(file);
     return buffer;
@@ -60,7 +63,7 @@ fl_bool fl_file_append_str(const fl_char *filename, const fl_char *content)
         return FL_FALSE;
 
     if (fputs(content, file) < 0)
-        // error occured while appending
+        // Error occured while appending
         return FL_FALSE;
 
     fclose(file);
