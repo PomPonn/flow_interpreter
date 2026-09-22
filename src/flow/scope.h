@@ -25,6 +25,7 @@ struct _fl_scope
     struct _fl_scope *outer;
     fl_id_entry_vec ids;
     fl_inner_scopes_impl inners;
+    fl_bool freeze_blocks;
 };
 typedef struct _fl_scope fl_scope;
 
