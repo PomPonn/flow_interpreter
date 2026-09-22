@@ -237,7 +237,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
             fl_ast_node_append_child(outer_node, inner_children);
             fl_ast_node_insert_after(outer_node->child, inner_node);
 
-            outer_order = _fl_ast_sort_operators_helper(inner_node, instr_infos);
+            outer_order = _fl_ast_sort_operators_helper(outer_node, instr_infos);
         }
     }
 
@@ -320,6 +320,8 @@ fl_ast_node *_fl_ast_process_expression(fl_ast_node *parent, fl_token_arr *arr, 
     // identifier can be either left side of the operator or a function name
     else if (arr->current->type == FL_TOKEN_TYPE_ID)
         node = _fl_ast_process_id(FL_NULL, arr);
+    else if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
+        node = _fl_ast_process_block(FL_NULL, arr, FL_FALSE);
     else
         __throw_syntax_error("Unexpected token");
 
@@ -396,8 +398,11 @@ fl_ast_node *_fl_ast_process_block(fl_ast_node *parent, fl_token_arr *arr, fl_bo
             _fl_ast_process_expression(parent, arr, FL_FALSE);
 
             // throw error if expression isn't ending with a semicolon
-            if (arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
+            if (!arr->current || arr->current->alias != FL_TOKEN_ALIAS_SEMICOLON)
+            {
                 __throw_syntax_error("expected semicolon ';' at the end of expression");
+                assert(FL_FALSE);
+            }
 
 #if _INCLUDE_INLINE_LOGS
 
@@ -429,12 +434,8 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
     // add left side of the operator as a child
     fl_ast_node_append_child(node, left);
 
-    if (arr->current->alias == FL_TOKEN_ALIAS_LBRACE)
-        // handle block on the right side of the operator...
-        _fl_ast_process_block(node, arr, FL_FALSE);
-    else
-        // ... else handle expression
-        _fl_ast_process_expression(node, arr, FL_FALSE);
+    // Handle right side
+    _fl_ast_process_expression(node, arr, FL_FALSE);
 
     // check for operators chaining
     if (arr->current && arr->current->type == FL_TOKEN_TYPE_ID)

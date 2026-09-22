@@ -3,5 +3,5 @@ io = import(":std.io");
 x = 0;
 x < 10 @ {
     io.put(x);
-    x += 1;
-}
+    x = x + 1;
+};

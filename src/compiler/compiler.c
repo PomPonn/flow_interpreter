@@ -134,6 +134,13 @@ fl_void _fl_cmp_block_cnt_to_bytes(
     const fl_cstr_vec *ignore_labels);
 
 /**
+ * @brief Compile node with guarantee that it'll be in a block.
+ * @param node AST node to compile.
+ * @param cnt Context to use.
+ */
+fl_void _fl_cmp_compile_as_block_wrapped(const fl_ast_node *node, fl_cmp_context *cnt);
+
+/**
  * @brief Compile single AST node.
  * @param node Node to compile.
  * @param cnt Context to use while compilation.
@@ -427,30 +434,20 @@ fl_void _fl_cmp_call_to_bytes(
             _fl_cmp_lambda_args_to_bytes(arg_node, cnt);
             compiled = FL_TRUE;
             break;
+        case FL_INSTR_WHILE:
+            _fl_cmp_compile_as_block_wrapped(arg_node, cnt);
+            _fl_cmp_compile_as_block_wrapped(arg_node->next, cnt);
+
+            assert(arg_node->next->next == FL_NULL);
+            compiled = FL_TRUE;
+            break;
         case FL_INSTR_IF:
         case FL_INSTR_ELSE:
-            if (arg_node->next->type != FL_AST_NODE_TYPE_BLOCK)
-            {
-                _fl_cmp_compile_node(arg_node, cnt);
+            _fl_cmp_compile_node(arg_node, cnt);
+            _fl_cmp_compile_as_block_wrapped(arg_node->next, cnt);
 
-                fl_byte_vec *bytes = &cnt->byte_code;
-                fl_size size = 0;
-
-                fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
-
-                fl_size size_ind = bytes->size;
-                // Push block size and fill it later
-                fl_byte_vec_push_t(bytes, size, fl_size);
-                size = cnt->byte_code.size;
-
-                _fl_cmp_compile_node(arg_node->next, cnt);
-                *(fl_size *)&bytes->data[size_ind] = bytes->size - size;
-
-                fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
-
-                assert(arg_node->next->next == FL_NULL);
-                compiled = FL_TRUE;
-            }
+            assert(arg_node->next->next == FL_NULL);
+            compiled = FL_TRUE;
             break;
         }
     }
@@ -613,4 +610,27 @@ fl_void _fl_cmp_lambda_args_to_bytes(const fl_ast_node *arg_node, fl_cmp_context
     fl_value_free(&lbl_arr);
     fl_cstr_vec_free_shallow(&labels);
     fl_cmp_context_free(&block_cnt);
+}
+
+fl_void _fl_cmp_compile_as_block_wrapped(const fl_ast_node *node, fl_cmp_context *cnt)
+{
+    if (node->type == FL_AST_NODE_TYPE_BLOCK)
+        _fl_cmp_compile_node(node, cnt);
+    else
+    {
+        fl_byte_vec *bytes = &cnt->byte_code;
+        fl_size size = 0;
+
+        fl_byte_vec_push(bytes, FL_INSTR_START_BLOCK);
+
+        fl_size size_ind = bytes->size;
+        // Push block size and fill it later
+        fl_byte_vec_push_t(bytes, size, fl_size);
+        size = cnt->byte_code.size;
+
+        _fl_cmp_compile_node(node, cnt);
+        *(fl_size *)&bytes->data[size_ind] = bytes->size - size;
+
+        fl_byte_vec_push(bytes, FL_INSTR_END_BLOCK);
+    }
 }

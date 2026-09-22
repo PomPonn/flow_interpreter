@@ -18,10 +18,10 @@ enum _fl_data_traits
 {
     // No traits.
     FL_DATA_TRAIT_NONE = 0b00000000,
-    
+
     // Data is immutable.
     FL_DATA_TRAIT_CONST = 0b00000001,
-    
+
     // Data is a view of something. Shouldn't be freed.
     FL_DATA_TRAIT_VIEW = 0b00000010,
 
@@ -123,7 +123,8 @@ FL_INLINE_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
 {
     // TODO: change this
 
-    if (!fl_bits_is_any(d1.type, d2.type))
+    // It's easy to convert to segments - almost every type can be it (maybe change it later)
+    if (!fl_bits_is_any(d1.type, d2.type) && d1.type != FL_DATA_TYPE_CODE_SEGM)
         return FL_FALSE;
 
     if (fl_bits_is_set(d1.traits, FL_DATA_TRAIT_CONST) &&

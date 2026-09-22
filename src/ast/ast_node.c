@@ -161,6 +161,8 @@ fl_data_desc fl_ast_node_get_desc(
         if (!fl_operation_is_callable(op))
             assert(FL_FALSE);
 
+        assert(fn_i);
+
         // Init descriptor
         fl_data_traits traits = FL_DATA_TRAIT_NONE;
 

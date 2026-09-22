@@ -90,7 +90,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_WHILE] = vars;
-    g_info_vec.data[FL_INSTR_WHILE] = fl_instr_info_create("@", FL_OP_ORDER_NEUTRAL);
+    g_info_vec.data[FL_INSTR_WHILE] = fl_instr_info_create("@", FL_OP_ORDER_LOOP);
 
     // ---- IF ----
 
@@ -177,7 +177,7 @@ fl_void fl_g_instrs_init()
         &params, 2,
         (fl_data_desc[]){
             fl_data_desc_create(FL_DATA_TYPE_ARRAY),
-            fl_data_desc_create(FL_DATA_TYPE_ANY),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
         });
     // init intf(s)
     fl_fn_intf_init(&intf, FL_DATA_TYPE_FN, params);

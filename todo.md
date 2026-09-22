@@ -12,7 +12,7 @@
 
 ## ast generator
 
-- opt. \_fl_ast_sort_operators_helper - redundant calls?
+- opt. \_fl_ast_sort_operators_helper - redundant calls? Sort operators immediately when adding them to the tree? !IMPORTANT
 - tweak lambdas sorting order?
 - AST generation unused tokens handling
 

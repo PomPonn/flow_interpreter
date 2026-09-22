@@ -249,6 +249,7 @@ fl_void fl_prt_print_byte_code_code(fl_byte_reader *reader, fl_size n)
             _PRT_HANDLE_CLL_INSTR_PRINT(LT_OR_EQ);
             _PRT_HANDLE_CLL_INSTR_PRINT(ELSE);
             _PRT_HANDLE_CLL_INSTR_PRINT(IF);
+            _PRT_HANDLE_CLL_INSTR_PRINT(WHILE);
         default:
             // undefined instruction
             assert(FL_FALSE);

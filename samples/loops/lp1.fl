@@ -1,16 +1,21 @@
 io = import(":std.io");
 
 x = 0;
+
+io.put("First:");
 x < 10 @ {
     io.put(x);
-    x += 1;
-}
+    x = x + 1;
+};
 
-@(x < 10, {
+io.put("Second:");
+@(x < 20, {
     io.put(x);
-    x += 1;
+    x = x + 1;
 });
 
-x <= 14 @ x += 3;
+
+io.put("Third:");
+x <= 29 @ x = x + 3;
 
 io.put(x);
