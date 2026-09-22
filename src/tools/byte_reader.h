@@ -19,9 +19,16 @@
 
 struct _fl_byte_reader
 {
+    // Byte segment we are reading from.
     const fl_byte_segm bytes;
+
+    // Current byte index.
     fl_size iterator;
 };
+
+/*
+ * @brief Byte reader.
+ */
 typedef struct _fl_byte_reader fl_byte_reader;
 
 // ---------- MACROS ----------
