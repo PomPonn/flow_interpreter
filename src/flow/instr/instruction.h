@@ -34,6 +34,7 @@ enum _fl_instruction
      */
 
     FL_INSTR_IMPORT,
+    FL_INSTR_WHILE,
     FL_INSTR_IF,
     FL_INSTR_ELSE,
     FL_INSTR_LOOP,

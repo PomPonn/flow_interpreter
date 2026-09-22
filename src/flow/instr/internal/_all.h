@@ -17,6 +17,7 @@
 #include "mul.h"
 #include "div.h"
 #include "sub.h"
+#include "while.h"
 #include "if.h"
 #include "else.h"
 #include "equal.h"

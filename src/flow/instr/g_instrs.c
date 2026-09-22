@@ -72,6 +72,26 @@ fl_void fl_g_instrs_init()
     fl_fn_variant var;
     fl_fn_intf intf;
 
+    // ---- WHILE ----
+
+    // init params
+    fl_data_desc_vec_init_with(
+        &params, 2,
+        (fl_data_desc[]){
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
+            fl_data_desc_create(FL_DATA_TYPE_CODE_SEGM),
+        });
+    // init intf(s)
+    fl_fn_intf_init(&intf, FL_DATA_TYPE_NULL, params);
+    fl_bits_set(intf.traits, FL_FN_TRAITS_META);
+    // init variant(s)
+    fl_fn_variant_init(&var, FL_TRUE, intf, fl_instr_while);
+    // set variant vec
+    fl_fn_variant_vec_init_with(&vars, 1, &var);
+    // set globals
+    g_variants.data[FL_INSTR_WHILE] = vars;
+    g_info_vec.data[FL_INSTR_WHILE] = fl_instr_info_create("@", FL_OP_ORDER_NEUTRAL);
+
     // ---- IF ----
 
     // init params
