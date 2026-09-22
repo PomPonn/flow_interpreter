@@ -35,6 +35,8 @@ FL_INLINE_FN fl_scope_vec *fl_scope_get_inners(const fl_scope *scope);
 
 FL_INLINE_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner);
 
+FL_INLINE_FN fl_void fl_scope_freeze_blocks(fl_scope *scope, fl_bool val);
+
 fl_id_entry *fl_scope_find_id(const fl_scope *scope, const fl_id_chain *id_chain);
 
 fl_void fl_scope_free(fl_scope **scope);
@@ -56,3 +58,8 @@ FL_INLINE_FN fl_void fl_scope_add_inner(fl_scope *scope, fl_scope *inner)
     fl_scope_vec_push(fl_scope_get_inners(scope), inner);
     inner->outer = scope;
 }
+
+FL_INLINE_FN fl_void fl_scope_freeze_blocks(fl_scope *scope, fl_bool val)
+{
+    scope->freeze_blocks = val;
+}    
