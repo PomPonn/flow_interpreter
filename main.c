@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     fl_globals_init();
 
-    fl_prof_profile(1000, 6, "lines", fl_flow_run(file_path));
+    fl_prof_profile(1000, 6, "lines", fl_flow_run_file(file_path));
 
     fl_globals_free();
 }
