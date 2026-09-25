@@ -177,11 +177,6 @@ fl_op_order _fl_ast_get_op_order(const fl_ast_node *op_node, const fl_instr_info
     assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
     assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
 
-    fl_bool is_grouped = *(fl_bool *)op_node->data;
-
-    if (is_grouped)
-        return FL_OP_ORDER_GROUP;
-
     fl_id_chain *id_chain = op_node->child[0].data;
     fl_op_order order = FL_OP_ORDER_NEUTRAL;
 
@@ -221,7 +216,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
     fl_op_order outer_order = _fl_ast_get_op_order(outer_node, instr_infos);
 
     // Expose grouping info only when climbing higher
-    // fl_bool is_grouped = *(fl_bool *)outer_node->data;
+    fl_bool is_grouped = *(fl_bool *)outer_node->data;
 
     for (fl_ast_node *inner_node = outer_node->child->next; inner_node; inner_node = inner_node->next)
     {
@@ -239,16 +234,16 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
             _fl_ast_sort_operators_helper(inner_node, instr_infos);
 
             // After the swap it's an outer order
-            return inner_order;
+            outer_order = inner_order;
         }
     }
 
-    return outer_order;
+    return is_grouped ? FL_OP_ORDER_GROUP : outer_order;
 }
 
 FL_INLINE_FN fl_void _fl_ast_swap_operators(fl_ast_node *outer, fl_ast_node *inner)
 {
-    _fl_swap(fl_bool *, outer->data, inner->data);
+    // _fl_swap(fl_bool *, outer->data, inner->data);
 
     // Detach nodes children
 
