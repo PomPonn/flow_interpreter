@@ -34,21 +34,19 @@ fl_ast_node *fl_ast_node_peek_child(fl_ast_node *parent)
 
 fl_void fl_ast_node_append_child(fl_ast_node *parent, fl_ast_node *node)
 {
+    fl_ast_node *current = parent->child;
     node->parent = parent;
 
-    if (!parent->child)
-    {
+    if (!current)
         parent->child = node;
-        return;
+    else
+    {
+        // Find last child
+        while (current->next)
+            current = current->next;
+
+        current->next = node;
     }
-
-    fl_ast_node *current = parent->child;
-
-    // Find last child
-    while (current->next)
-        current = current->next;
-
-    current->next = node;
 
     // Set parent for next nodes, if any
     current = node->next;
@@ -119,6 +117,7 @@ fl_void fl_ast_node_init(
 fl_ast_node *fl_ast_node_detach(fl_ast_node *node)
 {
     fl_ast_node *prev = node->parent->child;
+    assert(prev);
 
     if (prev == node)
     {
@@ -127,7 +126,10 @@ fl_ast_node *fl_ast_node_detach(fl_ast_node *node)
     else
     {
         while (prev->next != node)
+        {
             prev = prev->next;
+            assert(prev);
+        }
 
         prev->next = node->next;
     }

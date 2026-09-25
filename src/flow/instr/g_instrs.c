@@ -110,7 +110,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_IF] = vars;
-    g_info_vec.data[FL_INSTR_IF] = fl_instr_info_create("?", FL_OP_ORDER_COND);
+    g_info_vec.data[FL_INSTR_IF] = fl_instr_info_create("?", FL_OP_ORDER_IF);
 
     // ---- ELSE ----
 
@@ -130,7 +130,7 @@ fl_void fl_g_instrs_init()
     fl_fn_variant_vec_init_with(&vars, 1, &var);
     // set globals
     g_variants.data[FL_INSTR_ELSE] = vars;
-    g_info_vec.data[FL_INSTR_ELSE] = fl_instr_info_create(":", FL_OP_ORDER_COND);
+    g_info_vec.data[FL_INSTR_ELSE] = fl_instr_info_create(":", FL_OP_ORDER_ELSE);
 
     // ---- IMPORT ----
 

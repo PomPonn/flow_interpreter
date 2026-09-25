@@ -145,6 +145,13 @@ fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr);
  */
 FL_INLINE_FN fl_ast_node *_fl_ast_process_ast_literal(fl_token_arr *arr);
 
+/**
+ * @brief Swap an outer operator with its inner operator.
+ * @param outer Outer operator node.
+ * @param inner Inner operator node.
+ */
+FL_INLINE_FN fl_void _fl_ast_swap_operators(fl_ast_node *outer, fl_ast_node *inner);
+
 // ---------- DEFINITIONS ---------------
 
 fl_ast_node *fl_ast_gen(fl_token_arr *arr)
@@ -153,6 +160,8 @@ fl_ast_node *fl_ast_gen(fl_token_arr *arr)
 
     // Assume the whole program is a block
     fl_ast_node *node = _fl_ast_process_block(FL_NULL, arr, FL_TRUE);
+
+    fl_prt_print_ast_tree(node);
 
     _fl_ast_sort_operators(node);
 
@@ -167,6 +176,11 @@ fl_op_order _fl_ast_get_op_order(const fl_ast_node *op_node, const fl_instr_info
 {
     assert(op_node->type == FL_AST_NODE_TYPE_OPERATOR);
     assert(op_node->child[0].type == FL_AST_NODE_TYPE_ID_CHAIN);
+
+    fl_bool is_grouped = *(fl_bool *)op_node->data;
+
+    if (is_grouped)
+        return FL_OP_ORDER_GROUP;
 
     fl_id_chain *id_chain = op_node->child[0].data;
     fl_op_order order = FL_OP_ORDER_NEUTRAL;
@@ -207,7 +221,7 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
     fl_op_order outer_order = _fl_ast_get_op_order(outer_node, instr_infos);
 
     // Expose grouping info only when climbing higher
-    fl_bool is_grouped = *(fl_bool *)outer_node->data;
+    // fl_bool is_grouped = *(fl_bool *)outer_node->data;
 
     for (fl_ast_node *inner_node = outer_node->child->next; inner_node; inner_node = inner_node->next)
     {
@@ -221,27 +235,37 @@ fl_op_order _fl_ast_sort_operators_helper(fl_ast_node *outer_node, const fl_inst
 
         if (outer_order > inner_order)
         {
-            // Detach nodes children
-            fl_ast_node *outer_children = outer_node->child;
-            fl_ast_node *inner_children = inner_node->child;
-            fl_ast_node *mid_arg = fl_ast_node_detach(inner_children->next);
-            outer_node->child = FL_NULL;
-            inner_node->child = FL_NULL;
+            _fl_ast_swap_operators(outer_node, inner_node);
+            _fl_ast_sort_operators_helper(inner_node, instr_infos);
 
-            // Swap children
-
-            outer_children->next->next = FL_NULL;
-            fl_ast_node_append_child(inner_node, outer_children);
-            fl_ast_node_append_child(inner_node, mid_arg);
-
-            fl_ast_node_append_child(outer_node, inner_children);
-            fl_ast_node_insert_after(outer_node->child, inner_node);
-
-            outer_order = _fl_ast_sort_operators_helper(outer_node, instr_infos);
+            // After the swap it's an outer order
+            return inner_order;
         }
     }
 
-    return is_grouped ? FL_OP_ORDER_GROUP : outer_order;
+    return outer_order;
+}
+
+FL_INLINE_FN fl_void _fl_ast_swap_operators(fl_ast_node *outer, fl_ast_node *inner)
+{
+    _fl_swap(fl_bool *, outer->data, inner->data);
+
+    // Detach nodes children
+
+    fl_ast_node *outer_children = outer->child;
+    fl_ast_node *inner_children = inner->child;
+    fl_ast_node *mid_arg = fl_ast_node_detach(inner_children->next);
+    outer->child = FL_NULL;
+    inner->child = FL_NULL;
+
+    // Swap children
+
+    outer_children->next->next = FL_NULL;
+    fl_ast_node_append_child(inner, outer_children);
+    fl_ast_node_append_child(inner, mid_arg);
+
+    fl_ast_node_append_child(outer, inner_children);
+    fl_ast_node_insert_after(outer->child, inner);
 }
 
 fl_ast_node *_fl_ast_process_id(fl_ast_node *parent, fl_token_arr *arr)
