@@ -22,6 +22,7 @@
 
 ## other
 
+- write sample code tests
 - fix typing prediction system when checking lambda (current temp solution - set second arg type as ANY)
 - handle in-string escapes better (fl_value_from_literal function)
 - make some function struct instead of using fn_variant_vec directly?
