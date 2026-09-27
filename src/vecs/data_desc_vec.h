@@ -61,7 +61,7 @@ FL_INLINE_FN fl_bool fl_data_desc_vec_equal(const fl_data_desc_vec *vec, const f
 FL_INLINE_FN fl_bool fl_data_desc_vec_is_every_const(const fl_data_desc_vec *vec)
 {
     for (fl_size i = 0; i < vec->size; i++)
-        if (!fl_bits_is_set(vec->data[i].traits, FL_DATA_TRAIT_CONST))
+        if (!fl_bit_is_set(vec->data[i].traits, FL_DATA_TRAIT_CONST))
             return FL_FALSE;
 
     return FL_TRUE;
@@ -75,7 +75,7 @@ FL_INLINE_FN fl_bool fl_data_desc_vec_match_params(
         return FL_FALSE;
 
     for (fl_size i = 0; i < vec->size; i++)
-        if (!fl_data_desc_match_other(vec->data[i], params->data[i]))
+        if (!fl_data_desc_is_weak_match(vec->data[i], params->data[i]))
             return FL_FALSE;
 
     return FL_TRUE;

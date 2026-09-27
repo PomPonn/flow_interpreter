@@ -1,5 +1,9 @@
 io = import(":std.io");
 
-fib = [n] -> n < 2 ? n : fib(n - 1) + fib(n - 2);
+fib = n -> n < 2 ? n : fib(n - 1) + fib(n - 2);
 
-io.print(fib(4));
+i = 0;
+i < 40 @ {
+    io.put(fib(i));
+    i = i + 1;
+};

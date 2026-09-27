@@ -38,7 +38,7 @@ fl_fn_variant *fl_operation_prep_run(fl_operation op, fl_value_vec *args, fl_loc
     _fl_operation_adapt_args(op, args);
 
     // add base context as the first arg if META trait is set
-    if (fl_bits_is_set(var->intf.traits, FL_FN_TRAITS_META))
+    if (fl_bit_is_set(var->intf.traits, FL_FN_TRAITS_META))
     {
         fl_data_desc desc = fl_data_desc_create_traited(FL_DATA_TYPE_ANY, FL_DATA_TRAIT_VIEW);
         fl_value cnt_arg = fl_value_create_desc(desc, cnt);
@@ -55,17 +55,18 @@ fl_void _fl_operation_adapt_args(fl_operation op, fl_value_vec *args)
 
     for (fl_size i = 0; i < args->size; i++)
     {
-        // clean this up?
+        fl_data_desc declared = intf->param_descs.data[i];
+        fl_data_desc actual = args->data[i].desc;
 
-        if (!fl_bits_is_set(args->data[i].desc.traits, FL_DATA_TRAIT_REF))
-            continue;
+        // Convert type if there is no match
+        if (!fl_data_desc_is_strong_match(declared, actual))
+        {
+            fl_value_convert(&args->data[i], declared.type);
+            actual = args->data[i].desc;
 
-        if (fl_bits_is_set(intf->param_descs.data[i].traits, FL_DATA_TRAIT_REF))
-            continue;
-
-        // convert ref to simple value
-        fl_value target = ((fl_id_entry *)args->data[i].data)->value;
-        args->data[i] = fl_value_copy(target);
+            if (fl_value_is_empty(args->data[i]))
+                assert(FL_FALSE);
+        }
     }
 }
 

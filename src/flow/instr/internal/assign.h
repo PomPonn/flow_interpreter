@@ -31,7 +31,7 @@ FL_INLINE_FN fl_value fl_instr_assign(fl_value_vec args)
     fl_id_entry *id = ref.data;
 
     // invalid data types
-    if (!fl_bits_is_set(id->decl_type, what->desc.type))
+    if (!fl_bit_is_set(id->decl_type, what->desc.type))
         assert(FL_FALSE);
 
     fl_value_free(&id->value);

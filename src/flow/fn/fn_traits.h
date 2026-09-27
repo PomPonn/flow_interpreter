@@ -11,7 +11,7 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
-#include "shared/bitfield.h"
+#include "shared/bit.h"
 
 // ---------- TYPE DEFINITIONS ----------
 

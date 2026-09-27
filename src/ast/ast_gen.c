@@ -441,8 +441,7 @@ fl_ast_node *_fl_ast_process_operator(fl_ast_node *parent, fl_token_arr *arr, fl
     fl_ast_node *node;
 
     // init operator data (info)
-    fl_bool *data = fl_mem_alloc_t(fl_bool);
-    *data = grouped;
+    fl_bool *data = fl_new_fl_bool(grouped);
     // create operator node
     __init_node_filled(FL_AST_NODE_TYPE_OPERATOR, data, FL_NULL);
 

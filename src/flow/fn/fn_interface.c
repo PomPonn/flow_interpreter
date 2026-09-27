@@ -23,7 +23,7 @@ fl_bool fl_fn_intf_overlaps(const fl_fn_intf *left, const fl_fn_intf *right)
         return FL_FALSE;
 
     for (fl_size i = 0; i < left->param_descs.size; i++)
-        if (!fl_data_desc_match_other(left->param_descs.data[i], right->param_descs.data[i]))
+        if (!fl_data_desc_is_weak_match(left->param_descs.data[i], right->param_descs.data[i]))
             return FL_FALSE;
 
     return FL_TRUE;

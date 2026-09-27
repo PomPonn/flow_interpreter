@@ -81,9 +81,6 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 {
     fl_uint block_freeze_layers = 0;
 
-    // should it be bond to fl_scope?
-    fl_bool call_attached = FL_FALSE;
-
     while (!fl_byte_reader_is_end(reader))
     {
         fl_instruction instr = fl_byte_reader_next(reader, fl_instruction);
@@ -110,8 +107,20 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
 
             break;
         case FL_INSTR_END_BLOCK:
+        {
+            fl_operation *last_op = fl_op_vec_peek(&cnt->op_stack);
+
+            // Make sure that peeked value is not a reference, because it'll be invalid after shallow
+            // (It will be returned if this interpretation is called by the eval function)
+            if (last_op->type == FL_OPERATION_VALUE &&
+                fl_bit_is_set(last_op->value.desc.traits, FL_DATA_TRAIT_REF))
+            {
+                fl_value_dereference(&last_op->value);
+            }
+
             fl_local_context_shallow((fl_local_context *)cnt);
             break;
+        }
         case FL_INSTR_CALL:
         {
             fl_id_entry *fn_id = FL_NULL;
@@ -120,6 +129,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
                 assert(FL_FALSE);
 
             fn_id = _fl_intpr_resolve_id_chain(reader, cnt->scope);
+
             assert(fn_id);
 
             fl_value val = fn_id->value;
@@ -151,7 +161,7 @@ fl_void _fl_intpr_interpret_bytes(fl_byte_reader *reader, fl_intpr_context *cnt)
             const fl_size ind = fl_byte_reader_next(reader, fl_size);
             fl_value lit_val = cnt->base->literals.data[ind];
             // make this a literal view
-            fl_bits_set(lit_val.desc.traits, FL_DATA_TRAIT_VIEW);
+            fl_bit_set(lit_val.desc.traits, FL_DATA_TRAIT_VIEW);
             fl_op_vec_push(&cnt->op_stack, fl_operation_from_value(lit_val));
             break;
         }
@@ -238,9 +248,10 @@ fl_value _fl_intpr_exec_fn(const fl_fn_variant *fn_var, fl_value_vec *args, cons
     fl_value res = fl_intpr_eval(body_content, &cnt);
 
     // free array only
-    // each individual arg will is freed through the context
+    // each individual arg is freed through the context
     fl_value_vec_free_shallow(args);
-    // Don't free local scope, because it's already invalid and handled by eval function
+    // Don't free local scope, because it's already invalid and handled by
+    // eval function (particularly by END_BLOCK instruction)
 
     return res;
 }

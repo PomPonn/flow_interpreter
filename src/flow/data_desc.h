@@ -19,14 +19,17 @@ enum _fl_data_traits
     // No traits.
     FL_DATA_TRAIT_NONE = 0b00000000,
 
+    // Any trait acceptable.
+    FL_DATA_TRAIT_ANY = 0b00000001,
+
     // Data is immutable.
-    FL_DATA_TRAIT_CONST = 0b00000001,
+    FL_DATA_TRAIT_CONST = 0b00000010,
 
     // Data is a view of something. Shouldn't be freed.
-    FL_DATA_TRAIT_VIEW = 0b00000010,
+    FL_DATA_TRAIT_VIEW = 0b00000100,
 
-    // Data is a reference to some data.
-    FL_DATA_TRAIT_REF = 0b00000100,
+    // Data is a pointer to some id entry.
+    FL_DATA_TRAIT_REF = 0b00001000,
 };
 
 /**
@@ -80,12 +83,20 @@ FL_INLINE_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data
 FL_INLINE_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2);
 
 /**
- * @brief Checks whether one descriptor matches another descriptor.
+ * @brief Checks whether one descriptor matches weakly another descriptor.
  * @param d1 The descriptor whose requirements are checked.
  * @param d2 The descriptor being matched against.
  * @return FL_TRUE if d2 satisfies d1; otherwise, FL_FALSE.
  */
-FL_INLINE_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2);
+FL_INLINE_FN fl_bool fl_data_desc_is_weak_match(fl_data_desc d1, fl_data_desc d2);
+
+/**
+ * @brief Checks whether one descriptor matches stronglu another descriptor.
+ * @param d1 The descriptor whose requirements are checked.
+ * @param d2 The descriptor being matched against.
+ * @return FL_TRUE if d2 satisfies d1; otherwise, FL_FALSE.
+ */
+FL_INLINE_FN fl_bool fl_data_desc_is_strong_match(fl_data_desc d1, fl_data_desc d2);
 
 // ---------- DEFINITIONS -----------
 
@@ -115,24 +126,42 @@ FL_INLINE_FN fl_data_desc fl_data_desc_create_traited(fl_data_type type, fl_data
 
 FL_INLINE_FN fl_bool fl_data_desc_equal(fl_data_desc d1, fl_data_desc d2)
 {
-    return fl_bits_is_set(d1.type, d2.type) &&
+    return fl_bit_is_set(d1.type, d2.type) &&
            d1.traits == d2.traits;
 }
 
-FL_INLINE_FN fl_bool fl_data_desc_match_other(fl_data_desc d1, fl_data_desc d2)
+FL_INLINE_FN fl_bool fl_data_desc_is_weak_match(fl_data_desc d1, fl_data_desc d2)
 {
     // TODO: change this
 
-    // It's easy to convert to segments - almost every type can be it (maybe change it later)
-    if (!fl_bits_is_any(d1.type, d2.type) && d1.type != FL_DATA_TYPE_CODE_SEGM)
+    // It's easy to convert to segment - almost every type can be it (maybe change it later)
+    if (!fl_bit_is_any(d1.type, d2.type) && d1.type != FL_DATA_TYPE_CODE_SEGM)
         return FL_FALSE;
 
-    if (fl_bits_is_set(d1.traits, FL_DATA_TRAIT_CONST) &&
-        !fl_bits_is_set(d2.traits, FL_DATA_TRAIT_CONST))
+    if (fl_bit_is_set(d1.traits, FL_DATA_TRAIT_ANY))
+        return FL_TRUE;
+
+    if (fl_bit_is_set(d1.traits, FL_DATA_TRAIT_CONST) &&
+        !fl_bit_is_set(d2.traits, FL_DATA_TRAIT_CONST))
         return FL_FALSE;
 
-    if (fl_bits_is_set(d1.traits, FL_DATA_TRAIT_REF) &&
-        !fl_bits_is_set(d2.traits, FL_DATA_TRAIT_REF))
+    if (fl_bit_is_set(d1.traits, FL_DATA_TRAIT_REF) &&
+        !fl_bit_is_set(d2.traits, FL_DATA_TRAIT_REF))
+        return FL_FALSE;
+
+    return FL_TRUE;
+}
+
+FL_INLINE_FN fl_bool fl_data_desc_is_strong_match(fl_data_desc d1, fl_data_desc d2)
+{
+    if (!fl_bit_is_any(d1.type, d2.type))
+        return FL_FALSE;
+
+    if (fl_bit_is_set(d1.traits, FL_DATA_TRAIT_ANY))
+        return FL_TRUE;
+
+    if (fl_bit_is_set(d1.traits, FL_DATA_TRAIT_REF) !=
+        fl_bit_is_set(d2.traits, FL_DATA_TRAIT_REF))
         return FL_FALSE;
 
     return FL_TRUE;

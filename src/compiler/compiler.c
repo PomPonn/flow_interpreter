@@ -451,7 +451,7 @@ fl_void _fl_cmp_call_to_bytes(
             break;
         }
     }
-    else if (fl_bits_is_any(op.type, FL_OPERATION_FN | FL_OPERATION_UNKNOWN))
+    else if (fl_bit_is_any(op.type, FL_OPERATION_FN | FL_OPERATION_UNKNOWN))
     {
         // Start CALL instruction
         fl_byte_vec_push(&cnt->byte_code, FL_INSTR_CALL);

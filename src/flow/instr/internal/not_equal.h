@@ -29,7 +29,7 @@ FL_INLINE_FN fl_value fl_instr_not_equal(fl_value_vec args)
     fl_flow_int *l = left.data;
     fl_flow_int *r = right.data;
 
-    fl_flow_bool *res = fl_new_bool(*l != *r);
+    fl_flow_bool *res = fl_new_fl_flow_bool(*l != *r);
 
     return fl_value_create(FL_DATA_TYPE_BOOL, res);
 }

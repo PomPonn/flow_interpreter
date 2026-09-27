@@ -2,6 +2,8 @@
 
 ## interpreter
 
+- FL_DATA_TRAIT_ANY unused
+- cleanup messy type conversion system
 - opt.: implement container with unshifting without moving whole container data (used in ARGS_END case (and fl_instr_info_vec_to_escapes?))
 
 ## compiler
@@ -22,6 +24,7 @@
 
 ## other
 
+- are consts handled properly?
 - write sample code tests
 - fix typing prediction system when checking lambda (current temp solution - set second arg type as ANY)
 - handle in-string escapes better (fl_value_from_literal function)

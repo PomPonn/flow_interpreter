@@ -30,3 +30,5 @@ fl_size fl_str_count_chr(const fl_char *str, fl_char chr);
 fl_char *fl_str_as_printable(const fl_char *str, fl_char *buffer, fl_size buff_len);
 fl_size fl_str_count_substrs(const fl_char *str, const fl_char *substr);
 fl_char *fl_str_concat(fl_char *dest, const fl_char *src, fl_size dest_size);
+fl_double fl_str_to_float(const fl_char *str);
+fl_long fl_str_to_long_int(const fl_char *str);

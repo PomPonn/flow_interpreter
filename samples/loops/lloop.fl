@@ -1,0 +1,6 @@
+io = import(":std.io");
+
+i = 0;
+i < 100000 @ i = i + 1;
+
+io.put(i);

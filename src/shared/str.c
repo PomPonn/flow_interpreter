@@ -11,6 +11,7 @@
 // ---------- DEPENDENCIES --------------
 
 #include <string.h>
+#include <stdlib.h>
 
 // ---------- DEFINITIONS ---------------
 
@@ -177,4 +178,14 @@ fl_char *fl_str_concat(fl_char *dest, const fl_char *src, fl_size dest_size)
     const fl_size left_size = dest_size - fl_str_len(dest) - 1;
 
     return fl_str_len(src) > left_size ? FL_NULL : strcat(dest, src);
+}
+
+fl_double fl_str_to_float(const fl_char *str)
+{
+    return atof(str);
+}
+
+fl_long fl_str_to_long_int(const fl_char *str)
+{
+    return atoll(str);
 }

@@ -20,14 +20,20 @@
 #include "flow/id/id_entry.h"
 #include "vecs/cstr_vec.h"
 
-// TODO: wrap this out
-#include <stdlib.h>
+// ------------- MACROS -----------------
+
+#define _FL_BOOL_TO_FLOAT_VALUE 1.0f
+#define _FL_BOOL_TO_INT_VALUE 1
+#define _FL_BOOL_FALSE_STR "false"
+#define _FL_BOOL_TRUE_STR "true"
+#define _FL_BOOL_TO_STR_VALUE(bool_ptr) \
+    (*(fl_bool *)(bool_ptr) ? _FL_BOOL_TRUE_STR : _FL_BOOL_FALSE_STR)
 
 // ---------- DEFINITIONS -----------
 
 fl_void fl_value_free(fl_value *value)
 {
-    if (!fl_bits_is_any(value->desc.traits, FL_DATA_TRAIT_VIEW | FL_DATA_TRAIT_REF))
+    if (!fl_bit_is_any(value->desc.traits, FL_DATA_TRAIT_VIEW | FL_DATA_TRAIT_REF))
     {
         switch (value->desc.type)
         {
@@ -67,15 +73,11 @@ fl_value fl_value_from_literal(fl_data_type lit_type, fl_unknown *lit_data)
     {
     case FL_DATA_TYPE_FLOAT:
         assert(sizeof(fl_flow_float) == sizeof(double));
-
-        res_data = fl_mem_alloc_t(fl_flow_float);
-        *((fl_flow_float *)res_data) = atof(lit_data);
+        res_data = fl_new_fl_flow_float(fl_str_to_float(lit_data));
         break;
     case FL_DATA_TYPE_INT:
         assert(sizeof(fl_flow_int) == sizeof(long long));
-
-        res_data = fl_mem_alloc_t(fl_flow_int);
-        *((fl_flow_int *)res_data) = atoll(lit_data);
+        res_data = fl_new_fl_flow_int(fl_str_to_long_int(lit_data));
         break;
     case FL_DATA_TYPE_STRING:
     {
@@ -331,4 +333,182 @@ fl_value fl_value_from_cstr_vec(const fl_cstr_vec vec)
     }
 
     return fl_value_create(FL_DATA_TYPE_ARRAY, vals);
+}
+
+fl_void fl_value_convert_to_array(fl_value *value)
+{
+    assert(FL_FALSE);
+}
+
+fl_bool fl_value_to_bool(fl_value value)
+{
+    if (fl_bit_is_set(value.desc.traits, FL_DATA_TRAIT_REF))
+        return FL_TRUE;
+    else
+    {
+        switch (value.desc.type)
+        {
+        case FL_DATA_TYPE_BOOL:
+            return *(fl_flow_bool *)value.data;
+        case FL_DATA_TYPE_FLOAT:
+            return *(fl_flow_float *)value.data;
+        case FL_DATA_TYPE_INT:
+            return *(fl_flow_int *)value.data;
+        case FL_DATA_TYPE_STRING:
+            return fl_str_len(value.data) != 0;
+        case FL_DATA_TYPE_ARRAY:
+            return ((fl_value_vec *)value.data)->size != 0;
+        case FL_DATA_TYPE_NULL:
+            return FL_FALSE;
+        case FL_DATA_TYPE_SCOPE:
+        case FL_DATA_TYPE_FN:
+        case FL_DATA_TYPE_CODE_SEGM:
+            assert(FL_FALSE);
+        default:
+            return FL_FALSE;
+        }
+    }
+}
+
+fl_void fl_value_convert_to_bool(fl_value *value)
+{
+    fl_flow_bool *data = fl_new_fl_flow_bool(fl_value_to_bool(*value));
+    fl_value_free(value);
+
+    *value = fl_value_create(FL_DATA_TYPE_BOOL, data);
+}
+
+fl_void fl_value_convert_to_float(fl_value *value)
+{
+    fl_value_dereference(value);
+
+    fl_flow_float *data = FL_NULL;
+
+    switch (value->desc.type)
+    {
+    case FL_DATA_TYPE_FLOAT:
+        return;
+    case FL_DATA_TYPE_BOOL:
+        data = fl_new_fl_flow_float(_FL_BOOL_TO_FLOAT_VALUE);
+        break;
+    case FL_DATA_TYPE_INT:
+        data = fl_new_fl_flow_float((fl_flow_float)(*(fl_flow_int *)value->data));
+        break;
+    case FL_DATA_TYPE_STRING:
+        data = fl_new_fl_flow_float(fl_str_to_float(value->data));
+        break;
+    case FL_DATA_TYPE_SCOPE:
+    case FL_DATA_TYPE_FN:
+    case FL_DATA_TYPE_CODE_SEGM:
+    case FL_DATA_TYPE_ARRAY:
+        assert(FL_FALSE);
+    default:
+        fl_value_free(value);
+        *value = fl_value_empty();
+        return;
+    }
+
+    fl_value_free(value);
+    *value = fl_value_create(FL_DATA_TYPE_FLOAT, data);
+}
+
+fl_void fl_value_convert_to_int(fl_value *value)
+{
+    fl_value_dereference(value);
+
+    fl_flow_int *data = FL_NULL;
+
+    switch (value->desc.type)
+    {
+    case FL_DATA_TYPE_INT:
+        return;
+    case FL_DATA_TYPE_BOOL:
+        data = fl_new_fl_flow_int(_FL_BOOL_TO_INT_VALUE);
+        break;
+    case FL_DATA_TYPE_STRING:
+        data = fl_new_fl_flow_int(fl_str_to_long_int(value->data));
+        break;
+    case FL_DATA_TYPE_FLOAT:
+        data = fl_new_fl_flow_int((fl_flow_int)(*(fl_flow_float *)value->data));
+        break;
+    case FL_DATA_TYPE_SCOPE:
+    case FL_DATA_TYPE_FN:
+    case FL_DATA_TYPE_CODE_SEGM:
+    case FL_DATA_TYPE_ARRAY:
+        assert(FL_FALSE);
+    default:
+        fl_value_free(value);
+        *value = fl_value_empty();
+        return;
+    }
+
+    fl_value_free(value);
+    *value = fl_value_create(FL_DATA_TYPE_INT, data);
+}
+
+fl_void fl_value_convert_to_string(fl_value *value)
+{
+    fl_value_dereference(value);
+
+    fl_char *data = FL_NULL;
+
+    switch (value->desc.type)
+    {
+    case FL_DATA_TYPE_STRING:
+        return;
+    case FL_DATA_TYPE_BOOL:
+        data = fl_str_dup(_FL_BOOL_TO_STR_VALUE(value->data));
+        break;
+    case FL_DATA_TYPE_INT:
+    case FL_DATA_TYPE_FLOAT:
+    case FL_DATA_TYPE_SCOPE:
+    case FL_DATA_TYPE_FN:
+    case FL_DATA_TYPE_CODE_SEGM:
+    case FL_DATA_TYPE_ARRAY:
+        assert(FL_FALSE);
+    default:
+        fl_value_free(value);
+        *value = fl_value_empty();
+        return;
+    }
+
+    fl_value_free(value);
+    *value = fl_value_create(FL_DATA_TYPE_STRING, data);
+}
+
+fl_void fl_value_convert(fl_value *value, fl_data_type target_type)
+{
+    switch (target_type)
+    {
+    case FL_DATA_TYPE_ARRAY:
+        fl_value_convert_to_array(value);
+        break;
+    case FL_DATA_TYPE_BOOL:
+        fl_value_convert_to_bool(value);
+        break;
+    case FL_DATA_TYPE_FLOAT:
+        fl_value_convert_to_float(value);
+        break;
+    case FL_DATA_TYPE_INT:
+        fl_value_convert_to_int(value);
+        break;
+    case FL_DATA_TYPE_STRING:
+        fl_value_convert_to_string(value);
+        break;
+    case FL_DATA_TYPE_SCOPE:
+    case FL_DATA_TYPE_FN:
+    case FL_DATA_TYPE_CODE_SEGM:
+    default:
+        fl_value_dereference(value);
+        // IS IT SAFE?
+    }
+}
+
+fl_void fl_value_dereference(fl_value *value)
+{
+    if (fl_bit_is_set(value->desc.traits, FL_DATA_TRAIT_REF))
+    {
+        fl_value target = ((fl_id_entry *)value->data)->value;
+        *value = fl_value_copy(target);
+    }
 }

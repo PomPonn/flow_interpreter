@@ -14,6 +14,7 @@
 #include "shared/memory.h"
 #include "shared/types.h"
 #include "tools/profiler.h"
+#include "templates/new.h"
 
 #include <assert.h>
 
@@ -43,24 +44,9 @@
     struct _##struct_name;             \
     typedef struct _##struct_name struct_name;
 
-// ---------- DECLARATIONS ----------
-
-FL_INLINE_FN fl_flow_int *fl_new_int(fl_flow_int init_value);
-
-FL_INLINE_FN fl_flow_bool *fl_new_bool(fl_flow_bool init_value);
-
 // ---------- DEFINITIONS ----------
 
-FL_INLINE_FN fl_flow_int *fl_new_int(fl_flow_int init_value)
-{
-    fl_flow_int *v = fl_mem_alloc_t(fl_flow_int);
-    *v = init_value;
-    return v;
-}
-
-FL_INLINE_FN fl_flow_bool *fl_new_bool(fl_flow_bool init_value)
-{
-    fl_flow_bool *v = fl_mem_alloc_t(fl_flow_bool);
-    *v = init_value;
-    return v;
-}
+FL_NEW_MEM_FN_OF(fl_bool);
+FL_NEW_MEM_FN_OF(fl_flow_bool);
+FL_NEW_MEM_FN_OF(fl_flow_int);
+FL_NEW_MEM_FN_OF(fl_flow_float);

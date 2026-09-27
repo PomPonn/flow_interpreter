@@ -11,7 +11,7 @@
 // ---------- DEPENDENCIES --------------
 
 #include "shared/common.h"
-#include "shared/bitfield.h"
+#include "shared/bit.h"
 
 // ---------- TYPE DEFINITIONS ----------
 
@@ -22,10 +22,10 @@ enum _fl_data_type
 
     // Any data type.
     FL_DATA_TYPE_ANY = 0b11111111,
-    
+
     // Scope data type.
     FL_DATA_TYPE_SCOPE = 0b00000001,
-    
+
     // Function data type.
     FL_DATA_TYPE_FN = 0b00000010,
 
@@ -37,7 +37,7 @@ enum _fl_data_type
 
     // Float data type.
     FL_DATA_TYPE_FLOAT = 0b00010000,
-    
+
     // Array data type.
     FL_DATA_TYPE_ARRAY = 0b00100000,
 

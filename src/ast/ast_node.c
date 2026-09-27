@@ -170,7 +170,7 @@ fl_data_desc fl_ast_node_get_desc(
 
         // If we can predict result of the operation, it's inherently constant.
         if (fl_fn_intf_is_inlineable(fn_i, &descs))
-            fl_bits_set(traits, FL_DATA_TRAIT_CONST);
+            fl_bit_set(traits, FL_DATA_TRAIT_CONST);
 
         fl_data_desc_vec_free(&descs);
 
@@ -179,7 +179,7 @@ fl_data_desc fl_ast_node_get_desc(
     case FL_AST_NODE_TYPE_ID_CHAIN:
     {
         fl_id_entry *id = fl_scope_find_id(cnt->scope, node->data);
-        fl_data_type type = id ? id->decl_type : FL_DATA_TYPE_NULL;
+        fl_data_type type = id ? id->decl_type : FL_DATA_TYPE_ANY;
         return fl_data_desc_create_traited(type, FL_DATA_TRAIT_REF);
     }
     case FL_AST_NODE_TYPE_LITERAL:

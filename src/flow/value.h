@@ -47,6 +47,16 @@ fl_value fl_value_from_bytes(fl_byte_reader *reader);
 fl_value fl_value_from_cstr_vec(const fl_cstr_vec vec);
 fl_value fl_value_create_ref(fl_id_entry *target);
 
+fl_bool fl_value_to_bool(fl_value value);
+
+fl_void fl_value_dereference(fl_value *value);
+fl_void fl_value_convert(fl_value *value, fl_data_type target_type);
+fl_void fl_value_convert_to_array(fl_value *value);
+fl_void fl_value_convert_to_bool(fl_value *value);
+fl_void fl_value_convert_to_float(fl_value *value);
+fl_void fl_value_convert_to_int(fl_value *value);
+fl_void fl_value_convert_to_string(fl_value *value);
+
 // ---------- DEFINITIONS ----------
 
 FL_INLINE_FN fl_value fl_value_empty()
@@ -98,13 +108,13 @@ FL_INLINE_FN fl_bool fl_value_is_desc_by(fl_value v, fl_data_desc desc)
     // Is it enough?
     // (opt this out)
 
-    if (fl_bits_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
-        !fl_bits_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
+    if (fl_bit_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
+        !fl_bit_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
         return FL_FALSE;
 
-    if (!fl_bits_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
-        fl_bits_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
+    if (!fl_bit_is_set(desc.traits, FL_DATA_TRAIT_REF) &&
+        fl_bit_is_set(v.desc.traits, FL_DATA_TRAIT_REF))
         return FL_FALSE;
 
-    return fl_bits_is_any(desc.type, v.desc.type);
+    return fl_bit_is_any(desc.type, v.desc.type);
 }

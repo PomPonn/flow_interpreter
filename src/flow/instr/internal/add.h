@@ -33,13 +33,13 @@ FL_INLINE_FN fl_value fl_instr_add(fl_value_vec args)
 
     if (left.desc.type == FL_DATA_TYPE_INT)
     {
-        fl_flow_int *res = fl_mem_alloc_t(fl_flow_int);
+        fl_flow_int *res = fl_new_fl_flow_int(0);
         *res = _FL_INT_VAL(left) + _FL_INT_VAL(right);
         return fl_value_create(FL_DATA_TYPE_INT, res);
     }
     else if (left.desc.type == FL_DATA_TYPE_FLOAT)
     {
-        fl_flow_float *res = fl_mem_alloc_t(fl_flow_float);
+        fl_flow_float *res = fl_new_fl_flow_float(0);
         *res = _FL_FLOAT_VAL(left) + _FL_FLOAT_VAL(right);
         return fl_value_create(FL_DATA_TYPE_FLOAT, res);
     }

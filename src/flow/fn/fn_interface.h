@@ -118,7 +118,7 @@ FL_INLINE_FN fl_void fl_fn_intf_free(fl_fn_intf *intf)
 
 FL_INLINE_FN fl_bool fl_fn_intf_is_inlineable(const fl_fn_intf *intf, const fl_data_desc_vec *arg_descs)
 {
-    return fl_bits_is_set(intf->traits, FL_FN_TRAITS_COMPILE_TIME) ||
-           (fl_bits_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
+    return fl_bit_is_set(intf->traits, FL_FN_TRAITS_COMPILE_TIME) ||
+           (fl_bit_is_set(intf->traits, FL_FN_TRAITS_PURE) &&
             fl_data_desc_vec_is_every_const(arg_descs));
 }
